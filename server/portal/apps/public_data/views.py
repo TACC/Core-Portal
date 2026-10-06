@@ -41,6 +41,10 @@ CROISSANT_FILE_CHECKSUM_FIELDS = ("md5", "sha256")
 
 CROISSANT_1_0 = "http://mlcommons.org/croissant/1.0"
 
+# The only formats Croissant defines `extract.column` for (as mimetypes.guess_type names them), so
+# the only files _get_record_sets builds a recordSet for.
+CROISSANT_TABULAR_FORMATS = ("text/csv", "text/tab-separated-values")
+
 # Same characters, same \uXXXX escaping Django's own `json_script` filter applies -- valid
 # anywhere inside a JSON string literal, so it can't corrupt the JSON, but it neutralizes the
 # "</script>" (or "<", ">", "&" more generally) that publication title/description text could
@@ -227,14 +231,14 @@ def _get_cover_image_url(base_meta, project_id, request):
     return f"{_get_configured_origin(request)}{url_path}"
 
 
-def _get_record_sets(file_objs):
-    """Build the Croissant `recordSet` list (one cr:RecordSet per tabular file that has known
+def _get_record_sets(file_objs, project_id):
+    """Build the Croissant `recordSet` list (one cr:RecordSet per CSV/TSV file that has known
     columns) from `file_objs` -- the same combined list `distribution` is built from, so every
     recordSet's `source.fileObject` resolves to a `distribution` entry. This only ever reads
-    metadata already stored on `fileObjs` (the `columns` field, populated at publish time for
-    recognized tabular formats) -- it does no file I/O of its own, since this runs on every
-    page request. Files with no known columns are simply skipped, so a publication with no
-    extracted schemas yet degrades to no `recordSet` at all rather than a broken one.
+    metadata already stored on `fileObjs` (the `columns` field) -- it does no file I/O of its
+    own, since this runs on every page request. Nothing populates `columns` yet (see
+    FileColumn), so today this returns [] and the Dataset is emitted with no `recordSet` --
+    which Croissant allows; it isn't one of REQUIRED_CROISSANT_FIELDS.
     """
 
     record_sets = []
@@ -244,20 +248,42 @@ def _get_record_sets(file_objs):
         if not columns or not path:
             continue
 
+        # Croissant only defines column extraction for CSV/TSV. Any other format would advertise a
+        # recordSet no consumer can actually read records from.
+        encoding_format, _ = mimetypes.guess_type(file_obj.get("name") or path)
+        if encoding_format not in CROISSANT_TABULAR_FORMATS:
+            continue
+
+        named_columns = [column for column in columns if column.get("name")]
+        column_names = [column["name"] for column in named_columns]
+        # Duplicate headers would give two fields the same @id (Croissant requires @ids to be
+        # unique) and make `extract.column` ambiguous, so the whole recordSet is withheld.
+        if len(column_names) != len(set(column_names)):
+            logger.warning(
+                f"Publication {project_id} file {path} has duplicate column names, so it's emitted without a recordSet."
+            )
+            continue
+
         # Percent-encoded the same way _get_distribution encodes this same file's
         # cr:FileObject "@id" (see its comment), so `source.fileObject.@id` below actually
         # cross-references the matching `distribution` entry instead of silently failing to
         # match it for any path containing characters that aren't legal unescaped in an IRI.
         encoded_path = quote(path)
+        # "#records" can't collide with any other @id in the document: quote() always encodes a
+        # literal "#" in a path or column name as %23, so no cr:FileObject @id (or field suffix)
+        # ever contains a raw "#" (whereas "{path}/records" would collide with the field for a
+        # column named "records"). Fields are prefixed with their recordSet's @id, per the spec;
+        # safe="" also encodes "/" in a column name, so a field suffix is always one segment.
+        record_set_id = f"{encoded_path}#records"
         record_sets.append(
             {
                 "@type": "cr:RecordSet",
-                "@id": f"{encoded_path}/records",
+                "@id": record_set_id,
                 "name": file_obj.get("name"),
                 "field": [
                     {
                         "@type": "cr:Field",
-                        "@id": f"{encoded_path}/{quote(column['name'])}",
+                        "@id": f"{record_set_id}/{quote(column['name'], safe='')}",
                         "name": column["name"],
                         "dataType": column.get("dataType", "sc:Text"),
                         "source": {
@@ -268,8 +294,7 @@ def _get_record_sets(file_objs):
                             "extract": {"column": column["name"]},
                         },
                     }
-                    for column in columns
-                    if column.get("name")
+                    for column in named_columns
                 ],
             }
         )
@@ -566,7 +591,7 @@ def get_schema_org_json(pub, project_id, request):
             "name": settings.PORTAL_PUBLICATION_PUBLISHER,
         },
         "distribution": _get_distribution(file_objs, project_id, request),
-        "recordSet": _get_record_sets(file_objs),
+        "recordSet": _get_record_sets(file_objs, project_id),
     }
 
     # Drop empty/unset fields so the JSON-LD stays clean
@@ -604,8 +629,10 @@ def get_schema_org_json(pub, project_id, request):
                 f"{CROISSANT_1_0}."
             )
     # Every cr:FileObject also needs a checksum, or Croissant validators reject the whole Dataset.
-    # Logged at debug, not warning: no publish-time hashing step populates FileObj.sha256 yet, so
-    # today this applies to every publication with files, on every page render and sitemap build.
+    # Logged at debug, not warning: publications archived before the archive app wrote sha256
+    # manifests (app < 0.0.3) have no hashes until compute_publication_checksums backfills them, so
+    # until then this fires for every one of them on every page render and sitemap build. Raise it
+    # to a warning once the backfill has run, when an unhashed file is a real anomaly.
     elif unhashed := [
         file_object["@id"]
         for file_object in schema_org_json["distribution"]

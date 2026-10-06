@@ -300,7 +300,7 @@ def test_get_record_sets_skips_missing_columns_or_path():
             {"columns": [{"name": "a"}], "path": ""},
         ]
     }
-    assert _get_record_sets(base_meta["fileObjs"]) == []
+    assert _get_record_sets(base_meta["fileObjs"], "PRJ-1") == []
 
 
 def test_get_record_sets_builds_fields_and_skips_unnamed_columns():
@@ -313,15 +313,15 @@ def test_get_record_sets_builds_fields_and_skips_unnamed_columns():
             }
         ]
     }
-    record_sets = _get_record_sets(base_meta["fileObjs"])
+    record_sets = _get_record_sets(base_meta["fileObjs"], "PRJ-1")
     assert len(record_sets) == 1
     record_set = record_sets[0]
     assert record_set["@type"] == "cr:RecordSet"
-    assert record_set["@id"] == "data.csv/records"
+    assert record_set["@id"] == "data.csv#records"
     assert record_set["name"] == "data.csv"
     assert len(record_set["field"]) == 1
     field = record_set["field"][0]
-    assert field["@id"] == "data.csv/col1"
+    assert field["@id"] == "data.csv#records/col1"
     assert field["name"] == "col1"
     assert field["dataType"] == "sc:Integer"
     assert field["source"] == {"fileObject": {"@id": "data.csv"}, "extract": {"column": "col1"}}
@@ -329,8 +329,60 @@ def test_get_record_sets_builds_fields_and_skips_unnamed_columns():
 
 def test_get_record_sets_default_data_type():
     base_meta = {"fileObjs": [{"name": "data.csv", "path": "/data.csv", "columns": [{"name": "col1"}]}]}
-    field = _get_record_sets(base_meta["fileObjs"])[0]["field"][0]
+    field = _get_record_sets(base_meta["fileObjs"], "PRJ-1")[0]["field"][0]
     assert field["dataType"] == "sc:Text"
+
+
+def test_get_record_sets_ids_are_unique_for_a_column_named_records():
+    """A column named "records" must not share its recordSet's @id (Croissant requires unique @ids)."""
+    file_objs = [{"name": "data.csv", "path": "/data.csv", "columns": [{"name": "records"}, {"name": "x"}]}]
+
+    record_set = _get_record_sets(file_objs, "PRJ-1")[0]
+    ids = [record_set["@id"]] + [field["@id"] for field in record_set["field"]] + ["data.csv"]
+
+    assert len(ids) == len(set(ids))
+
+
+def test_get_record_sets_encodes_special_characters_in_ids():
+    file_objs = [{"name": "a#b c.csv", "path": "/dir/a#b c.csv", "columns": [{"name": "x/y#z"}]}]
+
+    record_set = _get_record_sets(file_objs, "PRJ-1")[0]
+
+    assert record_set["@id"] == "dir/a%23b%20c.csv#records"
+    field = record_set["field"][0]
+    assert field["@id"] == "dir/a%23b%20c.csv#records/x%2Fy%23z"
+    # Names stay raw: `extract.column` must match the file's actual header.
+    assert field["name"] == "x/y#z"
+    assert field["source"] == {"fileObject": {"@id": "dir/a%23b%20c.csv"}, "extract": {"column": "x/y#z"}}
+
+
+def test_get_record_sets_includes_tsv():
+    file_objs = [{"name": "data.tsv", "path": "/data.tsv", "columns": [{"name": "x"}]}]
+
+    assert [record_set["@id"] for record_set in _get_record_sets(file_objs, "PRJ-1")] == ["data.tsv#records"]
+
+
+@pytest.mark.parametrize("name", ["data.xlsx", "data.parquet", "data.json", "data"])
+def test_get_record_sets_skips_formats_without_column_extraction(name):
+    """Croissant only defines `extract.column` for CSV/TSV."""
+    file_objs = [{"name": name, "path": f"/{name}", "columns": [{"name": "x"}]}]
+
+    assert _get_record_sets(file_objs, "PRJ-1") == []
+
+
+@patch("portal.apps.public_data.views.logger")
+def test_get_record_sets_skips_and_warns_on_duplicate_column_names(mock_logger):
+    file_objs = [
+        {"name": "dupes.csv", "path": "/dupes.csv", "columns": [{"name": "x"}, {"name": "y"}, {"name": "x"}]},
+        {"name": "ok.csv", "path": "/ok.csv", "columns": [{"name": "x"}]},
+    ]
+
+    record_sets = _get_record_sets(file_objs, "PRJ-1")
+
+    assert [record_set["@id"] for record_set in record_sets] == ["ok.csv#records"]
+    mock_logger.warning.assert_called_once()
+    assert "PRJ-1" in mock_logger.warning.call_args.args[0]
+    assert "dupes.csv" in mock_logger.warning.call_args.args[0]
 
 
 # ---------------------------------------------------------------------------
@@ -811,8 +863,8 @@ def test_schema_org_and_citation_include_entity_node_files(rf, settings, publica
     assert distribution_ids == ["data.csv", "sample1/scan.tif", "sample1/paper.pdf", "sample1/table.csv"]
     assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
     assert {record_set["@id"] for record_set in schema["recordSet"]} == {
-        "data.csv/records",
-        "sample1/table.csv/records",
+        "data.csv#records",
+        "sample1/table.csv#records",
     }
     assert citation_meta["entities"][0]["pdf_url"] == _get_publication_file_url(
         publication.project_id, "sample1/paper.pdf", request

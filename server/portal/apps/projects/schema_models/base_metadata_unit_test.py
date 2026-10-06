@@ -50,3 +50,8 @@ def test_file_obj_round_trips_stored_camel_case_dict():
 def test_file_column_requires_name():
     with pytest.raises(pydantic.ValidationError):
         FileColumn(data_type="sc:Text")
+
+
+def test_file_column_rejects_non_atomic_data_type():
+    with pytest.raises(pydantic.ValidationError):
+        FileColumn(name="x", data_type="sc:Int")
