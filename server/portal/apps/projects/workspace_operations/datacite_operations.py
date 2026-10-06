@@ -97,24 +97,34 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
     for author in base_meta.get("authors", []):
         first_name = author.get("first_name", "")
         last_name = author.get("last_name", "")
-        author_attr.append(
-            {
-                # DataCite's schema requires `name` on every creator (the other
-                # name parts below are supplementary) -- "Family, Given" is
-                # DataCite's own recommended form, the same convention
-                # _format_citation_author (public_data/views.py) already uses
-                # for Scholar's citation_author tag.
-                "name": ", ".join(part for part in (last_name, first_name) if part),
-                "nameType": "Personal",
-                "givenName": first_name,
-                "familyName": last_name,
-                # DataCite's schema types schemeUri/affiliationIdentifier/
-                # affiliationIdentifierScheme as strings only (no null variant)
-                # -- omit them rather than send explicit nulls, since there's
-                # no data source for them yet (only `institution`).
-                "affiliation": [{"name": institution}],
-            }
-        )
+        creator = {
+            # DataCite's schema requires `name` on every creator (the other
+            # name parts below are supplementary) -- "Family, Given" is
+            # DataCite's own recommended form, the same convention
+            # _format_citation_author (public_data/views.py) already uses
+            # for Scholar's citation_author tag.
+            "name": ", ".join(part for part in (last_name, first_name) if part),
+            "nameType": "Personal",
+            "givenName": first_name,
+            "familyName": last_name,
+            # DataCite's schema types schemeUri/affiliationIdentifier/
+            # affiliationIdentifierScheme as strings only (no null variant)
+            # -- omit them rather than send explicit nulls, since there's
+            # no data source for them yet (only `institution`).
+            "affiliation": [{"name": institution}],
+        }
+
+        orcid_id = (author.get("orcid_id") or "").strip()
+        if orcid_id:
+            creator["nameIdentifiers"] = [
+                {
+                    "nameIdentifier": f"https://orcid.org/{orcid_id}",
+                    "nameIdentifierScheme": "ORCID",
+                    "schemeUri": "https://orcid.org",
+                }
+            ]
+
+        author_attr.append(creator)
         institutions.append(author.get("inst", ""))
 
     if institution:
