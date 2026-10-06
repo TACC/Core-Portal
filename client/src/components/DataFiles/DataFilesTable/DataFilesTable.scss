@@ -46,27 +46,20 @@
   padding-right: 15px;
   flex-grow: 1;
 }
-.td:has(
-  .loading-icon,     /* <LoadingSpinner> */
-  [role="checkbox"], /* <Checkbox> */
-  [type="checkbox"]  /* <input type="checkbox"> */
-) {
+.td:nth-child(1) /* checkbox/loading */ {
   flex-grow: 0;
   padding-right: unset;
   padding-left: unset;
   width: 45px;
   text-align: center;
 }
-.td:has(
-  > .icon              /* <Icon name={iconName}> */
-) {
+.td:nth-child(2) /* file icon */ {
   flex-grow: 0;
   padding-left: unset;
   padding-right: 10px;
 }
-.td:has(
-  .data-files-name
-) {
+.td:nth-child(3) /* file name */ {
+  flex-grow: 1;
   padding-left: unset;
 }
 
