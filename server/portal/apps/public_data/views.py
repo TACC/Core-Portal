@@ -92,21 +92,17 @@ def _get_license(base_meta, project_id):
 
 
 def _get_orcid_same_as(author):
-    """Resolve an author's ORCID iD (however it's stored on the author dict) to its canonical
-    https://orcid.org/ profile URL, for that creator's `sameAs` -- or None if the author has no
-    (validly formed) ORCID.
+    """Resolve an author's `orcid_id` (set by get_project_user from the user's profile, or by
+    the publish form's AddOrcidModal) to its canonical https://orcid.org/ profile URL, for that
+    creator's `sameAs` -- or None if the author has no (validly formed) ORCID. Same key
+    datacite_operations.get_datacite_json reads for `nameIdentifiers`.
 
-    No author record actually carries an ORCID anywhere in this codebase today -- the
-    author-entry form (DataFilesPublicationAuthorsModal.jsx) only collects first_name/
-    last_name/email, and neither the backend author schema (base_metadata.py) nor the DataCite
-    export (datacite_operations.py) has an ORCID field either. So this is forward-compatible:
-    a no-op until an `orcid` key shows up on an author dict, at which point `sameAs` starts
-    getting populated with no other change needed here. Unlike `license` (a REQUIRED_CROISSANT_
-    FIELDS entry), a malformed ORCID isn't worth failing the whole page's JSON-LD over -- it's
-    just dropped, the same way _format_citation_date degrades rather than raises.
+    Unlike `license` (a REQUIRED_CROISSANT_FIELDS entry), a malformed ORCID isn't worth failing
+    the whole page's JSON-LD over -- it's just dropped, the same way _format_citation_date
+    degrades rather than raises.
     """
 
-    orcid = (author.get("orcid") or "").strip()
+    orcid = (author.get("orcid_id") or "").strip()
     if not orcid:
         return None
     if orcid.startswith("http://") or orcid.startswith("https://"):

@@ -62,7 +62,7 @@ def make_request(rf, path="/"):
 
 
 def full_author(orcid="0000-0002-1825-0097"):
-    return {"first_name": "Ada", "last_name": "Lovelace", "email": "ada@example.com", "orcid": orcid}
+    return {"first_name": "Ada", "last_name": "Lovelace", "email": "ada@example.com", "orcid_id": orcid}
 
 
 def valid_base_meta(**overrides):
@@ -142,21 +142,21 @@ def test_get_license_falsy_passthrough(base_meta):
 
 
 def test_get_orcid_same_as_url_passthrough():
-    author = {"orcid": "https://orcid.org/0000-0002-1825-0097"}
+    author = {"orcid_id": "https://orcid.org/0000-0002-1825-0097"}
     assert _get_orcid_same_as(author) == "https://orcid.org/0000-0002-1825-0097"
 
 
 @pytest.mark.parametrize("orcid", ["0000-0002-1825-0097", "0000-0002-1825-000X"])
 def test_get_orcid_same_as_valid_raw_id(orcid):
-    assert _get_orcid_same_as({"orcid": orcid}) == f"https://orcid.org/{orcid}"
+    assert _get_orcid_same_as({"orcid_id": orcid}) == f"https://orcid.org/{orcid}"
 
 
 @pytest.mark.parametrize("orcid", ["not-an-orcid", "1234-5678-9012", "0000-0002-1825-00977"])
 def test_get_orcid_same_as_invalid_format(orcid):
-    assert _get_orcid_same_as({"orcid": orcid}) is None
+    assert _get_orcid_same_as({"orcid_id": orcid}) is None
 
 
-@pytest.mark.parametrize("author", [{}, {"orcid": ""}, {"orcid": "  "}])
+@pytest.mark.parametrize("author", [{}, {"orcid_id": ""}, {"orcid_id": "  "}])
 def test_get_orcid_same_as_missing(author):
     assert _get_orcid_same_as(author) is None
 
