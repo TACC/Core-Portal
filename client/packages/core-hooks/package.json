@@ -15,7 +15,7 @@
     "axios": "catalog:"
   },
   "devDependencies": {
-    "vitest": "^4.0.18",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "^5.0.1"
   }
 }
