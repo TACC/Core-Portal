@@ -120,9 +120,13 @@ def publish_project_callback(
 
     # The files are on the published system now, so the DOI can't resolve to a landing page whose
     # file links 404. A transfer poll queued before this step existed (no `project_id`) belongs to a
-    # publish_project that already made its DOI findable itself.
-    if project_id and not settings.DEBUG:
-        _queue_publish_publication_doi(project_id)
+    # publish_project that already made its DOI findable itself. The landing page becomes indexable
+    # once the DOI is findable -- right away under DEBUG, where DOIs stay drafts.
+    if project_id:
+        if settings.DEBUG:
+            _mark_publication_indexable(project_id, version)
+        else:
+            _queue_publish_publication_doi(project_id, version)
 
     # Create ZIP archive of published files (the same job writes the sha256 manifest)
     archive_job = archive_publication_files(archive_project_id)
@@ -434,7 +438,14 @@ def publish_project(self, project_id: str, version: int | None = 1):
 
             pub_metadata, _ = Publication.objects.update_or_create(
                 project_id=project_id,
-                defaults={"value": published_project.value, "tree": nx.node_link_data(pub_tree), "version": version},
+                # Not indexable until publish_project_callback has the files in place and the DOI is
+                # findable, so the landing page stays noindex and out of the sitemap meanwhile.
+                defaults={
+                    "value": published_project.value,
+                    "tree": nx.node_link_data(pub_tree),
+                    "version": version,
+                    "is_indexable": False,
+                },
             )
 
             # The DOI isn't made findable here: publish_project_callback does that once the file
@@ -475,11 +486,12 @@ def publish_project(self, project_id: str, version: int | None = 1):
 
 
 @shared_task(bind=True, max_retries=5, queue="default")
-def publish_publication_doi(self, project_id: str, doi: str):
-    """Make a publication's DOI findable at DataCite. Queued by publish_project_callback once the
-    publication's files have been transferred (see _queue_publish_publication_doi). Retried with
-    backoff; once retries run out, `withdraw_publication --restore <project_id>` sends the same
-    `publish` event.
+def publish_publication_doi(self, project_id: str, doi: str, version: int | None = None):
+    """Make a publication's DOI findable at DataCite, then mark its landing page indexable. Queued by
+    publish_project_callback once the publication's files have been transferred (see
+    _queue_publish_publication_doi). Retried with backoff; once retries run out,
+    `withdraw_publication --restore <project_id>` sends the same `publish` event and marks it
+    indexable.
     """
 
     try:
@@ -491,9 +503,28 @@ def publish_publication_doi(self, project_id: str, doi: str):
         )
         raise self.retry(exc=e, countdown=60 * 2**self.request.retries)
     logger.info(f"DataCite DOI {doi} for project {project_id} is now findable.")
+    _mark_publication_indexable(project_id, version)
 
 
-def _queue_publish_publication_doi(project_id: str):
+def _mark_publication_indexable(project_id: str, version: int | None):
+    """Let a publication's landing page be indexed and listed in the sitemap. Only for `version`, so a
+    task from an earlier publish can't mark a newer republish indexable before its own files arrive.
+    An update() rather than save(), so last_updated (the sitemap's <lastmod>) isn't changed.
+    """
+
+    publications = Publication.objects.filter(project_id=project_id, is_published=True)
+    if version is not None:
+        publications = publications.filter(version=version)
+    if publications.update(is_indexable=True):
+        logger.info(f"Publication {project_id} v{version} is now indexable.")
+    else:
+        logger.warning(
+            f"Not marking publication {project_id} v{version} indexable: it's withdrawn, missing, or now a "
+            "different version."
+        )
+
+
+def _queue_publish_publication_doi(project_id: str, version: int | None = None):
     """Queue publish_publication_doi for the DOI stored on the publication. Making a DOI findable
     can't be undone, so the DOI is read from the committed, published Publication row: a publish
     that rolled back (no row) or a withdrawn publication is left alone.
@@ -507,7 +538,7 @@ def _queue_publish_publication_doi(project_id: str):
             f"If it should be findable, run `withdraw_publication --restore {project_id}`."
         )
         return
-    publish_publication_doi.apply_async(args=[project_id, doi])
+    publish_publication_doi.apply_async(args=[project_id, doi], kwargs={"version": version})
 
 
 def _record_minted_doi(source_project_id: str, doi: str):

@@ -15,6 +15,7 @@ from django.utils.html import escape
 from django.utils.http import content_disposition_header
 from django.views.generic.base import TemplateView, View
 
+from portal.apps.projects.schema_models.doi import doi_url
 from portal.apps.projects.schema_models.keywords import normalize_keywords
 from portal.apps.projects.schema_models.license_urls import resolve_license_url
 from portal.apps.projects.schema_models.orcid import orcid_url
@@ -224,17 +225,16 @@ def _get_distribution(file_objs, project_id, request):
         if not name or not path:
             continue
 
-        # `@id` is a JSON-LD identifier that (per the Croissant spec's own examples) doubles as
-        # an IRI reference resolved against this document's own URL, so it's percent-encoded
-        # the same way reverse() encodes this path inside `contentUrl` -- otherwise it would be
-        # an invalid IRI for any path containing characters (spaces, etc.) that aren't legal
-        # unescaped in one. `contentUrl` takes the raw path; reverse() does its own encoding.
         content_url = _get_publication_file_url(project_id, path, request)
         if content_url is None:
             continue
         file_object = {
             "@type": "cr:FileObject",
-            "@id": quote(path),
+            # The file's own absolute URL, not its relative path: a relative `@id` resolves against
+            # the page's `<base href="/">` (base.html), not the landing page, so "data.csv" in two
+            # different publications would name the same node. contentUrl is already absolute,
+            # percent-encoded by reverse() and unique to this publication's file.
+            "@id": content_url,
             "name": name,
             "contentUrl": content_url,
         }
@@ -276,7 +276,7 @@ def _get_cover_image_url(base_meta, project_id, request):
     return f"{_get_configured_origin(request)}{url_path}"
 
 
-def _get_record_sets(file_objs, project_id):
+def _get_record_sets(file_objs, project_id, request):
     """Build the Croissant `recordSet` list (one cr:RecordSet per CSV/TSV file that has known
     columns) from `file_objs` -- the same combined list `distribution` is built from, so every
     recordSet's `source.fileObject` resolves to a `distribution` entry. This only ever reads
@@ -309,17 +309,18 @@ def _get_record_sets(file_objs, project_id):
             )
             continue
 
-        # Percent-encoded the same way _get_distribution encodes this same file's
-        # cr:FileObject "@id" (see its comment), so `source.fileObject.@id` below actually
-        # cross-references the matching `distribution` entry instead of silently failing to
-        # match it for any path containing characters that aren't legal unescaped in an IRI.
-        encoded_path = quote(path)
-        # "#records" can't collide with any other @id in the document: quote() always encodes a
-        # literal "#" in a path or column name as %23, so no cr:FileObject @id (or field suffix)
-        # ever contains a raw "#" (whereas "{path}/records" would collide with the field for a
-        # column named "records"). Fields are prefixed with their recordSet's @id, per the spec;
+        # The same absolute URL _get_distribution uses as this file's cr:FileObject "@id" (see its
+        # comment), so `source.fileObject.@id` below cross-references the matching `distribution`
+        # entry. A file with no URL has no `distribution` entry to reference, so no recordSet.
+        file_url = _get_publication_file_url(project_id, path, request)
+        if file_url is None:
+            continue
+        # "#records" can't collide with any other @id in the document: reverse() and quote() both
+        # encode a literal "#" in a path or column name as %23, so no cr:FileObject @id (or field
+        # suffix) ever contains a raw "#" (whereas "{url}/records" would collide with the field for
+        # a column named "records"). Fields are prefixed with their recordSet's @id, per the spec;
         # safe="" also encodes "/" in a column name, so a field suffix is always one segment.
-        record_set_id = f"{encoded_path}#records"
+        record_set_id = f"{file_url}#records"
         record_sets.append(
             {
                 "@type": "cr:RecordSet",
@@ -334,8 +335,8 @@ def _get_record_sets(file_objs, project_id):
                         "source": {
                             # Links back to the matching entry this same publication's
                             # `distribution` emits in _get_distribution, whose "@id" is
-                            # also the file's percent-encoded stripped path.
-                            "fileObject": {"@id": encoded_path},
+                            # also the file's URL.
+                            "fileObject": {"@id": file_url},
                             "extract": {"column": column["name"]},
                         },
                     }
@@ -345,6 +346,16 @@ def _get_record_sets(file_objs, project_id):
         )
 
     return record_sets
+
+
+def _get_catalog_url(request):
+    """Absolute URL of the published-datasets browse page -- the root of the same `published-datasets/`
+    mount the landing pages live under, where the client app lists every publication -- for the
+    JSON-LD `includedInDataCatalog.url`. Reversed from public_data/urls.py's `index_fallback`
+    catch-all, the route that serves that page, on the same origin as every other URL here.
+    """
+
+    return f"{_get_configured_origin(request)}{reverse('publications:index_fallback')}"
 
 
 def _get_landing_page_url(project_id, request):
@@ -466,7 +477,6 @@ def _get_citations(base_meta):
         if not title:
             continue
 
-        doi = r_data.get("publicationDoi")
         citation = {
             "@type": "CreativeWork",
             "name": title,
@@ -475,8 +485,9 @@ def _get_citations(base_meta):
             "url": r_data.get("publicationLink"),
             # Prefer the DOI (a stabler, more citable identifier than a plain link) when one's
             # given -- same "https://doi.org/<doi>" form used for the dataset's own `identifier`
-            # elsewhere in this module.
-            "identifier": f"https://doi.org/{doi}" if doi else None,
+            # elsewhere in this module. Normalized first (projects/schema_models/doi.py), since the
+            # form accepts a bare DOI, "doi:..." or a resolver URL; anything else is left out.
+            "identifier": doi_url(r_data.get("publicationDoi")),
         }
         if r_data.get("publicationPublisher"):
             citation["publisher"] = {"@type": "Organization", "name": r_data["publicationPublisher"]}
@@ -613,9 +624,12 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
         # by the empty-field cleanup below when doi is falsy, like `keywords`/`citation`.
         "sameAs": f"https://doi.org/{doi}" if doi else None,
         "creator": creators,
+        # Google's Dataset guidance recommends a `url` on Organizations. The publisher is this
+        # portal, so it's the site root on the same origin as the landing page.
         "publisher": {
             "@type": "Organization",
             "name": settings.PORTAL_PUBLICATION_PUBLISHER,
+            "url": f"{_get_configured_origin(request)}/",
         },
         # Trimmed list, the same one DataCite's `subjects` gets (projects/schema_models/keywords.py).
         "keywords": normalize_keywords(base_meta.get("keywords")),
@@ -639,9 +653,10 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
         "includedInDataCatalog": {
             "@type": "DataCatalog",
             "name": settings.PORTAL_PUBLICATION_PUBLISHER,
+            "url": _get_catalog_url(request),
         },
         "distribution": _get_distribution(file_objs, project_id, request),
-        "recordSet": _get_record_sets(file_objs, project_id),
+        "recordSet": _get_record_sets(file_objs, project_id, request),
     }
 
     # Drop empty/unset fields so the JSON-LD stays clean
@@ -791,6 +806,12 @@ class IndexView(TemplateView):
                     # citation/JSON-LD metadata, which also leaves it at base.html's default
                     # noindex. Matches SitemapView, which leaves it out for the same reason.
                     logger.info(f"Publication {project_id} is unpublished; serving it without metadata.")
+                elif not pub.is_indexable:
+                    # Mid-publish: the files are still being transferred, or the DOI isn't findable
+                    # yet, so the page's file links and DOI wouldn't resolve. Served the same way
+                    # until publish_publication_doi (project_publish_operations.py) marks it
+                    # indexable; SitemapView leaves it out meanwhile.
+                    logger.info(f"Publication {project_id} isn't indexable yet; serving it without metadata.")
                 else:
                     # `revision` (the URL's `vN` suffix -- see public_data/urls.py) can't select a
                     # specific version's content: Publication is keyed by bare project_id and always
@@ -1057,8 +1078,9 @@ class SitemapView(View):
 
     def _build(self, request):
         # Mirrors the is_published filter publications/views.py already uses for its own
-        # (authenticated) publications listing.
-        publications = Publication.objects.filter(is_published=True).order_by("project_id")
+        # (authenticated) publications listing, plus is_indexable: IndexView serves a publication
+        # that's still mid-publish without metadata (noindex), so it isn't listed either.
+        publications = Publication.objects.filter(is_published=True, is_indexable=True).order_by("project_id")
 
         entries = []
         for pub in publications:

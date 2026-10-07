@@ -44,6 +44,13 @@ class Publication(models.Model):
     project_id = models.CharField(max_length=100, primary_key=True, editable=False)
     created = models.DateTimeField(default=timezone.now)
     is_published = models.BooleanField(default=True)
+    is_indexable = models.BooleanField(
+        default=True,
+        help_text=(
+            "Whether the landing page may be indexed and listed in the sitemap. publish_project clears it; it's set "
+            "again once the files have been transferred and the DOI is findable."
+        ),
+    )
     last_updated = models.DateTimeField(auto_now=True)
     version = models.IntegerField(default=1)
     value = models.JSONField(

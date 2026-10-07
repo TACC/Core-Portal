@@ -17,7 +17,9 @@ class Command(BaseCommand):
     the tombstone page, but is no longer listed in DataCite's search or metadata feeds.
 
     --restore sets is_published back to True and sends the `publish` event, which makes the DOI
-    findable again.
+    findable again. Once the DOI is findable (or there's no DataCite call to make), it also marks the
+    landing page indexable -- which also recovers a publish whose publish_publication_doi task ran out
+    of retries, leaving the page noindex and out of the sitemap.
 
     The publication is withdrawn (or restored) even if DataCite rejects the request, so a failed
     DataCite call can be retried by running the same command again for the same project id. When
@@ -72,22 +74,26 @@ class Command(BaseCommand):
             doi = publication.value.get("doi")
             if not doi:
                 self.stdout.write(f"Skipped DataCite {datacite_event} for {label}: no DOI")
-                continue
-            if settings.DEBUG:
+            elif settings.DEBUG:
                 self.stdout.write(
                     f"Skipped DataCite {datacite_event} for {doi} ({label}): DEBUG is set, so DOIs aren't made findable"
                 )
-                continue
+            else:
+                # A rejected event (e.g. a DOI that's still a draft) raises DataCiteError, with
+                # DataCite's own error details in its message; a network failure raises a requests
+                # exception.
+                try:
+                    datacite_call(doi)
+                except Exception as e:
+                    failed.append(publication.project_id)
+                    self.stderr.write(f"Failed to {doi_action} {doi} ({label}): {e}")
+                    continue
+                self.stdout.write(f"{doi_done} {doi} {'findable ' if restore else ''}({label})")
 
-            # A rejected event (e.g. a DOI that's still a draft) raises DataCiteError, with DataCite's
-            # own error details in its message; a network failure raises a requests exception.
-            try:
-                datacite_call(doi)
-            except Exception as e:
-                failed.append(publication.project_id)
-                self.stderr.write(f"Failed to {doi_action} {doi} ({label}): {e}")
-                continue
-            self.stdout.write(f"{doi_done} {doi} {'findable ' if restore else ''}({label})")
+            if restore and not publication.is_indexable:
+                publication.is_indexable = True
+                publication.save(update_fields=["is_indexable"])
+                self.stdout.write(f"Marked {label} indexable")
 
         if failed:
             raise CommandError(

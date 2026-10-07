@@ -32,47 +32,23 @@
       {% endif %}
   {% endif %}
 {% endblock %}
-{% block robots %}
-  {# max-image-preview:large lets Search show this page's cover image (og:image below) at full preview size in results instead of the small default thumbnail Google otherwise caps unannotated pages to -- harmless to request even for a publication with no cover image. #}
-  {% if citation_context %}index, follow, max-image-preview:large{% else %}{{ block.super }}{% endif %}
-{% endblock %}
-{% block title %}
-  {% if citation_context.entities.0.title %}
-    {{ citation_context.entities.0.title }} | {{ settings.PORTAL_NAMESPACE }}
-  {% else %}
-    {{ settings.PORTAL_NAMESPACE }} Workbench
-  {% endif %}
-{% endblock %}
-{% block meta_description %}
-  {% if citation_context.entities.0.description %}
-    {{ citation_context.entities.0.description|truncatechars:160 }}
-  {% else %}
-    {{ block.super }}
-  {% endif %}
-{% endblock %}
-{% block og_title %}
-  {% if citation_context.entities.0.title %}
-    {{ citation_context.entities.0.title }} | {{ settings.PORTAL_NAMESPACE }}
-  {% else %}
-    {{ block.super }}
-  {% endif %}
-{% endblock %}
-{% block og_description %}
-  {% if citation_context.entities.0.description %}
-    {{ citation_context.entities.0.description|truncatechars:160 }}
-  {% else %}
-    {{ block.super }}
-  {% endif %}
-{% endblock %}
+{% comment %}
+  The blocks below render inside <title> and meta `content` attributes, so each is kept on one line:
+  any newline or indentation inside the block would end up in the value itself.
+  robots: max-image-preview:large lets Search show this page's cover image (og:image below) at full preview size in results instead of the small default thumbnail Google otherwise caps unannotated pages to -- harmless to request even for a publication with no cover image.
+{% endcomment %}
+{% block robots %}{% if citation_context %}index, follow, max-image-preview:large{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block title %}{% if citation_context.entities.0.title %}{{ citation_context.entities.0.title }} | {{ settings.PORTAL_NAMESPACE }}{% else %}{{ settings.PORTAL_NAMESPACE }} Workbench{% endif %}{% endblock %}
+{% block meta_description %}{% if citation_context.entities.0.description %}{{ citation_context.entities.0.description|truncatechars:160 }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block og_title %}{% if citation_context.entities.0.title %}{{ citation_context.entities.0.title }} | {{ settings.PORTAL_NAMESPACE }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block og_description %}{% if citation_context.entities.0.description %}{{ citation_context.entities.0.description|truncatechars:160 }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 {% block og_image %}
   {% if citation_context.cover_image_url %}
     <meta property="og:image" content="{{ citation_context.cover_image_url }}">
     <meta name="twitter:image" content="{{ citation_context.cover_image_url }}">
   {% endif %}
 {% endblock %}
-{% block twitter_card %}
-  {% if citation_context.cover_image_url %}summary_large_image{% else %}{{ block.super }}{% endif %}
-{% endblock %}
+{% block twitter_card %}{% if citation_context.cover_image_url %}summary_large_image{% else %}{{ block.super }}{% endif %}{% endblock %}
 {% block head_extra %}
   <base href="{% url 'workbench:index' %}">
 {% endblock %}

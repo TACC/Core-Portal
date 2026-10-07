@@ -160,6 +160,7 @@ def test_restore_unknown_id_is_an_error_and_nothing_is_restored(publications, mo
 
 
 def test_restore_rejected_publish_still_restores_and_reports_failure(publications, mocker):
+    Publication.objects.filter(project_id="test.project-9").update(is_indexable=False)
     mocker.patch(
         f"{DIR}.publish_datacite_doi",
         side_effect=DataCiteError("DataCite publish of 10.12345/zzzz failed (HTTP 422): invalid"),
@@ -171,3 +172,35 @@ def test_restore_rejected_publish_still_restores_and_reports_failure(publication
         run("--restore", "test.project-9")
 
     assert is_published("test.project-9")
+    assert not is_indexable("test.project-9")
+
+
+def is_indexable(project_id):
+    return Publication.objects.get(project_id=project_id).is_indexable
+
+
+def test_restore_marks_publication_indexable_once_doi_is_findable(publications, mock_publish):
+    """--restore is the remedy when publish_publication_doi runs out of retries, which leaves the page
+    noindex and out of the sitemap."""
+    Publication.objects.filter(project_id="test.project-1").update(is_indexable=False)
+
+    out, _ = run("--restore", "test.project-1")
+
+    assert is_indexable("test.project-1")
+    assert "Marked test.project-1 v2 indexable" in out
+
+
+def test_restore_without_datacite_call_marks_publication_indexable(publications, mock_publish, settings):
+    settings.DEBUG = True
+    Publication.objects.filter(project_id__in=["test.project-2", "test.project-9"]).update(is_indexable=False)
+
+    run("--restore", "test.project-2", "test.project-9")
+
+    assert is_indexable("test.project-2") and is_indexable("test.project-9")
+
+
+def test_withdraw_leaves_is_indexable_alone(publications, mock_hide):
+    """Withdrawal is governed by is_published; restoring must not have to re-derive indexability."""
+    run("test.project-1")
+
+    assert is_indexable("test.project-1")

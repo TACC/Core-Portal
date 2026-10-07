@@ -526,7 +526,25 @@ def test_get_datacite_json_related_publications_prefers_doi_over_link():
 
 @DATACITE_SETTINGS
 @pytest.mark.django_db
-@pytest.mark.parametrize("blank_doi", ["", None])
+@pytest.mark.parametrize("entered_doi", ["https://doi.org/10.5555/related-doi", "doi:10.5555/related-doi"])
+def test_get_datacite_json_related_publications_normalizes_doi(entered_doi):
+    base_meta = minimal_base_meta(
+        relatedPublications=[
+            {
+                "publicationLink": "https://example.com/publication",
+                "publicationType": "context",
+                "publicationDoi": entered_doi,
+            }
+        ]
+    )
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["relatedIdentifiers"][0]["relatedIdentifier"] == "10.5555/related-doi"
+    assert result["relatedIdentifiers"][0]["relatedIdentifierType"] == "DOI"
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+@pytest.mark.parametrize("blank_doi", ["", None, "not a doi"])
 def test_get_datacite_json_related_publications_blank_doi_falls_back_to_link(blank_doi):
     base_meta = minimal_base_meta(
         relatedPublications=[

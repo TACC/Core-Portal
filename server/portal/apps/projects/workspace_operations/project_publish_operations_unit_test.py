@@ -230,17 +230,33 @@ def test_publish_project_callback_makes_stored_doi_findable_after_transfer(mocke
 
     publish_project_callback("review-1", "published-1", "archive-1", project_id="test.project-1", version=1)
 
-    mock_publish_doi.assert_called_once_with(args=["test.project-1", "10.5555/minted-doi"])
+    mock_publish_doi.assert_called_once_with(args=["test.project-1", "10.5555/minted-doi"], kwargs={"version": 1})
 
 
-def test_publish_project_callback_debug_leaves_doi_draft(mocker, settings):
+def test_publish_project_callback_debug_leaves_doi_draft_and_marks_indexable(mocker, settings):
+    """Under DEBUG the DOI never becomes findable, so the page is indexable once the files are in."""
     settings.DEBUG = True
     mock_publish_doi = _mock_publish_project_callback_steps(mocker)
-    Publication.objects.create(project_id="test.project-1", value={"doi": "10.5555/minted-doi"}, tree={})
+    Publication.objects.create(
+        project_id="test.project-1", value={"doi": "10.5555/minted-doi"}, tree={}, is_indexable=False
+    )
 
     publish_project_callback("review-1", "published-1", "archive-1", project_id="test.project-1", version=1)
 
     mock_publish_doi.assert_not_called()
+    assert Publication.objects.get(project_id="test.project-1").is_indexable
+
+
+def test_publish_project_callback_leaves_page_unindexable_until_doi_is_findable(mocker, settings):
+    settings.DEBUG = False
+    _mock_publish_project_callback_steps(mocker)
+    Publication.objects.create(
+        project_id="test.project-1", value={"doi": "10.5555/minted-doi"}, tree={}, is_indexable=False
+    )
+
+    publish_project_callback("review-1", "published-1", "archive-1", project_id="test.project-1", version=1)
+
+    assert not Publication.objects.get(project_id="test.project-1").is_indexable
 
 
 def test_publish_project_callback_without_project_id_leaves_doi_alone(mocker, settings):
@@ -451,6 +467,8 @@ def test_publish_project_success_creates_publication_and_updates_doi(mocker, set
     publication = Publication.objects.get(project_id="test.project-1")
     assert publication.version == 1
     assert publication.value["doi"] == "10.5555/minted-doi"
+    # Held back from search until publish_project_callback has the files and the DOI is findable.
+    assert not publication.is_indexable
 
     mock_index.assert_called_once_with("test.project-1")
     mock_upload_metadata.assert_called_once()
@@ -576,14 +594,58 @@ def test_publish_project_failure_with_existing_doi_leaves_source_project_unchang
     assert "publicationDate" not in source_project.value
 
 
-def test_publish_publication_doi_makes_doi_findable(mocker):
+def test_publish_publication_doi_makes_doi_findable_and_page_indexable(mocker):
+    Publication.objects.create(project_id="test.project-1", version=2, value={}, tree={}, is_indexable=False)
+    last_updated = Publication.objects.get(project_id="test.project-1").last_updated
     mock_publish = mocker.patch(f"{DIR}.publish_datacite_doi")
     mock_retry = mocker.patch.object(publish_publication_doi, "retry")
 
-    publish_publication_doi("test.project-1", "10.5555/minted-doi")
+    publish_publication_doi("test.project-1", "10.5555/minted-doi", version=2)
 
     mock_publish.assert_called_once_with("10.5555/minted-doi")
     mock_retry.assert_not_called()
+    publication = Publication.objects.get(project_id="test.project-1")
+    assert publication.is_indexable
+    # Not a content change, so the sitemap's <lastmod> stays put.
+    assert publication.last_updated == last_updated
+
+
+@pytest.mark.parametrize(
+    "publication",
+    [
+        {"version": 3},  # republished since: v3's own files may not be in place yet
+        {"version": 2, "is_published": False},  # withdrawn meanwhile
+    ],
+)
+def test_publish_publication_doi_leaves_other_versions_and_withdrawn_unindexable(mocker, caplog, publication):
+    Publication.objects.create(project_id="test.project-1", value={}, tree={}, is_indexable=False, **publication)
+    mocker.patch(f"{DIR}.publish_datacite_doi")
+
+    publish_publication_doi("test.project-1", "10.5555/minted-doi", version=2)
+
+    assert not Publication.objects.get(project_id="test.project-1").is_indexable
+    assert "Not marking publication test.project-1 v2 indexable" in caplog.text
+
+
+def test_publish_publication_doi_without_version_marks_current_publication_indexable(mocker):
+    """Tasks queued before `version` was passed still mark the publication indexable."""
+    Publication.objects.create(project_id="test.project-1", version=4, value={}, tree={}, is_indexable=False)
+    mocker.patch(f"{DIR}.publish_datacite_doi")
+
+    publish_publication_doi("test.project-1", "10.5555/minted-doi")
+
+    assert Publication.objects.get(project_id="test.project-1").is_indexable
+
+
+def test_publish_publication_doi_failure_leaves_page_unindexable(mocker):
+    Publication.objects.create(project_id="test.project-1", version=1, value={}, tree={}, is_indexable=False)
+    mocker.patch(f"{DIR}.publish_datacite_doi", side_effect=RuntimeError("datacite down"))
+    mocker.patch.object(publish_publication_doi, "retry", side_effect=Retry())
+
+    with pytest.raises(Retry):
+        publish_publication_doi("test.project-1", "10.5555/minted-doi", version=1)
+
+    assert not Publication.objects.get(project_id="test.project-1").is_indexable
 
 
 def test_publish_publication_doi_retries_with_backoff_and_logs_remedy(mocker):

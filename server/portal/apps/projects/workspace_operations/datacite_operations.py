@@ -8,6 +8,7 @@ import requests
 from django.conf import settings
 from django.urls import reverse
 
+from portal.apps.projects.schema_models.doi import normalize_doi
 from portal.apps.projects.schema_models.keywords import normalize_keywords
 from portal.apps.projects.schema_models.license_urls import (
     SPDX_SCHEME_URI,
@@ -326,10 +327,11 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
             identifier["relationType"] = relation_mapping.get(publication_type, "References")
             identifier["relatedIdentifier"] = r_data["publicationLink"]
             identifier["relatedIdentifierType"] = "URL"
-            # Truthiness, not key presence: an empty or null DOI would otherwise replace the link
-            # with a blank DOI, which DataCite rejects.
-            if r_data.get("publicationDoi"):
-                identifier["relatedIdentifier"] = r_data["publicationDoi"]
+            # Normalized to a bare DOI (projects/schema_models/doi.py), the form DataCite expects for
+            # relatedIdentifierType "DOI". An empty value, or one that isn't a DOI, keeps the link.
+            related_doi = normalize_doi(r_data.get("publicationDoi"))
+            if related_doi:
+                identifier["relatedIdentifier"] = related_doi
                 identifier["relatedIdentifierType"] = "DOI"
             datacite_json["relatedIdentifiers"].append(identifier)
 

@@ -70,6 +70,11 @@ def make_request(rf, path="/"):
     return rf.get(path)
 
 
+# Where test.project-1's published files are served from (public_data/urls.py's `file_download`), which
+# is also each file's Croissant `@id`.
+FILES_URL = "http://testserver/published-datasets/test.project.published.test.project-1/files/"
+
+
 def full_author(orcid="0000-0002-1825-0097"):
     return {"first_name": "Ada", "last_name": "Lovelace", "email": "ada@example.com", "orcid_id": orcid}
 
@@ -249,7 +254,7 @@ def test_get_distribution_builds_file_objects(rf):
     assert len(distribution) == 1
     file_object = distribution[0]
     assert file_object["@type"] == "cr:FileObject"
-    assert file_object["@id"] == "data.csv"
+    assert file_object["@id"] == f"{FILES_URL}data.csv"
     assert file_object["name"] == "data.csv"
     assert (
         file_object["contentUrl"]
@@ -277,7 +282,7 @@ def test_get_distribution_percent_encodes_path_and_defaults_encoding_format(rf):
     base_meta = {"fileObjs": [{"type": "file", "name": "weird.unknownext", "path": "sub dir/data file.bin"}]}
     distribution = _get_distribution(base_meta["fileObjs"], "test.project-1", request)
     file_object = distribution[0]
-    assert file_object["@id"] == "sub%20dir/data%20file.bin"
+    assert file_object["@id"] == f"{FILES_URL}sub%20dir/data%20file.bin"
     assert file_object["contentUrl"].endswith("/files/sub%20dir/data%20file.bin")
     assert file_object["encodingFormat"] == "application/octet-stream"
     assert "contentSize" not in file_object
@@ -313,17 +318,17 @@ def test_get_cover_image_url_builds_url(rf, settings):
 # ---------------------------------------------------------------------------
 
 
-def test_get_record_sets_skips_missing_columns_or_path():
+def test_get_record_sets_skips_missing_columns_or_path(rf):
     base_meta = {
         "fileObjs": [
             {"path": "/no-columns.csv"},
             {"columns": [{"name": "a"}], "path": ""},
         ]
     }
-    assert _get_record_sets(base_meta["fileObjs"], "PRJ-1") == []
+    assert _get_record_sets(base_meta["fileObjs"], "test.project-1", make_request(rf)) == []
 
 
-def test_get_record_sets_builds_fields_and_skips_unnamed_columns():
+def test_get_record_sets_builds_fields_and_skips_unnamed_columns(rf):
     base_meta = {
         "fileObjs": [
             {
@@ -333,76 +338,102 @@ def test_get_record_sets_builds_fields_and_skips_unnamed_columns():
             }
         ]
     }
-    record_sets = _get_record_sets(base_meta["fileObjs"], "PRJ-1")
+    record_sets = _get_record_sets(base_meta["fileObjs"], "test.project-1", make_request(rf))
     assert len(record_sets) == 1
     record_set = record_sets[0]
     assert record_set["@type"] == "cr:RecordSet"
-    assert record_set["@id"] == "data.csv#records"
+    assert record_set["@id"] == f"{FILES_URL}data.csv#records"
     assert record_set["name"] == "data.csv"
     assert len(record_set["field"]) == 1
     field = record_set["field"][0]
-    assert field["@id"] == "data.csv#records/col1"
+    assert field["@id"] == f"{FILES_URL}data.csv#records/col1"
     assert field["name"] == "col1"
     assert field["dataType"] == "sc:Integer"
-    assert field["source"] == {"fileObject": {"@id": "data.csv"}, "extract": {"column": "col1"}}
+    assert field["source"] == {"fileObject": {"@id": f"{FILES_URL}data.csv"}, "extract": {"column": "col1"}}
 
 
-def test_get_record_sets_default_data_type():
+def test_get_record_sets_default_data_type(rf):
     base_meta = {"fileObjs": [{"name": "data.csv", "path": "/data.csv", "columns": [{"name": "col1"}]}]}
-    field = _get_record_sets(base_meta["fileObjs"], "PRJ-1")[0]["field"][0]
+    field = _get_record_sets(base_meta["fileObjs"], "test.project-1", make_request(rf))[0]["field"][0]
     assert field["dataType"] == "sc:Text"
 
 
-def test_get_record_sets_ids_are_unique_for_a_column_named_records():
+def test_get_record_sets_ids_are_unique_for_a_column_named_records(rf):
     """A column named "records" must not share its recordSet's @id (Croissant requires unique @ids)."""
     file_objs = [{"name": "data.csv", "path": "/data.csv", "columns": [{"name": "records"}, {"name": "x"}]}]
 
-    record_set = _get_record_sets(file_objs, "PRJ-1")[0]
-    ids = [record_set["@id"]] + [field["@id"] for field in record_set["field"]] + ["data.csv"]
+    record_set = _get_record_sets(file_objs, "test.project-1", make_request(rf))[0]
+    ids = [record_set["@id"]] + [field["@id"] for field in record_set["field"]] + [f"{FILES_URL}data.csv"]
 
     assert len(ids) == len(set(ids))
 
 
-def test_get_record_sets_encodes_special_characters_in_ids():
+def test_get_record_sets_encodes_special_characters_in_ids(rf):
     file_objs = [{"name": "a#b c.csv", "path": "/dir/a#b c.csv", "columns": [{"name": "x/y#z"}]}]
 
-    record_set = _get_record_sets(file_objs, "PRJ-1")[0]
+    record_set = _get_record_sets(file_objs, "test.project-1", make_request(rf))[0]
 
-    assert record_set["@id"] == "dir/a%23b%20c.csv#records"
+    assert record_set["@id"] == f"{FILES_URL}dir/a%23b%20c.csv#records"
     field = record_set["field"][0]
-    assert field["@id"] == "dir/a%23b%20c.csv#records/x%2Fy%23z"
+    assert field["@id"] == f"{FILES_URL}dir/a%23b%20c.csv#records/x%2Fy%23z"
     # Names stay raw: `extract.column` must match the file's actual header.
     assert field["name"] == "x/y#z"
-    assert field["source"] == {"fileObject": {"@id": "dir/a%23b%20c.csv"}, "extract": {"column": "x/y#z"}}
+    assert field["source"] == {"fileObject": {"@id": f"{FILES_URL}dir/a%23b%20c.csv"}, "extract": {"column": "x/y#z"}}
 
 
-def test_get_record_sets_includes_tsv():
+def test_get_record_sets_includes_tsv(rf):
     file_objs = [{"name": "data.tsv", "path": "/data.tsv", "columns": [{"name": "x"}]}]
 
-    assert [record_set["@id"] for record_set in _get_record_sets(file_objs, "PRJ-1")] == ["data.tsv#records"]
+    assert [record_set["@id"] for record_set in _get_record_sets(file_objs, "test.project-1", make_request(rf))] == [
+        f"{FILES_URL}data.tsv#records"
+    ]
 
 
 @pytest.mark.parametrize("name", ["data.xlsx", "data.parquet", "data.json", "data"])
-def test_get_record_sets_skips_formats_without_column_extraction(name):
+def test_get_record_sets_skips_formats_without_column_extraction(rf, name):
     """Croissant only defines `extract.column` for CSV/TSV."""
     file_objs = [{"name": name, "path": f"/{name}", "columns": [{"name": "x"}]}]
 
-    assert _get_record_sets(file_objs, "PRJ-1") == []
+    assert _get_record_sets(file_objs, "test.project-1", make_request(rf)) == []
 
 
 @patch("portal.apps.public_data.views.logger")
-def test_get_record_sets_skips_and_warns_on_duplicate_column_names(mock_logger):
+def test_get_record_sets_skips_and_warns_on_duplicate_column_names(mock_logger, rf):
     file_objs = [
         {"name": "dupes.csv", "path": "/dupes.csv", "columns": [{"name": "x"}, {"name": "y"}, {"name": "x"}]},
         {"name": "ok.csv", "path": "/ok.csv", "columns": [{"name": "x"}]},
     ]
 
-    record_sets = _get_record_sets(file_objs, "PRJ-1")
+    record_sets = _get_record_sets(file_objs, "test.project-1", make_request(rf))
 
-    assert [record_set["@id"] for record_set in record_sets] == ["ok.csv#records"]
+    assert [record_set["@id"] for record_set in record_sets] == [f"{FILES_URL}ok.csv#records"]
     mock_logger.warning.assert_called_once()
-    assert "PRJ-1" in mock_logger.warning.call_args.args[0]
+    assert "test.project-1" in mock_logger.warning.call_args.args[0]
     assert "dupes.csv" in mock_logger.warning.call_args.args[0]
+
+
+def test_get_record_sets_skips_file_without_url(rf):
+    """A file whose URL can't be built has no `distribution` entry to reference, so no recordSet."""
+    file_objs = [{"name": "data.csv", "path": "/data.csv", "columns": [{"name": "x"}]}]
+
+    with patch("portal.apps.public_data.views.reverse", side_effect=NoReverseMatch("simulated")):
+        assert _get_record_sets(file_objs, "test.project-1", make_request(rf)) == []
+
+
+def test_file_ids_differ_between_publications_with_the_same_file_name(rf, settings):
+    """Relative @ids resolved against the page's <base href="/">, so data.csv in two publications was
+    one node; absolute file URLs keep them apart."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    request = make_request(rf)
+    ids = []
+    for project_id in ("test.project-1", "test.project-2"):
+        pub = Publication.objects.create(project_id=project_id, value=valid_base_meta(), tree={})
+        schema = get_schema_org_json(pub, project_id, request)
+        assert schema["distribution"][0]["@id"] == schema["distribution"][0]["contentUrl"]
+        assert schema["recordSet"][0]["field"][0]["source"]["fileObject"]["@id"] == schema["distribution"][0]["@id"]
+        ids.append(schema["distribution"][0]["@id"])
+
+    assert ids[0] != ids[1]
 
 
 # ---------------------------------------------------------------------------
@@ -568,6 +599,25 @@ def test_get_citations_strips_empty_fields():
     assert "author" not in citation
     assert "publisher" not in citation
     assert "identifier" not in citation
+
+
+@pytest.mark.parametrize(
+    "entered_doi,expected",
+    [
+        ("https://doi.org/10.1/kept", "https://doi.org/10.1/kept"),
+        ("doi:10.1/kept", "https://doi.org/10.1/kept"),
+        ("http://dx.doi.org/10.1/kept", "https://doi.org/10.1/kept"),
+        ("not a doi", None),
+    ],
+)
+def test_get_citations_normalizes_related_doi(entered_doi, expected):
+    """The form takes the DOI as free text; a URL form used to become https://doi.org/https://doi.org/..."""
+    base_meta = {
+        "relatedPublications": [
+            {"publicationType": "context", "publicationTitle": "Kept", "publicationDoi": entered_doi}
+        ]
+    }
+    assert _get_citations(base_meta)[0].get("identifier") == expected
 
 
 # ---------------------------------------------------------------------------
@@ -943,18 +993,20 @@ def test_schema_org_and_citation_include_entity_node_files(rf, settings, publica
 
     distribution_ids = [file_object["@id"] for file_object in schema["distribution"]]
     # Root-level data.csv first, then the entity's files; the directory isn't enumerated.
-    assert distribution_ids == ["data.csv", "sample1/scan.tif", "sample1/paper.pdf", "sample1/table.csv"]
+    assert distribution_ids == [
+        f"{FILES_URL}{path}" for path in ("data.csv", "sample1/scan.tif", "sample1/paper.pdf", "sample1/table.csv")
+    ]
     assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
     assert {record_set["@id"] for record_set in schema["recordSet"]} == {
-        "data.csv#records",
-        "sample1/table.csv#records",
+        f"{FILES_URL}data.csv#records",
+        f"{FILES_URL}sample1/table.csv#records",
     }
     assert citation_meta["entities"][0]["pdf_url"] == _get_publication_file_url(
         publication.project_id, "sample1/paper.pdf", request
     )
     # Everything advertised is something the file route will actually serve.
     for file_object in schema["distribution"]:
-        assert _is_publication_file_path(publication, file_object["@id"].replace("%20", " "))
+        assert _is_publication_file_path(publication, unquote(file_object["@id"].removeprefix(FILES_URL)))
 
 
 def test_entity_only_files_still_make_publication_a_croissant_candidate(rf, settings, publication):
@@ -967,7 +1019,7 @@ def test_entity_only_files_still_make_publication_a_croissant_candidate(rf, sett
 
     schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
 
-    assert [file_object["@id"] for file_object in schema["distribution"]] == ["sample1/scan.tif"]
+    assert [file_object["@id"] for file_object in schema["distribution"]] == [f"{FILES_URL}sample1/scan.tif"]
     assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
 
 
@@ -1107,7 +1159,12 @@ def test_get_schema_org_json_success(rf, settings, publication):
     # The publication-level institution isn't an author affiliation.
     assert "affiliation" not in schema["creator"][0]
     assert schema["creator"][0]["sameAs"] == "https://orcid.org/0000-0002-1825-0097"
-    assert schema["publisher"] == {"@type": "Organization", "name": "Test Publisher"}
+    assert schema["publisher"] == {"@type": "Organization", "name": "Test Publisher", "url": "http://testserver/"}
+    assert schema["includedInDataCatalog"] == {
+        "@type": "DataCatalog",
+        "name": "Test Publisher",
+        "url": "http://testserver/published-datasets/",
+    }
     assert schema["version"] == "3"
     assert schema["dateModified"] == publication.last_updated.isoformat()
     assert len(schema["distribution"]) == 1
@@ -1267,7 +1324,10 @@ def test_get_schema_org_json_unhashed_file_omits_conforms_to(mock_logger, rf, se
 
     assert "conformsTo" not in schema
     assert schema["@type"] == "Dataset"
-    assert [file_object["@id"] for file_object in schema["distribution"]] == ["data.csv", "sample1/scan.tif"]
+    assert [file_object["@id"] for file_object in schema["distribution"]] == [
+        f"{FILES_URL}data.csv",
+        f"{FILES_URL}sample1/scan.tif",
+    ]
     assert schema["distribution"][0]["sha256"] == "abc123"
     assert "sha256" not in schema["distribution"][1]
     # Unrelated Croissant fields are untouched.
@@ -1689,6 +1749,51 @@ def test_index_view_publication_route_is_indexable(client, publication):
     assert "index, follow, max-image-preview:large" in robots_match.group(1)
 
 
+@pytest.mark.parametrize("on_publication_route", [True, False])
+def test_index_view_head_values_have_no_surrounding_whitespace(client, publication, on_publication_route):
+    """The overridden blocks render inside <title> and meta `content` attributes, so template
+    indentation and newlines used to end up inside those values."""
+    if on_publication_route:
+        url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    else:
+        url = "/published-datasets/"
+    body = client.get(url).content.decode()
+
+    values = [re.search(r"<title>(.*?)</title>", body, re.S).group(1)]
+    for attr, name in [
+        ("name", "robots"),
+        ("name", "description"),
+        ("property", "og:title"),
+        ("property", "og:description"),
+        ("name", "twitter:card"),
+    ]:
+        values.append(re.search(rf'<meta {attr}="{re.escape(name)}" content="([^"]*)">', body).group(1))
+
+    for value in values:
+        assert value
+        assert value == value.strip()
+        assert "\n" not in value
+    if on_publication_route:
+        assert values[:2] == ["Test Dataset | test", "index, follow, max-image-preview:large"]
+    else:
+        assert values[:2] == ["test Workbench", "noindex, follow"]
+
+
+def test_index_view_mid_publish_publication_is_noindex_without_metadata(client, publication):
+    """Until its files are in place and its DOI is findable, the page's file links and DOI wouldn't
+    resolve, so it's served like a withdrawn one: noindex, no JSON-LD or citation tags."""
+    publication.is_indexable = False
+    publication.save()
+
+    response = client.get(reverse("publications:index", kwargs={"project_id": publication.project_id}))
+    body = response.content.decode()
+
+    assert response.status_code == 200
+    assert re.search(r'<meta name="robots" content="([^"]*)">', body).group(1) == "noindex, follow"
+    assert "application/ld+json" not in body
+    assert "citation_title" not in body
+
+
 @pytest.mark.parametrize("publication_date,expected", [("2024-05-01", ["2024-05-01"]), (None, [])])
 def test_index_view_dc_date_only_when_publication_has_a_date(client, settings, publication_date, expected):
     """DC.date is left out, rather than rendered as content="None", for a publication with no date."""
@@ -1769,6 +1874,18 @@ def test_sitemap_view_lists_published_publications_in_order(client, settings):
     second_index = body.index("test.project-2")
     assert first_index < second_index
     assert "test.project-3" not in body
+
+
+def test_sitemap_view_omits_mid_publish_publications(client, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    Publication.objects.create(project_id="test.project-1", value=valid_base_meta(), tree={})
+    Publication.objects.create(project_id="test.project-2", value=valid_base_meta(), tree={}, is_indexable=False)
+
+    body = client.get(reverse("sitemap")).content.decode()
+
+    assert body.count("<url>") == 1
+    assert "test.project-1" in body
+    assert "test.project-2" not in body
 
 
 def test_sitemap_view_is_well_formed_sitemap_protocol_xml(client, settings):
@@ -1997,7 +2114,7 @@ def test_newline_filename_keeps_landing_page_indexable_with_json_ld(client, sett
     schema = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', body, re.S).group(1))
     assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
     newline_file = schema["distribution"][1]
-    assert newline_file["@id"] == "docs/new%0Aline.pdf"
+    assert newline_file["@id"] == newline_file["contentUrl"]
     assert newline_file["contentUrl"].endswith("/files/docs/new%0Aline.pdf")
     # The only PDF is the newline-named one, so it's also citation_pdf_url.
     assert 'name="citation_pdf_url" content="' in body
@@ -2067,7 +2184,7 @@ def test_unreversible_file_is_skipped_not_fatal(mock_logger, rf, settings, publi
         pdf_url = _get_citation_pdf_url(file_objs, "test.project-1", request)
         assert _get_publication_file_url("test.project-1", "bad.pdf", request) is None
 
-    assert [file_object["@id"] for file_object in distribution] == ["good.pdf"]
+    assert [file_object["@id"] for file_object in distribution] == [f"{FILES_URL}good.pdf"]
     assert pdf_url.endswith("/files/good.pdf")
     assert "bad.pdf" in mock_logger.warning.call_args.args[0]
 
