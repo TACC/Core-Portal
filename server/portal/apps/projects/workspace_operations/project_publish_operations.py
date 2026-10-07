@@ -437,16 +437,19 @@ def publish_project(self, project_id: str, version: int | None = 1):
             published_project.value["publicationDate"] = published_project.created
             published_project.save()
 
+            publication_values = {
+                "value": published_project.value,
+                "tree": nx.node_link_data(pub_tree),
+                "version": version,
+            }
             pub_metadata, _ = Publication.objects.update_or_create(
                 project_id=project_id,
-                # Not indexable until publish_project_callback has the files in place and the DOI is
-                # findable, so the landing page stays noindex and out of the sitemap meanwhile.
-                defaults={
-                    "value": published_project.value,
-                    "tree": nx.node_link_data(pub_tree),
-                    "version": version,
-                    "is_indexable": False,
-                },
+                defaults=publication_values,
+                # A first publish isn't indexable until publish_project_callback has the files in
+                # place and the DOI is findable, so the landing page stays noindex and out of the
+                # sitemap meanwhile. A republish keeps its is_indexable as it was: its DOI already
+                # resolves, so the page stays in search while the new version's files transfer.
+                create_defaults={**publication_values, "is_indexable": False},
             )
 
             # The DOI isn't made findable here: publish_project_callback does that once the file

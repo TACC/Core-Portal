@@ -484,6 +484,35 @@ def test_publish_project_success_creates_publication_and_updates_doi(
     assert apply_kwargs["kwargs"]["version"] == 1
 
 
+@pytest.mark.parametrize("is_indexable", [True, False])
+def test_publish_project_republish_keeps_is_indexable(mocker, settings, is_indexable):
+    """Only a first publish is held out of search. A republish leaves is_indexable as it was: an
+    indexable page stays indexable while the new version's files transfer, and one whose first
+    publish hasn't finished yet stays noindex until it does."""
+    _setup_publish_project_fixtures(settings, existing_doi="10.5555/existing-doi")
+    # v2's own published workspace, which create_publication_workspace makes before a republish.
+    create_project(f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.test.project-1v2", value={"title": "v2"})
+    Publication.objects.create(
+        project_id="test.project-1", version=1, value={"title": "v1"}, tree={}, is_indexable=is_indexable
+    )
+
+    mocker.patch(f"{DIR}.get_datacite_json", return_value={"titles": []})
+    mocker.patch(f"{DIR}.upsert_datacite_json", return_value={"data": {"id": "10.5555/existing-doi"}})
+    mocker.patch(f"{DIR}.upload_metadata_file")
+    mocker.patch(f"{DIR}.index_publication")
+    mocker.patch(f"{DIR}.service_account")
+    mocker.patch(f"{DIR}._transfer_files", return_value=SimpleNamespace(uuid="transfer-uuid-7"))
+    mocker.patch(f"{DIR}._transfer_cover_image")
+    mocker.patch.object(poll_tapis_file_transfer, "apply_async")
+
+    publish_project(project_id="test.project-1", version=2)
+
+    publication = Publication.objects.get(project_id="test.project-1")
+    assert publication.version == 2
+    assert publication.value["doi"] == "10.5555/existing-doi"
+    assert publication.is_indexable is is_indexable
+
+
 def test_publish_project_reuses_existing_doi(mocker, settings):
     _setup_publish_project_fixtures(settings, existing_doi="10.5555/existing-doi")
 
