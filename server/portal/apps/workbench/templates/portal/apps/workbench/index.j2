@@ -7,7 +7,7 @@
           <meta name="DC.identifier" content="{{ entity.identifier }}">
           <meta name="DC.publisher" content="{{ publisher }}">
           <meta name="DC.title" content="{{entity.title}}">
-          <meta name="DC.date" content="{{entity.publication_date}}">
+          {% if entity.publication_date %}<meta name="DC.date" content="{{ entity.publication_date }}">{% endif %}
           <meta name="DC.language" content="en">
           {% if entity.license %}<meta name="DC.rights" content="{{ entity.license }}">{% endif %}
           {% for creator in entity.dc_creators %}

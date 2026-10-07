@@ -8,6 +8,7 @@ from urllib.parse import quote
 
 import requests
 from django.conf import settings
+from django.core.cache import cache
 from django.http import Http404, HttpResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.urls import NoReverseMatch, reverse
 from django.utils.html import escape
@@ -108,6 +109,10 @@ _JSON_LD_HTML_ESCAPES = {
 # (tapipy's files.getContents returns the entire file as one bytes object), since a published
 # dataset's files can run to multiple GB.
 _FILE_STREAM_CHUNK_SIZE = 64 * 1024
+
+# SitemapView rebuilds every publication's JSON-LD to decide what to list, so its body is cached
+# for this long. A publish or withdrawal shows up in the sitemap within this window.
+_SITEMAP_CACHE_SECONDS = 5 * 60
 
 
 def _get_license(base_meta, project_id):
@@ -1013,9 +1018,28 @@ class SitemapView(View):
     same get_citation_context call IndexView makes, with the same broad except, keeps the two in
     step; each omission is logged at ERROR so the broken publication gets noticed and fixed
     instead of silently dropping out of search.
+
+    The body is cached for _SITEMAP_CACHE_SECONDS, keyed by the origin its <loc>s are built
+    against (which can be the request's own host). The cache is skipped, not fatal, if it's
+    unreachable.
     """
 
     def get(self, request, *args, **kwargs):
+        cache_key = f"public_data:sitemap:{_get_configured_origin(request)}"
+        try:
+            body = cache.get(cache_key)
+        except Exception:
+            logger.warning("Sitemap cache read failed; building the sitemap uncached.", exc_info=True)
+            body = None
+        if body is None:
+            body = self._build(request)
+            try:
+                cache.set(cache_key, body, _SITEMAP_CACHE_SECONDS)
+            except Exception:
+                logger.warning("Sitemap cache write failed.", exc_info=True)
+        return HttpResponse(body, content_type="application/xml")
+
+    def _build(self, request):
         # Mirrors the is_published filter publications/views.py already uses for its own
         # (authenticated) publications listing.
         publications = Publication.objects.filter(is_published=True).order_by("project_id")
@@ -1037,11 +1061,10 @@ class SitemapView(View):
 
         # Sitemap protocol caps a single file at 50,000 URLs; this repository has nowhere near
         # that many publications today, so a <sitemapindex> of multiple files isn't implemented.
-        body = (
+        return (
             '<?xml version="1.0" encoding="UTF-8"?>\n'
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
             + "\n".join(entries)
             + ("\n" if entries else "")
             + "</urlset>\n"
         )
-        return HttpResponse(body, content_type="application/xml")

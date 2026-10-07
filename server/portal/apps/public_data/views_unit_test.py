@@ -7,6 +7,7 @@ from xml.etree import ElementTree
 import networkx as nx
 import pytest
 import requests
+from django.core.cache import cache
 from django.http import Http404
 from django.test import RequestFactory
 from django.urls import NoReverseMatch, resolve, reverse
@@ -50,6 +51,14 @@ pytestmark = pytest.mark.django_db
 @pytest.fixture(autouse=True)
 def _datacite_url_prefix(settings):
     settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = ""
+
+
+# SitemapView caches its body, so a sitemap built by one test mustn't be served to the next.
+@pytest.fixture(autouse=True)
+def _clear_cache():
+    cache.clear()
+    yield
+    cache.clear()
 
 
 @pytest.fixture
@@ -1278,7 +1287,6 @@ def test_publication_with_unhashed_files_is_indexable_and_in_sitemap(client, set
     """Withholding conformsTo only drops the Croissant claim: the landing page is still indexable
     with its schema.org Dataset JSON-LD, and still listed in the sitemap."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
-    settings.DEBUG = True
     unhashed_file = {"type": "file", "name": "data.csv", "path": "/data.csv", "length": 2048}
     pub = Publication.objects.create(
         project_id="test.project-2",
@@ -1408,18 +1416,13 @@ def test_get_citation_context_cover_image_url_when_configured(rf, settings, publ
 # IndexView (via the Django test client)
 # ---------------------------------------------------------------------------
 #
-# index.html's `{% else %}` branch does `{% include "index.html" %}` -- the built frontend
-# bundle, only resolvable via the `client/dist` TEMPLATES dir that settings.py's (production)
-# TEMPLATES config includes but unit_test_settings.py's does not. So every one of these tests
-# forces the `{% if DEBUG %}` branch instead (which every production/dev deployment actually
-# uses whenever DEBUG=True) by overriding settings.DEBUG -- this is a pre-existing gap in
-# unit_test_settings.py, not something specific to these tests: the same TemplateDoesNotExist
-# already reproduces on the *existing* portal/apps/site_search/views_unit_test.py tests today.
+# These render the real landing page. unit_test_settings.py swaps the workbench index.html for its
+# index.j2 build template (see WORKBENCH_INDEX_TEMPLATE there), so they run with DEBUG off, as
+# production does.
 
 
 def test_index_view_renders_publication(client, settings, publication):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
-    settings.DEBUG = True
     url = reverse("publications:index", kwargs={"project_id": publication.project_id})
     response = client.get(url)
 
@@ -1439,11 +1442,10 @@ def test_index_view_missing_publication_404s(client):
 @patch("portal.apps.public_data.views.get_citation_context")
 @patch("portal.apps.public_data.views.logger")
 def test_index_view_unpublished_publication_renders_noindex_without_metadata(
-    mock_logger, mock_get_citation_context, client, settings, publication
+    mock_logger, mock_get_citation_context, client, publication
 ):
     """A withdrawn publication's DOI still resolves to a page (not a 404), but one with no
     citation/JSON-LD metadata and left noindex -- the same pages SitemapView leaves out."""
-    settings.DEBUG = True
     publication.is_published = False
     publication.save()
 
@@ -1468,7 +1470,6 @@ def test_index_view_unpublished_publication_renders_noindex_without_metadata(
 @patch("portal.apps.public_data.views.logger")
 def test_index_view_revision_mismatch_logs_warning(mock_logger, client, settings, publication):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
-    settings.DEBUG = True
     response = client.get(f"/published-datasets/test.project.published.{publication.project_id}v99/")
 
     assert response.status_code == 200
@@ -1477,8 +1478,7 @@ def test_index_view_revision_mismatch_logs_warning(mock_logger, client, settings
 
 
 @patch("portal.apps.public_data.views.logger")
-def test_index_view_schema_org_validation_error_is_caught_and_logged(mock_logger, client, settings, publication):
-    settings.DEBUG = True
+def test_index_view_schema_org_validation_error_is_caught_and_logged(mock_logger, client, publication):
     publication.value = valid_base_meta(title=None)
     publication.save()
 
@@ -1491,8 +1491,7 @@ def test_index_view_schema_org_validation_error_is_caught_and_logged(mock_logger
     mock_logger.exception.assert_called_once()
 
 
-def test_index_view_fallback_route_has_no_publication_context(client, settings):
-    settings.DEBUG = True
+def test_index_view_fallback_route_has_no_publication_context(client):
     response = client.get("/published-datasets/not-a-real-project/")
     assert response.status_code == 200
     assert response.context["setup_complete"] is False
@@ -1512,7 +1511,6 @@ def test_index_view_fallback_route_has_no_publication_context(client, settings):
 
 
 def test_index_view_renders_json_ld_script_tag(client, settings, publication):
-    settings.DEBUG = True
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     url = reverse("publications:index", kwargs={"project_id": publication.project_id})
     body = client.get(url).content.decode()
@@ -1526,7 +1524,6 @@ def test_index_view_renders_json_ld_script_tag(client, settings, publication):
 
 
 def test_index_view_renders_citation_and_dc_meta_tags(client, settings, publication):
-    settings.DEBUG = True
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     url = reverse("publications:index", kwargs={"project_id": publication.project_id})
     body = client.get(url).content.decode()
@@ -1541,8 +1538,7 @@ def test_index_view_renders_citation_and_dc_meta_tags(client, settings, publicat
     assert '<meta name="DC.identifier" content="https://doi.org/10.1234/test-doi">' in body
 
 
-def test_index_view_renders_citation_pdf_url_when_pdf_present(client, settings):
-    settings.DEBUG = True
+def test_index_view_renders_citation_pdf_url_when_pdf_present(client):
     pub = Publication.objects.create(
         project_id="test.project-2",
         value=valid_base_meta(
@@ -1559,8 +1555,7 @@ def test_index_view_renders_citation_pdf_url_when_pdf_present(client, settings):
     assert f'<meta name="citation_pdf_url" content="http://testserver{expected_pdf_url}">' in body
 
 
-def test_index_view_renders_title_and_description_from_publication(client, settings, publication):
-    settings.DEBUG = True
+def test_index_view_renders_title_and_description_from_publication(client, publication):
     url = reverse("publications:index", kwargs={"project_id": publication.project_id})
     body = client.get(url).content.decode()
 
@@ -1570,8 +1565,7 @@ def test_index_view_renders_title_and_description_from_publication(client, setti
     assert "A dataset for testing" in body
 
 
-def test_index_view_publication_route_is_indexable(client, settings, publication):
-    settings.DEBUG = True
+def test_index_view_publication_route_is_indexable(client, publication):
     url = reverse("publications:index", kwargs={"project_id": publication.project_id})
     body = client.get(url).content.decode()
 
@@ -1581,8 +1575,24 @@ def test_index_view_publication_route_is_indexable(client, settings, publication
     assert "index, follow, max-image-preview:large" in robots_match.group(1)
 
 
-def test_index_view_fallback_route_is_noindex(client, settings):
-    settings.DEBUG = True
+@pytest.mark.parametrize("publication_date,expected", [("2024-05-01", ["2024-05-01"]), (None, [])])
+def test_index_view_dc_date_only_when_publication_has_a_date(client, settings, publication_date, expected):
+    """DC.date is left out, rather than rendered as content="None", for a publication with no date."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    pub = Publication.objects.create(
+        project_id="test.project-1",
+        value=valid_base_meta(publicationDate=publication_date),
+        tree={},
+        is_published=True,
+    )
+
+    body = client.get(reverse("publications:index", kwargs={"project_id": pub.project_id})).content.decode()
+
+    assert re.findall(r'<meta name="DC.date" content="([^"]*)">', body) == expected
+    assert 'name="DC.title"' in body
+
+
+def test_index_view_fallback_route_is_noindex(client):
     body = client.get("/published-datasets/not-a-real-project/").content.decode()
 
     robots_match = re.search(r'<meta name="robots" content="([^"]*)">', body)
@@ -1593,7 +1603,6 @@ def test_index_view_fallback_route_is_noindex(client, settings):
 
 
 def test_index_view_renders_og_image_when_cover_image_configured(client, settings, publication):
-    settings.DEBUG = True
     settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "root.system"
     url = reverse("publications:index", kwargs={"project_id": publication.project_id})
     body = client.get(url).content.decode()
@@ -1606,8 +1615,7 @@ def test_index_view_renders_og_image_when_cover_image_configured(client, setting
     assert card_match.group(1).strip() == "summary_large_image"
 
 
-def test_index_view_omits_og_image_without_cover_image_configured(client, settings, publication):
-    settings.DEBUG = True
+def test_index_view_omits_og_image_without_cover_image_configured(client, publication):
     url = reverse("publications:index", kwargs={"project_id": publication.project_id})
     body = client.get(url).content.decode()
 
@@ -1721,7 +1729,6 @@ def test_sitemap_omitted_publication_is_noindex_on_its_landing_page(client, sett
     same broken publication really does render noindex, so the sitemap isn't dropping a page
     that's actually indexable."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
-    settings.DEBUG = True
     pub = Publication.objects.create(
         project_id="test.project-2",
         value=valid_base_meta(description=""),
@@ -1741,7 +1748,6 @@ def test_publication_without_license_is_indexable_and_in_sitemap(client, setting
     """A missing license used to fail the whole page closed (noindex, no JSON-LD, out of the
     sitemap). It's optional on the publish form, so it now only withholds the Croissant claim."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
-    settings.DEBUG = True
     pub = Publication.objects.create(
         project_id="test.project-2",
         value=valid_base_meta(license=None),
@@ -1769,6 +1775,51 @@ def test_sitemap_view_empty_when_no_publications(client):
     assert response.status_code == 200
     assert "<url>" not in body
     assert "<urlset" in body
+
+
+def test_sitemap_view_serves_cached_body_without_rebuilding(client, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    Publication.objects.create(project_id="test.project-1", value=valid_base_meta(), tree={}, is_published=True)
+    first = client.get(reverse("sitemap"))
+    # Published after the first request: not listed until the cached body expires.
+    Publication.objects.create(project_id="test.project-2", value=valid_base_meta(), tree={}, is_published=True)
+
+    with patch("portal.apps.public_data.views.get_citation_context") as mock_get_citation_context:
+        second = client.get(reverse("sitemap"))
+
+    mock_get_citation_context.assert_not_called()
+    assert second.content == first.content
+    assert second["Content-Type"] == "application/xml"
+    assert b"test.project-2" not in second.content
+
+    cache.clear()
+    assert b"test.project-2" in client.get(reverse("sitemap")).content
+
+
+def test_sitemap_view_caches_per_origin(client, settings):
+    """Each origin's <loc>s are cached separately, so one host's sitemap is never served on another."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    Publication.objects.create(project_id="test.project-1", value=valid_base_meta(), tree={}, is_published=True)
+
+    first = client.get(reverse("sitemap"), HTTP_HOST="one.example.org").content
+    second = client.get(reverse("sitemap"), HTTP_HOST="two.example.org").content
+
+    assert b"//one.example.org/" in first
+    assert b"//two.example.org/" in second
+    assert b"one.example.org" not in second
+
+
+@patch("portal.apps.public_data.views.cache")
+def test_sitemap_view_builds_uncached_when_cache_unavailable(mock_cache, client, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    mock_cache.get.side_effect = ConnectionError("memcached down")
+    mock_cache.set.side_effect = ConnectionError("memcached down")
+    Publication.objects.create(project_id="test.project-1", value=valid_base_meta(), tree={}, is_published=True)
+
+    response = client.get(reverse("sitemap"))
+
+    assert response.status_code == 200
+    assert b"test.project-1" in response.content
 
 
 def test_datacite_url_matches_landing_page_url_and_sitemap(client, settings):
@@ -1817,7 +1868,6 @@ def test_newline_filename_keeps_landing_page_indexable_with_json_ld(client, sett
     """Regression: one file whose name contains a newline used to fail the whole page's JSON-LD
     (NoReverseMatch), leaving it noindex with no structured data and out of the sitemap."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
-    settings.DEBUG = True
     file_objs = [
         {"type": "file", "name": "data.csv", "path": "/data.csv", "sha256": "abc123"},
         {"type": "file", "name": "new\nline.pdf", "path": "/docs/new\nline.pdf", "sha256": "def456"},

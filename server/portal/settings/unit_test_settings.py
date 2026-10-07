@@ -92,12 +92,26 @@ MIDDLEWARE = [
     "impersonate.middleware.ImpersonateMiddleware",  # must be AFTER django.contrib.auth
 ]
 
+# The checked-in workbench index.html is the dev template: with DEBUG off it includes "index.html",
+# the client build's output, which doesn't exist outside a built image. Tests render the index.j2
+# build template in its place instead -- the same swap CI makes by copying index.j2 over index.html
+# -- so the suite passes in a fresh checkout without that copy step.
+WORKBENCH_INDEX_TEMPLATE = "portal/apps/workbench/index.html"
+with open(os.path.join(BASE_DIR, "apps/workbench/templates/portal/apps/workbench/index.j2")) as f:
+    WORKBENCH_INDEX_J2 = f.read()
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [os.path.join(BASE_DIR, "templates")],
-        "APP_DIRS": True,
         "OPTIONS": {
+            # locmem first, so it wins over the app's own index.html. These replace APP_DIRS, which
+            # can't be combined with an explicit `loaders` list.
+            "loaders": [
+                ("django.template.loaders.locmem.Loader", {WORKBENCH_INDEX_TEMPLATE: WORKBENCH_INDEX_J2}),
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
+            ],
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
