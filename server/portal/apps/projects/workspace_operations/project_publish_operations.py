@@ -390,91 +390,118 @@ def publish_project(self, project_id: str, version: int | None = 1):
     published_workspace_id = f"{project_id}{f'v{version}' if version and version > 1 else ''}"
     published_system_id = f"{published_system_prefix}.{published_workspace_id}"
     review_system_id = f"{review_system_prefix}.{project_id}"
+    source_project_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
 
-    with transaction.atomic():
-        project_meta = ProjectMetadata.get_project_by_id(review_system_id)
-        publication_tree: nx.DiGraph = nx.node_link_graph(project_meta.project_graph.value)
+    # A DOI DataCite created during this run that the source project doesn't record yet. Anything
+    # failing after that point rolls back the transaction below, including the source project's
+    # `doi` -- so it's saved again outside the transaction, and a retry updates this same draft DOI
+    # instead of creating another one.
+    new_doi = None
+    try:
+        with transaction.atomic():
+            project_meta = ProjectMetadata.get_project_by_id(review_system_id)
+            publication_tree: nx.DiGraph = nx.node_link_graph(project_meta.project_graph.value)
 
-        publication_tree.nodes["NODE_ROOT"]["value"]["projectId"] = published_system_id
+            publication_tree.nodes["NODE_ROOT"]["value"]["projectId"] = published_system_id
 
-        published_project = ProjectMetadata.get_project_by_id(published_system_id)
+            published_project = ProjectMetadata.get_project_by_id(published_system_id)
 
-        ProjectMetadata.objects.create(
-            name=constants.PROJECT_GRAPH,
-            base_project=published_project,
-            value=nx.node_link_data(publication_tree),
-        )
+            ProjectMetadata.objects.create(
+                name=constants.PROJECT_GRAPH,
+                base_project=published_project,
+                value=nx.node_link_data(publication_tree),
+            )
 
-        source_project_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
-        source_project = ProjectMetadata.get_project_by_id(source_project_id)
+            source_project = ProjectMetadata.get_project_by_id(source_project_id)
 
-        try:
-            # Mint a DataCite DOI
-            existing_doi = source_project.value.get("doi", None)
-            logger.info(f"Attempting to mint DataCite DOI for project {project_id}, existing DOI: {existing_doi}")
-
-            datacite_json = get_datacite_json(publication_tree, project_id, version)
-            datacite_resp = upsert_datacite_json(datacite_json, doi=existing_doi)
-            doi = datacite_resp["data"]["id"]
-            logger.info(f"Successfully minted DataCite DOI for project {project_id}: {doi}")
-        except Exception as e:
-            logger.error(f"Error minting DataCite DOI for project {project_id}: {e}")
-            raise Exception(f"Error minting DOI for project {project_id}: {e}")
-
-        # Update project metadata with datacite doi
-        source_project.value["doi"] = doi
-        source_project.value["publicationDate"] = published_project.created
-        source_project.save()
-
-        pub_tree = nx.node_link_graph(published_project.project_graph.value)
-        pub_tree.nodes["NODE_ROOT"]["version"] = version
-        pub_tree.nodes["NODE_ROOT"]["value"]["doi"] = doi
-        pub_tree.nodes["NODE_ROOT"]["value"]["publicationDate"] = published_project.created
-        published_project.project_graph.value = nx.node_link_data(pub_tree)
-        published_project.value["doi"] = doi
-        published_project.value["publicationDate"] = published_project.created
-        published_project.save()
-
-        pub_metadata, _ = Publication.objects.update_or_create(
-            project_id=project_id,
-            defaults={"value": published_project.value, "tree": nx.node_link_data(pub_tree), "version": version},
-        )
-
-        if not settings.DEBUG:
             try:
-                publish_datacite_doi(doi)
+                # Mint a DataCite DOI
+                existing_doi = source_project.value.get("doi", None)
+                logger.info(f"Attempting to mint DataCite DOI for project {project_id}, existing DOI: {existing_doi}")
+
+                datacite_json = get_datacite_json(publication_tree, project_id, version)
+                datacite_resp = upsert_datacite_json(datacite_json, doi=existing_doi)
+                doi = datacite_resp["data"]["id"]
+                if doi != existing_doi:
+                    new_doi = doi
+                logger.info(f"Successfully minted DataCite DOI for project {project_id}: {doi}")
             except Exception as e:
-                logger.error(f"Error publishing DataCite DOI for project {project_id}: {e}")
-                raise Exception(f"Error publishing DOI for project {project_id}: {e}")
+                logger.error(f"Error minting DataCite DOI for project {project_id}: {e}")
+                raise Exception(f"Error minting DOI for project {project_id}: {e}")
 
-        upload_metadata_file(published_workspace_id, pub_metadata.tree)
+            # Update project metadata with datacite doi
+            source_project.value["doi"] = doi
+            source_project.value["publicationDate"] = published_project.created
+            source_project.save()
 
-        index_publication(project_id)
+            pub_tree = nx.node_link_graph(published_project.project_graph.value)
+            pub_tree.nodes["NODE_ROOT"]["version"] = version
+            pub_tree.nodes["NODE_ROOT"]["value"]["doi"] = doi
+            pub_tree.nodes["NODE_ROOT"]["value"]["publicationDate"] = published_project.created
+            published_project.project_graph.value = nx.node_link_data(pub_tree)
+            published_project.value["doi"] = doi
+            published_project.value["publicationDate"] = published_project.created
+            published_project.save()
 
-        # transfer files
-        client = service_account()
-        transfer = _transfer_files(client, review_system_id, published_system_id)
-        _transfer_cover_image(
-            settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME,
-            settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME,
-            project_meta.value.get("coverImage", None),
-        )
+            pub_metadata, _ = Publication.objects.update_or_create(
+                project_id=project_id,
+                defaults={"value": published_project.value, "tree": nx.node_link_data(pub_tree), "version": version},
+            )
 
-        poll_tapis_file_transfer.apply_async(
-            args=(transfer.uuid, False),
-            kwargs={
-                "review_project_id": review_system_id,
-                "published_project_id": published_system_id,
-                "archive_project_id": published_workspace_id,
-                "project_id": project_id,
-                "version": version,
-            },
-            countdown=30,
-        )
+            if not settings.DEBUG:
+                try:
+                    publish_datacite_doi(doi)
+                except Exception as e:
+                    logger.error(f"Error publishing DataCite DOI for project {project_id}: {e}")
+                    raise Exception(f"Error publishing DOI for project {project_id}: {e}")
 
-        if not settings.DEBUG:
-            send_publication_accepted_email_to_authors.apply_async(args=[project_id])
-            send_publication_reviewed_email_to_reviewers.apply_async(args=[project_id, "APPROVED", None])
+            upload_metadata_file(published_workspace_id, pub_metadata.tree)
+
+            index_publication(project_id)
+
+            # transfer files
+            client = service_account()
+            transfer = _transfer_files(client, review_system_id, published_system_id)
+            _transfer_cover_image(
+                settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME,
+                settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME,
+                project_meta.value.get("coverImage", None),
+            )
+
+            poll_tapis_file_transfer.apply_async(
+                args=(transfer.uuid, False),
+                kwargs={
+                    "review_project_id": review_system_id,
+                    "published_project_id": published_system_id,
+                    "archive_project_id": published_workspace_id,
+                    "project_id": project_id,
+                    "version": version,
+                },
+                countdown=30,
+            )
+
+            if not settings.DEBUG:
+                send_publication_accepted_email_to_authors.apply_async(args=[project_id])
+                send_publication_reviewed_email_to_reviewers.apply_async(args=[project_id, "APPROVED", None])
+    except Exception:
+        if new_doi:
+            _record_minted_doi(source_project_id, new_doi)
+        raise
+
+
+def _record_minted_doi(source_project_id: str, doi: str):
+    """Save a DOI minted by a publish_project run that then failed onto the source project, so the
+    next attempt finds it as `existing_doi` and updates it rather than minting a second one. Errors
+    are logged, not raised, so they can't replace the exception that failed the publish.
+    """
+
+    try:
+        source_project = ProjectMetadata.get_project_by_id(source_project_id)
+        source_project.value["doi"] = doi
+        source_project.save()
+        logger.info(f"Saved DOI {doi} on {source_project_id} after a failed publish, for reuse on retry.")
+    except Exception:
+        logger.exception(f"Could not save DOI {doi} on {source_project_id}; a retry will mint a new one.")
 
 
 @shared_task(bind=True, max_retries=3, queue="default")

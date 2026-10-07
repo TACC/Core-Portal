@@ -21,6 +21,7 @@ from portal.apps.projects.workspace_operations.project_publish_operations import
     _get_published_workspace_id,
     _parse_sha256_manifest,
     _read_sha256_manifest,
+    _record_minted_doi,
     _transfer_cover_image,
     _transfer_files,
     archive_publication_files,
@@ -456,16 +457,56 @@ def test_publish_project_debug_false_publishes_doi_and_schedules_emails(mocker, 
 
 
 def test_publish_project_datacite_publish_failure_raises(mocker, settings):
-    _setup_publish_project_fixtures(settings)
+    """The publish rolls back, but the draft DOI it minted is kept on the source project, so the
+    retry updates that draft instead of minting a second one."""
+    fixtures = _setup_publish_project_fixtures(settings)
     settings.DEBUG = False
 
     mocker.patch(f"{DIR}.get_datacite_json", return_value={"titles": []})
-    mocker.patch(f"{DIR}.upsert_datacite_json", return_value={"data": {"id": "10.5555/minted-doi"}})
+    mock_upsert = mocker.patch(f"{DIR}.upsert_datacite_json", return_value={"data": {"id": "10.5555/minted-doi"}})
     mocker.patch(f"{DIR}.publish_datacite_doi", side_effect=RuntimeError("datacite down"))
     mocker.patch(f"{DIR}.service_account")
 
     with pytest.raises(Exception, match="Error publishing DOI for project test.project-1"):
         publish_project(project_id="test.project-1", version=1)
+
+    source_project = ProjectMetadata.objects.get(pk=fixtures.source_project.pk)
+    assert source_project.value["doi"] == "10.5555/minted-doi"
+    assert "publicationDate" not in source_project.value
+    assert not Publication.objects.filter(project_id="test.project-1").exists()
+
+    with pytest.raises(Exception, match="Error publishing DOI for project test.project-1"):
+        publish_project(project_id="test.project-1", version=1)
+
+    assert mock_upsert.call_args_list[1].kwargs["doi"] == "10.5555/minted-doi"
+
+
+def test_publish_project_failure_with_existing_doi_leaves_source_project_unchanged(mocker, settings):
+    fixtures = _setup_publish_project_fixtures(settings, existing_doi="10.5555/existing-doi")
+    settings.DEBUG = False
+
+    mocker.patch(f"{DIR}.get_datacite_json", return_value={"titles": []})
+    mocker.patch(f"{DIR}.upsert_datacite_json", return_value={"data": {"id": "10.5555/existing-doi"}})
+    mocker.patch(f"{DIR}.publish_datacite_doi", side_effect=RuntimeError("datacite down"))
+    mocker.patch(f"{DIR}.service_account")
+    mock_record = mocker.patch(f"{DIR}._record_minted_doi")
+
+    with pytest.raises(Exception, match="Error publishing DOI for project test.project-1"):
+        publish_project(project_id="test.project-1", version=1)
+
+    mock_record.assert_not_called()
+    source_project = ProjectMetadata.objects.get(pk=fixtures.source_project.pk)
+    assert source_project.value["doi"] == "10.5555/existing-doi"
+    assert "publicationDate" not in source_project.value
+
+
+def test_record_minted_doi_logs_instead_of_raising(mocker, caplog):
+    """Raising here would replace the exception that actually failed the publish."""
+    mocker.patch.object(ProjectMetadata, "get_project_by_id", side_effect=RuntimeError("db down"))
+
+    _record_minted_doi("test.project.test.project-1", "10.5555/minted-doi")
+
+    assert "Could not save DOI 10.5555/minted-doi on test.project.test.project-1" in caplog.text
 
 
 def test_publish_project_graph_property_write_is_not_persisted(mocker, settings):
