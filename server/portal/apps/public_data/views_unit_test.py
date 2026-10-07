@@ -1915,10 +1915,9 @@ def test_unreversible_file_is_skipped_not_fatal(mock_logger, rf, settings, publi
 
 def test_get_schema_org_json_passes_mlcroissant_validation(rf, settings, publication, tmp_path):
     """The document that claims Croissant 1.0 `conformsTo` validates with mlcroissant, MLCommons'
-    reference implementation, with no errors or warnings. mlcroissant isn't a project dependency,
-    so this is skipped unless it's installed, e.g.:
-
-        uv run --with mlcroissant pytest portal/apps/public_data/views_unit_test.py -k mlcroissant
+    reference implementation, with no errors or warnings. mlcroissant is a dev dependency
+    (pyproject.toml), so this runs in CI; it's only skipped in an environment synced without the
+    dev group.
     """
 
     mlc = pytest.importorskip("mlcroissant")
