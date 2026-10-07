@@ -4,6 +4,7 @@ import networkx as nx
 import pytest
 from django.core.management import CommandError, call_command
 
+from portal.apps.projects.workspace_operations.datacite_operations import DataCiteError
 from portal.apps.publications.models import Publication
 
 DIR = "portal.apps.projects.management.commands.update_datacite_metadata"
@@ -103,7 +104,10 @@ def test_dry_run_sends_nothing(publications, mock_upsert):
 def test_rejected_update_is_reported_and_the_rest_continue(publications, mocker):
     mock_upsert = mocker.patch(
         f"{DIR}.upsert_datacite_json",
-        side_effect=[{"errors": [{"status": "422", "title": "bad"}]}, {"data": {"id": "10.12345/bbbb"}}],
+        side_effect=[
+            DataCiteError("DataCite update of 10.12345/aaaa failed (HTTP 422): creators: bad", status_code=422),
+            {"data": {"id": "10.12345/bbbb"}},
+        ],
     )
     out, err = StringIO(), StringIO()
 
@@ -111,7 +115,8 @@ def test_rejected_update_is_reported_and_the_rest_continue(publications, mocker)
         call_command("update_datacite_metadata", "--all", stdout=out, stderr=err)
 
     assert mock_upsert.call_count == 2
-    assert "DataCite rejected the update" in err.getvalue()
+    assert "Failed test.project-1 v2 (10.12345/aaaa): DataCite update of" in err.getvalue()
+    assert "failed (HTTP 422): creators: bad" in err.getvalue()
     assert "Updated 10.12345/bbbb" in out.getvalue()
 
 

@@ -11,6 +11,7 @@ from django.test import override_settings
 from django.urls import reverse
 
 from portal.apps.projects.workspace_operations.datacite_operations import (
+    DataCiteError,
     get_datacite_json,
     get_doi_publication_date,
     hide_datacite_doi,
@@ -548,6 +549,113 @@ def test_hide_datacite_doi(requests_mock):
     assert result == {"data": {"attributes": {"state": "registered"}}}
     payload = requests_mock.last_request.json()
     assert payload == {"data": {"type": "dois", "attributes": {"event": "hide"}}}
+
+
+# ---------------------------------------------------------------------------
+# DataCite error handling (upsert_datacite_json / publish_datacite_doi / hide_datacite_doi)
+# ---------------------------------------------------------------------------
+
+DOI_URL = "https://api.test.datacite.org/dois/10.1234/abc"
+
+# (requests_mock method, URL, call, action named in the error message) for every DataCite write.
+DATACITE_CALLS = [
+    pytest.param(
+        "post",
+        "https://api.test.datacite.org/dois",
+        lambda: upsert_datacite_json({"titles": [{"title": "T"}]}),
+        "DOI creation",
+        id="upsert-create",
+    ),
+    pytest.param(
+        "put",
+        DOI_URL,
+        lambda: upsert_datacite_json({"titles": [{"title": "T"}]}, doi="10.1234/abc"),
+        "update of 10.1234/abc",
+        id="upsert-update",
+    ),
+    pytest.param("put", DOI_URL, lambda: publish_datacite_doi("10.1234/abc"), "publish of 10.1234/abc", id="publish"),
+    pytest.param("put", DOI_URL, lambda: hide_datacite_doi("10.1234/abc"), "hide of 10.1234/abc", id="hide"),
+]
+
+VALIDATION_ERRORS = [
+    {"status": "422", "source": "creators", "title": "Creator name is required"},
+    {"status": "422", "source": "url", "title": "Url is not in the allowed domains"},
+]
+
+
+@DATACITE_SETTINGS
+@pytest.mark.parametrize("method, url, call, action", DATACITE_CALLS)
+def test_datacite_call_raises_with_datacite_errors_on_error_status(requests_mock, method, url, call, action):
+    """A rejected request (e.g. a 422 when a DOI's metadata fails validation) raises, naming each
+    of DataCite's own errors, instead of returning the error body as if it were a success."""
+    requests_mock.register_uri(method.upper(), url, status_code=422, json={"errors": VALIDATION_ERRORS})
+
+    with pytest.raises(DataCiteError) as exc_info:
+        call()
+
+    assert str(exc_info.value) == (
+        f"DataCite {action} failed (HTTP 422): creators: Creator name is required; "
+        "url: Url is not in the allowed domains"
+    )
+    assert exc_info.value.status_code == 422
+    assert exc_info.value.errors == VALIDATION_ERRORS
+
+
+@DATACITE_SETTINGS
+@pytest.mark.parametrize("method, url, call, action", DATACITE_CALLS)
+def test_datacite_call_raises_on_errors_in_a_2xx_body(requests_mock, method, url, call, action):
+    requests_mock.register_uri(method.upper(), url, status_code=200, json={"errors": [{"title": "Not saved"}]})
+
+    with pytest.raises(DataCiteError, match=rf"DataCite {action} failed \(HTTP 200\): Not saved"):
+        call()
+
+
+@DATACITE_SETTINGS
+@pytest.mark.parametrize("method, url, call, action", DATACITE_CALLS)
+def test_datacite_call_raises_on_error_status_without_errors_array(requests_mock, method, url, call, action):
+    requests_mock.register_uri(method.upper(), url, status_code=404, json={"message": "DOI not found"})
+
+    with pytest.raises(DataCiteError) as exc_info:
+        call()
+
+    assert str(exc_info.value) == f'DataCite {action} failed (HTTP 404): {{"message": "DOI not found"}}'
+    assert exc_info.value.status_code == 404
+    assert exc_info.value.errors == []
+
+
+@DATACITE_SETTINGS
+@pytest.mark.parametrize("status_code", [200, 502])
+@pytest.mark.parametrize("method, url, call, action", DATACITE_CALLS)
+def test_datacite_call_raises_on_non_json_body(requests_mock, method, url, call, action, status_code):
+    """E.g. a proxy's HTML error page -- previously res.json() raised an opaque JSONDecodeError."""
+    requests_mock.register_uri(method.upper(), url, status_code=status_code, text="<html>Bad Gateway</html>")
+
+    with pytest.raises(DataCiteError) as exc_info:
+        call()
+
+    assert str(exc_info.value) == (
+        f"DataCite {action} failed (HTTP {status_code}): non-JSON response: '<html>Bad Gateway</html>'"
+    )
+    assert exc_info.value.status_code == status_code
+
+
+@DATACITE_SETTINGS
+@pytest.mark.parametrize(
+    "errors, detail",
+    [
+        # Not a list: treated as a single error.
+        ({"title": "Only one"}, "Only one"),
+        # Items with neither `source` nor `title` (or that aren't objects) fall back to their JSON.
+        ([{"status": "500"}, "plain string"], '{"status": "500"}; "plain string"'),
+    ],
+)
+def test_datacite_error_detail_tolerates_unexpected_errors_shapes(requests_mock, errors, detail):
+    requests_mock.put(DOI_URL, status_code=500, json={"errors": errors})
+
+    with pytest.raises(DataCiteError) as exc_info:
+        publish_datacite_doi("10.1234/abc")
+
+    assert str(exc_info.value) == f"DataCite publish of 10.1234/abc failed (HTTP 500): {detail}"
 
 
 # ---------------------------------------------------------------------------

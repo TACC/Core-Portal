@@ -73,17 +73,13 @@ class Command(BaseCommand):
                 self.stdout.write(f"Would update {doi} ({label}):\n{json.dumps(datacite_json, indent=2)}")
                 continue
 
+            # A rejected update (e.g. a 422 schema error) raises DataCiteError, with DataCite's own
+            # error details in its message; a network failure raises a requests exception.
             try:
-                response = upsert_datacite_json(datacite_json, doi=doi)
+                upsert_datacite_json(datacite_json, doi=doi)
             except Exception as e:
                 failed.append(publication.project_id)
                 self.stderr.write(f"Failed {label} ({doi}): {e}")
-                continue
-            # upsert_datacite_json returns DataCite's JSON body whatever the HTTP status, so a rejected
-            # update (e.g. a 422 schema error) only shows up as `errors` in the body.
-            if "errors" in response:
-                failed.append(publication.project_id)
-                self.stderr.write(f"Failed {label} ({doi}): DataCite rejected the update: {response['errors']}")
                 continue
             self.stdout.write(f"Updated {doi} ({label})")
 

@@ -11,6 +11,62 @@ from portal.apps.projects.schema_models.orcid import ORCID_URL_PREFIX, orcid_url
 from portal.apps.public_data.origin import get_configured_origin
 
 
+class DataCiteError(Exception):
+    """DataCite rejected a request, or answered with something other than a JSON success body.
+
+    `status_code` is the HTTP status; `errors` is DataCite's JSON:API `errors` array (each item
+    typically has `status`, `title` and, for validation failures, `source`), or [] when the body
+    had none.
+    """
+
+    def __init__(self, message, status_code=None, errors=None):
+        super().__init__(message)
+        self.status_code = status_code
+        self.errors = errors or []
+
+
+def _check_datacite_response(res, action):
+    """Return a DataCite response's JSON body, or raise DataCiteError.
+
+    DataCite reports failures as a non-2xx status with a JSON:API `errors` array -- e.g. a 422
+    when a DOI's metadata fails schema validation, which drafts are lenient about but the
+    `publish` event (draft -> findable) enforces in full. Callers used to return that body as if
+    it were a success, so a DOI could silently stay a draft. An `errors` array on a 2xx is
+    treated as a failure too, as is a body that isn't JSON at all (e.g. a proxy's HTML error page).
+    """
+
+    try:
+        body = res.json()
+    except ValueError:
+        body = None
+
+    errors = body.get("errors") if isinstance(body, dict) else None
+    if res.ok and body is not None and not errors:
+        return body
+
+    if errors and not isinstance(errors, list):
+        errors = [errors]
+    if errors:
+        detail = "; ".join(
+            (
+                ": ".join(str(part) for part in (error.get("source"), error.get("title")) if part)
+                if isinstance(error, dict)
+                else ""
+            )
+            or json.dumps(error)
+            for error in errors
+        )
+    elif body is None:
+        detail = f"non-JSON response: {res.text[:200]!r}"
+    else:
+        detail = json.dumps(body)[:200]
+    raise DataCiteError(
+        f"DataCite {action} failed (HTTP {res.status_code}): {detail}",
+        status_code=res.status_code,
+        errors=errors,
+    )
+
+
 def _get_subjects(base_meta):
     """Build DataCite's `subjects` property -- a list of `{"subject": ...}`
     objects -- from the publication's `keywords`.
@@ -247,7 +303,8 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
 def upsert_datacite_json(datacite_json: dict, doi: str | None = None):
     """
     Create a draft DOI in datacite with the specified metadata. If a DOI is
-    specified, the metadata for that DOI is updated instead.
+    specified, the metadata for that DOI is updated instead. Raises DataCiteError
+    if DataCite rejects the request.
     """
     if doi:
         datacite_json.pop("publicationYear", None)
@@ -276,12 +333,13 @@ def upsert_datacite_json(datacite_json: dict, doi: str | None = None):
             timeout=30,
         )
 
-    return res.json()
+    return _check_datacite_response(res, f"update of {doi}" if doi else "DOI creation")
 
 
 def publish_datacite_doi(doi: str):
     """
-    Set a DOI's status to `Findable` in Datacite.
+    Set a DOI's status to `Findable` in Datacite. Raises DataCiteError if
+    DataCite rejects it (e.g. metadata that fails full schema validation).
     """
     payload = {"data": {"type": "dois", "attributes": {"event": "publish"}}}
 
@@ -292,12 +350,13 @@ def publish_datacite_doi(doi: str):
         headers={"Content-Type": "application/vnd.api+json"},
         timeout=30,
     )
-    return res.json()
+    return _check_datacite_response(res, f"publish of {doi}")
 
 
 def hide_datacite_doi(doi: str):
     """
-    Remove a Datacite DOI from public consumption.
+    Remove a Datacite DOI from public consumption. Raises DataCiteError if
+    DataCite rejects it.
     """
     payload = {"data": {"type": "dois", "attributes": {"event": "hide"}}}
 
@@ -308,7 +367,7 @@ def hide_datacite_doi(doi: str):
         headers={"Content-Type": "application/vnd.api+json"},
         timeout=30,
     )
-    return res.json()
+    return _check_datacite_response(res, f"hide of {doi}")
 
 
 def get_doi_publication_date(doi: str) -> str:
