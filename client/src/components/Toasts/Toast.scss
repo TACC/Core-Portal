@@ -1,4 +1,4 @@
-@import '../../styles/tools/mixins.scss';
+@use '../../styles/tools/mixins.scss' as mixins;
 
 /* TODO:
     - Convert to CSS Module (special care necessary for `MuiSnackbar` classes)
@@ -65,7 +65,7 @@
   display: grid;
   place-items: center left;
   span {
-    @include truncate-with-ellipsis;
+    @include mixins.truncate-with-ellipsis;
     width: 100%;
     font-size: 1.1em;
   }
