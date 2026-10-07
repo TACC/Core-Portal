@@ -121,18 +121,12 @@ const DataFilesListing = ({
     const cells = [
       {
         id: 'checkbox',
-        width: 0.05,
-        minWidth: 20,
-        maxWidth: 40,
         Header: CheckboxHeaderCell,
         Cell: checkboxCellCallback,
       },
       {
         id: 'icon',
         accessor: (row) => row,
-        width: 0.05,
-        minWidth: 20,
-        maxWidth: 25,
         Cell: FileIconCell,
       },
       {
