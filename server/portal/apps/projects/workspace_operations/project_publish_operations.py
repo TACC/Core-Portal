@@ -448,12 +448,11 @@ def publish_project(self, project_id: str, version: int | None = 1):
                 defaults={"value": published_project.value, "tree": nx.node_link_data(pub_tree), "version": version},
             )
 
+            # Making a DOI findable can't be undone, so it waits until this transaction commits: if
+            # anything below fails, the rollback removes the Publication row and a DOI made findable
+            # here would resolve to a 404. on_commit drops the callback on rollback.
             if not settings.DEBUG:
-                try:
-                    publish_datacite_doi(doi)
-                except Exception as e:
-                    logger.error(f"Error publishing DataCite DOI for project {project_id}: {e}")
-                    raise Exception(f"Error publishing DOI for project {project_id}: {e}")
+                transaction.on_commit(lambda: publish_publication_doi.apply_async(args=[project_id, doi]))
 
             upload_metadata_file(published_workspace_id, pub_metadata.tree)
 
@@ -487,6 +486,25 @@ def publish_project(self, project_id: str, version: int | None = 1):
         if new_doi:
             _record_minted_doi(source_project_id, new_doi)
         raise
+
+
+@shared_task(bind=True, max_retries=5, queue="default")
+def publish_publication_doi(self, project_id: str, doi: str):
+    """Make a publication's DOI findable at DataCite. Queued by publish_project only once its
+    transaction has committed, so the DOI never becomes findable for a publication that was rolled
+    back. Retried with backoff; once retries run out, `withdraw_publication --restore <project_id>`
+    sends the same `publish` event.
+    """
+
+    try:
+        publish_datacite_doi(doi)
+    except Exception as e:
+        logger.error(
+            f"Error publishing DataCite DOI {doi} for project {project_id} (attempt {self.request.retries + 1} of "
+            f"{self.max_retries + 1}): {e}. If retries run out, run `withdraw_publication --restore {project_id}`."
+        )
+        raise self.retry(exc=e, countdown=60 * 2**self.request.retries)
+    logger.info(f"DataCite DOI {doi} for project {project_id} is now findable.")
 
 
 def _record_minted_doi(source_project_id: str, doi: str):
