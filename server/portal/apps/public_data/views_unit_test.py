@@ -1104,7 +1104,8 @@ def test_get_schema_org_json_success(rf, settings, publication):
     assert schema["sameAs"] == "https://doi.org/10.1234/test-doi"
     assert len(schema["creator"]) == 1
     assert schema["creator"][0]["name"] == "Ada Lovelace"
-    assert schema["creator"][0]["affiliation"] == {"@type": "Organization", "name": "Test University"}
+    # The publication-level institution isn't an author affiliation.
+    assert "affiliation" not in schema["creator"][0]
     assert schema["creator"][0]["sameAs"] == "https://orcid.org/0000-0002-1825-0097"
     assert schema["publisher"] == {"@type": "Organization", "name": "Test Publisher"}
     assert schema["version"] == "3"
@@ -1329,6 +1330,25 @@ def test_get_schema_org_json_creator_without_institution_or_orcid(rf, publicatio
     assert "sameAs" not in creator
 
 
+def test_get_schema_org_json_affiliation_comes_from_each_authors_own_institution(rf, publication):
+    request = make_request(rf)
+    publication.value = valid_base_meta(
+        institution="Hosting University",
+        authors=[
+            {**full_author(), "institution": "  Analytical Engine Society  "},
+            {"first_name": "Alan", "last_name": "Turing", "institution": "   "},
+            {"first_name": "Grace", "last_name": "Hopper"},
+        ],
+    )
+    publication.save()
+
+    creators = get_schema_org_json(publication, publication.project_id, request)["creator"]
+
+    assert creators[0]["affiliation"] == {"@type": "Organization", "name": "Analytical Engine Society"}
+    assert "affiliation" not in creators[1]
+    assert "affiliation" not in creators[2]
+
+
 @pytest.mark.parametrize(
     "nameless_author",
     [{}, {"first_name": "", "last_name": ""}, {"first_name": None, "last_name": None}, {"first_name": "  "}],
@@ -1422,6 +1442,23 @@ def test_get_citation_context(rf, settings, publication):
     assert entity["citation_date"] == "2024/05/01"
     assert entity["abstract_url"] == schema_org_json["url"]
     assert citation_meta["cover_image_url"] is None  # PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME unset
+
+
+def test_get_citation_context_collects_file_objects_once(rf, publication):
+    """The JSON-LD distribution and citation_pdf_url share one walk of the publication's files."""
+    publication.value = valid_base_meta(
+        fileObjs=[{"type": "file", "name": "paper.pdf", "path": "/paper.pdf", "sha256": "abc123"}]
+    )
+    publication.save()
+
+    with patch(
+        "portal.apps.public_data.views._get_publication_file_objs", wraps=_get_publication_file_objs
+    ) as mock_file_objs:
+        citation_meta, schema, _ = get_citation_context(publication, make_request(rf))
+
+    mock_file_objs.assert_called_once_with(publication)
+    assert schema["distribution"][0]["name"] == "paper.pdf"
+    assert citation_meta["entities"][0]["pdf_url"] == schema["distribution"][0]["contentUrl"]
 
 
 @pytest.mark.parametrize(

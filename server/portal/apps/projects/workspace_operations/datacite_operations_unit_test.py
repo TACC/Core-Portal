@@ -123,11 +123,13 @@ def test_get_datacite_json_issued_date_defaults_to_today(stored):
 @DATACITE_SETTINGS
 @pytest.mark.django_db
 def test_get_datacite_json_with_institution_and_authors():
+    """The publication-level institution is the HostingInstitution contributor; each creator's
+    affiliation comes only from that author's own institution."""
     base_meta = minimal_base_meta(
         institution="Test University",
         authors=[
-            {"first_name": "Ada", "last_name": "Lovelace", "inst": "Test University"},
-            {"first_name": "Alan", "last_name": "Turing", "inst": "Test University"},
+            {"first_name": "Ada", "last_name": "Lovelace", "institution": "Analytical Engine Society"},
+            {"first_name": "Alan", "last_name": "Turing"},
         ],
     )
     result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
@@ -141,14 +143,13 @@ def test_get_datacite_json_with_institution_and_authors():
             "nameType": "Personal",
             "givenName": "Ada",
             "familyName": "Lovelace",
-            "affiliation": [{"name": "Test University"}],
+            "affiliation": [{"name": "Analytical Engine Society"}],
         },
         {
             "name": "Turing, Alan",
             "nameType": "Personal",
             "givenName": "Alan",
             "familyName": "Turing",
-            "affiliation": [{"name": "Test University"}],
         },
     ]
 
@@ -159,9 +160,10 @@ def test_get_datacite_json_with_institution_and_authors():
 def test_get_datacite_json_omits_affiliation_without_institution(institution):
     """The DPMP publish form has no institution field. DataCite rejects a null
     affiliation name, so affiliation is left out instead of sent as {"name": null}."""
+    institution_field = {} if institution is None else {"institution": institution}
     base_meta = minimal_base_meta(
-        authors=[{"first_name": "Ada", "last_name": "Lovelace"}],
-        **({} if institution is None else {"institution": institution}),
+        authors=[{"first_name": "Ada", "last_name": "Lovelace", **institution_field}],
+        **institution_field,
     )
     result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
 
@@ -176,11 +178,11 @@ def test_get_datacite_json_omits_affiliation_without_institution(institution):
 def test_get_datacite_json_strips_institution_whitespace():
     base_meta = minimal_base_meta(
         institution="  Test University  ",
-        authors=[{"first_name": "Ada", "last_name": "Lovelace"}],
+        authors=[{"first_name": "Ada", "last_name": "Lovelace", "institution": "  Analytical Engine Society  "}],
     )
     result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
 
-    assert result["creators"][0]["affiliation"] == [{"name": "Test University"}]
+    assert result["creators"][0]["affiliation"] == [{"name": "Analytical Engine Society"}]
     assert result["contributors"][0]["name"] == "Test University"
 
 

@@ -20,7 +20,7 @@ from portal.apps.projects.workspace_operations.datacite_operations import (
 from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
 from portal.apps.projects.workspace_operations.shared_workspace_operations import remove_user
 from portal.apps.publications.models import Publication, PublicationRequest
-from portal.apps.publications.utils import get_published_workspace_id
+from portal.apps.publications.utils import get_publication_file_objs, get_published_workspace_id
 from portal.apps.search.tasks import index_publication
 from portal.libs.agave.utils import service_account, user_account
 
@@ -118,6 +118,12 @@ def publish_project_callback(
     # Make system public for listing
     service_client.systems.shareSystemPublic(systemId=published_project_id)
 
+    # The files are on the published system now, so the DOI can't resolve to a landing page whose
+    # file links 404. A transfer poll queued before this step existed (no `project_id`) belongs to a
+    # publish_project that already made its DOI findable itself.
+    if project_id and not settings.DEBUG:
+        _queue_publish_publication_doi(project_id)
+
     # Create ZIP archive of published files (the same job writes the sha256 manifest)
     archive_job = archive_publication_files(archive_project_id)
 
@@ -127,16 +133,6 @@ def publish_project_callback(
         poll_publication_archive_job.apply_async(
             args=[archive_job.uuid, project_id, version], countdown=_ARCHIVE_JOB_POLL_SECONDS
         )
-
-
-def _get_publication_file_objs(publication):
-    """Every file object in a Publication -- root-level `value.fileObjs` plus each entity node's
-    `value.fileObjs` in `tree` -- as the same dicts stored on it, so they can be updated in place."""
-
-    file_objs = list(publication.value.get("fileObjs") or [])
-    for node in (publication.tree or {}).get("nodes", []):
-        file_objs.extend((node.get("value") or {}).get("fileObjs") or [])
-    return file_objs
 
 
 def _unescape_manifest_path(path):
@@ -212,7 +208,7 @@ def load_publication_file_checksums(self, project_id: str, version: int | None =
             )
             return
         stored, unhashed = 0, set()
-        for file_obj in _get_publication_file_objs(publication):
+        for file_obj in get_publication_file_objs(publication):
             path = (file_obj.get("path") or "").strip("/")
             if file_obj.get("type") != "file" or not path:
                 continue
@@ -441,11 +437,8 @@ def publish_project(self, project_id: str, version: int | None = 1):
                 defaults={"value": published_project.value, "tree": nx.node_link_data(pub_tree), "version": version},
             )
 
-            # Making a DOI findable can't be undone, so it waits until this transaction commits: if
-            # anything below fails, the rollback removes the Publication row and a DOI made findable
-            # here would resolve to a 404. on_commit drops the callback on rollback.
-            if not settings.DEBUG:
-                transaction.on_commit(lambda: publish_publication_doi.apply_async(args=[project_id, doi]))
+            # The DOI isn't made findable here: publish_project_callback does that once the file
+            # transfer below has completed, so it never resolves to a page whose files 404.
 
             upload_metadata_file(published_workspace_id, pub_metadata.tree)
 
@@ -483,10 +476,10 @@ def publish_project(self, project_id: str, version: int | None = 1):
 
 @shared_task(bind=True, max_retries=5, queue="default")
 def publish_publication_doi(self, project_id: str, doi: str):
-    """Make a publication's DOI findable at DataCite. Queued by publish_project only once its
-    transaction has committed, so the DOI never becomes findable for a publication that was rolled
-    back. Retried with backoff; once retries run out, `withdraw_publication --restore <project_id>`
-    sends the same `publish` event.
+    """Make a publication's DOI findable at DataCite. Queued by publish_project_callback once the
+    publication's files have been transferred (see _queue_publish_publication_doi). Retried with
+    backoff; once retries run out, `withdraw_publication --restore <project_id>` sends the same
+    `publish` event.
     """
 
     try:
@@ -498,6 +491,23 @@ def publish_publication_doi(self, project_id: str, doi: str):
         )
         raise self.retry(exc=e, countdown=60 * 2**self.request.retries)
     logger.info(f"DataCite DOI {doi} for project {project_id} is now findable.")
+
+
+def _queue_publish_publication_doi(project_id: str):
+    """Queue publish_publication_doi for the DOI stored on the publication. Making a DOI findable
+    can't be undone, so the DOI is read from the committed, published Publication row: a publish
+    that rolled back (no row) or a withdrawn publication is left alone.
+    """
+
+    publication = Publication.objects.filter(project_id=project_id, is_published=True).first()
+    doi = publication.value.get("doi") if publication else None
+    if not doi:
+        logger.error(
+            f"Not making a DOI findable for project {project_id}: no published publication with a DOI. "
+            f"If it should be findable, run `withdraw_publication --restore {project_id}`."
+        )
+        return
+    publish_publication_doi.apply_async(args=[project_id, doi])
 
 
 def _record_minted_doi(source_project_id: str, doi: str):

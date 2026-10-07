@@ -186,7 +186,8 @@ def test_add_values_to_tree_embeds_entity_values_and_clears_uuid(mocker):
 # ---------------------------------------------------------------------------
 
 
-def test_publish_project_callback_orchestrates_cleanup_share_archive_and_checksum_poll(mocker):
+def test_publish_project_callback_orchestrates_cleanup_share_archive_and_checksum_poll(mocker, settings):
+    settings.DEBUG = True
     mock_service_account = mocker.patch(f"{DIR}.service_account")
     mock_cleanup = mocker.patch(f"{DIR}.update_and_cleanup_review_project")
     mock_archive = mocker.patch(f"{DIR}.archive_publication_files", return_value=SimpleNamespace(uuid="job-1"))
@@ -212,6 +213,67 @@ def test_publish_project_callback_without_project_id_skips_checksum_poll(mocker)
 
     mock_archive.assert_called_once_with("archive-1")
     mock_poll.assert_not_called()
+
+
+def _mock_publish_project_callback_steps(mocker):
+    mocker.patch(f"{DIR}.service_account")
+    mocker.patch(f"{DIR}.update_and_cleanup_review_project")
+    mocker.patch(f"{DIR}.archive_publication_files", return_value=SimpleNamespace(uuid="job-1"))
+    mocker.patch.object(poll_publication_archive_job, "apply_async")
+    return mocker.patch.object(publish_publication_doi, "apply_async")
+
+
+def test_publish_project_callback_makes_stored_doi_findable_after_transfer(mocker, settings):
+    settings.DEBUG = False
+    mock_publish_doi = _mock_publish_project_callback_steps(mocker)
+    Publication.objects.create(project_id="test.project-1", value={"doi": "10.5555/minted-doi"}, tree={})
+
+    publish_project_callback("review-1", "published-1", "archive-1", project_id="test.project-1", version=1)
+
+    mock_publish_doi.assert_called_once_with(args=["test.project-1", "10.5555/minted-doi"])
+
+
+def test_publish_project_callback_debug_leaves_doi_draft(mocker, settings):
+    settings.DEBUG = True
+    mock_publish_doi = _mock_publish_project_callback_steps(mocker)
+    Publication.objects.create(project_id="test.project-1", value={"doi": "10.5555/minted-doi"}, tree={})
+
+    publish_project_callback("review-1", "published-1", "archive-1", project_id="test.project-1", version=1)
+
+    mock_publish_doi.assert_not_called()
+
+
+def test_publish_project_callback_without_project_id_leaves_doi_alone(mocker, settings):
+    """A transfer poll queued before this step existed belongs to a publish_project that already
+    made its DOI findable."""
+    settings.DEBUG = False
+    mock_publish_doi = _mock_publish_project_callback_steps(mocker)
+
+    publish_project_callback("review-1", "published-1", "archive-1")
+
+    mock_publish_doi.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "publication",
+    [
+        None,  # the publish rolled back, so there's no Publication row
+        {"value": {}},  # no DOI stored
+        {"value": {"doi": "10.5555/minted-doi"}, "is_published": False},  # withdrawn meanwhile
+    ],
+)
+def test_publish_project_callback_never_makes_doi_findable_without_published_publication(
+    mocker, settings, caplog, publication
+):
+    settings.DEBUG = False
+    mock_publish_doi = _mock_publish_project_callback_steps(mocker)
+    if publication is not None:
+        Publication.objects.create(project_id="test.project-1", tree={}, **publication)
+
+    publish_project_callback("review-1", "published-1", "archive-1", project_id="test.project-1", version=1)
+
+    mock_publish_doi.assert_not_called()
+    assert "withdraw_publication --restore test.project-1" in caplog.text
 
 
 # ---------------------------------------------------------------------------
@@ -434,9 +496,11 @@ def test_publish_project_datacite_mint_failure_raises_and_rolls_back(mocker, set
     assert not Publication.objects.filter(project_id="test.project-1").exists()
 
 
-def test_publish_project_debug_false_publishes_doi_and_schedules_emails(
+def test_publish_project_debug_false_schedules_emails_but_leaves_doi_to_transfer_callback(
     mocker, settings, django_capture_on_commit_callbacks
 ):
+    """The DOI isn't made findable here: publish_project_callback does that after the files have
+    been transferred."""
     _setup_publish_project_fixtures(settings)
     settings.DEBUG = False
 
@@ -455,8 +519,8 @@ def test_publish_project_debug_false_publishes_doi_and_schedules_emails(
     with django_capture_on_commit_callbacks(execute=True) as callbacks:
         publish_project(project_id="test.project-1", version=1)
 
-    assert len(callbacks) == 1
-    mock_publish_doi.assert_called_once_with(args=["test.project-1", "10.5555/minted-doi"])
+    assert callbacks == []
+    mock_publish_doi.assert_not_called()
     mock_accepted.apply_async.assert_called_once_with(args=["test.project-1"])
     mock_reviewed.apply_async.assert_called_once_with(args=["test.project-1", "APPROVED", None])
 

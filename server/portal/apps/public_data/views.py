@@ -20,7 +20,7 @@ from portal.apps.projects.schema_models.license_urls import resolve_license_url
 from portal.apps.projects.schema_models.orcid import orcid_url
 from portal.apps.public_data.origin import get_configured_origin
 from portal.apps.publications.models import Publication
-from portal.apps.publications.utils import get_published_workspace_id
+from portal.apps.publications.utils import get_publication_file_objs, get_published_workspace_id
 
 logger = logging.getLogger(__name__)
 
@@ -539,15 +539,18 @@ def _get_citation_pdf_url(file_objs, project_id, request):
     return None
 
 
-def get_schema_org_json(pub, project_id, request):
+def get_schema_org_json(pub, project_id, request, file_objs=None):
     """Build a schema.org/Dataset JSON-LD object for a published project to embed directly in
     the page's <script type="application/ld+json"> tag for Google Dataset Search.
+
+    `file_objs` is _get_publication_file_objs(pub), for a caller that already has it.
     """
 
     base_meta = pub.value
     doi = base_meta.get("doi")
     # Root-level and entity-node files together -- see _get_publication_file_objs.
-    file_objs = _get_publication_file_objs(pub)
+    if file_objs is None:
+        file_objs = _get_publication_file_objs(pub)
 
     # A metadata-only / externally-hosted publication can legitimately have no files at all, and
     # so is never a Croissant candidate. Having files that failed to make it into `distribution`
@@ -571,8 +574,11 @@ def get_schema_org_json(pub, project_id, request):
             logger.warning(f"Publication {project_id} has an author with no name; leaving them out of `creator`.")
             continue
         creator = {"@type": "Person", "name": name}
-        if base_meta.get("institution"):
-            creator["affiliation"] = {"@type": "Organization", "name": base_meta["institution"]}
+        # Only the author's own institution: the publication-level `institution` says where the
+        # dataset is hosted, not where each of its authors works.
+        institution = (author.get("institution") or "").strip()
+        if institution:
+            creator["affiliation"] = {"@type": "Organization", "name": institution}
         same_as = _get_orcid_same_as(author)
         if same_as:
             creator["sameAs"] = same_as
@@ -706,9 +712,10 @@ def get_citation_context(pub, request):
     (https://scholar.google.com/intl/en/scholar/inclusion.html#indexing).
     """
 
+    file_objs = _get_publication_file_objs(pub)
     # Built first so its already-resolved `url` and `distribution` (with real, absolute
     # download URLs) can be reused below instead of recomputed.
-    schema_org_json = get_schema_org_json(pub, pub.project_id, request)
+    schema_org_json = get_schema_org_json(pub, pub.project_id, request, file_objs)
 
     base_meta = pub.value
     authors = base_meta.get("authors", [])
@@ -750,7 +757,7 @@ def get_citation_context(pub, request):
             "citation_authors": [name for name in (_format_citation_author(author) for author in authors) if name],
             "publication_date": publication_date,
             "citation_date": _format_citation_date(publication_date),
-            "pdf_url": _get_citation_pdf_url(_get_publication_file_objs(pub), pub.project_id, request),
+            "pdf_url": _get_citation_pdf_url(file_objs, pub.project_id, request),
             "abstract_url": schema_org_json.get("url"),
         }
     ]
@@ -839,16 +846,12 @@ def _get_publication_file_objs(pub):
     (libs/agave/operations.py's upload: an entity's own `fileObjs` when the folder is an entity,
     the project root's otherwise), and publish_project's _add_values_to_tree copies each entity's
     value into its node in `Publication.tree`. So `pub.value["fileObjs"]` alone only covers files
-    attached directly to the project root -- the entity nodes in `pub.tree` hold the rest.
+    attached directly to the project root -- the entity nodes in `pub.tree` hold the rest
+    (publications/utils.py's get_publication_file_objs reads both).
     """
 
-    file_objs = list(pub.value.get("fileObjs") or [])
-    # `tree` is networkx node_link_data: {"nodes": [{"id": ..., "value": {...}}, ...], ...}
-    for node in (pub.tree or {}).get("nodes", []):
-        file_objs.extend((node.get("value") or {}).get("fileObjs") or [])
-
     by_path = {}
-    for file_obj in file_objs:
+    for file_obj in get_publication_file_objs(pub):
         path = (file_obj.get("path") or "").strip("/")
         if path:
             by_path.setdefault(path, file_obj)
