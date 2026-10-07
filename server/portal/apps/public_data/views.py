@@ -15,6 +15,7 @@ from django.utils.html import escape
 from django.utils.http import content_disposition_header
 from django.views.generic.base import TemplateView, View
 
+from portal.apps.projects.schema_models.keywords import normalize_keywords
 from portal.apps.projects.schema_models.license_urls import resolve_license_url
 from portal.apps.projects.schema_models.orcid import orcid_url
 from portal.apps.public_data.origin import get_configured_origin
@@ -604,7 +605,8 @@ def get_schema_org_json(pub, project_id, request):
             "@type": "Organization",
             "name": settings.PORTAL_PUBLICATION_PUBLISHER,
         },
-        "keywords": base_meta.get("keywords"),
+        # Trimmed list, the same one DataCite's `subjects` gets (projects/schema_models/keywords.py).
+        "keywords": normalize_keywords(base_meta.get("keywords")),
         "datePublished": base_meta.get("publicationDate") or base_meta.get("publication_date"),
         # Publication.last_updated (auto_now=True) already backs the sitemap's <lastmod> for
         # this same publication -- reusing it here rather than sourcing from base_meta means
@@ -699,12 +701,9 @@ def get_citation_context(pub, request):
     publication_date = base_meta.get("publicationDate") or base_meta.get("publication_date")
 
     citation_meta = {}
-    # `keywords` (base_metadata.py) is typed `str | list[str] | None` and can be stored either way:
-    # a free-text "text" form field saves one comma-separated string, while the deployed DPMP
-    # form's "tags" field saves a list. Joining a string would join its individual characters, so
-    # only join when it's actually a list; pass a string straight through.
-    kw = base_meta.get("keywords") or ""
-    citation_meta["keywords"] = ", ".join(kw) if isinstance(kw, list) else kw
+    # Stored as either a comma-separated string or a list; normalized to the same trimmed list as
+    # the JSON-LD `keywords` and DataCite's `subjects` (projects/schema_models/keywords.py).
+    citation_meta["keywords"] = ", ".join(normalize_keywords(base_meta.get("keywords")))
     # Page-level (not per-entity, like `keywords` above) since og:image/twitter:image are
     # single tags in <head>, not part of the citation_* block.
     citation_meta["cover_image_url"] = _get_cover_image_url(base_meta, pub.project_id, request)

@@ -7,6 +7,7 @@ import requests
 from django.conf import settings
 from django.urls import reverse
 
+from portal.apps.projects.schema_models.keywords import normalize_keywords
 from portal.apps.projects.schema_models.license_urls import (
     SPDX_SCHEME_URI,
     resolve_license_spdx_id,
@@ -76,21 +77,12 @@ def _check_datacite_response(res, action):
 
 def _get_subjects(base_meta):
     """Build DataCite's `subjects` property -- a list of `{"subject": ...}`
-    objects -- from the publication's `keywords`.
-
-    Distinct shape from schema.org's `keywords` (public_data/views.py), which
-    accepts either a comma-separated string or a list as stored. A stored
-    `keywords` can be either (BaseProjectMetadata.keywords is typed
-    `str | list[str] | None`): a free-text "text" field saves one
-    comma-separated string, while the deployed DPMP form's "tags" field saves
-    a list. So a string is split on "," -- mirroring get_citation_context's
-    own keywords handling (public_data/views.py) -- and a list is used as-is.
+    objects -- from the publication's `keywords`, normalized by
+    projects/schema_models/keywords.py, the same function the landing page's
+    schema.org `keywords` and `keywords` meta tag use (public_data/views.py).
     """
 
-    keywords = base_meta.get("keywords") or []
-    if isinstance(keywords, str):
-        keywords = keywords.split(",")
-    return [{"subject": keyword.strip()} for keyword in keywords if keyword.strip()]
+    return [{"subject": keyword} for keyword in normalize_keywords(base_meta.get("keywords"))]
 
 
 def _get_rights_list(base_meta, project_id):

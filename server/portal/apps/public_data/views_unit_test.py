@@ -1400,6 +1400,30 @@ def test_get_citation_context_keywords_list_is_joined(rf, settings, publication)
     assert citation_meta["keywords"] == "alpha, beta, gamma"
 
 
+@pytest.mark.parametrize("keywords", [["one", " two", "three ", "  "], " one,two ,  three, "])
+def test_get_citation_context_trims_keywords_in_json_ld_and_meta_tag(rf, settings, publication, keywords):
+    """Keywords are trimmed (and blanks dropped) the same way DataCite's `subjects` are, whether
+    stored as a list (the DPMP "tags" field, which can keep stray spaces) or as a string."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    request = make_request(rf)
+    publication.value = valid_base_meta(keywords=keywords)
+    publication.save()
+
+    citation_meta, schema_org_json, _ = get_citation_context(publication, request)
+    assert schema_org_json["keywords"] == ["one", "two", "three"]
+    assert citation_meta["keywords"] == "one, two, three"
+
+
+def test_index_view_renders_trimmed_keywords_meta_tag(client, publication):
+    publication.value = valid_base_meta(keywords=["one", " two"])
+    publication.save()
+
+    body = client.get(reverse("publications:index", kwargs={"project_id": publication.project_id})).content.decode()
+
+    assert "<meta name=\"keywords\" content='one, two'>" in body
+    assert '"keywords": ["one", "two"]' in body
+
+
 def test_get_citation_context_cover_image_url_when_configured(rf, settings, publication):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "root.system"
