@@ -10,6 +10,7 @@ from unittest.mock import MagicMock
 
 import networkx as nx
 import pytest
+from celery.exceptions import Retry
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 
@@ -34,6 +35,7 @@ from portal.apps.projects.workspace_operations.project_publish_operations import
     publication_request_callback,
     publish_project,
     publish_project_callback,
+    publish_publication_doi,
     send_publication_accepted_email_to_authors,
     send_publication_in_review_email_to_authors,
     send_publication_rejected_email_to_authors,
@@ -433,13 +435,15 @@ def test_publish_project_datacite_mint_failure_raises_and_rolls_back(mocker, set
     assert not Publication.objects.filter(project_id="test.project-1").exists()
 
 
-def test_publish_project_debug_false_publishes_doi_and_schedules_emails(mocker, settings):
+def test_publish_project_debug_false_publishes_doi_and_schedules_emails(
+    mocker, settings, django_capture_on_commit_callbacks
+):
     _setup_publish_project_fixtures(settings)
     settings.DEBUG = False
 
     mocker.patch(f"{DIR}.get_datacite_json", return_value={"titles": []})
     mocker.patch(f"{DIR}.upsert_datacite_json", return_value={"data": {"id": "10.5555/minted-doi"}})
-    mock_publish_doi = mocker.patch(f"{DIR}.publish_datacite_doi")
+    mock_publish_doi = mocker.patch.object(publish_publication_doi, "apply_async")
     mocker.patch(f"{DIR}.upload_metadata_file")
     mocker.patch(f"{DIR}.index_publication")
     mocker.patch(f"{DIR}.service_account")
@@ -449,33 +453,42 @@ def test_publish_project_debug_false_publishes_doi_and_schedules_emails(mocker, 
     mock_accepted = mocker.patch(f"{DIR}.send_publication_accepted_email_to_authors")
     mock_reviewed = mocker.patch(f"{DIR}.send_publication_reviewed_email_to_reviewers")
 
-    publish_project(project_id="test.project-1", version=1)
+    with django_capture_on_commit_callbacks(execute=True) as callbacks:
+        publish_project(project_id="test.project-1", version=1)
 
-    mock_publish_doi.assert_called_once_with("10.5555/minted-doi")
+    assert len(callbacks) == 1
+    mock_publish_doi.assert_called_once_with(args=["test.project-1", "10.5555/minted-doi"])
     mock_accepted.apply_async.assert_called_once_with(args=["test.project-1"])
     mock_reviewed.apply_async.assert_called_once_with(args=["test.project-1", "APPROVED", None])
 
 
-def test_publish_project_datacite_publish_failure_raises(mocker, settings):
-    """The publish rolls back, but the draft DOI it minted is kept on the source project, so the
-    retry updates that draft instead of minting a second one."""
+def test_publish_project_failure_after_mint_rolls_back_and_never_publishes_doi(
+    mocker, settings, django_capture_on_commit_callbacks
+):
+    """A step after the mint fails: the publish rolls back and the DOI is never made findable (it
+    would resolve to a 404), but the draft DOI is kept on the source project, so the retry updates
+    that draft instead of minting a second one."""
     fixtures = _setup_publish_project_fixtures(settings)
     settings.DEBUG = False
 
     mocker.patch(f"{DIR}.get_datacite_json", return_value={"titles": []})
     mock_upsert = mocker.patch(f"{DIR}.upsert_datacite_json", return_value={"data": {"id": "10.5555/minted-doi"}})
-    mocker.patch(f"{DIR}.publish_datacite_doi", side_effect=RuntimeError("datacite down"))
+    mock_publish_doi = mocker.patch.object(publish_publication_doi, "apply_async")
+    mocker.patch(f"{DIR}.upload_metadata_file", side_effect=RuntimeError("tapis down"))
     mocker.patch(f"{DIR}.service_account")
 
-    with pytest.raises(Exception, match="Error publishing DOI for project test.project-1"):
-        publish_project(project_id="test.project-1", version=1)
+    with django_capture_on_commit_callbacks(execute=True) as callbacks:
+        with pytest.raises(RuntimeError, match="tapis down"):
+            publish_project(project_id="test.project-1", version=1)
 
+    assert callbacks == []
+    mock_publish_doi.assert_not_called()
     source_project = ProjectMetadata.objects.get(pk=fixtures.source_project.pk)
     assert source_project.value["doi"] == "10.5555/minted-doi"
     assert "publicationDate" not in source_project.value
     assert not Publication.objects.filter(project_id="test.project-1").exists()
 
-    with pytest.raises(Exception, match="Error publishing DOI for project test.project-1"):
+    with pytest.raises(RuntimeError, match="tapis down"):
         publish_project(project_id="test.project-1", version=1)
 
     assert mock_upsert.call_args_list[1].kwargs["doi"] == "10.5555/minted-doi"
@@ -487,17 +500,40 @@ def test_publish_project_failure_with_existing_doi_leaves_source_project_unchang
 
     mocker.patch(f"{DIR}.get_datacite_json", return_value={"titles": []})
     mocker.patch(f"{DIR}.upsert_datacite_json", return_value={"data": {"id": "10.5555/existing-doi"}})
-    mocker.patch(f"{DIR}.publish_datacite_doi", side_effect=RuntimeError("datacite down"))
+    mocker.patch(f"{DIR}.upload_metadata_file", side_effect=RuntimeError("tapis down"))
     mocker.patch(f"{DIR}.service_account")
     mock_record = mocker.patch(f"{DIR}._record_minted_doi")
 
-    with pytest.raises(Exception, match="Error publishing DOI for project test.project-1"):
+    with pytest.raises(RuntimeError, match="tapis down"):
         publish_project(project_id="test.project-1", version=1)
 
     mock_record.assert_not_called()
     source_project = ProjectMetadata.objects.get(pk=fixtures.source_project.pk)
     assert source_project.value["doi"] == "10.5555/existing-doi"
     assert "publicationDate" not in source_project.value
+
+
+def test_publish_publication_doi_makes_doi_findable(mocker):
+    mock_publish = mocker.patch(f"{DIR}.publish_datacite_doi")
+    mock_retry = mocker.patch.object(publish_publication_doi, "retry")
+
+    publish_publication_doi("test.project-1", "10.5555/minted-doi")
+
+    mock_publish.assert_called_once_with("10.5555/minted-doi")
+    mock_retry.assert_not_called()
+
+
+def test_publish_publication_doi_retries_with_backoff_and_logs_remedy(mocker):
+    error = RuntimeError("datacite down")
+    mocker.patch(f"{DIR}.publish_datacite_doi", side_effect=error)
+    mock_logger = mocker.patch(f"{DIR}.logger")
+    mock_retry = mocker.patch.object(publish_publication_doi, "retry", side_effect=Retry())
+
+    with pytest.raises(Retry):
+        publish_publication_doi("test.project-1", "10.5555/minted-doi")
+
+    mock_retry.assert_called_once_with(exc=error, countdown=60)
+    assert "withdraw_publication --restore test.project-1" in mock_logger.error.call_args.args[0]
 
 
 def test_record_minted_doi_logs_instead_of_raising(mocker, caplog):
