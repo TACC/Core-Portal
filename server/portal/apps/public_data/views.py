@@ -715,31 +715,38 @@ class IndexView(TemplateView):
         if project_id:
             try:
                 pub = Publication.objects.get(project_id=project_id)
-                # `revision` (the URL's `vN` suffix -- see public_data/urls.py) can't select a
-                # specific version's content: Publication is keyed by bare project_id and always
-                # holds only the latest republish (see get_schema_org_json's `version` comment).
-                # A mismatch means this link was minted against an older version that's since
-                # been superseded and is now silently rendering the current version instead --
-                # worth knowing about even though there's no old content left to serve.
-                revision = kwargs.get("revision")
-                if revision is not None and int(revision) != pub.version:
-                    logger.warning(
-                        f"Publication {project_id} was requested at revision {revision}, but "
-                        f"its current version is {pub.version}; serving current content."
-                    )
-                citation_context, schema_org_json, _ = get_citation_context(pub, self.request)
-                context["schema_org_json"] = dumps_json_ld(schema_org_json)
-                context["citation_context"] = citation_context
-                context["publisher"] = settings.PORTAL_PUBLICATION_PUBLISHER
-                # Reuse the same _get_landing_page_url-derived value already resolved for the
-                # JSON-LD's own `url` (rather than falling back to base.html's default
-                # request.build_absolute_uri) so <link rel="canonical">/og:url can't disagree
-                # with what this same page's structured data claims as its URL -- see
-                # _get_landing_page_url's docstring for why that's not just the current
-                # request's own URL (a stale ?vN revision link, or a deployment where
-                # PORTAL_PUBLICATION_DATACITE_URL_PREFIX points at a different host than the
-                # one serving this request).
-                context["canonical_url"] = schema_org_json.get("url")
+                if not pub.is_published:
+                    # A withdrawn publication's DOI still resolves here (DataCite expects a
+                    # tombstone page, not a 404), so the page still renders -- but with no
+                    # citation/JSON-LD metadata, which also leaves it at base.html's default
+                    # noindex. Matches SitemapView, which leaves it out for the same reason.
+                    logger.info(f"Publication {project_id} is unpublished; serving it without metadata.")
+                else:
+                    # `revision` (the URL's `vN` suffix -- see public_data/urls.py) can't select a
+                    # specific version's content: Publication is keyed by bare project_id and always
+                    # holds only the latest republish (see get_schema_org_json's `version` comment).
+                    # A mismatch means this link was minted against an older version that's since
+                    # been superseded and is now silently rendering the current version instead --
+                    # worth knowing about even though there's no old content left to serve.
+                    revision = kwargs.get("revision")
+                    if revision is not None and int(revision) != pub.version:
+                        logger.warning(
+                            f"Publication {project_id} was requested at revision {revision}, but "
+                            f"its current version is {pub.version}; serving current content."
+                        )
+                    citation_context, schema_org_json, _ = get_citation_context(pub, self.request)
+                    context["schema_org_json"] = dumps_json_ld(schema_org_json)
+                    context["citation_context"] = citation_context
+                    context["publisher"] = settings.PORTAL_PUBLICATION_PUBLISHER
+                    # Reuse the same _get_landing_page_url-derived value already resolved for the
+                    # JSON-LD's own `url` (rather than falling back to base.html's default
+                    # request.build_absolute_uri) so <link rel="canonical">/og:url can't disagree
+                    # with what this same page's structured data claims as its URL -- see
+                    # _get_landing_page_url's docstring for why that's not just the current
+                    # request's own URL (a stale ?vN revision link, or a deployment where
+                    # PORTAL_PUBLICATION_DATACITE_URL_PREFIX points at a different host than the
+                    # one serving this request).
+                    context["canonical_url"] = schema_org_json.get("url")
             except Publication.DoesNotExist:
                 # Unlike the catch-all fallback route (public_data/urls.py's `index_fallback`,
                 # which never captures a project_id and legitimately needs to keep rendering
@@ -905,11 +912,12 @@ class PublicationFileDownloadView(View):
     Only serves paths the publication itself declares (_is_publication_file_path), checked
     before any redirect or Tapis call: without the check this route would relay (with the
     service account's token) or point at any path on the published system -- including files
-    never associated with the publication -- and send every crawler-guessed URL onward.
+    never associated with the publication -- and send every crawler-guessed URL onward. An
+    unpublished (withdrawn) publication serves no files at all.
     """
 
     def get(self, request, project_id, path):
-        pub = Publication.objects.filter(project_id=project_id).first()
+        pub = Publication.objects.filter(project_id=project_id, is_published=True).first()
         if pub is None:
             raise Http404(f"No publication found for project {project_id}")
         if not _is_publication_file_path(pub, path):
@@ -927,12 +935,13 @@ class PublicationCoverImageView(View):
     PublicationFileDownloadView reads from, so it gets its own route. The path is read from the
     stored publication rather than the URL, so this can't be used to read anything else off that
     shared system. Redirects to the web mirror when one is configured, the same way
-    PublicationFileDownloadView does -- the root system's rootDir is the mirror's root.
+    PublicationFileDownloadView does -- the root system's rootDir is the mirror's root. An
+    unpublished (withdrawn) publication has no cover image here.
     """
 
     def get(self, request, project_id):
         root_system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
-        pub = Publication.objects.filter(project_id=project_id).first()
+        pub = Publication.objects.filter(project_id=project_id, is_published=True).first()
         cover_image_path = ((pub.value.get("coverImage") if pub else None) or "").lstrip("/")
         if not root_system or not cover_image_path:
             raise Http404(f"No cover image for publication {project_id}")

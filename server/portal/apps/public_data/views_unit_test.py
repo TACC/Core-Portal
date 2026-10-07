@@ -715,6 +715,21 @@ def test_publication_file_download_view_404s_for_undeclared_path_without_calling
     assert not requests_mock.called
 
 
+@pytest.mark.parametrize("web_base_url", [None, "https://web.example.org/published"])
+def test_publication_file_download_view_404s_for_unpublished_publication(
+    rf, settings, requests_mock, v1_publication, web_base_url
+):
+    """A withdrawn publication's declared files are neither streamed nor redirected to."""
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = web_base_url
+    v1_publication.is_published = False
+    v1_publication.save()
+    request = make_request(rf)
+
+    with pytest.raises(Http404):
+        PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path="data.csv")
+    assert not requests_mock.called
+
+
 def test_publication_file_download_view_serves_root_level_file(rf, requests_mock, v1_publication):
     requests_mock.get(f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1/data.csv", content=b"root")
     request = make_request(rf)
@@ -994,6 +1009,17 @@ def test_cover_image_view_404s_for_unknown_publication(rf, settings, db):
 
     with pytest.raises(Http404):
         PublicationCoverImageView.as_view()(request, project_id="test.project-999")
+
+
+def test_cover_image_view_404s_for_unpublished_publication(rf, settings, publication, requests_mock):
+    settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "root.system"
+    publication.is_published = False
+    publication.save()
+    request = make_request(rf)
+
+    with pytest.raises(Http404):
+        PublicationCoverImageView.as_view()(request, project_id=publication.project_id)
+    assert not requests_mock.called
 
 
 # ---------------------------------------------------------------------------
@@ -1296,6 +1322,35 @@ def test_index_view_missing_publication_404s(client):
     url = reverse("publications:index", kwargs={"project_id": "test.project-999"})
     response = client.get(url)
     assert response.status_code == 404
+
+
+@patch("portal.apps.public_data.views.get_citation_context")
+@patch("portal.apps.public_data.views.logger")
+def test_index_view_unpublished_publication_renders_noindex_without_metadata(
+    mock_logger, mock_get_citation_context, client, settings, publication
+):
+    """A withdrawn publication's DOI still resolves to a page (not a 404), but one with no
+    citation/JSON-LD metadata and left noindex -- the same pages SitemapView leaves out."""
+    settings.DEBUG = True
+    publication.is_published = False
+    publication.save()
+
+    url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    response = client.get(url)
+    body = response.content.decode()
+
+    assert response.status_code == 200
+    assert "schema_org_json" not in response.context
+    assert "citation_context" not in response.context
+    assert "canonical_url" not in response.context
+    mock_get_citation_context.assert_not_called()
+    mock_logger.info.assert_called_once()
+    assert publication.project_id in mock_logger.info.call_args[0][0]
+    robots_match = re.search(r'<meta name="robots" content="([^"]*)">', body)
+    assert robots_match is not None
+    assert robots_match.group(1).strip() == "noindex, follow"
+    assert "citation_title" not in body
+    assert "application/ld+json" not in body
 
 
 @patch("portal.apps.public_data.views.logger")
