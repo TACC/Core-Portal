@@ -16,12 +16,12 @@ def _get_subjects(base_meta):
     objects -- from the publication's `keywords`.
 
     Distinct shape from schema.org's `keywords` (public_data/views.py), which
-    Google accepts as a single comma-separated string. The DPMP publish form
-    stores `keywords` as one free-text, comma-separated string (matching the
-    `str | list[str] | None` type on BaseProjectMetadata.keywords), so this
-    splits on "," for that case -- mirroring get_citation_context's own
-    keywords handling (public_data/views.py) -- while a list value (the
-    schema's other allowed shape) is used as-is.
+    accepts either a comma-separated string or a list as stored. A stored
+    `keywords` can be either (BaseProjectMetadata.keywords is typed
+    `str | list[str] | None`): a free-text "text" field saves one
+    comma-separated string, while the deployed DPMP form's "tags" field saves
+    a list. So a string is split on "," -- mirroring get_citation_context's
+    own keywords handling (public_data/views.py) -- and a list is used as-is.
     """
 
     keywords = base_meta.get("keywords") or []
