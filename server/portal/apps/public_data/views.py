@@ -807,8 +807,8 @@ class IndexView(TemplateView):
                     # noindex. Matches SitemapView, which leaves it out for the same reason.
                     logger.info(f"Publication {project_id} is unpublished; serving it without metadata.")
                 elif not pub.is_indexable:
-                    # Mid-publish: the files are still being transferred, or the DOI isn't findable
-                    # yet, so the page's file links and DOI wouldn't resolve. Served the same way
+                    # Mid first publish: the files are still being transferred, or the DOI isn't
+                    # findable yet, so the page's file links and DOI wouldn't resolve. Served the same way
                     # until publish_publication_doi (project_publish_operations.py) marks it
                     # indexable; SitemapView leaves it out meanwhile.
                     logger.info(f"Publication {project_id} isn't indexable yet; serving it without metadata.")
@@ -1079,7 +1079,7 @@ class SitemapView(View):
     def _build(self, request):
         # Mirrors the is_published filter publications/views.py already uses for its own
         # (authenticated) publications listing, plus is_indexable: IndexView serves a publication
-        # that's still mid-publish without metadata (noindex), so it isn't listed either.
+        # that's still mid first publish without metadata (noindex), so it isn't listed either.
         publications = Publication.objects.filter(is_published=True, is_indexable=True).order_by("project_id")
 
         entries = []

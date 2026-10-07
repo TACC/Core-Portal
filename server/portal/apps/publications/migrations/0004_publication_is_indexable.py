@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
             name="is_indexable",
             field=models.BooleanField(
                 default=True,
-                help_text="Whether the landing page may be indexed and listed in the sitemap. publish_project clears it; it's set again once the files have been transferred and the DOI is findable.",
+                help_text="Whether the landing page may be indexed and listed in the sitemap. A first publish clears it; it's set once the files have been transferred and the DOI is findable. A republish leaves it unchanged.",
             ),
         ),
     ]

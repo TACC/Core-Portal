@@ -47,8 +47,8 @@ class Publication(models.Model):
     is_indexable = models.BooleanField(
         default=True,
         help_text=(
-            "Whether the landing page may be indexed and listed in the sitemap. publish_project clears it; it's set "
-            "again once the files have been transferred and the DOI is findable."
+            "Whether the landing page may be indexed and listed in the sitemap. A first publish clears it; it's set "
+            "once the files have been transferred and the DOI is findable. A republish leaves it unchanged."
         ),
     )
     last_updated = models.DateTimeField(auto_now=True)
