@@ -308,8 +308,23 @@ def test_get_datacite_json_rights_list_resolves_known_label():
     base_meta = minimal_base_meta(license="ODC-BY 1.0")
     result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
     assert result["rightsList"] == [
-        {"rights": "ODC-BY 1.0", "rightsUri": "https://opendatacommons.org/licenses/by/1-0/"}
+        {
+            "rights": "ODC-BY 1.0",
+            "rightsUri": "https://opendatacommons.org/licenses/by/1-0/",
+            "rightsIdentifier": "ODC-By-1.0",
+            "rightsIdentifierScheme": "SPDX",
+            "schemeUri": "https://spdx.org/licenses/",
+        }
     ]
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+def test_get_datacite_json_rights_list_adds_spdx_id_for_known_license_url():
+    base_meta = minimal_base_meta(license="https://opendatacommons.org/licenses/by/1-0/")
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["rightsList"][0]["rightsIdentifier"] == "ODC-By-1.0"
+    assert result["rightsList"][0]["rightsIdentifierScheme"] == "SPDX"
 
 
 @DATACITE_SETTINGS

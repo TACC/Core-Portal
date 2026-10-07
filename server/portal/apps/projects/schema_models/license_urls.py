@@ -21,6 +21,15 @@ LICENSE_URLS = {
     "ODC-BY 1.0": "https://opendatacommons.org/licenses/by/1-0/",
 }
 
+# SPDX License List identifiers (https://spdx.org/licenses/) for the same
+# labels, for DataCite's `rightsIdentifier` (with rightsIdentifierScheme
+# "SPDX"). Optional: a label with no entry here is just sent without one.
+LICENSE_SPDX_IDS = {
+    "ODC-BY 1.0": "ODC-By-1.0",
+}
+
+SPDX_SCHEME_URI = "https://spdx.org/licenses/"
+
 
 def resolve_license_url(license_value: str | None) -> str | None:
     """Resolve a publish form's stored license selection to its canonical
@@ -39,3 +48,19 @@ def resolve_license_url(license_value: str | None) -> str | None:
     if license_value.startswith("http://") or license_value.startswith("https://"):
         return license_value
     return LICENSE_URLS.get(license_value)
+
+
+def resolve_license_spdx_id(license_value: str | None) -> str | None:
+    """Resolve a stored license selection -- a known label, or the canonical
+    URL LICENSE_URLS maps one to -- to its SPDX identifier, or None when it
+    has none.
+    """
+
+    if not license_value:
+        return None
+    if license_value in LICENSE_SPDX_IDS:
+        return LICENSE_SPDX_IDS[license_value]
+    for label, url in LICENSE_URLS.items():
+        if license_value == url:
+            return LICENSE_SPDX_IDS.get(label)
+    return None

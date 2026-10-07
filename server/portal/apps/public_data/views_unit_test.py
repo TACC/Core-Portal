@@ -428,7 +428,7 @@ def test_get_cite_as_full_citation(rf, settings):
     request = make_request(rf)
     base_meta = {"authors": [full_author()], "publicationDate": "2024-05-01", "title": "Test Dataset"}
     citation = _get_cite_as(base_meta, "10.1234/test-doi", "test.project-1", request)
-    assert citation == "Ada Lovelace. (2024). Test Dataset. Test Publisher. https://doi.org/10.1234/test-doi"
+    assert citation == "Lovelace, A. (2024). Test Dataset. Test Publisher. https://doi.org/10.1234/test-doi"
 
 
 def test_get_cite_as_falls_back_to_landing_page_without_doi(rf, settings):
@@ -455,6 +455,54 @@ def test_get_cite_as_skips_authors_without_last_name(rf, settings):
     base_meta = {"authors": [{"first_name": "NoLastName"}], "title": "Test Dataset"}
     citation = _get_cite_as(base_meta, None, "test.project-1", request)
     assert citation.startswith("Test Dataset.")
+
+
+@pytest.mark.parametrize(
+    "authors,expected_creators",
+    [
+        (
+            [{"first_name": "Ada", "last_name": "Lovelace"}, {"first_name": "Alan", "last_name": "Turing"}],
+            "Lovelace, A., & Turing, A.",
+        ),
+        (
+            [
+                {"first_name": "Ada", "last_name": "Lovelace"},
+                {"first_name": "Alan", "last_name": "Turing"},
+                {"first_name": "Grace", "last_name": "Hopper"},
+            ],
+            "Lovelace, A., Turing, A., & Hopper, G.",
+        ),
+        ([{"first_name": "Mary Ann", "last_name": "Evans"}], "Evans, M. A."),
+        ([{"first_name": "Jean-Paul", "last_name": "Sartre"}], "Sartre, J.-P."),
+        ([{"first_name": None, "last_name": "Lovelace"}], "Lovelace"),
+        ([{"first_name": "Ada -", "last_name": " Lovelace "}], "Lovelace, A."),
+    ],
+)
+def test_get_cite_as_formats_authors_apa_style(rf, settings, authors, expected_creators):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    request = make_request(rf)
+    base_meta = {"authors": authors, "publicationDate": "2024-05-01", "title": "Test Dataset"}
+    citation = _get_cite_as(base_meta, "10.1234/test-doi", "test.project-1", request)
+    assert citation == f"{expected_creators} (2024). Test Dataset. Test Publisher. https://doi.org/10.1234/test-doi"
+
+
+def test_get_cite_as_never_doubles_a_period(rf, settings):
+    """A creator list ending in an initial, or a title/publisher ending in punctuation, keeps its
+    own mark instead of gaining a second one."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher Inc."
+    request = make_request(rf)
+    base_meta = {"authors": [full_author()], "title": "Is this a dataset?"}
+    citation = _get_cite_as(base_meta, "10.1234/test-doi", "test.project-1", request)
+    assert citation == "Lovelace, A. Is this a dataset? Test Publisher Inc. https://doi.org/10.1234/test-doi"
+    assert ".." not in citation
+
+
+def test_get_cite_as_year_without_authors(rf, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = None
+    request = make_request(rf)
+    base_meta = {"publicationDate": "2024-05-01", "title": "Test Dataset"}
+    citation = _get_cite_as(base_meta, "10.1234/test-doi", "test.project-1", request)
+    assert citation == "(2024). Test Dataset. https://doi.org/10.1234/test-doi"
 
 
 # ---------------------------------------------------------------------------

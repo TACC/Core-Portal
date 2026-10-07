@@ -84,7 +84,13 @@ def test_payload_matches_publish(publications, mock_upsert):
     assert payload["url"] == "https://example.org/published-datasets/test.project.published.test.project-1"
     assert payload["version"] == "2"
     assert payload["rightsList"] == [
-        {"rights": "ODC-BY 1.0", "rightsUri": "https://opendatacommons.org/licenses/by/1-0/"}
+        {
+            "rights": "ODC-BY 1.0",
+            "rightsUri": "https://opendatacommons.org/licenses/by/1-0/",
+            "rightsIdentifier": "ODC-By-1.0",
+            "rightsIdentifierScheme": "SPDX",
+            "schemeUri": "https://spdx.org/licenses/",
+        }
     ]
     assert payload["subjects"] == [{"subject": "rocks"}]
     assert payload["creators"][0]["name"] == "Lovelace, Ada"

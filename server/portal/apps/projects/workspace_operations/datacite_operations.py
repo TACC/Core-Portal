@@ -7,7 +7,11 @@ import requests
 from django.conf import settings
 from django.urls import reverse
 
-from portal.apps.projects.schema_models.license_urls import resolve_license_url
+from portal.apps.projects.schema_models.license_urls import (
+    SPDX_SCHEME_URI,
+    resolve_license_spdx_id,
+    resolve_license_url,
+)
 from portal.apps.projects.schema_models.orcid import ORCID_URL_PREFIX, orcid_url
 from portal.apps.public_data.origin import get_configured_origin
 
@@ -119,7 +123,17 @@ def _get_rights_list(base_meta, project_id):
             "requires a resolvable rightsUri -- add a canonical "
             f"license-deed URL for {license_value!r} to LICENSE_URLS."
         )
-    return [{"rights": license_value, "rightsUri": license_url}]
+    rights = {"rights": license_value, "rightsUri": license_url}
+    # DataCite's recommended machine-readable license id, when the license has
+    # an SPDX one (LICENSE_SPDX_IDS).
+    spdx_id = resolve_license_spdx_id(license_value)
+    if spdx_id:
+        rights.update(
+            rightsIdentifier=spdx_id,
+            rightsIdentifierScheme="SPDX",
+            schemeUri=SPDX_SCHEME_URI,
+        )
+    return [rights]
 
 
 def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | None = None):

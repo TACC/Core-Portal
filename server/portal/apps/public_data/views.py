@@ -383,33 +383,50 @@ def _get_publication_file_url(project_id, path, request):
     return f"{_get_configured_origin(request)}{url_path}"
 
 
+def _format_cite_as_author(author):
+    """Format one author as "Family, G." -- the APA form DataCite's own citation formatter uses --
+    with an initial for each given name, keeping hyphens ("Jean-Paul" -> "J.-P.")."""
+
+    initials = [
+        "-".join(f"{part[0]}." for part in name.split("-") if part) for name in (author.get("first_name") or "").split()
+    ]
+    initials = " ".join(initial for initial in initials if initial)
+    return f"{author['last_name'].strip()}, {initials}" if initials else author["last_name"].strip()
+
+
+def _end_sentence(text):
+    """`text` ending in exactly one sentence-ending mark, so a title or name that already ends in
+    one doesn't get a second period."""
+
+    return text if text.endswith((".", "?", "!")) else f"{text}."
+
+
 def _get_cite_as(base_meta, doi, project_id, request):
     """Build a plain-text citation for the Croissant `citeAs` property, following DataCite's
     recommended citation format (Creator(s) (PublicationYear). Title. Publisher. Identifier),
-    from metadata already available on the publication so it can't go stale like a hand-written
-    placeholder would.
+    in the APA style DataCite's own citation formatter produces -- e.g. "Lovelace, A., & Turing, A.
+    (2024). Title. Publisher. https://doi.org/..." -- from metadata already available on the
+    publication so it can't go stale like a hand-written placeholder would. Authors without a last
+    name are left out.
     """
 
-    authors = base_meta.get("authors", [])
-    author_names = "; ".join(
-        f"{author.get('first_name', '')} {author.get('last_name', '')}".strip()
-        for author in authors
-        if author.get("last_name")
-    )
+    author_names = [
+        _format_cite_as_author(author)
+        for author in base_meta.get("authors", [])
+        if (author.get("last_name") or "").strip()
+    ]
+    if len(author_names) > 1:
+        author_names = [f"{', '.join(author_names[:-1])}, & {author_names[-1]}"]
 
     publication_date = base_meta.get("publicationDate") or base_meta.get("publication_date") or ""
     year = publication_date[:4] if publication_date else ""
 
     identifier = f"https://doi.org/{doi}" if doi else _get_landing_page_url(project_id, request)
 
-    parts = [
-        author_names,
-        f"({year})" if year else None,
-        base_meta.get("title"),
-        settings.PORTAL_PUBLICATION_PUBLISHER,
-        identifier,
-    ]
-    return ". ".join(part for part in parts if part)
+    creator_and_year = " ".join([*author_names, *([f"({year})"] if year else [])])
+    sentences = [creator_and_year, base_meta.get("title"), settings.PORTAL_PUBLICATION_PUBLISHER]
+    # The identifier is a URL, so it isn't followed by a period.
+    return " ".join([*(_end_sentence(part.strip()) for part in sentences if part and part.strip()), identifier])
 
 
 def _get_citations(base_meta):
