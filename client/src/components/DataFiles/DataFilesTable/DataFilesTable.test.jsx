@@ -39,16 +39,10 @@ const initialMockState = {
 const columns = [
   {
     id: 'checkbox',
-    width: 0.05,
-    minWidth: 20,
-    maxWidth: 40,
   },
   {
     id: 'icon',
     accessor: 'format',
-    width: 0.05,
-    minWidth: 20,
-    maxWidth: 25,
   },
   {
     Header: 'Name',
