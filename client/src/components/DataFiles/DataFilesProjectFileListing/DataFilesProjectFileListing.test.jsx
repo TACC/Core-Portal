@@ -53,19 +53,25 @@ const initialMockState = {
     modals: filesFixture.modals,
     modalProps: filesFixture.modalProps,
   },
-  authenticatedUser: {
-    user: {
-      email: 'user@username.com',
-      first_name: 'Firstname',
-      last_name: 'Lastname',
-      username: 'username',
-    },
-  },
   workbench: {
     config: {
       trashPath: '.Trash',
     },
   },
+};
+
+const authenticatedUser = {
+  email: 'user@username.com',
+  first_name: 'Firstname',
+  last_name: 'Lastname',
+  username: 'username',
+};
+
+const authenticatedMember = {
+  email: 'user@username.com',
+  first_name: 'Firstname',
+  last_name: 'Lastname',
+  username: 'member',
 };
 
 describe('DataFilesProjectFileListing', () => {
@@ -77,14 +83,16 @@ describe('DataFilesProjectFileListing', () => {
         system="test.site.project.PROJECT-3"
         path="/"
       />,
-      store
+      store,
+      undefined,
+      undefined,
+      authenticatedUser
     );
 
     expect(getByText(/Show More/)).toBeDefined();
   });
 
   it('hides Edit Workspace and Manage Team when readOnly is true or user is not owner', () => {
-    initialMockState.authenticatedUser.user.username = 'member';
     initialMockState.systems.storage.configuration[5].readOnly = true;
     const store = mockStore(initialMockState);
     const { queryByText } = renderComponent(
@@ -92,7 +100,10 @@ describe('DataFilesProjectFileListing', () => {
         system="test.site.project.PROJECT-3"
         path="/"
       />,
-      store
+      store,
+      undefined,
+      undefined,
+      authenticatedMember
     );
 
     expect(queryByText(/Edit Workspace/)).toBeNull();
@@ -100,7 +111,6 @@ describe('DataFilesProjectFileListing', () => {
   });
 
   it('shows Edit Workspace and Manage Team when readOnly is false and user is owner', () => {
-    initialMockState.authenticatedUser.user.username = 'username';
     initialMockState.systems.storage.configuration[5].readOnly = false;
     const store = mockStore(initialMockState);
     const { getByText } = renderComponent(
@@ -108,7 +118,10 @@ describe('DataFilesProjectFileListing', () => {
         system="test.site.project.PROJECT-3"
         path="/"
       />,
-      store
+      store,
+      undefined,
+      undefined,
+      authenticatedUser
     );
 
     expect(getByText(/Edit Workspace/)).toBeDefined();
@@ -116,7 +129,6 @@ describe('DataFilesProjectFileListing', () => {
   });
 
   it('hides Edit Workspace and Manage Team when readOnly is false and user is not owner', () => {
-    initialMockState.authenticatedUser.user.username = 'member';
     initialMockState.systems.storage.configuration[5].readOnly = false;
     const store = mockStore(initialMockState);
     const { queryByText } = renderComponent(
@@ -124,7 +136,10 @@ describe('DataFilesProjectFileListing', () => {
         system="test.site.project.PROJECT-3"
         path="/"
       />,
-      store
+      store,
+      undefined,
+      undefined,
+      authenticatedMember
     );
 
     expect(queryByText(/Edit Workspace/)).toBeNull();
@@ -132,7 +147,6 @@ describe('DataFilesProjectFileListing', () => {
   });
 
   it('shows Edit Workspace and hides Manage Team when readOnly is true and user is owner', () => {
-    initialMockState.authenticatedUser.user.username = 'username';
     initialMockState.systems.storage.configuration[5].readOnly = true;
     const store = mockStore(initialMockState);
     const { queryByText, getByText } = renderComponent(
@@ -140,7 +154,10 @@ describe('DataFilesProjectFileListing', () => {
         system="test.site.project.PROJECT-3"
         path="/"
       />,
-      store
+      store,
+      undefined,
+      undefined,
+      authenticatedUser
     );
 
     expect(getByText(/Edit Workspace/)).toBeDefined();
@@ -155,7 +172,10 @@ describe('DataFilesProjectFileListing', () => {
         system="test.site.project.PROJECT-3"
         path="/"
       />,
-      store
+      store,
+      undefined,
+      undefined,
+      authenticatedUser
     );
 
     expect(queryByText(/Keywords/)).toBeNull();
@@ -169,7 +189,10 @@ describe('DataFilesProjectFileListing', () => {
         system="test.site.project.PROJECT-3"
         path="/"
       />,
-      store
+      store,
+      undefined,
+      undefined,
+      authenticatedUser
     );
 
     expect(queryByText(/one, two, three/)).toBeDefined();

@@ -17,7 +17,7 @@ import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import getDefaultProjectSystem from 'utils/getDefaultProjectSystem';
 import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
 import styles from './DataFilesProjectFileListing.module.scss';
-import { useWorkbenchConfig } from '@tacc/core-hooks';
+import { useAuthenticatedUser, useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DataFilesProjectFileListing = ({
   rootSystem,
@@ -73,12 +73,14 @@ const DataFilesProjectFileListing = ({
   );
   const projectMembersLabel = projectsEnableMetadata ? 'Authors' : 'Team';
 
+  const authenticatedUserUsername = useAuthenticatedUser()?.username;
+
   const canEditSystem = useSelector(
     (state) =>
       metadata.members
         .filter((member) =>
           member.user
-            ? member.user.username === state.authenticatedUser?.user?.username
+            ? member.user.username === authenticatedUserUsername
             : { access: null }
         )
         .map(

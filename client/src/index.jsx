@@ -4,11 +4,9 @@ import { Provider } from 'react-redux';
 import LoadingSpinner from '_common/LoadingSpinner';
 import '@tacc/core-components/styles/globals.css';
 import {
-  MutationCache,
-  QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query';
-const AppRouter = React.lazy(() => import('./components/Workbench'));
+import AppRouter from './components/Workbench';
 import store from './redux/store';
 import { queryClient } from './queryClient';
 

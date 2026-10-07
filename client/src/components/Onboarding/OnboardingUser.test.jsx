@@ -7,8 +7,8 @@ import renderComponent from 'utils/testing';
 
 const mockStore = configureStore();
 
-function renderOnboardingUserComponent(store, config) {
-  return renderComponent(<OnboardingUser />, store, undefined, config);
+function renderOnboardingUserComponent(store, config, user) {
+  return renderComponent(<OnboardingUser />, store, undefined, config, user);
 }
 
 const genericState = (error, loading) => {
@@ -21,7 +21,6 @@ const genericState = (error, loading) => {
         loading,
       },
     },
-    authenticatedUser: {},
     workbench: {
       config: {},
     },
@@ -75,14 +74,11 @@ describe('Onboarding User View', () => {
   it('renders staff user interface', () => {
     const state = {
       ...genericState(null, false),
-      authenticatedUser: {
-        user: {
-          isStaff: true,
-        },
-      },
     };
     const store = mockStore(state);
-    const { getByText } = renderOnboardingUserComponent(store);
+    const { getByText } = renderOnboardingUserComponent(store, undefined, {
+      isStaff: true,
+    });
     expect(getByText(/Last, First/)).toBeDefined();
     expect(getByText(/Approve/)).toBeDefined();
     expect(getByText(/Deny/)).toBeDefined();

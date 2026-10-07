@@ -14,7 +14,7 @@ import { useSystemRole } from '../DataFilesProjectMembers/_cells/SystemRoleSelec
 import './DataFilesToolbar.scss';
 import { useTrash } from 'hooks/datafiles/mutations';
 import canCompressForDownload from 'utils/canCompressForDownload';
-import { useWorkbenchConfig } from '@tacc/core-hooks';
+import { useAuthenticatedUser, useWorkbenchConfig } from '@tacc/core-hooks';
 
 const EMPTY_FILE_LIST = [];
 
@@ -118,9 +118,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   const { DataFilesToolbarAddon } = useAddonComponents({ portalName });
 
-  const authenticatedUser = useSelector(
-    (state) => state.authenticatedUser?.user?.username
-  );
+  const authenticatedUser = useAuthenticatedUser()?.username;
 
   const { query: authenticatedUserQuery } = useSystemRole(
     projectId,

@@ -11,21 +11,26 @@ import GoogleDrivePrivacyPolicy from '../ManageAccount/GoogleDrivePrivacyPolicy'
 import SiteSearch from '../SiteSearch';
 import UserNewsBrowse from '../UserNews/UserNewsBrowse';
 import UserNewsDetail from '../UserNews/UserNewsDetail';
-import { useWorkbenchConfig } from '@tacc/core-hooks';
+import { useSuspenseQueries } from '@tanstack/react-query';
+import { userQueries, workbenchConfigQueries } from '@tacc/core-queries';
 
 function AppRouter() {
+  const [workbenchConfig, { data: authenticatedUser }] = useSuspenseQueries({
+    queries: [
+      workbenchConfigQueries.getWorkbenchConfig(),
+      userQueries.getAuthenticatedUser(),
+    ],
+  });
+
   const {
     data: {
       config: { showUserNews, hasCustomSagas },
       portalName,
     },
-  } = useWorkbenchConfig();
+  } = workbenchConfig;
 
   const dispatch = useDispatch();
   const { fetchSystems } = useSystems();
-  const authenticatedUser = useSelector(
-    (state) => state.authenticatedUser.user
-  );
 
   const [CustomRoutes, setCustomRoutes] = useState(null);
 
@@ -42,7 +47,6 @@ function AppRouter() {
   }, [portalName]);
 
   useEffect(() => {
-    dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
     fetchSystems();
   }, []);
 

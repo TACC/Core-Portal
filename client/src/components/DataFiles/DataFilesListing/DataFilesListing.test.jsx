@@ -11,14 +11,6 @@ import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import filesFixture from '../fixtures/DataFiles.files.fixture';
 import { QueryClient } from '@tanstack/react-query';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-});
-
 const mockStore = configureStore();
 const initialMockState = {
   pushKeys: {
@@ -63,8 +55,9 @@ const initialMockState = {
       trashPath: '.Trash',
     },
   },
-  authenticatedUser: { user: { username: 'username' } },
 };
+
+const authenticatedUser = { username: 'username' };
 
 describe('CheckBoxCell', () => {
   it('box is checked when selected', () => {
@@ -223,9 +216,10 @@ describe('DataFilesListing', () => {
           path="/"
         />,
         store,
-        history
+        history,
+        undefined,
+        authenticatedUser
       );
-
       expect(getByText(message)).toBeDefined();
     }
   );

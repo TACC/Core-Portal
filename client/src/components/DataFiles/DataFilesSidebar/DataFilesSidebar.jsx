@@ -13,7 +13,7 @@ import { useTapisToken } from 'hooks/datafiles';
 import { useMatch } from 'react-router-dom';
 import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
 import './DataFilesSidebar.scss';
-import { useWorkbenchConfig } from '@tacc/core-hooks';
+import { useAuthenticatedUser, useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DataFilesAddButton = ({ readOnly }) => {
   const { data: tapisToken } = useTapisToken();
@@ -115,7 +115,7 @@ const DataFilesSidebar = ({ readOnly = false }) => {
     shallowEqual
   );
 
-  const user = useSelector((state) => state.authenticatedUser.user);
+  const user = useAuthenticatedUser();
 
   const match = useMatch('/workbench/data/*');
 
@@ -123,7 +123,7 @@ const DataFilesSidebar = ({ readOnly = false }) => {
 
   systems.forEach((sys) => {
     if (sys.scheme === 'projects') {
-      if (!sys.reviewProject || user.groups?.includes('PROJECT_REVIEWER')) {
+      if (!sys.reviewProject || user?.groups?.includes('PROJECT_REVIEWER')) {
         sidebarItems.push({
           to: `${match.pathnameBase}/${sys.api}/${sys.scheme}/${sys.system}`,
           label: sys.name,

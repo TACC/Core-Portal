@@ -5,7 +5,10 @@ import styles from '../PublicationWizard.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAddonComponents } from 'hooks/datafiles';
 import { useFormikContext } from 'formik';
-import { useWorkbenchConfig } from '@tacc/core-hooks';
+import {
+  useAuthenticatedUserOrThrow,
+  useWorkbenchConfig,
+} from '@tacc/core-hooks';
 
 // Review the project's data tree before publication.
 const ReviewProjectStructure = ({ projectId }) => {
@@ -19,7 +22,7 @@ const ReviewProjectStructure = ({ projectId }) => {
 
   const canEdit = useSelector((state) => {
     const { members } = state.projects.metadata;
-    const { username } = state.authenticatedUser.user;
+    const { username } = useAuthenticatedUserOrThrow();
     const currentUser = members.find(
       (member) => member.user?.username === username
     );

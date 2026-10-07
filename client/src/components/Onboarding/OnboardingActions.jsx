@@ -6,6 +6,7 @@ import { Button as ReactstrapButton } from 'reactstrap';
 import { stepPropType } from './OnboardingPropTypes';
 import styles from './OnboardingActions.module.scss';
 import './OnboardingActions.scss';
+import { useAuthenticatedUser } from '@tacc/core-hooks';
 
 const OnboardingActions = ({ step }) => {
   const dispatch = useDispatch();
@@ -19,9 +20,9 @@ const OnboardingActions = ({ step }) => {
       },
     });
   });
-  const isStaff = useSelector((state) =>
-    state.authenticatedUser.user ? state.authenticatedUser.user.isStaff : false
-  );
+  const authenticatedUser = useAuthenticatedUser();
+  const isStaff = authenticatedUser?.isStaff ?? false;
+  const authUsername = authenticatedUser?.username ?? '';
   const isSending = useSelector(
     (state) =>
       state.onboarding.action.loading &&
@@ -30,9 +31,6 @@ const OnboardingActions = ({ step }) => {
   const error = useSelector((state) => state.onboarding.action.error);
   const actionStep = useSelector((state) => state.onboarding.action.step);
   const params = useParams();
-  const authUsername = useSelector((state) =>
-    state.authenticatedUser.user ? state.authenticatedUser.user.username : ''
-  );
 
   const hasSendingError = actionStep === step.step && error;
 

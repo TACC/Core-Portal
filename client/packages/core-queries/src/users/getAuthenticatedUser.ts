@@ -1,5 +1,6 @@
 import { queryOptions } from '@tanstack/react-query';
 import { apiClient } from '../apiClient';
+import { isAxiosError } from 'axios';
 
 export type TAuthenticatedUser = {
   first_name: string;
@@ -13,14 +14,24 @@ export type TAuthenticatedUser = {
   groups: string[];
 };
 
-async function getAuthenticatedUser() {
-  const result = await apiClient.get<TAuthenticatedUser>('/api/workbench/');
-  return result.data;
+async function getAuthenticatedUser({ signal }: { signal: AbortSignal }) {
+  try {
+    const result = await apiClient.get<TAuthenticatedUser>('/api/users/auth/', {
+      signal,
+    });
+
+    return result.data;
+  } catch (err) {
+    if (isAxiosError(err) && [401, 403].includes(err.status ?? 500)) {
+      return null;
+    }
+    throw err;
+  }
 }
 
 export function getAuthenticatedUserQuery() {
   return queryOptions({
-    queryKey: ['workbench'],
-    queryFn: getAuthenticatedUser,
+    queryKey: ['users', 'authenticatedUser'],
+    queryFn: ({ signal }) => getAuthenticatedUser({ signal }),
   });
 }
