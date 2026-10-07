@@ -1,9 +1,9 @@
-@import '../../../styles/tools/mixins.scss';
+@use '../../../styles/tools/mixins.scss' as mixins;
 @import '../../../styles/components/dropdown-menu.css';
 
 .breadcrumbs {
   /* ... */
-  @include truncate-with-ellipsis;
+  @include mixins.truncate-with-ellipsis;
   margin-right: 2em;
   display: flex;
   align-items: center;
