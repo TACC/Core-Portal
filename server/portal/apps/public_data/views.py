@@ -535,7 +535,11 @@ def get_schema_org_json(pub, project_id, request):
 
     creators = []
     for author in base_meta.get("authors", []):
-        name = f"{author.get('first_name', '')} {author.get('last_name', '')}".strip()
+        name = f"{author.get('first_name') or ''} {author.get('last_name') or ''}".strip()
+        # A Person with an empty name is invalid schema.org, so a nameless author is left out.
+        if not name:
+            logger.warning(f"Publication {project_id} has an author with no name; leaving them out of `creator`.")
+            continue
         creator = {"@type": "Person", "name": name}
         if base_meta.get("institution"):
             creator["affiliation"] = {"@type": "Organization", "name": base_meta["institution"]}

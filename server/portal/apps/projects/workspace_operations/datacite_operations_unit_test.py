@@ -151,12 +151,29 @@ def test_get_datacite_json_strips_institution_whitespace():
 
 @DATACITE_SETTINGS
 @pytest.mark.django_db
-def test_get_datacite_json_author_missing_name_parts_defaults_to_empty_string():
-    base_meta = minimal_base_meta(authors=[{}])
+@pytest.mark.parametrize(
+    "nameless_author",
+    [{}, {"first_name": "", "last_name": ""}, {"first_name": None, "last_name": None}, {"first_name": "  "}],
+)
+def test_get_datacite_json_leaves_out_author_with_no_name(caplog, nameless_author):
+    """DataCite rejects a creator with an empty `name`, so a nameless author is left out (and
+    logged) rather than sent."""
+    base_meta = minimal_base_meta(authors=[nameless_author, {"first_name": "Ada", "last_name": "Lovelace"}])
     result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
-    assert result["creators"][0]["givenName"] == ""
-    assert result["creators"][0]["familyName"] == ""
-    assert result["creators"][0]["name"] == ""
+
+    assert [creator["name"] for creator in result["creators"]] == ["Lovelace, Ada"]
+    assert "Publication test.project-1 has an author with no name" in caplog.text
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "author,expected_name",
+    [({"first_name": "Ada"}, "Ada"), ({"last_name": "Lovelace", "first_name": None}, "Lovelace")],
+)
+def test_get_datacite_json_keeps_author_with_one_name_part(author, expected_name):
+    result = get_datacite_json(make_pub_graph(minimal_base_meta(authors=[author])), "test.project-1")
+    assert result["creators"][0]["name"] == expected_name
 
 
 @DATACITE_SETTINGS

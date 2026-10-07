@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 
 import networkx as nx
 import requests
@@ -9,6 +10,8 @@ from django.urls import reverse
 from portal.apps.projects.schema_models.license_urls import resolve_license_url
 from portal.apps.projects.schema_models.orcid import ORCID_URL_PREFIX, orcid_url
 from portal.apps.public_data.origin import get_configured_origin
+
+logger = logging.getLogger(__name__)
 
 
 class DataCiteError(Exception):
@@ -153,8 +156,13 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
     institution = (base_meta.get("institution") or "").strip() or None
 
     for author in base_meta.get("authors", []):
-        first_name = author.get("first_name", "")
-        last_name = author.get("last_name", "")
+        first_name = (author.get("first_name") or "").strip()
+        last_name = (author.get("last_name") or "").strip()
+        # DataCite rejects a creator with an empty `name` (a 422 at publish), so a nameless author is
+        # left out, matching the landing page's schema.org `creator` (public_data/views.py).
+        if not (first_name or last_name):
+            logger.warning(f"Publication {project_id} has an author with no name; leaving them out of `creators`.")
+            continue
         creator = {
             # DataCite's schema requires `name` on every creator (the other
             # name parts below are supplementary) -- "Family, Given" is

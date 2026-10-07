@@ -1268,6 +1268,38 @@ def test_get_schema_org_json_creator_without_institution_or_orcid(rf, publicatio
     assert "sameAs" not in creator
 
 
+@pytest.mark.parametrize(
+    "nameless_author",
+    [{}, {"first_name": "", "last_name": ""}, {"first_name": None, "last_name": None}, {"first_name": "  "}],
+)
+@patch("portal.apps.public_data.views.logger")
+def test_get_schema_org_json_leaves_out_author_with_no_name(mock_logger, rf, publication, nameless_author):
+    """A Person with an empty name is invalid schema.org, so a nameless author is left out (and
+    logged) rather than emitted."""
+    request = make_request(rf)
+    publication.value = valid_base_meta(authors=[nameless_author, {"first_name": "Ada", "last_name": "Lovelace"}])
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, request)
+
+    assert [creator["name"] for creator in schema["creator"]] == ["Ada Lovelace"]
+    assert any("has an author with no name" in call.args[0] for call in mock_logger.warning.call_args_list)
+
+
+@patch("portal.apps.public_data.views.logger")
+def test_get_schema_org_json_only_nameless_authors_drops_creator(mock_logger, rf, publication):
+    """With no named author left there's no `creator`, which Croissant requires, so `conformsTo` is
+    withheld too."""
+    request = make_request(rf)
+    publication.value = valid_base_meta(authors=[{"first_name": "", "last_name": ""}])
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, request)
+
+    assert "creator" not in schema
+    assert "conformsTo" not in schema
+
+
 def test_get_schema_org_json_drops_empty_optional_fields(rf, publication):
     request = make_request(rf)
     publication.value = valid_base_meta(keywords="", relatedPublications=[])
