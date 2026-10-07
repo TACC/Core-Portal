@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+import re
 
 import networkx as nx
 import requests
@@ -128,6 +129,23 @@ def _get_rights_list(base_meta, project_id):
     return [rights]
 
 
+def _get_issued_date(base_meta):
+    """Return the publication's "YYYY-MM-DD" issue date for DataCite's `dates`.
+
+    `publicationDate` is set by publish_project only after the DOI is minted, so a first publish has
+    none yet and gets today's date -- the same "now" `publicationYear` uses. A republish, or
+    update_datacite_metadata's rebuild from a stored Publication, keeps the original date. It's
+    stored as a datetime in memory or an ISO string once saved (DjangoJSONEncoder).
+    """
+
+    stored = base_meta.get("publicationDate") or base_meta.get("publication_date")
+    if isinstance(stored, (datetime.date, datetime.datetime)):
+        return stored.isoformat()[:10]
+    if isinstance(stored, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", stored[:10]):
+        return stored[:10]
+    return datetime.date.today().isoformat()
+
+
 def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | None = None):
     """
     Generate datacite payload for a publishable entity. `pub_graph` is the
@@ -156,7 +174,6 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
     base_meta = pub_graph.nodes[base_meta_node]["value"]
 
     author_attr = []
-    institutions = []
 
     # Whitespace-only counts as unset too, so it can't become a blank affiliation name.
     institution = (base_meta.get("institution") or "").strip() or None
@@ -203,7 +220,6 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
             ]
 
         author_attr.append(creator)
-        institutions.append(author.get("inst", ""))
 
     if institution:
         datacite_json["contributors"] = [
@@ -226,11 +242,13 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
         }
     ]
 
-    datacite_json["types"] = {}
-    datacite_json["types"]["resourceTypeGeneral"] = "Dataset"
+    # `resourceType` is DataCite's free-text refinement of `resourceTypeGeneral`; with no finer
+    # category to offer, DataCite's guidance is to repeat the general type.
+    datacite_json["types"] = {"resourceTypeGeneral": "Dataset", "resourceType": "Dataset"}
     datacite_json["publisher"] = settings.PORTAL_PUBLICATION_PUBLISHER
 
     datacite_json["publicationYear"] = datetime.datetime.now().year
+    datacite_json["dates"] = [{"date": _get_issued_date(base_meta), "dateType": "Issued"}]
 
     datacite_json["subjects"] = _get_subjects(base_meta)
     datacite_json["rightsList"] = _get_rights_list(base_meta, project_id)

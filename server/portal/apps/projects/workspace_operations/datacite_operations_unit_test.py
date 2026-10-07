@@ -4,6 +4,8 @@
    :synopsis: datacite_operations unit tests.
 """
 
+import datetime
+
 import networkx as nx
 import pytest
 import requests
@@ -60,7 +62,7 @@ def test_get_datacite_json_minimal():
     assert result["descriptions"] == [
         {"descriptionType": "Abstract", "description": "A description of the test dataset.", "lang": "en"}
     ]
-    assert result["types"] == {"resourceTypeGeneral": "Dataset"}
+    assert result["types"] == {"resourceTypeGeneral": "Dataset", "resourceType": "Dataset"}
     assert result["prefix"] == "10.1234"
     assert result["language"] == "en"
     assert result["subjects"] == []
@@ -78,11 +80,44 @@ def test_get_datacite_json_minimal():
 @DATACITE_SETTINGS
 @pytest.mark.django_db
 def test_get_datacite_json_publication_year_is_current_year():
-    import datetime
-
     base_meta = minimal_base_meta()
     result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
     assert result["publicationYear"] == datetime.datetime.now().year
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "stored,expected",
+    [
+        ("2024-05-01", "2024-05-01"),
+        ("2024-05-01T12:34:56.789Z", "2024-05-01"),
+        (datetime.datetime(2024, 5, 1, 12, 34), "2024-05-01"),
+        (datetime.date(2024, 5, 1), "2024-05-01"),
+    ],
+)
+def test_get_datacite_json_issued_date_from_stored_publication_date(stored, expected):
+    """A republish (or update_datacite_metadata) keeps the original publication date, whether it's
+    still a datetime in memory or has been saved as an ISO string."""
+    result = get_datacite_json(make_pub_graph(minimal_base_meta(publicationDate=stored)), "test.project-1")
+    assert result["dates"] == [{"date": expected, "dateType": "Issued"}]
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+def test_get_datacite_json_issued_date_reads_snake_case_key():
+    result = get_datacite_json(make_pub_graph(minimal_base_meta(publication_date="2023-01-02")), "test.project-1")
+    assert result["dates"] == [{"date": "2023-01-02", "dateType": "Issued"}]
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+@pytest.mark.parametrize("stored", [None, "", "not a date", 2024])
+def test_get_datacite_json_issued_date_defaults_to_today(stored):
+    """A first publish has no publicationDate yet (publish_project sets it after minting), so the
+    DOI is issued today -- the same "now" publicationYear uses."""
+    result = get_datacite_json(make_pub_graph(minimal_base_meta(publicationDate=stored)), "test.project-1")
+    assert result["dates"] == [{"date": datetime.date.today().isoformat(), "dateType": "Issued"}]
 
 
 @DATACITE_SETTINGS

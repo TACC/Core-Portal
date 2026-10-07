@@ -30,6 +30,12 @@ logger = logging.getLogger(__name__)
 # Dataset to emit at all.
 REQUIRED_DATASET_FIELDS = ("name", "description")
 
+# Google's Dataset structured-data guidelines require `description` to be 50-5000 characters
+# (https://developers.google.com/search/docs/appearance/structured-data/dataset). Outside that
+# range the Dataset is still emitted -- Search may just flag or ignore it -- so get_schema_org_json
+# only logs a warning rather than raising.
+GOOGLE_DATASET_DESCRIPTION_LENGTH = (50, 5000)
+
 # Properties Croissant (http://mlcommons.org/croissant/1.0) additionally requires on a
 # conformant Dataset. When any of these is missing, get_schema_org_json still emits the plain
 # schema.org Dataset -- it's still valid, and still eligible for Dataset Search -- but drops
@@ -654,6 +660,14 @@ def get_schema_org_json(pub, project_id, request):
             "before this page can be indexed."
         )
 
+    min_length, max_length = GOOGLE_DATASET_DESCRIPTION_LENGTH
+    description_length = len(schema_org_json["description"])
+    if not min_length <= description_length <= max_length:
+        logger.warning(
+            f"Publication {project_id} has a {description_length}-character description; Google Dataset "
+            f"Search expects {min_length}-{max_length} characters, so it may flag or ignore this Dataset."
+        )
+
     # Only claim Croissant conformance when every field Croissant requires actually made it in.
     # Otherwise this is still a valid plain schema.org Dataset, so it's emitted without the claim.
     croissant_missing = [field for field in REQUIRED_CROISSANT_FIELDS if field not in schema_org_json]
@@ -727,7 +741,7 @@ def get_citation_context(pub, request):
             "dc_creators": [
                 name
                 for name in (
-                    f"{author.get('first_name', '')} {author.get('last_name', '')}".strip() for author in authors
+                    f"{author.get('first_name') or ''} {author.get('last_name') or ''}".strip() for author in authors
                 )
                 if name
             ],

@@ -74,10 +74,15 @@ def full_author(orcid="0000-0002-1825-0097"):
     return {"first_name": "Ada", "last_name": "Lovelace", "email": "ada@example.com", "orcid_id": orcid}
 
 
+# Within Google Dataset Search's 50-5000 character `description` range, so the length warning
+# (GOOGLE_DATASET_DESCRIPTION_LENGTH) only fires in the tests that ask for it.
+TEST_DESCRIPTION = "A dataset for testing the published-dataset landing page metadata."
+
+
 def valid_base_meta(**overrides):
     meta = {
         "title": "Test Dataset",
-        "description": "A dataset for testing",
+        "description": TEST_DESCRIPTION,
         "license": "ODC-BY 1.0",
         "authors": [full_author()],
         "publicationDate": "2024-05-01",
@@ -1091,7 +1096,7 @@ def test_get_schema_org_json_success(rf, settings, publication):
 
     assert schema["@type"] == "Dataset"
     assert schema["name"] == "Test Dataset"
-    assert schema["description"] == "A dataset for testing"
+    assert schema["description"] == TEST_DESCRIPTION
     assert schema["license"] == LICENSE_URLS["ODC-BY 1.0"]
     assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
     assert schema["isAccessibleForFree"] is True
@@ -1211,7 +1216,7 @@ def test_get_schema_org_json_missing_croissant_field_still_emits_plain_dataset(
 
     assert schema["@type"] == "Dataset"
     assert schema["name"] == "Test Dataset"
-    assert schema["description"] == "A dataset for testing"
+    assert schema["description"] == TEST_DESCRIPTION
     assert missing_field not in schema
     assert "conformsTo" not in schema
     # Everything not tied to the missing field is still emitted.
@@ -1366,6 +1371,35 @@ def test_get_schema_org_json_drops_empty_optional_fields(rf, publication):
     assert "citation" not in schema
 
 
+@pytest.mark.parametrize("length", [49, 5001])
+@patch("portal.apps.public_data.views.logger")
+def test_get_schema_org_json_warns_on_description_outside_google_length_range(mock_logger, rf, publication, length):
+    """Google Dataset Search expects 50-5000 characters; outside that the Dataset is still emitted,
+    with a warning."""
+    request = make_request(rf)
+    publication.value = valid_base_meta(description="x" * length)
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, request)
+
+    assert schema["description"] == "x" * length
+    assert any(f"{length}-character description" in call.args[0] for call in mock_logger.warning.call_args_list)
+
+
+@pytest.mark.parametrize("length", [50, 5000])
+@patch("portal.apps.public_data.views.logger")
+def test_get_schema_org_json_no_warning_for_description_within_google_length_range(
+    mock_logger, rf, publication, length
+):
+    request = make_request(rf)
+    publication.value = valid_base_meta(description="x" * length)
+    publication.save()
+
+    get_schema_org_json(publication, publication.project_id, request)
+
+    assert not any("character description" in call.args[0] for call in mock_logger.warning.call_args_list)
+
+
 # ---------------------------------------------------------------------------
 # get_citation_context
 # ---------------------------------------------------------------------------
@@ -1388,6 +1422,25 @@ def test_get_citation_context(rf, settings, publication):
     assert entity["citation_date"] == "2024/05/01"
     assert entity["abstract_url"] == schema_org_json["url"]
     assert citation_meta["cover_image_url"] is None  # PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME unset
+
+
+@pytest.mark.parametrize(
+    "author,expected",
+    [
+        ({"first_name": None, "last_name": "Lovelace"}, ["Lovelace"]),
+        ({"first_name": "Ada", "last_name": None}, ["Ada"]),
+        ({"first_name": None, "last_name": None}, []),
+    ],
+)
+def test_get_citation_context_dc_creators_treat_null_name_parts_as_missing(rf, publication, author, expected):
+    """A name part stored as null is left out, never rendered as the string "None"."""
+    request = make_request(rf)
+    publication.value = valid_base_meta(authors=[author])
+    publication.save()
+
+    citation_meta, _, _ = get_citation_context(publication, request)
+
+    assert citation_meta["entities"][0]["dc_creators"] == expected
 
 
 def test_get_citation_context_keywords_list_is_joined(rf, settings, publication):
@@ -1586,7 +1639,7 @@ def test_index_view_renders_title_and_description_from_publication(client, publi
     title_match = re.search(r"<title>(.*?)</title>", body, re.DOTALL)
     assert title_match is not None
     assert title_match.group(1).strip() == "Test Dataset | test"
-    assert "A dataset for testing" in body
+    assert TEST_DESCRIPTION in body
 
 
 def test_index_view_publication_route_is_indexable(client, publication):

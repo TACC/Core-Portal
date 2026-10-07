@@ -6,9 +6,11 @@ Disallow: /admin/
 # (published-dataset landing pages, public_data/views.py). Crawlers only
 # find the second one through this file, since it isn't at the
 # conventional root path.
-# __SERVER_NAME__ is a literal placeholder, not a real hostname.
-# nginx.conf's `/robots.txt` location substitutes it for nginx's own
-# $server_name at request time (sub_filter), so this line always reflects
+# The host in the Sitemap: lines below is a placeholder, not a real
+# hostname. nginx.conf's `/robots.txt` location substitutes it for nginx's
+# own $server_name at request time (sub_filter, which rewrites every
+# occurrence in this file -- so it's only spelled out on those lines),
+# so they always reflect
 # whichever domain that deployment's nginx.conf is actually configured
 # for (see its `server_name` directive) instead of a value hardcoded here
 # that could drift from it.
