@@ -18,6 +18,7 @@ from portal.apps.projects.schema_models.license_urls import resolve_license_url
 from portal.apps.projects.schema_models.orcid import orcid_url
 from portal.apps.public_data.origin import get_configured_origin
 from portal.apps.publications.models import Publication
+from portal.apps.publications.utils import get_published_workspace_id
 
 logger = logging.getLogger(__name__)
 
@@ -855,17 +856,6 @@ def _is_publication_file_path(pub, path):
     return False
 
 
-def _get_published_workspace_id(project_id, version):
-    """Return the `{project_id}` / `{project_id}v{version}` id publish_project
-    (project_publish_operations.py) gives a version's published workspace -- the suffix of its
-    Tapis system id, and its directory under PORTAL_PROJECTS_PUBLISHED_ROOT_DIR. Version 1 has no
-    suffix; every republish gets its own `v{version}` workspace.
-    """
-
-    suffix = f"v{version}" if version and version > 1 else ""
-    return f"{project_id}{suffix}"
-
-
 def _get_published_system_id(project_id, version):
     """Return the Tapis system a publication's current version was published to. Must match
     publish_project (project_publish_operations.py): version 1 publishes to
@@ -874,7 +864,7 @@ def _get_published_system_id(project_id, version):
     files the landing page's metadata describes -- not version 1's.
     """
 
-    return f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{_get_published_workspace_id(project_id, version)}"
+    return f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{get_published_workspace_id(project_id, version)}"
 
 
 def _get_published_web_url(path):
@@ -966,7 +956,7 @@ class PublicationFileDownloadView(View):
             raise Http404(f"No publication found for project {project_id}")
         if not _is_publication_file_path(pub, path):
             raise Http404(f"Publication {project_id} has no file at {path}")
-        web_url = _get_published_web_url(f"{_get_published_workspace_id(project_id, pub.version)}/{path}")
+        web_url = _get_published_web_url(f"{get_published_workspace_id(project_id, pub.version)}/{path}")
         if web_url:
             return HttpResponseRedirect(web_url)
         return _stream_published_file(_get_published_system_id(project_id, pub.version), path)

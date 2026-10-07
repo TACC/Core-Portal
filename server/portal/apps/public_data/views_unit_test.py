@@ -1906,3 +1906,45 @@ def test_unreversible_file_is_skipped_not_fatal(mock_logger, rf, settings, publi
     assert [file_object["@id"] for file_object in distribution] == ["good.pdf"]
     assert pdf_url.endswith("/files/good.pdf")
     assert "bad.pdf" in mock_logger.warning.call_args.args[0]
+
+
+# ---------------------------------------------------------------------------
+# Croissant conformance (mlcroissant)
+# ---------------------------------------------------------------------------
+
+
+def test_get_schema_org_json_passes_mlcroissant_validation(rf, settings, publication, tmp_path):
+    """The document that claims Croissant 1.0 `conformsTo` validates with mlcroissant, MLCommons'
+    reference implementation, with no errors or warnings. mlcroissant isn't a project dependency,
+    so this is skipped unless it's installed, e.g.:
+
+        uv run --with mlcroissant pytest portal/apps/public_data/views_unit_test.py -k mlcroissant
+    """
+
+    mlc = pytest.importorskip("mlcroissant")
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    publication.value = valid_base_meta(
+        fileObjs=[
+            {
+                "type": "file",
+                "name": "data.csv",
+                "path": "/data.csv",
+                "length": 2048,
+                "sha256": "a" * 64,
+                "columns": [{"name": "porosity", "dataType": "sc:Float"}, {"name": "sample"}],
+            },
+            {"type": "file", "name": "scan.raw", "path": "/scans/scan.raw", "length": 123456789, "sha256": "b" * 64},
+        ]
+    )
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+    assert schema["recordSet"]
+
+    jsonld_path = tmp_path / "croissant.json"
+    jsonld_path.write_text(json.dumps(schema))
+    # Raises mlcroissant.ValidationError, listing every problem, if the document has errors.
+    issues = mlc.Dataset(jsonld=jsonld_path).metadata.ctx.issues
+    assert not issues.errors
+    assert not issues.warnings

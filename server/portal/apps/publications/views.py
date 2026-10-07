@@ -28,6 +28,7 @@ from portal.apps.projects.workspace_operations.project_publish_operations import
 )
 from portal.apps.projects.workspace_operations.shared_workspace_operations import create_publication_workspace
 from portal.apps.publications.models import Publication, PublicationRequest
+from portal.apps.publications.utils import get_published_workspace_id
 from portal.exceptions.api import ApiException
 from portal.libs.elasticsearch.docs.base import IndexedPublication
 from portal.views.base import BaseApiView
@@ -347,7 +348,7 @@ class PublicationVersionView(BaseApiView):
         print(f"Version: {version}")
 
         source_system_id = f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.{project_id}"
-        published_workspace_id = f"{project_id}{f'v{version}' if version and version > 1 else ''}"
+        published_workspace_id = get_published_workspace_id(project_id, version)
         published_system_id = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{published_workspace_id}"
 
         print(f"Published Workspace ID: {published_workspace_id}")

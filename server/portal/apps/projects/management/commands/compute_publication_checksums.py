@@ -4,12 +4,12 @@ from django.core.management.base import BaseCommand, CommandError
 
 from portal.apps.projects.workspace_operations.project_publish_operations import (
     _ARCHIVE_JOB_POLL_SECONDS,
-    _get_published_workspace_id,
     archive_publication_files,
     load_publication_file_checksums,
     poll_publication_archive_job,
 )
 from portal.apps.publications.models import Publication
+from portal.apps.publications.utils import get_published_workspace_id
 
 
 class Command(BaseCommand):
@@ -72,7 +72,7 @@ class Command(BaseCommand):
             if options["load_only"]:
                 load_publication_file_checksums.apply_async(args=[publication.project_id, publication.version])
             else:
-                workspace_id = _get_published_workspace_id(publication.project_id, publication.version)
+                workspace_id = get_published_workspace_id(publication.project_id, publication.version)
                 try:
                     job = archive_publication_files(workspace_id, checksum_only=True)
                 except ValueError as e:

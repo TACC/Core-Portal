@@ -19,7 +19,6 @@ from portal.apps.projects.schema_models import constants
 from portal.apps.projects.workspace_operations.project_publish_operations import (
     _add_values_to_tree,
     _check_transfer_status,
-    _get_published_workspace_id,
     _parse_sha256_manifest,
     _read_sha256_manifest,
     _record_minted_doi,
@@ -821,12 +820,6 @@ def test_send_publication_submitted_for_review_email_to_reviewers_no_recipients(
 H1 = "a" * 64
 H2 = "b" * 64
 H3 = "c" * 64
-
-
-def test_get_published_workspace_id():
-    assert _get_published_workspace_id("DRP-1149", 1) == "DRP-1149"
-    assert _get_published_workspace_id("DRP-1149", None) == "DRP-1149"
-    assert _get_published_workspace_id("DRP-1129", 2) == "DRP-1129v2"
 
 
 def test_parse_sha256_manifest_maps_paths_relative_to_workspace():

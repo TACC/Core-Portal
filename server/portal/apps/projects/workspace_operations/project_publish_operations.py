@@ -20,6 +20,7 @@ from portal.apps.projects.workspace_operations.datacite_operations import (
 from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
 from portal.apps.projects.workspace_operations.shared_workspace_operations import remove_user
 from portal.apps.publications.models import Publication, PublicationRequest
+from portal.apps.publications.utils import get_published_workspace_id
 from portal.apps.search.tasks import index_publication
 from portal.libs.agave.utils import service_account, user_account
 
@@ -128,14 +129,6 @@ def publish_project_callback(
         )
 
 
-def _get_published_workspace_id(project_id, version):
-    """The `{project_id}` / `{project_id}v{version}` id publish_project gives a version's published
-    workspace -- also its directory name under the published root, and in the archive job's paths."""
-
-    suffix = f"v{version}" if version and version > 1 else ""
-    return f"{project_id}{suffix}"
-
-
 def _get_publication_file_objs(publication):
     """Every file object in a Publication -- root-level `value.fileObjs` plus each entity node's
     `value.fileObjs` in `tree` -- as the same dicts stored on it, so they can be updated in place."""
@@ -201,7 +194,7 @@ def load_publication_file_checksums(self, project_id: str, version: int | None =
 
     publication = Publication.objects.get(project_id=project_id)
     version = version or publication.version
-    hashes = _read_sha256_manifest(_get_published_workspace_id(project_id, version))
+    hashes = _read_sha256_manifest(get_published_workspace_id(project_id, version))
     if not hashes:
         logger.warning(
             f"No sha256 checksums available for publication {project_id} v{version}; its files stay "
@@ -387,7 +380,7 @@ def publish_project(self, project_id: str, version: int | None = 1):
     review_system_prefix = settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX
     published_system_prefix = settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX
 
-    published_workspace_id = f"{project_id}{f'v{version}' if version and version > 1 else ''}"
+    published_workspace_id = get_published_workspace_id(project_id, version)
     published_system_id = f"{published_system_prefix}.{published_workspace_id}"
     review_system_id = f"{review_system_prefix}.{project_id}"
     source_project_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
