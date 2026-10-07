@@ -19,10 +19,9 @@ const ProjectDescription = ({ project }) => {
   const dispatch = useDispatch();
   const [data, setData] = useState({});
   const { errors } = useFormikContext();
-
+  const { username } = useAuthenticatedUserOrThrow();
   const canEdit = useSelector((state) => {
     const { members } = state.projects.metadata;
-    const { username } = useAuthenticatedUserOrThrow();
     const currentUser = members.find(
       (member) => member.user?.username === username
     );

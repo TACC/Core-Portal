@@ -19,10 +19,9 @@ const ReviewProjectStructure = ({ projectId }) => {
   const { DataFilesProjectTree } = useAddonComponents({ portalName });
 
   const { errors } = useFormikContext();
-
+  const { username } = useAuthenticatedUserOrThrow();
   const canEdit = useSelector((state) => {
     const { members } = state.projects.metadata;
-    const { username } = useAuthenticatedUserOrThrow();
     const currentUser = members.find(
       (member) => member.user?.username === username
     );
