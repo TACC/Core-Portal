@@ -1,3 +1,4 @@
+import copy
 import json
 import logging
 import mimetypes
@@ -41,6 +42,51 @@ REQUIRED_CROISSANT_FIELDS = ("license", "creator", "datePublished", "distributio
 CROISSANT_FILE_CHECKSUM_FIELDS = ("md5", "sha256")
 
 CROISSANT_1_0 = "http://mlcommons.org/croissant/1.0"
+
+# The Croissant 1.0 spec's official @context, verbatim and in full (the same one mlcroissant's
+# make_context builds for a 1.0 document, and its example datasets use). Every Croissant term this
+# document emits -- in `distribution` (cr:FileObject) or `recordSet` (cr:RecordSet, field/source/
+# extract/fileObject/dataType/column) -- needs its mapping here, or it falls back to the bare @vocab
+# and resolves to a nonexistent "https://schema.org/<term>". The terms this document doesn't use
+# are kept too: mlcroissant warns that any @context missing one of them "is not standard".
+CROISSANT_1_0_CONTEXT = {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "citeAs": "cr:citeAs",
+    "column": "cr:column",
+    "conformsTo": "dct:conformsTo",
+    "cr": "http://mlcommons.org/croissant/",
+    "rai": "http://mlcommons.org/croissant/RAI/",
+    "data": {"@id": "cr:data", "@type": "@json"},
+    "dataType": {"@id": "cr:dataType", "@type": "@vocab"},
+    "dct": "http://purl.org/dc/terms/",
+    "equivalentProperty": "cr:equivalentProperty",
+    "examples": {"@id": "cr:examples", "@type": "@json"},
+    "extract": "cr:extract",
+    "field": "cr:field",
+    "fileProperty": "cr:fileProperty",
+    "fileObject": "cr:fileObject",
+    "fileSet": "cr:fileSet",
+    "format": "cr:format",
+    "includes": "cr:includes",
+    "isLiveDataset": "cr:isLiveDataset",
+    "jsonPath": "cr:jsonPath",
+    "key": "cr:key",
+    "md5": "cr:md5",
+    "parentField": "cr:parentField",
+    "path": "cr:path",
+    "recordSet": "cr:recordSet",
+    "references": "cr:references",
+    "regex": "cr:regex",
+    "repeated": "cr:repeated",
+    "replace": "cr:replace",
+    "samplingRate": "cr:samplingRate",
+    "sc": "https://schema.org/",
+    "separator": "cr:separator",
+    "source": "cr:source",
+    "subField": "cr:subField",
+    "transform": "cr:transform",
+}
 
 # The only formats Croissant defines `extract.column` for (as mimetypes.guess_type names them), so
 # the only files _get_record_sets builds a recordSet for.
@@ -499,32 +545,7 @@ def get_schema_org_json(pub, project_id, request):
         creators.append(creator)
 
     schema_org_json = {
-        "@context": {
-            "@language": "en",
-            "@vocab": "https://schema.org/",
-            # Verbatim (minus unused terms) from the Croissant spec's own recommended
-            # @context (Appendix 1). Every Croissant-specific key we emit anywhere in this
-            # document -- in `distribution` (cr:FileObject) or `recordSet` (cr:RecordSet,
-            # field/source/extract/fileObject/dataType/column) -- needs an explicit mapping
-            # here, or it silently falls back to the bare @vocab and resolves to a
-            # nonexistent "https://schema.org/<term>" instead of its real Croissant IRI. A
-            # strict Croissant validator (e.g. MLCommons' mlcroissant) would not recognize
-            # this record as Croissant without these.
-            "cr": "http://mlcommons.org/croissant/",
-            "dct": "http://purl.org/dc/terms/",
-            "sc": "https://schema.org/",
-            "citeAs": "cr:citeAs",
-            "column": "cr:column",
-            "conformsTo": "dct:conformsTo",
-            "dataType": {"@id": "cr:dataType", "@type": "@vocab"},
-            "extract": "cr:extract",
-            "field": "cr:field",
-            "fileObject": "cr:fileObject",
-            "fileSet": "cr:fileSet",
-            "key": "cr:key",
-            "recordSet": "cr:recordSet",
-            "source": "cr:source",
-        },
+        "@context": copy.deepcopy(CROISSANT_1_0_CONTEXT),
         "@type": "Dataset",
         "name": base_meta.get("title"),
         # Provisional -- removed below unless every REQUIRED_CROISSANT_FIELDS entry made it into
@@ -570,8 +591,10 @@ def get_schema_org_json(pub, project_id, request):
         # (e.g. a DOI minted against v2, visited after a v3 republish) would still resolve here
         # and render v3's content throughout, so claiming the URL's version number would
         # contradict every other field in this same document. pub.version is the only value
-        # that's ever consistent with the content actually being rendered.
-        "version": pub.version,
+        # that's ever consistent with the content actually being rendered. A string, matching
+        # DataCite's `version` (datacite_operations.py) -- schema.org allows Text there, and a bare
+        # "2" satisfies Croissant's MAJOR[.MINOR[.PATCH]] pattern as-is.
+        "version": str(pub.version),
         "includedInDataCatalog": {
             "@type": "DataCatalog",
             "name": settings.PORTAL_PUBLICATION_PUBLISHER,

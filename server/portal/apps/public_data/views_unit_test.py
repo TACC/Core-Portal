@@ -1045,11 +1045,43 @@ def test_get_schema_org_json_success(rf, settings, publication):
     assert schema["creator"][0]["affiliation"] == {"@type": "Organization", "name": "Test University"}
     assert schema["creator"][0]["sameAs"] == "https://orcid.org/0000-0002-1825-0097"
     assert schema["publisher"] == {"@type": "Organization", "name": "Test Publisher"}
-    assert schema["version"] == 3
+    assert schema["version"] == "3"
     assert schema["dateModified"] == publication.last_updated.isoformat()
     assert len(schema["distribution"]) == 1
     assert len(schema["recordSet"]) == 1
     assert len(schema["citation"]) == 1
+
+
+def test_get_schema_org_json_uses_full_croissant_1_0_context(rf, publication):
+    context = get_schema_org_json(publication, publication.project_id, make_request(rf))["@context"]
+
+    # Every key in the Croissant 1.0 spec's @context (Appendix 1), including terms this
+    # document never emits -- mlcroissant flags a @context missing any of them as non-standard.
+    assert set(context) == {
+        "@language", "@vocab", "citeAs", "column", "conformsTo", "cr", "rai", "data", "dataType",
+        "dct", "equivalentProperty", "examples", "extract", "field", "fileProperty", "fileObject",
+        "fileSet", "format", "includes", "isLiveDataset", "jsonPath", "key", "md5", "parentField",
+        "path", "recordSet", "references", "regex", "repeated", "replace", "samplingRate", "sc",
+        "separator", "source", "subField", "transform",
+    }  # fmt: skip
+    assert context["cr"] == "http://mlcommons.org/croissant/"
+    assert context["conformsTo"] == "dct:conformsTo"
+    assert context["dataType"] == {"@id": "cr:dataType", "@type": "@vocab"}
+    # 1.0 values, not 0.8's sc:key/sc:md5.
+    assert context["key"] == "cr:key"
+    assert context["md5"] == "cr:md5"
+
+
+def test_get_schema_org_json_context_is_not_shared_between_documents(rf, publication):
+    request = make_request(rf)
+    first = get_schema_org_json(publication, publication.project_id, request)
+    first["@context"]["dataType"]["@type"] = "mutated"
+    first["@context"]["cr"] = "mutated"
+
+    second = get_schema_org_json(publication, publication.project_id, request)
+
+    assert second["@context"]["dataType"] == {"@id": "cr:dataType", "@type": "@vocab"}
+    assert second["@context"]["cr"] == "http://mlcommons.org/croissant/"
 
 
 def test_get_schema_org_json_no_files_omits_conforms_to_and_distribution(rf, settings, publication):
