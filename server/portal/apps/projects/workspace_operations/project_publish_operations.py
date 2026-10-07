@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from functools import partial
 from io import StringIO
 
 import networkx as nx
@@ -464,21 +465,33 @@ def publish_project(self, project_id: str, version: int | None = 1):
                 project_meta.value.get("coverImage", None),
             )
 
-            poll_tapis_file_transfer.apply_async(
-                args=(transfer.uuid, False),
-                kwargs={
-                    "review_project_id": review_system_id,
-                    "published_project_id": published_system_id,
-                    "archive_project_id": published_workspace_id,
-                    "project_id": project_id,
-                    "version": version,
-                },
-                countdown=30,
+            # Queued on commit, so the callback (which reads the Publication row to find the DOI) never
+            # runs before that row is committed, and a publish that rolls back queues nothing.
+            transaction.on_commit(
+                partial(
+                    poll_tapis_file_transfer.apply_async,
+                    args=(transfer.uuid, False),
+                    kwargs={
+                        "review_project_id": review_system_id,
+                        "published_project_id": published_system_id,
+                        "archive_project_id": published_workspace_id,
+                        "project_id": project_id,
+                        "version": version,
+                    },
+                    countdown=30,
+                )
             )
 
             if not settings.DEBUG:
-                send_publication_accepted_email_to_authors.apply_async(args=[project_id])
-                send_publication_reviewed_email_to_reviewers.apply_async(args=[project_id, "APPROVED", None])
+                transaction.on_commit(
+                    partial(send_publication_accepted_email_to_authors.apply_async, args=[project_id])
+                )
+                transaction.on_commit(
+                    partial(
+                        send_publication_reviewed_email_to_reviewers.apply_async,
+                        args=[project_id, "APPROVED", None],
+                    )
+                )
     except Exception:
         if new_doi:
             _record_minted_doi(source_project_id, new_doi)
