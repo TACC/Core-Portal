@@ -292,7 +292,9 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
             identifier["relationType"] = relation_mapping.get(publication_type, "References")
             identifier["relatedIdentifier"] = r_data["publicationLink"]
             identifier["relatedIdentifierType"] = "URL"
-            if "publicationDoi" in r_data:
+            # Truthiness, not key presence: an empty or null DOI would otherwise replace the link
+            # with a blank DOI, which DataCite rejects.
+            if r_data.get("publicationDoi"):
                 identifier["relatedIdentifier"] = r_data["publicationDoi"]
                 identifier["relatedIdentifierType"] = "DOI"
             datacite_json["relatedIdentifiers"].append(identifier)

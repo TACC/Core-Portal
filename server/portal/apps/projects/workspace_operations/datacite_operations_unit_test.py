@@ -457,6 +457,29 @@ def test_get_datacite_json_related_publications_prefers_doi_over_link():
 
 @DATACITE_SETTINGS
 @pytest.mark.django_db
+@pytest.mark.parametrize("blank_doi", ["", None])
+def test_get_datacite_json_related_publications_blank_doi_falls_back_to_link(blank_doi):
+    base_meta = minimal_base_meta(
+        relatedPublications=[
+            {
+                "publicationLink": "https://example.com/publication",
+                "publicationType": "context",
+                "publicationDoi": blank_doi,
+            }
+        ]
+    )
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["relatedIdentifiers"] == [
+        {
+            "relationType": "IsDocumentedBy",
+            "relatedIdentifier": "https://example.com/publication",
+            "relatedIdentifierType": "URL",
+        }
+    ]
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
 def test_get_datacite_json_related_publications_skipped_without_link():
     base_meta = minimal_base_meta(relatedPublications=[{"publicationType": "context"}])
     result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
