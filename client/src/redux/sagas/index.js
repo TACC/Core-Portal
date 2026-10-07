@@ -27,7 +27,6 @@ import watchSystemMonitor from './systemMonitor.sagas';
 import watchProfile from './profile.sagas';
 
 import { watchPostRequestAccess } from './requestAccess.sagas';
-import { watchAuthenticatedUser } from './authenticated_user.sagas';
 import {
   watchFetchIntroMessageComponents,
   watchSaveIntroMessageComponents,
@@ -87,7 +86,6 @@ export default function* rootSaga() {
     watchSystemMonitor(),
     ...watchProfile,
     watchPostRequestAccess(),
-    watchAuthenticatedUser(),
     watchSocket(),
     watchFetchNotifications(),
     watchFetchIntroMessageComponents(),

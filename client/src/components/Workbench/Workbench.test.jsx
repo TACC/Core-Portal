@@ -9,7 +9,6 @@ import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
 // TODOv3: dropV2Jobs
 import { initialStateV2 as jobsv2 } from '../../redux/reducers/jobs.reducers';
 
-import { initialState as authenticatedUser } from '../../redux/reducers/authenticated_user.reducer';
 import { initialState as systemMonitor } from '../../redux/reducers/systemMonitor.reducers';
 import { initialIntroMessageComponents as introMessageComponents } from '../../redux/reducers/portalMessages.reducers';
 import { initialSystemState as systems } from '../../redux/reducers/datafiles.reducers';
@@ -17,7 +16,6 @@ import { Route, Routes } from 'react-router-dom';
 
 /* state required to render workbench/dashboard */
 const state = {
-  authenticatedUser,
   onboarding,
   notifications,
   introMessageComponents,

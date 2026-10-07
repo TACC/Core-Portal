@@ -3,14 +3,12 @@ import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import TicketStandaloneCreate from './TicketStandaloneCreate';
 import initialIntroMessageComponents from '../../redux/reducers/portalMessages.reducers';
-import { initialState as user } from '../../redux/reducers/authenticated_user.reducer';
 
 const mockStore = configureStore();
 
 describe('TicketStandaloneCreate', () => {
   it('renders ticket creation and shows intro message', () => {
     const store = mockStore({
-      authenticatedUser: user,
       introMessageComponents: {
         ...initialIntroMessageComponents,
         TICKETS: true,
@@ -25,7 +23,6 @@ describe('TicketStandaloneCreate', () => {
 
   it('renders ticket creation and hides intro message if already dismissed', () => {
     const store = mockStore({
-      authenticatedUser: user,
       introMessageComponents: {
         ...initialIntroMessageComponents,
         TICKETS: false,
