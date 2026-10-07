@@ -442,7 +442,9 @@ def _setup_publish_project_fixtures(settings, project_id="test.project-1", exist
     )
 
 
-def test_publish_project_success_creates_publication_and_updates_doi(mocker, settings):
+def test_publish_project_success_creates_publication_and_updates_doi(
+    mocker, settings, django_capture_on_commit_callbacks
+):
     fixtures = _setup_publish_project_fixtures(settings)
 
     mocker.patch(f"{DIR}.get_datacite_json", return_value={"titles": []})
@@ -455,7 +457,8 @@ def test_publish_project_success_creates_publication_and_updates_doi(mocker, set
     mocker.patch(f"{DIR}._transfer_cover_image")
     mock_apply_async = mocker.patch.object(poll_tapis_file_transfer, "apply_async")
 
-    publish_project(project_id="test.project-1", version=1)
+    with django_capture_on_commit_callbacks(execute=True):
+        publish_project(project_id="test.project-1", version=1)
 
     source_project = ProjectMetadata.objects.get(pk=fixtures.source_project.pk)
     assert source_project.value["doi"] == "10.5555/minted-doi"
@@ -537,8 +540,44 @@ def test_publish_project_debug_false_schedules_emails_but_leaves_doi_to_transfer
     with django_capture_on_commit_callbacks(execute=True) as callbacks:
         publish_project(project_id="test.project-1", version=1)
 
-    assert callbacks == []
+    # The transfer poll and the two emails, all queued on commit.
+    assert len(callbacks) == 3
     mock_publish_doi.assert_not_called()
+    mock_accepted.apply_async.assert_called_once_with(args=["test.project-1"])
+    mock_reviewed.apply_async.assert_called_once_with(args=["test.project-1", "APPROVED", None])
+
+
+def test_publish_project_queues_transfer_poll_and_emails_only_on_commit(
+    mocker, settings, django_capture_on_commit_callbacks
+):
+    """Nothing is queued while the transaction is open: the transfer callback reads the committed
+    Publication row, so it must not run before that row exists."""
+    _setup_publish_project_fixtures(settings)
+    settings.DEBUG = False
+
+    mocker.patch(f"{DIR}.get_datacite_json", return_value={"titles": []})
+    mocker.patch(f"{DIR}.upsert_datacite_json", return_value={"data": {"id": "10.5555/minted-doi"}})
+    mocker.patch(f"{DIR}.upload_metadata_file")
+    mocker.patch(f"{DIR}.index_publication")
+    mocker.patch(f"{DIR}.service_account")
+    mocker.patch(f"{DIR}._transfer_files", return_value=SimpleNamespace(uuid="transfer-uuid-6"))
+    mocker.patch(f"{DIR}._transfer_cover_image")
+    mock_poll = mocker.patch.object(poll_tapis_file_transfer, "apply_async")
+    mock_accepted = mocker.patch(f"{DIR}.send_publication_accepted_email_to_authors")
+    mock_reviewed = mocker.patch(f"{DIR}.send_publication_reviewed_email_to_reviewers")
+
+    with django_capture_on_commit_callbacks(execute=False) as callbacks:
+        publish_project(project_id="test.project-1", version=1)
+
+    mock_poll.assert_not_called()
+    mock_accepted.apply_async.assert_not_called()
+    mock_reviewed.apply_async.assert_not_called()
+
+    for callback in callbacks:
+        callback()
+
+    mock_poll.assert_called_once()
+    assert mock_poll.call_args.kwargs["args"] == ("transfer-uuid-6", False)
     mock_accepted.apply_async.assert_called_once_with(args=["test.project-1"])
     mock_reviewed.apply_async.assert_called_once_with(args=["test.project-1", "APPROVED", None])
 
