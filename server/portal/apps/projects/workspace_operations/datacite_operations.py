@@ -202,16 +202,16 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
             creator["givenName"] = first_name
         if last_name:
             creator["familyName"] = last_name
-        # Only the author's own institution: the publication-level `institution`
-        # is the HostingInstitution contributor below, not where each author
-        # works. DataCite requires `name` on every affiliation, and allows only
-        # strings (no null) for it and for schemeUri/affiliationIdentifier/
-        # affiliationIdentifierScheme. So `affiliation` is left out entirely when
-        # the author has no institution, rather than sent as [{"name": null}].
-        # The identifier fields are always left out: nothing supplies them yet.
-        author_institution = (author.get("institution") or "").strip()
-        if author_institution:
-            creator["affiliation"] = [{"name": author_institution}]
+        # Every creator is affiliated with the publication-level `institution`
+        # (also the HostingInstitution contributor below), as on main; an
+        # author's own `institution`, if any, is ignored. DataCite requires
+        # `name` on every affiliation, and allows only strings (no null) for it
+        # and for schemeUri/affiliationIdentifier/affiliationIdentifierScheme. So
+        # `affiliation` is left out entirely when the publication has no
+        # institution, rather than sent as [{"name": null}]. The identifier
+        # fields are always left out: nothing supplies them yet.
+        if institution:
+            creator["affiliation"] = [{"name": institution}]
 
         # Normalized the same way the landing page's `sameAs` is (projects/schema_models/
         # orcid.py): a stored URL, a lowercase "x" or an unhyphenated iD all register as the

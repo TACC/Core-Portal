@@ -129,8 +129,8 @@ def test_get_datacite_json_issued_date_defaults_to_today(stored):
 @DATACITE_SETTINGS
 @pytest.mark.django_db
 def test_get_datacite_json_with_institution_and_authors():
-    """The publication-level institution is the HostingInstitution contributor; each creator's
-    affiliation comes only from that author's own institution."""
+    """The publication-level institution is the HostingInstitution contributor and every creator's
+    affiliation, as on main; an author's own institution is ignored."""
     base_meta = minimal_base_meta(
         institution="Test University",
         authors=[
@@ -149,13 +149,14 @@ def test_get_datacite_json_with_institution_and_authors():
             "nameType": "Personal",
             "givenName": "Ada",
             "familyName": "Lovelace",
-            "affiliation": [{"name": "Analytical Engine Society"}],
+            "affiliation": [{"name": "Test University"}],
         },
         {
             "name": "Turing, Alan",
             "nameType": "Personal",
             "givenName": "Alan",
             "familyName": "Turing",
+            "affiliation": [{"name": "Test University"}],
         },
     ]
 
@@ -207,8 +208,24 @@ def test_get_datacite_json_strips_institution_whitespace():
     )
     result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
 
-    assert result["creators"][0]["affiliation"] == [{"name": "Analytical Engine Society"}]
+    assert result["creators"][0]["affiliation"] == [{"name": "Test University"}]
     assert result["contributors"][0]["name"] == "Test University"
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+@pytest.mark.parametrize("author_institution", [None, "", "   ", "Analytical Engine Society"])
+def test_get_datacite_json_affiliation_is_publication_institution(author_institution):
+    """Every author is affiliated with the publication's (stripped) institution, as on main,
+    whatever their own institution field holds."""
+    author_field = {} if author_institution is None else {"institution": author_institution}
+    base_meta = minimal_base_meta(
+        institution="  Test University  ",
+        authors=[{"first_name": "Ada", "last_name": "Lovelace", **author_field}],
+    )
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+
+    assert result["creators"][0]["affiliation"] == [{"name": "Test University"}]
 
 
 @DATACITE_SETTINGS
