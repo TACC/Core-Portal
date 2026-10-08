@@ -698,13 +698,38 @@ def test_format_citation_date(date_value, expected):
 # ---------------------------------------------------------------------------
 
 
-def test_get_citation_pdf_url_finds_first_pdf(rf):
+def test_get_citation_pdf_url_finds_only_pdf(rf):
     request = make_request(rf)
     base_meta = {
         "fileObjs": [
             {"type": "file", "name": "readme.txt", "path": "/readme.txt"},
+            {"type": "file", "name": "paper.pdf", "path": "/entity/paper.pdf"},
+        ]
+    }
+    url = _get_citation_pdf_url(base_meta["fileObjs"], "test.project-1", request)
+    assert url == _get_publication_file_url("test.project-1", "entity/paper.pdf", request)
+
+
+def test_get_citation_pdf_url_none_when_several_pdfs(rf):
+    """With more than one PDF there's no way to tell which is the article, so none is claimed."""
+    request = make_request(rf)
+    base_meta = {
+        "fileObjs": [
             {"type": "file", "name": "paper.pdf", "path": "/paper.pdf"},
-            {"type": "file", "name": "other.pdf", "path": "/other.pdf"},
+            {"type": "file", "name": "supplement.pdf", "path": "/supplement.pdf"},
+        ]
+    }
+    assert _get_citation_pdf_url(base_meta["fileObjs"], "test.project-1", request) is None
+
+
+def test_get_citation_pdf_url_ignores_incomplete_entries_when_counting(rf):
+    """A PDF entry missing its name or path isn't a usable file, so it doesn't make the real one ambiguous."""
+    request = make_request(rf)
+    base_meta = {
+        "fileObjs": [
+            {"type": "file", "name": "", "path": "/broken.pdf"},
+            {"type": "dir", "name": "folder.pdf", "path": "/folder.pdf"},
+            {"type": "file", "name": "paper.pdf", "path": "/paper.pdf"},
         ]
     }
     url = _get_citation_pdf_url(base_meta["fileObjs"], "test.project-1", request)
@@ -2349,7 +2374,7 @@ def test_unreversible_file_is_skipped_not_fatal(mock_logger, rf, settings, publi
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     file_objs = [
         {"type": "file", "name": "bad.pdf", "path": "/bad.pdf"},
-        {"type": "file", "name": "good.pdf", "path": "/good.pdf"},
+        {"type": "file", "name": "good.csv", "path": "/good.csv"},
     ]
     real_reverse = reverse
 
@@ -2364,8 +2389,8 @@ def test_unreversible_file_is_skipped_not_fatal(mock_logger, rf, settings, publi
         pdf_url = _get_citation_pdf_url(file_objs, "test.project-1", request)
         assert _get_publication_file_url("test.project-1", "bad.pdf", request) is None
 
-    assert [file_object["@id"] for file_object in distribution] == [f"{FILES_URL}good.pdf"]
-    assert pdf_url.endswith("/files/good.pdf")
+    assert [file_object["@id"] for file_object in distribution] == [f"{FILES_URL}good.csv"]
+    assert pdf_url is None
     assert "bad.pdf" in mock_logger.warning.call_args.args[0]
 
 

@@ -562,8 +562,12 @@ def _format_citation_date(date_value):
 
 
 def _get_citation_pdf_url(file_objs, project_id, request):
-    """Pick the first PDF out of `file_objs` (_get_publication_file_objs' combined list, so a PDF
-    attached to an entity node is found too), for Google Scholar's citation_pdf_url.
+    """The publication's PDF for Google Scholar's citation_pdf_url, only when it has exactly one.
+
+    `file_objs` is _get_publication_file_objs' combined list, so a PDF attached to an entity node
+    counts too. citation_pdf_url claims the PDF is the article's full text, and nothing in the
+    metadata says which file that is. With several PDFs (papers, reports, supplements) any pick
+    could be wrong, so none is emitted; with one, it's the only candidate.
 
     Scholar requires citation_pdf_url to resolve in the same subdirectory as the citing landing
     page, which _get_publication_file_url's `file_download` route guarantees -- the same route
@@ -571,6 +575,7 @@ def _get_citation_pdf_url(file_objs, project_id, request):
     from the portal host itself even when a web mirror is configured (PublicationFileDownloadView).
     """
 
+    pdf_paths = []
     for file_obj in file_objs:
         if file_obj.get("type") != "file":
             continue
@@ -580,10 +585,11 @@ def _get_citation_pdf_url(file_objs, project_id, request):
             continue
         encoding_format, _ = mimetypes.guess_type(name)
         if encoding_format == "application/pdf":
-            pdf_url = _get_publication_file_url(project_id, path, request)
-            if pdf_url:
-                return pdf_url
-    return None
+            pdf_paths.append(path)
+
+    if len(pdf_paths) != 1:
+        return None
+    return _get_publication_file_url(project_id, pdf_paths[0], request)
 
 
 def get_schema_org_json(pub, project_id, request, file_objs=None):
