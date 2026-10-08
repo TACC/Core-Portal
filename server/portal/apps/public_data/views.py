@@ -1248,6 +1248,14 @@ class PublicationCroissantView(View):
         return response
 
 
+class PublicationSubpathNotFoundView(View):
+    """404 for a path under a publication's id that no route serves (public_data/urls.py's
+    `subpath_not_found`), rather than the client app's 200 shell from `index_fallback`."""
+
+    def get(self, request, *args, **kwargs):
+        raise Http404(f"Nothing is published at {request.path}")
+
+
 class SchemaOrgValidationError(Exception):
     """Raised when a publication's metadata can't satisfy the schema.org/Croissant fields
     get_schema_org_json claims to emit."""

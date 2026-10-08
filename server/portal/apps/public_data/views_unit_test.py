@@ -2118,6 +2118,42 @@ def test_index_view_metadata_failure_is_not_redirected(mock_logger, client, publ
     mock_logger.exception.assert_called_once()
 
 
+ENTITY_ID = "0b6a2a8e-6f1d-4c7e-9a3b-2f5d8c1e4a90"
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/published-datasets/test.project.published.test.project-1v3/croissant.json",
+        "/published-datasets/test.project.published.test.project-1v3/files/data.csv",
+        "/published-datasets/test.project.published.test.project-1v3/cover-image",
+        "/published-datasets/test.project.published.test.project-1/files",
+        "/published-datasets/test.project.published.test.project-1/unknown",
+        "/published-datasets/test.project.published.test.project-1/sample/not-a-uuid",
+        f"/published-datasets/test.project.published.test.project-1/sample/{ENTITY_ID}/extra",
+        "/published-datasets/test.project.published.test.project-999/croissant.json/",
+        "/public-data/test.project.published.test.project-1v3/croissant.json",
+    ],
+)
+def test_unknown_path_under_a_project_id_404s(client, publication, path):
+    """Paths under a project id that no route serves are a real 404, not the client app at 200."""
+    assert client.get(path).status_code == 404
+
+
+@pytest.mark.parametrize("version_suffix", ["", "v3"])
+@pytest.mark.parametrize("trailing_slash", ["", "/"])
+def test_client_entity_pages_still_serve_the_app(client, publication, version_suffix, trailing_slash):
+    """The DPMP client's `:system/:entity_type/:entity_id` pages stay the noindex app shell,
+    without redirecting to the landing page."""
+    path = f"/published-datasets/test.project.published.test.project-1{version_suffix}/sample/{ENTITY_ID}"
+    response = client.get(path + trailing_slash)
+
+    assert response.status_code == 200
+    assert "canonical_url" not in response.context
+    robots = re.search(r'<meta name="robots" content="([^"]*)">', response.content.decode()).group(1)
+    assert robots.strip() == "noindex, follow"
+
+
 def test_index_view_fallback_route_has_no_publication_context(client):
     response = client.get("/published-datasets/not-a-real-project/")
     assert response.status_code == 200

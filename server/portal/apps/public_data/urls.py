@@ -13,6 +13,7 @@ from portal.apps.public_data.views import (
     PublicationCoverImageView,
     PublicationCroissantView,
     PublicationFileDownloadView,
+    PublicationSubpathNotFoundView,
 )
 
 app_name = "public_data"
@@ -56,6 +57,25 @@ urlpatterns = [
         rf"^{published_prefix}\.(?P<project_id>{id_prefix}-[0-9]+)/croissant\.json$",
         PublicationCroissantView.as_view(),
         name="croissant",
+    ),
+    # The DPMP client's entity pages (PublishedDatasetsRoutes.jsx's
+    # `:system/:entity_type/:entity_id`): `entity_type` is the last part of the entity's schema
+    # name ("sample") and `entity_id` the UUID ending its graph node id (NODE_<name>_<uuid>).
+    # Served the client app like `index_fallback`, so with no named groups: a `project_id` kwarg
+    # would make IndexView treat it as the landing page and redirect it there.
+    re_path(
+        rf"^{published_prefix}\.{id_prefix}-[0-9]+(?:v[0-9]+)?/[A-Za-z0-9_]+/[0-9A-Fa-f-]{{36}}/?$",
+        IndexView.as_view(),
+        name="entity_fallback",
+    ),
+    # Any other path under a project id (for example `...vN/croissant.json`, or `...vN/files/...`,
+    # which only exist under the bare id) is a real 404, not the client app at 200 -- a soft 404
+    # that crawlers would otherwise treat as a duplicate page. Must come after every route above
+    # and before `index_fallback`.
+    re_path(
+        rf"^{published_prefix}\.{id_prefix}-[0-9]+(?:v[0-9]+)?/",
+        PublicationSubpathNotFoundView.as_view(),
+        name="subpath_not_found",
     ),
     re_path(r"^.*$", IndexView.as_view(), name="index_fallback"),
 ]
