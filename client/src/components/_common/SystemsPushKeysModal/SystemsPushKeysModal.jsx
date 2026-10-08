@@ -7,7 +7,10 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import FormField from '../Form/FormField';
 import InlineMessage from '../InlineMessage';
-import { useWorkbenchConfig } from '@tacc/core-hooks';
+import {
+  useAuthenticatedUserOrThrow,
+  useWorkbenchConfig,
+} from '@tacc/core-hooks';
 
 const SystemsPushKeysModal = () => {
   const dispatch = useDispatch();
@@ -17,22 +20,15 @@ const SystemsPushKeysModal = () => {
   const {
     data: { isTACCPortal },
   } = useWorkbenchConfig();
+  const { username: initialUsername } = useAuthenticatedUserOrThrow();
 
-  const {
-    error,
-    onSuccess,
-    system,
-    submitting,
-    onCancel,
-    reloadCallback,
-    initialUsername,
-  } = useSelector(
-    (state) => ({
-      ...state.pushKeys.modalProps.pushKeys,
-      initialUsername: state.authenticatedUser.user.username,
-    }),
-    shallowEqual
-  );
+  const { error, onSuccess, system, submitting, onCancel, reloadCallback } =
+    useSelector(
+      (state) => ({
+        ...state.pushKeys.modalProps.pushKeys,
+      }),
+      shallowEqual
+    );
 
   const defaultAuthnMethod = system?.defaultAuthnMethod;
 

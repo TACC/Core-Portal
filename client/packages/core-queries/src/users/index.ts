@@ -1,1 +1,3 @@
-export const userQueries = { getAuthenticatedUser: {} };
+import { getAuthenticatedUserQuery } from './getAuthenticatedUser';
+
+export const userQueries = { getAuthenticatedUser: getAuthenticatedUserQuery };

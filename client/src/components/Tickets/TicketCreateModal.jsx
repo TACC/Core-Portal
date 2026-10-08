@@ -5,6 +5,7 @@ import { Modal, ModalHeader } from 'reactstrap';
 import TicketCreateForm from './TicketCreateForm';
 import * as ROUTES from '../../constants/routes';
 import './TicketCreateModal.scss';
+import { useAuthenticatedUser } from '@tacc/core-hooks';
 
 function TicketCreateModal({
   isModalOpen,
@@ -15,9 +16,7 @@ function TicketCreateModal({
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const authenticatedUser = useSelector(
-    (state) => state.authenticatedUser.user
-  );
+  const authenticatedUser = useAuthenticatedUser();
 
   useEffect(() => {
     if (

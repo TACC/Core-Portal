@@ -10,13 +10,16 @@ import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProject
 import { useAddonComponents, useFileListing } from 'hooks/datafiles';
 import getDefaultProjectSystem from 'utils/getDefaultProjectSystem';
 import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
-import { useWorkbenchConfig } from '@tacc/core-hooks';
+import {
+  useAuthenticatedUserOrThrow,
+  useWorkbenchConfig,
+} from '@tacc/core-hooks';
 
 const DataFilesAddProjectModal = () => {
   const navigate = useNavigate();
   const match = useMatch('/workbench/data/*');
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.authenticatedUser);
+  const user = useAuthenticatedUserOrThrow();
   const [members, setMembers] = useState(
     user ? [{ user, access: 'owner' }] : []
   );

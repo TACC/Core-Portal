@@ -27,7 +27,7 @@ import { useSystemRole } from './DataFilesProjectMembers/_cells/SystemRoleSelect
 import DataFilesPublicationsList from './DataFilesPublicationsList/DataFilesPublicationsList';
 import DataFilesReviewProjectList from './DataFilesReviewProjectsList/DataFilesReviewProjectList';
 import { getDecodedPath } from 'utils/datafilesUtil';
-import { useWorkbenchConfig } from '@tacc/core-hooks';
+import { useAuthenticatedUser, useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DefaultSystemRedirect = () => {
   const systems = useSelector(
@@ -161,9 +161,7 @@ const DataFiles = () => {
     },
   } = useWorkbenchConfig();
 
-  const authenticatedUser = useSelector(
-    (state) => state.authenticatedUser.user.username
-  );
+  const authenticatedUser = useAuthenticatedUser()?.username;
   const projectId = useSelector((state) =>
     state.projects.metadata.projectId ? state.projects.metadata.projectId : ''
   );

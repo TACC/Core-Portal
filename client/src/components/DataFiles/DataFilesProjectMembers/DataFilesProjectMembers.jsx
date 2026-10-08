@@ -7,7 +7,7 @@ import { SystemRoleSelector, ProjectRoleSelector } from './_cells';
 import styles from './DataFilesProjectMembers.module.scss';
 import { useSystemRole } from './_cells/SystemRoleSelector';
 import './DataFilesProjectMembers.scss';
-import { useWorkbenchConfig } from '@tacc/core-hooks';
+import { useAuthenticatedUser, useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DataFilesProjectMembers = ({
   projectId,
@@ -21,9 +21,7 @@ const DataFilesProjectMembers = ({
   const dispatch = useDispatch();
 
   const userSearchResults = useSelector((state) => state.users.search.users);
-  const authenticatedUser = useSelector(
-    (state) => state.authenticatedUser.user.username
-  );
+  const authenticatedUser = useAuthenticatedUser()?.username;
 
   const {
     data: {

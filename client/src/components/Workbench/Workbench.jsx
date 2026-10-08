@@ -22,7 +22,8 @@ import './Workbench.scss';
 // Core Styles needs to be imported last for Rollup to compile the CSS correctly.
 import '../../index.css';
 import { useRedirectOnSessionExpired } from 'hooks/auth';
-import { useWorkbenchConfig } from '@tacc/core-hooks';
+import { useSuspenseQueries } from '@tanstack/react-query';
+import { userQueries, workbenchConfigQueries } from '@tacc/core-queries';
 
 function Workbench() {
   const dispatch = useDispatch();
@@ -35,6 +36,14 @@ function Workbench() {
   useRedirectOnSessionExpired({ location: '/' });
 
   // showUIPatterns: Show some entries only in local development
+
+  const [workbenchConfig, authenticatedUser] = useSuspenseQueries({
+    queries: [
+      workbenchConfigQueries.getWorkbenchConfig(),
+      userQueries.getAuthenticatedUser(),
+    ],
+  });
+
   const {
     data: {
       setupComplete,
@@ -50,12 +59,12 @@ function Workbench() {
         isTACCPortal,
       },
     },
-  } = useWorkbenchConfig();
+  } = workbenchConfig;
 
-  const isStaff = useSelector(
-    (state) =>
-      state.authenticatedUser.user && state.authenticatedUser.user.isStaff
-  );
+  const isStaff = authenticatedUser.data
+    ? authenticatedUser.data.isStaff
+    : false;
+
   // Get systems and any other initial data we need from the backend
   useEffect(() => {
     dispatch({

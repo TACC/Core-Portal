@@ -43,7 +43,6 @@ describe('AppRouter', () => {
       screen.getByText('SUSPENSE FALLBACK')
     );
     expect(store.getActions()).toEqual([
-      { type: 'FETCH_AUTHENTICATED_USER' },
       { type: 'FETCH_SYSTEMS' },
       { type: 'FETCH_INTRO' },
       { type: 'FETCH_CUSTOM_MESSAGES' },

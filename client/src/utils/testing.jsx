@@ -14,7 +14,8 @@ export default function renderComponent(
   component,
   store,
   history,
-  initialConfig
+  initialConfig,
+  initialUser
 ) {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -28,6 +29,23 @@ export default function renderComponent(
   queryClient.setQueryData(
     ['workbench'],
     initialConfig ?? workbenchJSON.response
+  );
+
+  queryClient.setQueryData(
+    ['users', 'authenticatedUser'],
+    initialUser !== undefined // support initialUser=null
+      ? initialUser
+      : {
+          first_name: 'Max',
+          username: 'mmunstermann',
+          last_name: 'Munstermann',
+          email: 'max@munster.mann',
+          oauth: {
+            expires_in: 14400,
+          },
+          groups: [],
+          isStaff: false,
+        }
   );
 
   if (history) {

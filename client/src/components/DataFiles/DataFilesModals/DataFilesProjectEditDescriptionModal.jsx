@@ -9,7 +9,7 @@ import styles from './DataFilesProjectEditDescription.module.scss';
 import { useAddonComponents } from 'hooks/datafiles';
 import getDefaultProjectSystem from 'utils/getDefaultProjectSystem';
 import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
-import { useWorkbenchConfig } from '@tacc/core-hooks';
+import { useAuthenticatedUser, useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DataFilesProjectEditDescriptionModal = () => {
   const dispatch = useDispatch();
@@ -53,12 +53,14 @@ const DataFilesProjectEditDescriptionModal = () => {
     portalName,
   });
 
+  const authenticatedUserUsername = useAuthenticatedUser()?.username;
+
   const isOwner = useSelector(
     (state) =>
       state.projects.metadata.members
         .filter((member) =>
           member.user
-            ? member.user.username === state.authenticatedUser?.user?.username
+            ? member.user.username === authenticatedUserUsername
             : { access: null }
         )
         .map((currentUser) => currentUser.access === 'owner')[0]
