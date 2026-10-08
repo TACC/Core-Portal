@@ -146,9 +146,15 @@ _BIBTEX_ESCAPES = str.maketrans(
 # dataset's files can run to multiple GB.
 _FILE_STREAM_CHUNK_SIZE = 64 * 1024
 
-# SitemapView rebuilds every publication's JSON-LD to decide what to list, so its body is cached
-# for this long. A publish or withdrawal shows up in the sitemap within this window.
+# SitemapView rebuilds every publication's JSON-LD to decide what to list, so its entries are
+# cached for this long. A publish or withdrawal shows up in the sitemap within this window.
 _SITEMAP_CACHE_SECONDS = 5 * 60
+
+# The sitemap protocol's limit on URLs in one sitemap file (and on sitemaps in one index). Past it,
+# SitemapView serves a sitemap index pointing at numbered sitemap files of up to this many URLs each.
+SITEMAP_MAX_URLS = 50_000
+
+_SITEMAP_NAMESPACE = "http://www.sitemaps.org/schemas/sitemap/0.9"
 
 
 def _get_license(base_meta, project_id):
@@ -1266,27 +1272,52 @@ class SitemapView(View):
     step; each omission is logged at ERROR so the broken publication gets noticed and fixed
     instead of silently dropping out of search.
 
-    The body is cached for _SITEMAP_CACHE_SECONDS, keyed by the origin its <loc>s are built
-    against (which can be the request's own host). The cache is skipped, not fatal, if it's
-    unreachable.
+    Up to SITEMAP_MAX_URLS publications, /published-datasets/sitemap.xml is one <urlset> listing
+    them all. Past that (the protocol's per-file limit), it becomes a <sitemapindex> pointing at
+    numbered sitemap files (/published-datasets/sitemap-1.xml, -2, ...), each a <urlset> of up to
+    SITEMAP_MAX_URLS publications in project_id order. The entry point's URL stays the same either
+    way, so robots.txt and Search Console never need to change. Every numbered file sits in the
+    same directory as the landing pages it lists, as the protocol's same-path rule requires.
+
+    The entries (not the rendered XML) are cached for _SITEMAP_CACHE_SECONDS, keyed by the origin
+    their <loc>s are built against (which can be the request's own host), so the index and every
+    numbered file are cut from the same list. The cache is skipped, not fatal, if it's unreachable
+    or rejects the value (memcached's default 1 MB item limit is reached at roughly ten thousand
+    publications, after which every request rebuilds the list).
     """
 
-    def get(self, request, *args, **kwargs):
-        cache_key = f"public_data:sitemap:{_get_configured_origin(request)}"
-        try:
-            body = cache.get(cache_key)
-        except Exception:
-            logger.warning("Sitemap cache read failed; building the sitemap uncached.", exc_info=True)
-            body = None
-        if body is None:
-            body = self._build(request)
-            try:
-                cache.set(cache_key, body, _SITEMAP_CACHE_SECONDS)
-            except Exception:
-                logger.warning("Sitemap cache write failed.", exc_info=True)
+    def get(self, request, *args, page=None, **kwargs):
+        entries = self._get_entries(request)
+        page_count = max(1, -(-len(entries) // SITEMAP_MAX_URLS))
+        if page is None:
+            if page_count == 1:
+                body = self._render_urlset(entries)
+            else:
+                body = self._render_index(request, entries, page_count)
+        elif 1 <= page <= page_count:
+            body = self._render_urlset(entries[(page - 1) * SITEMAP_MAX_URLS : page * SITEMAP_MAX_URLS])
+        else:
+            raise Http404(f"No sitemap page {page}; there are {page_count}.")
         return HttpResponse(body, content_type="application/xml")
 
-    def _build(self, request):
+    def _get_entries(self, request):
+        cache_key = f"public_data:sitemap_entries:{_get_configured_origin(request)}"
+        try:
+            entries = cache.get(cache_key)
+        except Exception:
+            logger.warning("Sitemap cache read failed; building the sitemap uncached.", exc_info=True)
+            entries = None
+        if entries is None:
+            entries = self._build_entries(request)
+            try:
+                cache.set(cache_key, entries, _SITEMAP_CACHE_SECONDS)
+            except Exception:
+                logger.warning("Sitemap cache write failed.", exc_info=True)
+        return entries
+
+    def _build_entries(self, request):
+        """Every listed publication's (escaped <loc>, <lastmod>) pair, in project_id order."""
+
         # Mirrors the is_published filter publications/views.py already uses for its own
         # (authenticated) publications listing, plus is_indexable: IndexView serves a publication
         # that's still mid first publish without metadata (noindex), so it isn't listed either.
@@ -1305,14 +1336,35 @@ class SitemapView(View):
                 continue
             loc = escape(_get_landing_page_url(pub.project_id, pub.version, request))
             lastmod = (pub.last_updated or pub.created).date().isoformat()
-            entries.append(f"  <url>\n    <loc>{loc}</loc>\n    <lastmod>{lastmod}</lastmod>\n  </url>")
+            entries.append((loc, lastmod))
+        return entries
 
-        # Sitemap protocol caps a single file at 50,000 URLs; this repository has nowhere near
-        # that many publications today, so a <sitemapindex> of multiple files isn't implemented.
+    def _render_urlset(self, entries):
+        urls = [
+            f"  <url>\n    <loc>{loc}</loc>\n    <lastmod>{lastmod}</lastmod>\n  </url>" for loc, lastmod in entries
+        ]
+        return self._render("urlset", urls)
+
+    def _render_index(self, request, entries, page_count):
+        """A <sitemapindex> with one <sitemap> per numbered file. Each <lastmod> is the newest
+        <lastmod> in that file (ISO dates sort as strings), so a crawler only refetches the files
+        that changed. More than SITEMAP_MAX_URLS files (2.5 billion publications) isn't handled.
+        """
+
+        origin = _get_configured_origin(request)
+        sitemaps = []
+        for page in range(1, page_count + 1):
+            page_entries = entries[(page - 1) * SITEMAP_MAX_URLS : page * SITEMAP_MAX_URLS]
+            loc = escape(f"{origin}{reverse('sitemap_page', kwargs={'page': page})}")
+            lastmod = max(lastmod for _, lastmod in page_entries)
+            sitemaps.append(f"  <sitemap>\n    <loc>{loc}</loc>\n    <lastmod>{lastmod}</lastmod>\n  </sitemap>")
+        return self._render("sitemapindex", sitemaps)
+
+    def _render(self, root_tag, children):
         return (
             '<?xml version="1.0" encoding="UTF-8"?>\n'
-            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-            + "\n".join(entries)
-            + ("\n" if entries else "")
-            + "</urlset>\n"
+            f'<{root_tag} xmlns="{_SITEMAP_NAMESPACE}">\n'
+            + "\n".join(children)
+            + ("\n" if children else "")
+            + f"</{root_tag}>\n"
         )

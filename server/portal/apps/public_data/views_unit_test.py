@@ -2518,6 +2518,114 @@ def test_sitemap_view_builds_uncached_when_cache_unavailable(mock_cache, client,
     assert b"test.project-1" in response.content
 
 
+SITEMAP_NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+
+
+def _create_publications(count):
+    return [
+        Publication.objects.create(project_id=f"test.project-{n}", value=valid_base_meta(), tree={}, is_published=True)
+        for n in range(1, count + 1)
+    ]
+
+
+def _sitemap_locs(response):
+    root = ElementTree.fromstring(response.content)
+    child = "sm:url" if root.tag == f"{{{SITEMAP_NS['sm']}}}urlset" else "sm:sitemap"
+    return [element.findtext("sm:loc", namespaces=SITEMAP_NS) for element in root.findall(child, SITEMAP_NS)]
+
+
+def test_sitemap_page_route_served_ahead_of_published_datasets_catch_all(client):
+    assert reverse("sitemap_page", kwargs={"page": 2}) == "/published-datasets/sitemap-2.xml"
+    assert resolve("/published-datasets/sitemap-2.xml").url_name == "sitemap_page"
+
+
+def test_sitemap_view_at_the_limit_is_a_single_urlset(client, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    _create_publications(2)
+
+    with patch("portal.apps.public_data.views.SITEMAP_MAX_URLS", 2):
+        response = client.get(reverse("sitemap"))
+
+    assert ElementTree.fromstring(response.content).tag == f"{{{SITEMAP_NS['sm']}}}urlset"
+    assert len(_sitemap_locs(response)) == 2
+
+
+def test_sitemap_view_past_the_limit_serves_an_index_of_numbered_sitemaps(client, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://data.example.org/published-datasets"
+    pubs = _create_publications(5)
+
+    with patch("portal.apps.public_data.views.SITEMAP_MAX_URLS", 2):
+        index = client.get(reverse("sitemap"))
+        pages = [client.get(reverse("sitemap_page", kwargs={"page": page})) for page in (1, 2, 3)]
+
+    assert index.status_code == 200
+    assert index["Content-Type"] == "application/xml"
+    assert ElementTree.fromstring(index.content).tag == f"{{{SITEMAP_NS['sm']}}}sitemapindex"
+    assert _sitemap_locs(index) == [f"https://data.example.org/published-datasets/sitemap-{n}.xml" for n in (1, 2, 3)]
+    assert all(page["Content-Type"] == "application/xml" for page in pages)
+    assert [len(_sitemap_locs(page)) for page in pages] == [2, 2, 1]
+    landing_pages = [f"https://data.example.org{get_landing_page_path(pub.project_id, pub.version)}" for pub in pubs]
+    assert [loc for page in pages for loc in _sitemap_locs(page)] == landing_pages
+
+
+def test_sitemap_index_lastmod_is_each_files_newest_lastmod(client, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    pubs = _create_publications(3)
+    # last_updated is auto_now, so it's set with update() rather than save().
+    for pub, day in zip(pubs, ("2024-01-05", "2024-03-01", "2023-12-31"), strict=True):
+        Publication.objects.filter(pk=pub.pk).update(last_updated=f"{day}T00:00:00Z")
+
+    with patch("portal.apps.public_data.views.SITEMAP_MAX_URLS", 2):
+        root = ElementTree.fromstring(client.get(reverse("sitemap")).content)
+
+    lastmods = [
+        element.findtext("sm:lastmod", namespaces=SITEMAP_NS) for element in root.findall("sm:sitemap", SITEMAP_NS)
+    ]
+    assert lastmods == ["2024-03-01", "2023-12-31"]
+
+
+def test_sitemap_index_escapes_xml_special_characters_in_loc(client, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://a&b.example.org/published-datasets"
+    _create_publications(3)
+
+    with patch("portal.apps.public_data.views.SITEMAP_MAX_URLS", 2):
+        response = client.get(reverse("sitemap"))
+
+    assert b"a&amp;b.example.org" in response.content
+    assert _sitemap_locs(response)[0] == "https://a&b.example.org/published-datasets/sitemap-1.xml"
+
+
+@pytest.mark.parametrize("page", [0, 3])
+def test_sitemap_page_out_of_range_404s(client, settings, page):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    _create_publications(3)
+
+    with patch("portal.apps.public_data.views.SITEMAP_MAX_URLS", 2):
+        assert client.get(reverse("sitemap_page", kwargs={"page": page})).status_code == 404
+
+
+def test_sitemap_page_one_matches_the_single_sitemap_under_the_limit(client, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    _create_publications(2)
+
+    assert client.get(reverse("sitemap_page", kwargs={"page": 1})).content == client.get(reverse("sitemap")).content
+
+
+def test_sitemap_index_and_pages_share_one_cached_build(client, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    _create_publications(3)
+
+    with patch("portal.apps.public_data.views.SITEMAP_MAX_URLS", 2):
+        client.get(reverse("sitemap"))
+        with patch("portal.apps.public_data.views.get_citation_context") as mock_get_citation_context:
+            page = client.get(reverse("sitemap_page", kwargs={"page": 2}))
+
+    mock_get_citation_context.assert_not_called()
+    assert len(_sitemap_locs(page)) == 1
+
+
 def test_datacite_url_matches_landing_page_url_and_sitemap(client, settings):
     """The DOI must resolve to the exact URL the landing page claims (canonical/JSON-LD `url`) and
     the sitemap lists -- even when VANITY_BASE_URL falls back to a different, internal host, as it

@@ -108,6 +108,9 @@ urlpatterns = [
     # published-datasets/ include, whose index_fallback catch-all would otherwise
     # swallow it.
     path("published-datasets/sitemap.xml", SitemapView.as_view(), name="sitemap"),
+    # Numbered sitemap files, listed by sitemap.xml's <sitemapindex> once there are more
+    # publications than one sitemap file may hold (SitemapView's docstring).
+    path("published-datasets/sitemap-<int:page>.xml", SitemapView.as_view(), name="sitemap_page"),
     path("published-datasets/", include("portal.apps.public_data.urls", namespace="publications")),
     path("request-access/", include("portal.apps.request_access.urls", namespace="request_access")),
     path("user-news/", include("portal.apps.news.urls", namespace="news")),
