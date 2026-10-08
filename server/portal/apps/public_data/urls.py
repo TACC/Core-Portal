@@ -29,12 +29,13 @@ urlpatterns = [
         IndexView.as_view(),
         name="index",
     ),
-    # Nested under the same path `index` above matches, so a file served from
-    # here is always in the same subdirectory as the landing page that links to
-    # it -- see PublicationFileDownloadView's docstring for why that matters
-    # (Google Scholar's citation_pdf_url same-subdirectory requirement). Must
-    # come before the `index_fallback` catch-all below, which would otherwise
-    # swallow this pattern first. `path` is [\s\S]+, not .+: `.` never matches a newline,
+    # Always under the bare project id, whatever version the landing page is:
+    # nested under version 1's `index` path, and beside a republish's `...vN`
+    # path. Either way a file is in the same directory as the landing page that
+    # links to it, which Google Scholar requires of citation_pdf_url -- see
+    # PublicationFileDownloadView's docstring. Must come before the
+    # `index_fallback` catch-all below, which would otherwise swallow this
+    # pattern first. `path` is [\s\S]+, not .+: `.` never matches a newline,
     # which is legal in a filename -- with .+, reverse() raised for a name with a newline
     # inside it (failing the landing page's whole JSON-LD), and URLs for a name ending in one
     # reversed fine but never resolved.

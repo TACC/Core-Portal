@@ -442,13 +442,15 @@ def _get_landing_page_url(project_id, version, request):
 
 
 def _get_publication_file_url(project_id, path, request):
-    """Build the same-subdirectory-as-the-landing-page URL for one published file, via public_
-    data/urls.py's `file_download` pattern -- nested directly under the same path `_get_landing_
-    page_url` resolves `index` against, so a file served from here can never end up outside the
-    landing page's own subdirectory the way the datafiles app's generic `/api/datafiles/tapis/
-    download/...` route can. Used for both citation_pdf_url and Croissant's `distribution`/
-    `contentUrl`, so a crawler following either one gets the file's own bytes -- see
-    PublicationFileDownloadView's docstring.
+    """Build the URL for one published file, via public_data/urls.py's `file_download` pattern:
+    `<published-datasets mount>/<prefix>.<project id>/files/<path>`. It always uses the bare
+    project id, whatever version the landing page is, so it's nested under version 1's landing
+    page path and sits beside a republish's `...vN` one. Either way the file is in the same
+    directory as the landing page, which Scholar requires of citation_pdf_url -- unlike the
+    datafiles app's generic `/api/datafiles/tapis/download/...` route. Used for both
+    citation_pdf_url and Croissant's `distribution`/`contentUrl`, so a crawler following either one
+    gets the file's own bytes -- see PublicationFileDownloadView's docstring. The URL doesn't name
+    a version: after a republish, the same URL serves the new version's file.
 
     `path` must be the file's raw (not percent-encoded) path: reverse() percent-encodes its own
     kwargs, so passing an already-quote()'d path here would double-encode it.
@@ -1153,20 +1155,22 @@ def _stream_published_file(system, path):
 
 
 class PublicationFileDownloadView(View):
-    """Serve one published file's bytes at a URL nested under its publication's own
-    landing-page path (public_data/urls.py's `file_download` pattern), rather than the datafiles
-    app's generic `/api/datafiles/tapis/download/...` route. Two reasons: Google Scholar requires
-    citation_pdf_url to resolve in the same subdirectory as the citing landing page, and every
-    consumer of citation_pdf_url/`contentUrl` expects the file itself -- see
-    _stream_published_file's docstring for why the generic route can't provide that.
+    """Serve one published file's bytes at a URL in the same directory as its publication's
+    landing page (public_data/urls.py's `file_download` pattern, under the bare project id --
+    see _get_publication_file_url), rather than the datafiles app's generic
+    `/api/datafiles/tapis/download/...` route. Two reasons: Google Scholar requires citation_pdf_url
+    to resolve in the same subdirectory as the citing landing page, and every consumer of
+    citation_pdf_url/`contentUrl` expects the file itself -- see _stream_published_file's docstring
+    for why the generic route can't provide that. It always serves the publication's current
+    version's file.
 
     When PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL is configured, this redirects (302) to the file
     on that public web mirror (e.g. web.corral), which serves byte ranges and multi-GB files
-    directly -- the URL in citation_pdf_url/`contentUrl` stays under the landing page's own path
+    directly -- the URL in citation_pdf_url/`contentUrl` stays in the landing page's directory
     either way. Otherwise it falls back to relaying the bytes from Tapis.
 
     PDFs are always relayed, never redirected: citation_pdf_url points at a PDF, and Scholar
-    requires it in the landing page's own subdirectory without saying whether it follows a
+    requires it in the landing page's subdirectory without saying whether it follows a
     redirect to another host. Relaying keeps the PDF's bytes on the portal host. Publication PDFs
     are papers, not multi-GB data, so holding a uWSGI worker for one is acceptable.
 
