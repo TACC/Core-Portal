@@ -9,7 +9,7 @@ async function postTicketReply({
   formData: FormData;
 }) {
   const result = await apiClient.post(
-    `/api/tickets/${ticketId}/history/`,
+    `/api/tickets/${ticketId}/history`,
     formData
   );
   console.log(result.data);
