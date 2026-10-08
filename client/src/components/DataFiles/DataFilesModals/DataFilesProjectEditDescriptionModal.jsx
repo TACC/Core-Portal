@@ -9,6 +9,7 @@ import styles from './DataFilesProjectEditDescription.module.scss';
 import { useAddonComponents } from 'hooks/datafiles';
 import getDefaultProjectSystem from 'utils/getDefaultProjectSystem';
 import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DataFilesProjectEditDescriptionModal = () => {
   const dispatch = useDispatch();
@@ -30,20 +31,24 @@ const DataFilesProjectEditDescriptionModal = () => {
       state.projects.operation.error
     );
   });
-  const minDescriptionLength =
-    useSelector((state) => state.workbench.config.minDescriptionLength) ?? 50;
-  const maxTitleLength =
-    useSelector((state) => state.workbench.config.maxTitleLength) ?? 150;
-  const enableWorkspaceKeywords =
-    useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
-    true;
+
+  const {
+    data: {
+      portalName,
+      config: {
+        minDescriptionLength = 50,
+        maxTitleLength = 150,
+        enableWorkspaceKeywords = true,
+      },
+    },
+  } = useWorkbenchConfig();
+
   const sharedWorkspacesDisplayName = useSelector((state) =>
     getSharedWorkspaceDisplayName(
       getDefaultProjectSystem(state.systems.storage.configuration)?.name
     )
   );
 
-  const portalName = useSelector((state) => state.workbench.portalName);
   const { DataFilesProjectEditDescriptionModalAddon } = useAddonComponents({
     portalName,
   });

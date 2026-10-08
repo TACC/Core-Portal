@@ -1,10 +1,9 @@
 import React from 'react';
-import renderComponent from 'utils/testing';
+import renderComponent, { workbenchConfig } from 'utils/testing';
 import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
 import Workbench from './Workbench';
 import { initialState as onboarding } from '../../redux/reducers/onboarding.reducers';
-import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
 // TODOv3: dropV2Jobs
@@ -19,7 +18,6 @@ import { Route, Routes } from 'react-router-dom';
 /* state required to render workbench/dashboard */
 const state = {
   authenticatedUser,
-  workbench,
   onboarding,
   notifications,
   introMessageComponents,
@@ -36,18 +34,14 @@ describe('workbench', () => {
     const history = createMemoryHistory({ initialEntries: ['/workbench'] });
     const store = mockStore({
       ...state,
-      workbench: {
-        ...workbench,
-        setupComplete: false,
-        loading: false,
-      },
     });
     const { getByText } = renderComponent(
       <Routes>
         <Route path="/workbench/*" element={<Workbench />} />
       </Routes>,
       store,
-      history
+      history,
+      { ...workbenchConfig, setupComplete: false }
     );
     expect(
       getByText(
@@ -59,11 +53,6 @@ describe('workbench', () => {
     const history = createMemoryHistory({ initialEntries: ['/workbench'] });
     const store = mockStore({
       ...state,
-      workbench: {
-        ...workbench,
-        setupComplete: true,
-        loading: false,
-      },
     });
 
     const { getByText } = renderComponent(

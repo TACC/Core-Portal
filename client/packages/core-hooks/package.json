@@ -12,6 +12,7 @@
   "type": "module",
   "dependencies": {
     "@tanstack/react-query": "catalog:",
+    "@tacc/core-queries": "workspace:",
     "axios": "catalog:"
   },
   "devDependencies": {

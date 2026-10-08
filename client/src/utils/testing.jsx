@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import {
   BrowserRouter,
   unstable_HistoryRouter as Router,
@@ -6,48 +6,59 @@ import {
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { workbenchJSON } from '@tacc/test-fixtures';
 
-export default function renderComponent(component, store, history) {
+export const workbenchConfig = workbenchJSON.response;
+
+export default function renderComponent(
+  component,
+  store,
+  history,
+  initialConfig
+) {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+
+  // Set workbench data synchronously to avoid having to wait for config in each test.
+  queryClient.setQueryData(
+    ['workbench'],
+    initialConfig ?? workbenchJSON.response
+  );
+
   if (history) {
     const routerHistory = {
       ...history,
       listen: (listener) =>
         history.listen((location, action) => listener({ location, action })),
     };
-
-    return render(
-      <QueryClientProvider
-        client={
-          new QueryClient({
-            defaultOptions: {
-              queries: {
-                retry: false,
-              },
-            },
-          })
-        }
-      >
-        <Provider store={store}>
-          <Router history={routerHistory}>{component}</Router>
-        </Provider>
-      </QueryClientProvider>
-    );
+    return {
+      queryClient,
+      ...render(
+        <Suspense>
+          <QueryClientProvider client={queryClient}>
+            <Provider store={store}>
+              <Router history={routerHistory}>{component}</Router>
+            </Provider>
+          </QueryClientProvider>
+        </Suspense>
+      ),
+    };
   }
-  return render(
-    <QueryClientProvider
-      client={
-        new QueryClient({
-          defaultOptions: {
-            queries: {
-              retry: false,
-            },
-          },
-        })
-      }
-    >
-      <Provider store={store}>
-        <BrowserRouter>{component}</BrowserRouter>
-      </Provider>
-    </QueryClientProvider>
-  );
+  return {
+    queryClient,
+    ...render(
+      <Suspense>
+        <QueryClientProvider client={queryClient}>
+          <Provider store={store}>
+            <BrowserRouter>{component}</BrowserRouter>
+          </Provider>
+        </QueryClientProvider>
+      </Suspense>
+    ),
+  };
 }

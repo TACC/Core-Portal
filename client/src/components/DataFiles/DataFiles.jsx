@@ -27,6 +27,7 @@ import { useSystemRole } from './DataFilesProjectMembers/_cells/SystemRoleSelect
 import DataFilesPublicationsList from './DataFilesPublicationsList/DataFilesPublicationsList';
 import DataFilesReviewProjectList from './DataFilesReviewProjectsList/DataFilesReviewProjectList';
 import { getDecodedPath } from 'utils/datafilesUtil';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DefaultSystemRedirect = () => {
   const systems = useSelector(
@@ -103,7 +104,9 @@ const DataFileRoute = () => {
 };
 
 const DataFilesSwitch = React.memo(() => {
-  const portalName = useSelector((state) => state.workbench.portalName);
+  const {
+    data: { portalName },
+  } = useWorkbenchConfig();
 
   const { DataFilesProjectPublish, DataFilesProjectReview } =
     useAddonComponents({ portalName });
@@ -151,9 +154,12 @@ const DataFiles = () => {
   } = useSystems();
 
   const systems = allSystems.filter((s) => !s.hidden);
-  const noPHISystem = useSelector(
-    (state) => state.workbench.config.noPHISystem
-  );
+
+  const {
+    data: {
+      config: { noPHISystem },
+    },
+  } = useWorkbenchConfig();
 
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user.username

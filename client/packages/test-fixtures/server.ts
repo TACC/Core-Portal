@@ -1,8 +1,9 @@
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { newsHandlers } from './handlers/news';
 import { ticketsHandlers } from './handlers/tickets';
+import { workbenchHandlers } from './handlers/workbench';
 
-import { http, HttpResponse } from 'msw';
 const exampleHandler = [
   http.get('https://api.example.com/user', () => {
     return HttpResponse.json({
@@ -15,5 +16,6 @@ const exampleHandler = [
 export const server = setupServer(
   ...newsHandlers,
   ...ticketsHandlers,
+  ...workbenchHandlers,
   ...exampleHandler
 );

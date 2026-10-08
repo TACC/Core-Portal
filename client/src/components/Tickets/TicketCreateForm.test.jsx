@@ -4,7 +4,6 @@ import { screen, waitFor } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import configureStore from 'redux-mock-store';
 import TicketCreateForm from './TicketCreateForm';
-import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 import { server } from '@tacc/test-fixtures';
 import { http, HttpResponse } from 'msw';
 
@@ -43,9 +42,7 @@ async function doFormCompletion(container, user) {
 
 describe('TicketCreateForm', () => {
   it('renders form for un-authenticated users', () => {
-    const store = mockStore({
-      workbench,
-    });
+    const store = mockStore({});
 
     const { getAllByText } = renderComponent(
       <TicketCreateForm provideDashBoardLinkOnSuccess={true} />,
@@ -55,9 +52,7 @@ describe('TicketCreateForm', () => {
   });
 
   it('renders form with authenticated user information', () => {
-    const store = mockStore({
-      workbench,
-    });
+    const store = mockStore({});
 
     const { getAllByText, getByDisplayValue } = renderComponent(
       <TicketCreateForm
@@ -74,9 +69,7 @@ describe('TicketCreateForm', () => {
 
   it('renders spinner when creating a ticket', async () => {
     const user = userEvent.setup();
-    const store = mockStore({
-      workbench,
-    });
+    const store = mockStore({});
 
     const { container } = renderComponent(
       <TicketCreateForm
@@ -92,9 +85,7 @@ describe('TicketCreateForm', () => {
 
   it('renders a ticket create ID upon success', async () => {
     const user = userEvent.setup();
-    const store = mockStore({
-      workbench,
-    });
+    const store = mockStore({});
 
     const { container } = renderComponent(
       <TicketCreateForm
@@ -114,9 +105,7 @@ describe('TicketCreateForm', () => {
 
   it('renders a ticket creation error', async () => {
     const user = userEvent.setup();
-    const store = mockStore({
-      workbench,
-    });
+    const store = mockStore({});
 
     server.use(
       http.post('/api/tickets/', () => new HttpResponse(null, { status: 403 }))

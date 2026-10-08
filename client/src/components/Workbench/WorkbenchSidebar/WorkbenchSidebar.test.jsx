@@ -1,11 +1,10 @@
 import React from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { render } from '@testing-library/react';
+import { Route, Routes } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
-import { initialState as workbench } from '../../../redux/reducers/workbench.reducers';
 import { initialState as notifications } from '../../../redux/reducers/notifications.reducers';
 import WorkbenchSidebar from './index';
+import renderComponent from 'utils/testing';
 
 const PUBLIC_PAGES = [
   'Dashboard',
@@ -36,23 +35,22 @@ function getPath(page) {
   }
   return path;
 }
-function renderSideBar(store, showUIPatterns) {
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={['/workbench']}>
-        <Routes>
-          <Route
-            path="/workbench/*"
-            element={
-              <WorkbenchSidebar
-                showUIPatterns={showUIPatterns}
-                loading={false}
-              />
-            }
-          />
-        </Routes>
-      </MemoryRouter>
-    </Provider>
+function renderSideBar(store, showUIPatterns, initialState) {
+  const history = createMemoryHistory();
+  history.push('/workbench');
+  return renderComponent(
+    <Routes>
+      <Route
+        path="/workbench/*"
+        element={
+          <WorkbenchSidebar showUIPatterns={showUIPatterns} loading={false} />
+        }
+      />
+    </Routes>,
+
+    store,
+    history,
+    initialState
   );
 }
 
@@ -61,15 +59,6 @@ describe('workbench sidebar', () => {
   it.each(PUBLIC_PAGES)('should have a link to the %s page', (page) => {
     const { getByText, queryByRole } = renderSideBar(
       mockStore({
-        workbench: {
-          ...workbench,
-          config: {
-            hideApps: false,
-            hideDataFiles: false,
-            hideAllocations: false,
-            hideSystemStatus: false,
-          },
-        },
         notifications,
       }),
       false
@@ -83,34 +72,34 @@ describe('workbench sidebar', () => {
     expect(queryByRole('status')).toBeNull();
   });
 
-  it.each(APP_DATA_PAGES)('should not have a link to the %s page', (page) => {
-    const { queryByText, queryByRole } = renderSideBar(
-      mockStore({
-        workbench: {
-          ...workbench,
+  it.each(APP_DATA_PAGES)(
+    'should not have a link to the %s page',
+    async (page) => {
+      const { queryByText, queryByRole } = renderSideBar(
+        mockStore({
+          notifications,
+        }),
+        false,
+        {
           config: {
             hideApps: true,
             hideDataFiles: true,
             hideAllocations: true,
             hideSystemStatus: true,
           },
-        },
-        notifications,
-      }),
-      false
-    );
-    const path = getPath(page);
-    expect(queryByText(page)).not.toBeInTheDocument();
-    expect(queryByRole('status')).toBeNull();
-  });
+        }
+      );
+
+      const path = getPath(page);
+      //await waitForElementToBeRemoved(() => screen.getByText(page));
+      expect(queryByText(page)).not.toBeInTheDocument();
+      expect(queryByRole('status')).toBeNull();
+    }
+  );
 
   it('should have a notification badge', () => {
     const { getByRole } = renderSideBar(
       mockStore({
-        workbench: {
-          ...workbench,
-          config: { hideApps: false, hideDataFiles: false },
-        },
         notifications: { list: { unread: 1 } },
       }),
       false
@@ -123,7 +112,6 @@ describe('workbench sidebar', () => {
   it.each(DEBUG_PAGES)('is not available', (page) => {
     const { queryByText } = renderSideBar(
       mockStore({
-        workbench,
         notifications,
       }),
       false
@@ -134,14 +122,6 @@ describe('workbench sidebar', () => {
   it.each(DEBUG_PAGES)('is available in debug mode', (page) => {
     const { getByText } = renderSideBar(
       mockStore({
-        workbench: {
-          status: { debug: true },
-          config: {
-            hideApps: false,
-            hideDataFiles: false,
-            hideAllocations: false,
-          },
-        },
         notifications,
       }),
       true

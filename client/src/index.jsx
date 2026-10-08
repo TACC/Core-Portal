@@ -10,17 +10,7 @@ import {
 } from '@tanstack/react-query';
 const AppRouter = React.lazy(() => import('./components/Workbench'));
 import store from './redux/store';
-
-const queryClient = new QueryClient({
-  mutationCache: new MutationCache({
-    onSuccess: (_data, _variables, _context, mutation) => {
-      console.log(mutation.options.mutationKey);
-      queryClient.invalidateQueries({
-        queryKey: mutation.options.mutationKey,
-      });
-    },
-  }),
-});
+import { queryClient } from './queryClient';
 
 const root = createRoot(document.getElementById('react-root'));
 root.render(

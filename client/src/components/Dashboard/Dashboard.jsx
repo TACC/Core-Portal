@@ -10,6 +10,7 @@ import * as ROUTES from '../../constants/routes';
 import './Dashboard.global.css';
 import styles from './Dashboard.module.css';
 import CustomDashboardSection from './CustomDashboardSection';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 function getPanelCount(standardApps = [], optionalApps = [], customApps = []) {
   return standardApps.length + optionalApps.length + customApps.length;
@@ -17,11 +18,16 @@ function getPanelCount(standardApps = [], optionalApps = [], customApps = []) {
 
 function Dashboard() {
   const {
-    hideApps,
-    hideManageAccount,
-    showUserNews = false,
-    customDashboardSection,
-  } = useSelector((state) => state.workbench.config);
+    data: {
+      config: {
+        hideApps,
+        hideManageAccount,
+        showUserNews = false,
+        customDashboardSection,
+      },
+    },
+  } = useWorkbenchConfig();
+
   const { hideSystemMonitor } = useSelector((state) => state.systemMonitor);
   const panelCount = getPanelCount(
     ['DashboardTickets', ...(showUserNews ? ['DashboardUserNews'] : [])],

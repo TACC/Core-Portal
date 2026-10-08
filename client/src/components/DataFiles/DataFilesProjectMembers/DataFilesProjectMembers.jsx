@@ -7,6 +7,7 @@ import { SystemRoleSelector, ProjectRoleSelector } from './_cells';
 import styles from './DataFilesProjectMembers.module.scss';
 import { useSystemRole } from './_cells/SystemRoleSelector';
 import './DataFilesProjectMembers.scss';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DataFilesProjectMembers = ({
   projectId,
@@ -23,9 +24,13 @@ const DataFilesProjectMembers = ({
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user.username
   );
-  const projectsEnableMetadata = useSelector(
-    (state) => state.workbench.config.projectsEnableMetadata
-  );
+
+  const {
+    data: {
+      config: { projectsEnableMetadata },
+    },
+  } = useWorkbenchConfig();
+
   const { query: authenticatedUserQuery } = useSystemRole(
     projectId ?? null,
     authenticatedUser ?? null

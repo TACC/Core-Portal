@@ -5,6 +5,7 @@ import { Button } from '_common';
 import { useFileListing } from 'hooks/datafiles';
 import { MetadataTitle } from '_common/ProjectMetadata';
 import useDrpDatasetModals from '../utils/hooks/useDrpDatasetModals';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DataFilesProjectFileListingMetadataTitleAddon = ({
   folderMetadata,
@@ -12,7 +13,9 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({
   system,
   path,
 }) => {
-  const portalName = useSelector((state) => state.workbench.portalName);
+  const {
+    data: { portalName },
+  } = useWorkbenchConfig();
   const { projectId } = useSelector((state) => state.projects.metadata);
   const { loading } = useFileListing('FilesListing');
 

@@ -28,7 +28,6 @@ import watchProfile from './profile.sagas';
 
 import { watchPostRequestAccess } from './requestAccess.sagas';
 import { watchAuthenticatedUser } from './authenticated_user.sagas';
-import { watchWorkbench } from './workbench.sagas';
 import {
   watchFetchIntroMessageComponents,
   watchSaveIntroMessageComponents,
@@ -50,9 +49,7 @@ function* watchStartCustomSaga() {
 }
 
 function* startCustomSaga(action) {
-  const portalName = yield select((state) => {
-    return state.workbench.portalName;
-  });
+  const portalName = action.payload.portalName;
 
   const { default: customSaga } = yield import(
     `./_custom/${portalName.toLowerCase()}.sagas.js`
@@ -93,7 +90,6 @@ export default function* rootSaga() {
     watchAuthenticatedUser(),
     watchSocket(),
     watchFetchNotifications(),
-    watchWorkbench(),
     watchFetchIntroMessageComponents(),
     watchFetchCustomMessages(),
     watchSaveIntroMessageComponents(),
