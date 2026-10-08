@@ -513,6 +513,36 @@ def test_publish_project_republish_keeps_is_indexable(mocker, settings, is_index
     assert publication.is_indexable is is_indexable
 
 
+def test_publish_project_republish_keeps_original_publication_date(mocker, settings):
+    """A republish keeps the first publish's date everywhere it's stored, and DataCite's Issued
+    date is built from it too; only `version` (and Publication.last_updated) move on."""
+    fixtures = _setup_publish_project_fixtures(settings, existing_doi="10.5555/existing-doi")
+    fixtures.source_project.value["publicationDate"] = "2024-01-15T12:00:00Z"
+    fixtures.source_project.save()
+    v2_project = create_project(f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.test.project-1v2", value={})
+
+    mock_datacite_json = mocker.patch(f"{DIR}.get_datacite_json", return_value={"titles": []})
+    mocker.patch(f"{DIR}.upsert_datacite_json", return_value={"data": {"id": "10.5555/existing-doi"}})
+    mocker.patch(f"{DIR}.upload_metadata_file")
+    mocker.patch(f"{DIR}.index_publication")
+    mocker.patch(f"{DIR}.service_account")
+    mocker.patch(f"{DIR}._transfer_files", return_value=SimpleNamespace(uuid="transfer-uuid-8"))
+    mocker.patch(f"{DIR}._transfer_cover_image")
+    mocker.patch.object(poll_tapis_file_transfer, "apply_async")
+
+    publish_project(project_id="test.project-1", version=2)
+
+    datacite_tree = mock_datacite_json.call_args.args[0]
+    assert datacite_tree.nodes["NODE_ROOT"]["value"]["publicationDate"] == "2024-01-15T12:00:00Z"
+    source_project = ProjectMetadata.objects.get(pk=fixtures.source_project.pk)
+    assert source_project.value["publicationDate"] == "2024-01-15T12:00:00Z"
+    v2_project.refresh_from_db()
+    assert v2_project.value["publicationDate"] == "2024-01-15T12:00:00Z"
+    publication = Publication.objects.get(project_id="test.project-1")
+    assert publication.value["publicationDate"] == "2024-01-15T12:00:00Z"
+    assert publication.tree["nodes"][0]["value"]["publicationDate"] == "2024-01-15T12:00:00Z"
+
+
 def test_publish_project_reuses_existing_doi(mocker, settings):
     _setup_publish_project_fixtures(settings, existing_doi="10.5555/existing-doi")
 

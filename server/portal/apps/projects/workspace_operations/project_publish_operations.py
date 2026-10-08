@@ -407,6 +407,12 @@ def publish_project(self, project_id: str, version: int | None = 1):
             )
 
             source_project = ProjectMetadata.get_project_by_id(source_project_id)
+            # The first publish's date, kept on every republish so `datePublished`, the citation
+            # date and DataCite's `Issued` date all stay the original; what changed in a republish
+            # is carried by `version` and `dateModified` instead. It's written into the tree here so
+            # get_datacite_json's Issued date reads it too.
+            publication_date = source_project.value.get("publicationDate") or published_project.created
+            publication_tree.nodes["NODE_ROOT"]["value"]["publicationDate"] = publication_date
 
             try:
                 # Mint a DataCite DOI
@@ -425,16 +431,16 @@ def publish_project(self, project_id: str, version: int | None = 1):
 
             # Update project metadata with datacite doi
             source_project.value["doi"] = doi
-            source_project.value["publicationDate"] = published_project.created
+            source_project.value["publicationDate"] = publication_date
             source_project.save()
 
             pub_tree = nx.node_link_graph(published_project.project_graph.value)
             pub_tree.nodes["NODE_ROOT"]["version"] = version
             pub_tree.nodes["NODE_ROOT"]["value"]["doi"] = doi
-            pub_tree.nodes["NODE_ROOT"]["value"]["publicationDate"] = published_project.created
+            pub_tree.nodes["NODE_ROOT"]["value"]["publicationDate"] = publication_date
             published_project.project_graph.value = nx.node_link_data(pub_tree)
             published_project.value["doi"] = doi
-            published_project.value["publicationDate"] = published_project.created
+            published_project.value["publicationDate"] = publication_date
             published_project.save()
 
             publication_values = {

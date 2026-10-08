@@ -1435,9 +1435,35 @@ def test_get_schema_org_json_creator_without_institution_or_orcid(rf, publicatio
 
     schema = get_schema_org_json(publication, publication.project_id, request)
     creator = schema["creator"][0]
-    assert creator == {"@type": "Person", "name": "No Orcid"}
+    assert creator == {"@type": "Person", "name": "No Orcid", "givenName": "No", "familyName": "Orcid"}
     assert "affiliation" not in creator
     assert "sameAs" not in creator
+
+
+@pytest.mark.parametrize(
+    "author,expected",
+    [
+        ({"first_name": " Ada ", "last_name": ""}, {"@type": "Person", "name": "Ada", "givenName": "Ada"}),
+        (
+            {"first_name": None, "last_name": "Lovelace"},
+            {"@type": "Person", "name": "Lovelace", "familyName": "Lovelace"},
+        ),
+    ],
+)
+def test_get_schema_org_json_creator_omits_empty_name_parts(rf, publication, author, expected):
+    publication.value = valid_base_meta(institution="", authors=[author])
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
+    assert schema["creator"] == [expected]
+
+
+def test_get_schema_org_json_dataset_id_is_landing_page_url(rf, publication):
+    """The Dataset node is named by its landing page, the same URL as `url`, whether or not
+    there's a DOI for `identifier`."""
+    request = make_request(rf)
+    schema = get_schema_org_json(publication, publication.project_id, request)
+    assert schema["@id"] == schema["url"] == _get_landing_page_url(publication.project_id, request)
 
 
 def test_get_schema_org_json_affiliation_comes_from_each_authors_own_institution(rf, publication):

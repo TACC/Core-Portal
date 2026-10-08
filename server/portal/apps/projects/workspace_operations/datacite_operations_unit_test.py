@@ -175,6 +175,25 @@ def test_get_datacite_json_omits_affiliation_without_institution(institution):
 
 @DATACITE_SETTINGS
 @pytest.mark.django_db
+@pytest.mark.parametrize(
+    "author,expected",
+    [
+        ({"first_name": "Ada", "last_name": ""}, {"name": "Ada", "nameType": "Personal", "givenName": "Ada"}),
+        (
+            {"first_name": None, "last_name": "Lovelace"},
+            {"name": "Lovelace", "nameType": "Personal", "familyName": "Lovelace"},
+        ),
+    ],
+)
+def test_get_datacite_json_omits_empty_name_parts(author, expected):
+    """A missing first or last name is left out rather than sent as an empty string."""
+    result = get_datacite_json(make_pub_graph(minimal_base_meta(authors=[author])), "test.project-1")
+
+    assert result["creators"] == [expected]
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
 def test_get_datacite_json_strips_institution_whitespace():
     base_meta = minimal_base_meta(
         institution="  Test University  ",

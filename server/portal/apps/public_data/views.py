@@ -604,12 +604,20 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
 
     creators = []
     for author in base_meta.get("authors", []):
-        name = f"{author.get('first_name') or ''} {author.get('last_name') or ''}".strip()
+        given_name = (author.get("first_name") or "").strip()
+        family_name = (author.get("last_name") or "").strip()
+        name = f"{given_name} {family_name}".strip()
         # A Person with an empty name is invalid schema.org, so a nameless author is left out.
         if not name:
             logger.warning(f"Publication {project_id} has an author with no name; leaving them out of `creator`.")
             continue
         creator = {"@type": "Person", "name": name}
+        # The separate name parts, as DataCite's `creators` sends them (datacite_operations.py),
+        # so a consumer doesn't have to guess where `name` splits. Each is left out when empty.
+        if given_name:
+            creator["givenName"] = given_name
+        if family_name:
+            creator["familyName"] = family_name
         # Only the author's own institution: the publication-level `institution` says where the
         # dataset is hosted, not where each of its authors works.
         institution = (author.get("institution") or "").strip()
@@ -620,9 +628,14 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
             creator["sameAs"] = same_as
         creators.append(creator)
 
+    landing_page_url = _get_landing_page_url(project_id, request)
     schema_org_json = {
         "@context": copy.deepcopy(CROISSANT_1_0_CONTEXT),
         "@type": "Dataset",
+        # Names the Dataset node itself, so it isn't a blank node other documents can't refer to.
+        # The landing page, not the DOI: `identifier`/`sameAs` already carry the DOI, and every
+        # other `@id` in this document is a URL on this same origin.
+        "@id": landing_page_url,
         "name": base_meta.get("title"),
         # Provisional -- removed below unless every REQUIRED_CROISSANT_FIELDS entry made it into
         # the final document. Set here only to keep its position in the serialized output.
@@ -639,8 +652,8 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
         # the publish workflow, so this is unconditionally true rather than sourced from
         # base_meta. Revisit if/when a restricted-access publication type is introduced.
         "isAccessibleForFree": True,
-        "url": _get_landing_page_url(project_id, request),
-        "identifier": f"https://doi.org/{doi}" if doi else _get_landing_page_url(project_id, request),
+        "url": landing_page_url,
+        "identifier": f"https://doi.org/{doi}" if doi else landing_page_url,
         # Recommended by both schema.org/Croissant -- a canonical URL for this exact dataset's
         # identity, distinct from `url` (the landing *page*, which could theoretically move).
         # Only worth stating when there's a real DOI to point at: with no DOI, `identifier`

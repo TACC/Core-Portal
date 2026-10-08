@@ -195,9 +195,12 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
             # for Scholar's citation_author tag.
             "name": ", ".join(part for part in (last_name, first_name) if part),
             "nameType": "Personal",
-            "givenName": first_name,
-            "familyName": last_name,
         }
+        # Left out when empty rather than sent as "": the name part is unknown, not blank.
+        if first_name:
+            creator["givenName"] = first_name
+        if last_name:
+            creator["familyName"] = last_name
         # Only the author's own institution: the publication-level `institution`
         # is the HostingInstitution contributor below, not where each author
         # works. DataCite requires `name` on every affiliation, and allows only
