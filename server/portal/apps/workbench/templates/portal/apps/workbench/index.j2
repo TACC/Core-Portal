@@ -83,6 +83,8 @@
         {% if entity.dc_creators %}<p>{{ entity.dc_creators|join:", " }}</p>{% endif %}
         {% if entity.description %}<p>{{ entity.description|linebreaksbr }}</p>{% endif %}
         {% if entity.doi_url %}<p>DOI: <a href="{{ entity.doi_url }}">{{ entity.doi_url }}</a></p>{% endif %}
+        {% if entity.apa_citation %}<p>Cite as: {{ entity.apa_citation }}</p>{% endif %}
+        {% if entity.bibtex_citation %}<pre>{{ entity.bibtex_citation }}</pre>{% endif %}
       </article>
     {% endfor %}
   </div>

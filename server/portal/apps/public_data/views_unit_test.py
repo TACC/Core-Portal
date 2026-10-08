@@ -12,6 +12,7 @@ from django.core.cache import cache
 from django.http import Http404
 from django.test import RequestFactory
 from django.urls import NoReverseMatch, resolve, reverse
+from django.utils.html import escape
 
 from portal.apps.projects.schema_models.license_urls import LICENSE_URLS
 from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json
@@ -23,9 +24,10 @@ from portal.apps.public_data.views import (
     _format_citation_author,
     _format_citation_date,
     _format_content_size,
+    _get_apa_citation,
+    _get_bibtex_citation,
     _get_citation_pdf_url,
     _get_citations,
-    _get_cite_as,
     _get_configured_origin,
     _get_cover_image_url,
     _get_distribution,
@@ -486,41 +488,41 @@ def test_get_publication_file_url(rf):
 
 
 # ---------------------------------------------------------------------------
-# _get_cite_as
+# _get_apa_citation
 # ---------------------------------------------------------------------------
 
 
-def test_get_cite_as_full_citation(rf, settings):
+def test_get_apa_citation_full_citation(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     request = make_request(rf)
     base_meta = {"authors": [full_author()], "publicationDate": "2024-05-01", "title": "Test Dataset"}
-    citation = _get_cite_as(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
+    citation = _get_apa_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
     assert citation == "Lovelace, A. (2024). Test Dataset. Test Publisher. https://doi.org/10.1234/test-doi"
 
 
-def test_get_cite_as_falls_back_to_landing_page_without_doi(rf, settings):
+def test_get_apa_citation_falls_back_to_landing_page_without_doi(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     request = make_request(rf)
     base_meta = {"authors": [], "title": "Test Dataset"}
-    citation = _get_cite_as(base_meta, None, "test.project-1", 1, request)
+    citation = _get_apa_citation(base_meta, None, "test.project-1", 1, request)
     landing_page = _get_landing_page_url("test.project-1", 1, request)
     assert citation == f"Test Dataset. Test Publisher. {landing_page}"
 
 
-def test_get_cite_as_omits_missing_parts(rf, settings):
+def test_get_apa_citation_omits_missing_parts(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = None
     request = make_request(rf)
     base_meta = {}
-    citation = _get_cite_as(base_meta, None, "test.project-1", 1, request)
+    citation = _get_apa_citation(base_meta, None, "test.project-1", 1, request)
     landing_page = _get_landing_page_url("test.project-1", 1, request)
     assert citation == landing_page
 
 
-def test_get_cite_as_skips_authors_without_last_name(rf, settings):
+def test_get_apa_citation_skips_authors_without_last_name(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     request = make_request(rf)
     base_meta = {"authors": [{"first_name": "NoLastName"}], "title": "Test Dataset"}
-    citation = _get_cite_as(base_meta, None, "test.project-1", 1, request)
+    citation = _get_apa_citation(base_meta, None, "test.project-1", 1, request)
     assert citation.startswith("Test Dataset.")
 
 
@@ -545,31 +547,115 @@ def test_get_cite_as_skips_authors_without_last_name(rf, settings):
         ([{"first_name": "Ada -", "last_name": " Lovelace "}], "Lovelace, A."),
     ],
 )
-def test_get_cite_as_formats_authors_apa_style(rf, settings, authors, expected_creators):
+def test_get_apa_citation_formats_authors_apa_style(rf, settings, authors, expected_creators):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     request = make_request(rf)
     base_meta = {"authors": authors, "publicationDate": "2024-05-01", "title": "Test Dataset"}
-    citation = _get_cite_as(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
+    citation = _get_apa_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
     assert citation == f"{expected_creators} (2024). Test Dataset. Test Publisher. https://doi.org/10.1234/test-doi"
 
 
-def test_get_cite_as_never_doubles_a_period(rf, settings):
+def test_get_apa_citation_never_doubles_a_period(rf, settings):
     """A creator list ending in an initial, or a title/publisher ending in punctuation, keeps its
     own mark instead of gaining a second one."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher Inc."
     request = make_request(rf)
     base_meta = {"authors": [full_author()], "title": "Is this a dataset?"}
-    citation = _get_cite_as(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
+    citation = _get_apa_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
     assert citation == "Lovelace, A. Is this a dataset? Test Publisher Inc. https://doi.org/10.1234/test-doi"
     assert ".." not in citation
 
 
-def test_get_cite_as_year_without_authors(rf, settings):
+def test_get_apa_citation_year_without_authors(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = None
     request = make_request(rf)
     base_meta = {"publicationDate": "2024-05-01", "title": "Test Dataset"}
-    citation = _get_cite_as(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
+    citation = _get_apa_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
     assert citation == "(2024). Test Dataset. https://doi.org/10.1234/test-doi"
+
+
+# ---------------------------------------------------------------------------
+# _get_bibtex_citation
+# ---------------------------------------------------------------------------
+
+
+def test_get_bibtex_citation_full_entry(rf, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    base_meta = {"authors": [full_author()], "publicationDate": "2024-05-01", "title": "Test Dataset"}
+
+    citation = _get_bibtex_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, make_request(rf))
+
+    assert citation == (
+        "@misc{lovelace2024,\n"
+        "  author = {Lovelace, Ada},\n"
+        "  title = {Test Dataset},\n"
+        "  publisher = {Test Publisher},\n"
+        "  year = {2024},\n"
+        "  doi = {10.1234/test-doi},\n"
+        "  url = {https://doi.org/10.1234/test-doi}\n"
+        "}"
+    )
+
+
+def test_get_bibtex_citation_without_doi_links_landing_page_and_omits_missing_parts(rf, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = None
+    request = make_request(rf)
+
+    citation = _get_bibtex_citation({"title": "Test Dataset"}, None, "test.project-1", 2, request)
+
+    landing_page = _get_landing_page_url("test.project-1", 2, request)
+    assert citation == f"@misc{{testproject1,\n  title = {{Test Dataset}},\n  url = {{{landing_page}}}\n}}"
+
+
+def test_get_bibtex_citation_joins_authors_with_and_skipping_those_without_last_name(rf, settings):
+    base_meta = {
+        "authors": [
+            {"first_name": "Ada", "last_name": "Lovelace"},
+            {"first_name": "NoLastName"},
+            {"first_name": None, "last_name": "Turing"},
+        ],
+        "title": "Test Dataset",
+    }
+
+    citation = _get_bibtex_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, make_request(rf))
+
+    assert "  author = {Lovelace, Ada and Turing},\n" in citation
+    assert citation.startswith("@misc{lovelace,\n")
+
+
+def test_get_bibtex_citation_escapes_tex_special_characters(rf, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "R&D {Lab}"
+    base_meta = {"title": "50% of #1 pores_x at $5 ~ a^b \\ c\nnext line", "authors": []}
+
+    citation = _get_bibtex_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, make_request(rf))
+
+    assert (
+        r"  title = {50\% of \#1 pores\_x at \$5 \textasciitilde{} a\textasciicircum{}b \textbackslash{} c next line},"
+        in citation
+    )
+    assert r"  publisher = {R\&D \{Lab\}}," in citation
+
+
+def test_get_bibtex_citation_keeps_doi_verbatim_but_drops_braces(rf, settings):
+    citation = _get_bibtex_citation({"title": "T"}, "10.1234/a_b{c}", "test.project-1", 1, make_request(rf))
+
+    assert "  doi = {10.1234/a_bc},\n" in citation
+
+
+@pytest.mark.parametrize(
+    "last_name,date,expected_key",
+    [
+        ("Gödel", "2024-05-01", "godel2024"),
+        ("O'Brien-Smith", "", "obriensmith"),
+        ("李", "2024-05-01", "testproject1"),
+    ],
+)
+def test_get_bibtex_citation_key(rf, last_name, date, expected_key):
+    base_meta = {"authors": [{"first_name": "A", "last_name": last_name}], "publicationDate": date, "title": "T"}
+
+    citation = _get_bibtex_citation(base_meta, None, "test.project-1", 1, make_request(rf))
+
+    assert citation.startswith(f"@misc{{{expected_key},\n")
 
 
 # ---------------------------------------------------------------------------
@@ -1859,6 +1945,24 @@ def test_index_view_renders_visible_summary_inside_react_root(client, publicatio
     assert "<p>Ada Lovelace</p>" in summary
     assert "<p>Line one &amp; &lt;two&gt;<br>Line three</p>" in summary
     assert '<a href="https://doi.org/10.1234/test-doi">https://doi.org/10.1234/test-doi</a>' in summary
+
+
+def test_index_view_summary_shows_apa_and_bibtex_citations(client, settings, publication):
+    """The APA citation is shown for readers, and the BibTeX entry the JSON-LD gives as citeAs is
+    shown with it, both HTML-escaped."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    publication.value = valid_base_meta(title="Rocks & <pores>")
+    publication.save()
+    body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+    summary = _react_root(body)
+
+    assert (
+        "<p>Cite as: Lovelace, A. (2024). Rocks &amp; &lt;pores&gt;. Test Publisher. https://doi.org/10.1234/test-doi</p>"
+        in summary
+    )
+    payload = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', body, re.DOTALL).group(1))
+    assert payload["citeAs"].startswith("@misc{lovelace2024,\n")
+    assert f"<pre>{escape(payload['citeAs'])}</pre>" in summary
 
 
 def test_index_view_summary_omits_missing_doi(client, publication):
