@@ -199,7 +199,7 @@ const DataFilesAddProjectModal = () => {
               ) : null}
               <Button
                 type="primary"
-                size="long"
+                size="auto"
                 attr="submit"
                 isLoading={isCreating}
               >

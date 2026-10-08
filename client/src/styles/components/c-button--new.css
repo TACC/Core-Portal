@@ -306,6 +306,7 @@ Styleguide Components.Button
 }
 .c-button--width-auto {
   width: auto;
+  max-width: none;
 }
 
 /* ELEMENTS */
