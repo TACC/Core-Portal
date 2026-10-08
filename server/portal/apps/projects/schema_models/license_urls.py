@@ -40,7 +40,7 @@ def resolve_license_url(license_value: str | None) -> str | None:
     mapped via LICENSE_URLS. Returns None for an empty/unset value *or* an
     unmapped label -- callers that need to distinguish "no license given"
     (fine, license is optional) from "a label with no LICENSE_URLS entry"
-    (a misconfiguration worth failing loudly over) check `license_value`and
+    (a misconfiguration worth failing loudly over) check `license_value` and
     `LICENSE_URLS` themselves; what counts as fatal differs by caller.
     """
 

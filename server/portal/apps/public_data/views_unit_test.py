@@ -222,12 +222,14 @@ def test_get_configured_origin_falls_back_when_prefix_not_absolute(rf, settings)
     [
         (0, "0 B"),
         (500, "500 B"),
-        (1023, "1023 B"),
+        (999, "999 B"),
+        (1000, "1.0 KB"),
         (2048, "2.0 KB"),
         (1024 * 1024, "1.0 MB"),
-        (1024 * 1024 * 1024, "1.0 GB"),
-        (1024**4, "1.0 TB"),
-        (1024**5, "1024.0 TB"),
+        (1500 * 1000, "1.5 MB"),
+        (1000**3, "1.0 GB"),
+        (1000**4, "1.0 TB"),
+        (1000**5, "1000.0 TB"),
     ],
 )
 def test_format_content_size(num_bytes, expected):
@@ -1748,6 +1750,41 @@ def test_index_view_renders_publication(client, settings, publication):
     assert response.context["publisher"] == "Test Publisher"
     assert "schema_org_json" in response.context
     assert response.context["canonical_url"] == "http://testserver" + url
+
+
+def _react_root(body):
+    match = re.search(r'<div id="react-root">(.*?)</div>', body, re.S)
+    assert match is not None
+    return match.group(1)
+
+
+def test_index_view_renders_visible_summary_inside_react_root(client, publication):
+    """Crawlers that don't run JavaScript see the title, authors, abstract and DOI in the page body."""
+    publication.value = valid_base_meta(description="Line one & <two>\nLine three")
+    publication.save()
+    body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+    summary = _react_root(body)
+
+    assert "<h1>Test Dataset</h1>" in summary
+    assert "<p>Ada Lovelace</p>" in summary
+    assert "<p>Line one &amp; &lt;two&gt;<br>Line three</p>" in summary
+    assert '<a href="https://doi.org/10.1234/test-doi">https://doi.org/10.1234/test-doi</a>' in summary
+
+
+def test_index_view_summary_omits_missing_doi(client, publication):
+    publication.value = valid_base_meta(doi=None)
+    publication.save()
+    body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+
+    assert "DOI:" not in _react_root(body)
+
+
+def test_index_view_leaves_react_root_empty_off_landing_pages(client, publication):
+    publication.is_published = False
+    publication.save()
+    body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+
+    assert _react_root(body).strip() == ""
 
 
 def test_index_view_missing_publication_404s(client):

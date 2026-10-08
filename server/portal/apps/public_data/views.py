@@ -201,15 +201,15 @@ def _format_content_size(num_bytes):
     docs describe the property as "File size in (mega/kilo)bytes", and both its and Croissant's
     published examples use a scaled, human-readable unit (e.g. "18MB"), not a raw byte count.
     A bare "<n> B" value is technically valid Text but unreadable at real file sizes, so this
-    scales to the largest unit that keeps the mantissa under 1024, matching the convention
-    those examples use.
+    scales to the largest unit that keeps the mantissa under 1000. Units are decimal (SI: 1 KB
+    = 1000 bytes), so the KB/MB labels mean what they say rather than KiB/MiB.
     """
 
     size = float(num_bytes)
     for unit in ("B", "KB", "MB", "GB", "TB"):
-        if size < 1024 or unit == "TB":
+        if size < 1000 or unit == "TB":
             return f"{int(size)} {unit}" if unit == "B" else f"{size:.1f} {unit}"
-        size /= 1024
+        size /= 1000
 
 
 def _get_distribution(file_objs, project_id, request):
@@ -809,6 +809,8 @@ def get_citation_context(pub, request):
             "title": base_meta.get("title"),
             "description": base_meta.get("description"),
             "doi": base_meta.get("doi"),
+            # For the visible summary's DOI link (index.html's `content` block).
+            "doi_url": doi_url(base_meta.get("doi")),
             "authors": authors,
             # Dublin Core wants DC.identifier to be a resolvable URI, not a bare DOI -- reuse
             # the same DOI-URL-or-landing-page value already resolved for the JSON-LD

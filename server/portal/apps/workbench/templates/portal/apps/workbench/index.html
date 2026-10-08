@@ -65,7 +65,21 @@
   <link rel="stylesheet" href="">
 {% endblock %}
 {% block content %}
-  <div id="react-root"></div>
+  <div id="react-root">
+    {% comment %}
+      A published dataset's summary, rendered on the server for crawlers that don't run JavaScript (Google Scholar
+      wants the abstract in the page itself) and so the structured data above matches visible content. The client
+      app's createRoot replaces it on mount.
+    {% endcomment %}
+    {% for entity in citation_context.entities %}
+      <article>
+        <h1>{{ entity.title }}</h1>
+        {% if entity.dc_creators %}<p>{{ entity.dc_creators|join:", " }}</p>{% endif %}
+        {% if entity.description %}<p>{{ entity.description|linebreaksbr }}</p>{% endif %}
+        {% if entity.doi_url %}<p>DOI: <a href="{{ entity.doi_url }}">{{ entity.doi_url }}</a></p>{% endif %}
+      </article>
+    {% endfor %}
+  </div>
 {% endblock %}
 {% block scripts %}
   <script> window.__INITIAL_SETUP_COMPLETE__ = {{ setup_complete|yesno:"true,false" }}; </script>
