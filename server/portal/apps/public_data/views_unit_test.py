@@ -1,6 +1,8 @@
 import json
 import posixpath
 import re
+from html.parser import HTMLParser
+from pathlib import Path
 from unittest.mock import patch
 from urllib.parse import unquote
 from xml.etree import ElementTree
@@ -2094,6 +2096,30 @@ def test_index_view_unpublished_publication_is_not_redirected(client, publicatio
     assert response.status_code == 200
 
 
+@pytest.mark.parametrize(
+    "path_template",
+    [
+        "/published-datasets/test.project.published.{project_id}",
+        "/published-datasets/test.project.published.{project_id}/",
+        "/published-datasets/test.project.published.{project_id}v1",
+        "/public-data/test.project.published.{project_id}",
+    ],
+)
+@patch("portal.apps.public_data.views.logger")
+def test_index_view_metadata_failure_is_not_redirected(mock_logger, client, publication, path_template):
+    """When the metadata fails to build there's no canonical URL to redirect to, so a
+    non-canonical URL renders the noindex shell where it's requested instead of 301ing."""
+    publication.value = valid_base_meta(title=None)
+    publication.save()
+
+    response = client.get(path_template.format(project_id=publication.project_id))
+
+    assert response.status_code == 200
+    assert "canonical_url" not in response.context
+    assert "schema_org_json" not in response.context
+    mock_logger.exception.assert_called_once()
+
+
 def test_index_view_fallback_route_has_no_publication_context(client):
     response = client.get("/published-datasets/not-a-real-project/")
     assert response.status_code == 200
@@ -2124,6 +2150,88 @@ def test_index_view_renders_json_ld_script_tag(client, settings, publication):
     assert payload["name"] == "Test Dataset"
     assert payload["license"] == "https://opendatacommons.org/licenses/by/1-0/"
     assert payload["@type"] == "Dataset"
+
+
+class _HeadParser(HTMLParser):
+    """Collects what a browser would see: <meta> tags by name/property, <title> text, the <h1>,
+    and the contents of each JSON-LD <script>. Like a browser, HTMLParser ends a <script> at the
+    first "</script", so text that broke out of the JSON-LD would show up as extra scripts here."""
+
+    def __init__(self):
+        super().__init__()
+        self.meta = {}
+        self.json_ld = []
+        self.text = {}
+        self._capture = None
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == "meta" and ("name" in attrs or "property" in attrs):
+            self.meta[attrs.get("name") or attrs["property"]] = attrs.get("content")
+        elif tag == "script" and attrs.get("type") == "application/ld+json":
+            self.json_ld.append("")
+            self._capture = "json_ld"
+        elif tag in ("title", "h1"):
+            self.text[tag] = ""
+            self._capture = tag
+
+    def handle_endtag(self, tag):
+        self._capture = None
+
+    def handle_data(self, data):
+        if self._capture == "json_ld":
+            self.json_ld[-1] += data
+        elif self._capture:
+            self.text[self._capture] += data
+
+
+def test_index_view_html_sensitive_metadata_stays_inside_its_tags(client, settings, publication):
+    """A title and description containing "</script>", quotes and "&" render end to end without
+    breaking out of the JSON-LD <script> or any <meta> attribute, and come back unchanged."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    title = 'Rocks </script><script>alert("t")</script> "quoted" & more'
+    description = f'{TEST_DESCRIPTION} </script><script>alert("d")</script> "quoted" & <b>bold</b>'
+    publication.value = valid_base_meta(title=title, description=description)
+    publication.save()
+
+    body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+    parser = _HeadParser()
+    parser.feed(body)
+
+    assert 'alert("t")</script>' not in body
+    assert 'alert("d")</script>' not in body
+    assert len(parser.json_ld) == 1
+    payload = json.loads(parser.json_ld[0])
+    assert payload["name"] == title
+    assert payload["description"] == description
+    for name in ("citation_title", "DC.title"):
+        assert parser.meta[name] == title
+    assert parser.meta["og:title"] == f"{title} | Test Publisher"
+    assert parser.text["title"] == f"{title} | Test Publisher"
+    assert parser.text["h1"] == title
+    assert parser.meta["description"] == parser.meta["og:description"]
+    assert parser.meta["description"].startswith(TEST_DESCRIPTION)
+
+
+WORKBENCH_TEMPLATES = Path(__file__).resolve().parents[1] / "workbench/templates/portal/apps/workbench"
+# The only blocks the two templates are meant to differ in: index.j2 is the client build's template,
+# with webpack asset placeholders, and index.html is the dev template, which loads Vite or includes
+# the build's output.
+_BUILD_ONLY_BLOCKS = re.compile(r"{%\s*block\s+(styles|scripts)\s*%}.*?{%\s*endblock\s*%}", re.S)
+
+
+def test_workbench_index_html_and_j2_agree_outside_styles_and_scripts():
+    """Tests render index.j2 (unit_test_settings.py), but local development renders index.html, and
+    the two are kept in sync by hand. Everything except the styles and scripts blocks -- the head
+    metadata, every block override and the server-rendered summary -- must be identical."""
+    j2 = (WORKBENCH_TEMPLATES / "index.j2").read_text()
+    html = (WORKBENCH_TEMPLATES / "index.html").read_text()
+
+    for template in (j2, html):
+        assert len(_BUILD_ONLY_BLOCKS.findall(template)) == 2
+        for block in ("google_citation_meta", "robots", "title", "head_extra", "content"):
+            assert re.search(rf"{{%\s*block\s+{block}\s*%}}", template), block
+    assert _BUILD_ONLY_BLOCKS.sub("", j2) == _BUILD_ONLY_BLOCKS.sub("", html)
 
 
 def test_index_view_renders_citation_and_dc_meta_tags(client, settings, publication):
