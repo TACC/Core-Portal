@@ -137,7 +137,7 @@ def _get_issued_date(base_meta):
     stored first-publish date on a republish, or the published project's `created` on a first publish.
     update_datacite_metadata's rebuild from a stored Publication reads that same date. It's a
     datetime in memory or an ISO string once saved (DjangoJSONEncoder). Today's date is only a
-    fallback for a tree with no usable date, the same "now" `publicationYear` uses.
+    fallback for a tree with no usable date. `publicationYear` is taken from this date.
     """
 
     stored = base_meta.get("publicationDate") or base_meta.get("publication_date")
@@ -254,8 +254,11 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
     datacite_json["types"] = {"resourceTypeGeneral": "Dataset", "resourceType": "Dataset"}
     datacite_json["publisher"] = settings.PORTAL_PUBLICATION_PUBLISHER
 
-    datacite_json["publicationYear"] = datetime.datetime.now().year
-    datacite_json["dates"] = [{"date": _get_issued_date(base_meta), "dateType": "Issued"}]
+    # The year comes from the Issued date, so the two (and the landing page's citeAs year) can't
+    # disagree. Only a first publish sends it: upsert_datacite_json drops it from an update.
+    issued_date = _get_issued_date(base_meta)
+    datacite_json["publicationYear"] = int(issued_date[:4])
+    datacite_json["dates"] = [{"date": issued_date, "dateType": "Issued"}]
 
     datacite_json["subjects"] = _get_subjects(base_meta)
     datacite_json["rightsList"] = _get_rights_list(base_meta, project_id)
@@ -302,22 +305,22 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
         }
     ]
 
+    # DataCite rejects an empty relatedIdentifier with a 422 at the publish event, so an entry
+    # whose link is blank is skipped rather than sent.
     datacite_json["relatedIdentifiers"] = []
     for r_data in base_meta.get("relatedDatasets", []):
-        identifier = {}
-        if {"datasetTitle", "datasetDescription", "datasetLink"} <= r_data.keys():
-            identifier["relationType"] = "References"
-            identifier["relatedIdentifier"] = r_data["datasetLink"]
-            identifier["relatedIdentifierType"] = "URL"
-            datacite_json["relatedIdentifiers"].append(identifier)
+        link = (r_data.get("datasetLink") or "").strip()
+        if {"datasetTitle", "datasetDescription"} <= r_data.keys() and link:
+            datacite_json["relatedIdentifiers"].append(
+                {"relationType": "References", "relatedIdentifier": link, "relatedIdentifierType": "URL"}
+            )
 
     for r_data in base_meta.get("relatedSoftware", []):
-        identifier = {}
-        if {"softwareTitle", "softwareDescription", "softwareLink"} <= r_data.keys():
-            identifier["relationType"] = "References"
-            identifier["relatedIdentifier"] = r_data["softwareLink"]
-            identifier["relatedIdentifierType"] = "URL"
-            datacite_json["relatedIdentifiers"].append(identifier)
+        link = (r_data.get("softwareLink") or "").strip()
+        if {"softwareTitle", "softwareDescription"} <= r_data.keys() and link:
+            datacite_json["relatedIdentifiers"].append(
+                {"relationType": "References", "relatedIdentifier": link, "relatedIdentifierType": "URL"}
+            )
 
     relation_mapping = {
         "linked_dataset": "IsPartOf",
@@ -326,19 +329,19 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
     }
 
     for r_data in base_meta.get("relatedPublications", []):
-        identifier = {}
-        if {"publicationLink"} <= r_data.keys():
-            publication_type = r_data.get("publicationType", None)
-            identifier["relationType"] = relation_mapping.get(publication_type, "References")
-            identifier["relatedIdentifier"] = r_data["publicationLink"]
-            identifier["relatedIdentifierType"] = "URL"
-            # Normalized to a bare DOI (projects/schema_models/doi.py), the form DataCite expects for
-            # relatedIdentifierType "DOI". An empty value, or one that isn't a DOI, keeps the link.
-            related_doi = normalize_doi(r_data.get("publicationDoi"))
-            if related_doi:
-                identifier["relatedIdentifier"] = related_doi
-                identifier["relatedIdentifierType"] = "DOI"
-            datacite_json["relatedIdentifiers"].append(identifier)
+        identifier = {"relationType": relation_mapping.get(r_data.get("publicationType"), "References")}
+        # Normalized to a bare DOI (projects/schema_models/doi.py), the form DataCite expects for
+        # relatedIdentifierType "DOI". An empty value, or one that isn't a DOI, falls back to the link;
+        # an entry with neither is skipped.
+        related_doi = normalize_doi(r_data.get("publicationDoi"))
+        link = (r_data.get("publicationLink") or "").strip()
+        if related_doi:
+            identifier.update(relatedIdentifier=related_doi, relatedIdentifierType="DOI")
+        elif link:
+            identifier.update(relatedIdentifier=link, relatedIdentifierType="URL")
+        else:
+            continue
+        datacite_json["relatedIdentifiers"].append(identifier)
 
     return datacite_json
 

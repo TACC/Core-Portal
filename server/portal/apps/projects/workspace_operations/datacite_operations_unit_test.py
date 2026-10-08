@@ -79,10 +79,16 @@ def test_get_datacite_json_minimal():
 
 @DATACITE_SETTINGS
 @pytest.mark.django_db
-def test_get_datacite_json_publication_year_is_current_year():
-    base_meta = minimal_base_meta()
-    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
-    assert result["publicationYear"] == datetime.datetime.now().year
+@pytest.mark.parametrize(
+    "stored,expected_year",
+    [("2019-11-30", 2019), (datetime.datetime(2021, 1, 1, 0, 0), 2021), (None, datetime.date.today().year)],
+)
+def test_get_datacite_json_publication_year_matches_issued_date(stored, expected_year):
+    """publicationYear comes from the Issued date (today's only when there's no stored date), so a
+    republish of an older dataset doesn't claim this year."""
+    result = get_datacite_json(make_pub_graph(minimal_base_meta(publicationDate=stored)), "test.project-1")
+    assert result["publicationYear"] == expected_year
+    assert result["dates"][0]["date"].startswith(str(expected_year))
 
 
 @DATACITE_SETTINGS
@@ -115,7 +121,7 @@ def test_get_datacite_json_issued_date_reads_snake_case_key():
 @pytest.mark.parametrize("stored", [None, "", "not a date", 2024])
 def test_get_datacite_json_issued_date_defaults_to_today(stored):
     """With no usable publicationDate in the tree (publish_project always writes one, so this is
-    only a fallback), the DOI is issued today -- the same "now" publicationYear uses."""
+    only a fallback), the DOI is issued today, and publicationYear is this year."""
     result = get_datacite_json(make_pub_graph(minimal_base_meta(publicationDate=stored)), "test.project-1")
     assert result["dates"] == [{"date": datetime.date.today().isoformat(), "dateType": "Issued"}]
 
@@ -471,6 +477,31 @@ def test_get_datacite_json_related_datasets_skipped_when_incomplete():
 
 @DATACITE_SETTINGS
 @pytest.mark.django_db
+@pytest.mark.parametrize("blank_link", ["", "   ", None])
+def test_get_datacite_json_related_datasets_and_software_skip_blank_links(blank_link):
+    """DataCite rejects an empty relatedIdentifier with a 422, so a blank link is never sent."""
+    base_meta = minimal_base_meta(
+        relatedDatasets=[{"datasetTitle": "D", "datasetDescription": "desc", "datasetLink": blank_link}],
+        relatedSoftware=[{"softwareTitle": "S", "softwareDescription": "desc", "softwareLink": blank_link}],
+    )
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["relatedIdentifiers"] == []
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+def test_get_datacite_json_related_links_are_trimmed():
+    base_meta = minimal_base_meta(
+        relatedDatasets=[
+            {"datasetTitle": "D", "datasetDescription": "desc", "datasetLink": " https://example.com/dataset "}
+        ]
+    )
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["relatedIdentifiers"][0]["relatedIdentifier"] == "https://example.com/dataset"
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
 def test_get_datacite_json_related_software_included_when_complete():
     base_meta = minimal_base_meta(
         relatedSoftware=[
@@ -599,6 +630,32 @@ def test_get_datacite_json_related_publications_skipped_without_link():
     base_meta = minimal_base_meta(relatedPublications=[{"publicationType": "context"}])
     result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
     assert result["relatedIdentifiers"] == []
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+@pytest.mark.parametrize("blank_link", ["", "   ", None])
+def test_get_datacite_json_related_publications_skipped_with_blank_link_and_no_doi(blank_link):
+    base_meta = minimal_base_meta(
+        relatedPublications=[{"publicationType": "context", "publicationLink": blank_link, "publicationDoi": ""}]
+    )
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["relatedIdentifiers"] == []
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+@pytest.mark.parametrize("blank_link", ["", None])
+def test_get_datacite_json_related_publications_uses_doi_without_link(blank_link):
+    base_meta = minimal_base_meta(
+        relatedPublications=[
+            {"publicationType": "cited_by", "publicationLink": blank_link, "publicationDoi": "10.5555/related-doi"}
+        ]
+    )
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["relatedIdentifiers"] == [
+        {"relationType": "IsCitedBy", "relatedIdentifier": "10.5555/related-doi", "relatedIdentifierType": "DOI"}
+    ]
 
 
 # ---------------------------------------------------------------------------
