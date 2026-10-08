@@ -35,7 +35,7 @@
       twitter:image/twitter:card are the only Twitter-specific tags needed here.
     {% endcomment %}
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="{{ settings.PORTAL_NAMESPACE }}">
+    <meta property="og:site_name" content="{% block og_site_name %}{{ settings.PORTAL_NAMESPACE }}{% endblock %}">
     {% comment %}
       Matches the `<html lang="en">` above (and DC.language/@language elsewhere in this document) -- og:locale
       wants the longer language_TERRITORY form, not a bare language code, so "en" becomes "en_US" here rather

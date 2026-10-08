@@ -299,6 +299,28 @@ Deployments are initiated via [Jenkins](https://jenkins01.tacc.utexas.edu/view/W
 2. Update deployment settings, particularly the `PORTAL_TAG` environment variable in [Core Portal Deployments](https://github.com/TACC/Core-Portal-Deployments) with new tag name
 3. Deploy new image with [Jenkins](https://jenkins01.tacc.utexas.edu/view/WMA%20CEP/job/Core_Portal_Deploy/)
 
+### Published Dataset Landing Pages and Sitemap
+
+Published datasets get server-rendered landing pages at `/published-datasets/<project id>` and a sitemap at `/published-datasets/sitemap.xml`. Camino's default nginx template doesn't route `/published-datasets` to the portal, so a deployment that publishes datasets needs its own nginx location for it. Without one, those URLs go to the CMS instead. DPMP's `publications.location.conf` in [Core Portal Deployments] is a working example:
+
+```nginx
+location ~ ^/published-datasets {
+    uwsgi_read_timeout 60s;
+    uwsgi_send_timeout 600s;
+    uwsgi_pass  portal_core;
+    include     /etc/nginx/uwsgi_params;
+    # Camino's cep-headers.conf sets `sub_filter_types *`. Limiting it to HTML keeps
+    # published files streamed through this route from losing their Content-Length.
+    sub_filter_types text/html;
+}
+```
+
+The deployment also needs to:
+
+- Advertise the sitemap in its own robots.txt with `Sitemap: https://<host>/published-datasets/sitemap.xml`. Camino serves `/robots.txt` from the deployment, not from `server/conf/nginx/robots.txt`, which is only for local development.
+- Keep non-production hosts out of search indexes, for example by sending an `X-Robots-Tag: noindex` header (DPMP's pprd does this).
+- Set `_PORTAL_PUBLICATION_DATACITE_URL_PREFIX` to the public host, so DOIs and canonical URLs point at the landing pages.
+
 ### Contributing
 
 #### Development Workflow

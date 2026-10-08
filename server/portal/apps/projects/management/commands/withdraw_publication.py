@@ -16,6 +16,12 @@ class Command(BaseCommand):
     DataCite the `hide` event, which moves the DOI from findable to registered: it still resolves to
     the tombstone page, but is no longer listed in DataCite's search or metadata feeds.
 
+    Withdrawing only changes what the portal and DataCite serve; it doesn't touch the files. Every
+    version's published Tapis system stays publicly shared (publish_project_callback's
+    shareSystemPublic), and any copy on the PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL web mirror stays
+    in place, so Tapis users can still list and download them, and so can anyone with a mirror URL.
+    To take the files down too, unshare those systems and remove the mirrored directories by hand.
+
     --restore sets is_published back to True and sends the `publish` event, which makes the DOI
     findable again. Once the DOI is findable (or there's no DataCite call to make), it also marks the
     landing page indexable -- which also recovers a publish whose publish_publication_doi task ran out

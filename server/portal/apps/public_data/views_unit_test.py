@@ -1815,6 +1815,28 @@ def test_index_view_renders_title_and_description_from_publication(client, publi
     assert TEST_DESCRIPTION in body
 
 
+@pytest.mark.parametrize("on_publication_route", [True, False])
+def test_index_view_names_publisher_on_landing_pages_only(client, settings, publication, on_publication_route):
+    """A landing page's title suffix and og:site_name name the publisher; every other page keeps
+    the portal namespace."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    if on_publication_route:
+        url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    else:
+        url = "/published-datasets/"
+    body = client.get(url).content.decode()
+
+    title = re.search(r"<title>(.*?)</title>", body, re.S).group(1)
+    og_title = re.search(r'<meta property="og:title" content="([^"]*)">', body).group(1)
+    site_name = re.search(r'<meta property="og:site_name" content="([^"]*)">', body).group(1)
+    if on_publication_route:
+        assert title == og_title == "Test Dataset | Test Publisher"
+        assert site_name == "Test Publisher"
+    else:
+        assert title == og_title == "test Workbench"
+        assert site_name == "test"
+
+
 def test_index_view_publication_route_is_indexable(client, publication):
     url = reverse("publications:index", kwargs={"project_id": publication.project_id})
     body = client.get(url).content.decode()
@@ -1840,6 +1862,7 @@ def test_index_view_head_values_have_no_surrounding_whitespace(client, publicati
         ("name", "robots"),
         ("name", "description"),
         ("property", "og:title"),
+        ("property", "og:site_name"),
         ("property", "og:description"),
         ("name", "twitter:card"),
     ]:

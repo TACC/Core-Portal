@@ -35,12 +35,17 @@
 {% comment %}
   The blocks below render inside <title> and meta `content` attributes, so each is kept on one line:
   any newline or indentation inside the block would end up in the value itself.
-  robots: max-image-preview:large lets Search show this page's cover image (og:image below) at full preview size in results instead of the small default thumbnail Google otherwise caps unannotated pages to -- harmless to request even for a publication with no cover image.
+  robots: max-image-preview:large lets Search show this page's cover image (og:image below) at full
+  preview size in results, instead of the small default thumbnail Google otherwise caps unannotated
+  pages to -- harmless to request even for a publication with no cover image.
+  title, og_title and og_site_name: a landing page names the publisher (PORTAL_PUBLICATION_PUBLISHER,
+  IndexView's `publisher`), the name the dataset is published under, rather than the portal namespace.
 {% endcomment %}
 {% block robots %}{% if citation_context %}index, follow, max-image-preview:large{% else %}{{ block.super }}{% endif %}{% endblock %}
-{% block title %}{% if citation_context.entities.0.title %}{{ citation_context.entities.0.title }} | {{ settings.PORTAL_NAMESPACE }}{% else %}{{ settings.PORTAL_NAMESPACE }} Workbench{% endif %}{% endblock %}
+{% block title %}{% if citation_context.entities.0.title %}{{ citation_context.entities.0.title }} | {{ publisher|default:settings.PORTAL_NAMESPACE }}{% else %}{{ settings.PORTAL_NAMESPACE }} Workbench{% endif %}{% endblock %}
 {% block meta_description %}{% if citation_context.entities.0.description %}{{ citation_context.entities.0.description|truncatechars:160 }}{% else %}{{ block.super }}{% endif %}{% endblock %}
-{% block og_title %}{% if citation_context.entities.0.title %}{{ citation_context.entities.0.title }} | {{ settings.PORTAL_NAMESPACE }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block og_title %}{% if citation_context.entities.0.title %}{{ citation_context.entities.0.title }} | {{ publisher|default:settings.PORTAL_NAMESPACE }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block og_site_name %}{% if citation_context %}{{ publisher|default:settings.PORTAL_NAMESPACE }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 {% block og_description %}{% if citation_context.entities.0.description %}{{ citation_context.entities.0.description|truncatechars:160 }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 {% block og_image %}
   {% if citation_context.cover_image_url %}
