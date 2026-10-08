@@ -13,6 +13,7 @@ from django.test import override_settings
 from django.urls import reverse
 
 from portal.apps.projects.workspace_operations.datacite_operations import (
+    DATACITE_SCHEMA_VERSION,
     DataCiteError,
     get_datacite_json,
     get_doi_publication_date,
@@ -721,6 +722,29 @@ def test_upsert_datacite_json_updates_and_strips_publication_year_when_doi_given
     assert "publicationYear" not in payload["data"]["attributes"]
     # The function pops the key from the caller's own dict, not just a copy.
     assert "publicationYear" not in datacite_json
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "doi,method,url",
+    [
+        (None, "POST", "https://api.test.datacite.org/dois"),
+        ("10.1234/existing", "PUT", "https://api.test.datacite.org/dois/10.1234/existing"),
+    ],
+)
+def test_datacite_schema_version_is_sent_on_create_and_update(requests_mock, doi, method, url):
+    """The payload get_datacite_json builds names the kernel-4 schema, and upsert_datacite_json
+    sends it on both a create (POST) and an update (PUT)."""
+    getattr(requests_mock, method.lower())(url, json={"data": {"id": doi or "10.1234/newly-minted"}})
+    datacite_json = get_datacite_json(make_pub_graph(minimal_base_meta()), "test.project-1")
+
+    upsert_datacite_json(datacite_json, doi=doi)
+
+    request = requests_mock.last_request
+    assert (request.method, request.url) == (method, url)
+    assert request.json()["data"]["attributes"]["schemaVersion"] == "http://datacite.org/schema/kernel-4"
+    assert DATACITE_SCHEMA_VERSION == "http://datacite.org/schema/kernel-4"
 
 
 @override_settings(

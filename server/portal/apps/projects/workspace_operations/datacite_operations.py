@@ -20,6 +20,11 @@ from portal.apps.publications.utils import get_landing_page_path
 
 logger = logging.getLogger(__name__)
 
+# The DataCite metadata schema every DOI's metadata is sent against: the kernel-4 family, whose
+# current 4.x release DataCite applies. Stated rather than left to DataCite's default, since the
+# payload uses 4.x-only fields (e.g. rightsIdentifier/rightsIdentifierScheme in `rightsList`).
+DATACITE_SCHEMA_VERSION = "http://datacite.org/schema/kernel-4"
+
 
 class DataCiteError(Exception):
     """DataCite rejected a request, or answered with something other than a JSON success body.
@@ -291,6 +296,8 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
     # landing page claims as canonical (see get_landing_page_path).
     datacite_json["url"] = f"{origin}{get_landing_page_path(project_id, version)}"
     datacite_json["prefix"] = settings.PORTAL_PUBLICATION_DATACITE_SHOULDER
+    # Sent on every create and update (see DATACITE_SCHEMA_VERSION).
+    datacite_json["schemaVersion"] = DATACITE_SCHEMA_VERSION
 
     # DataCite's schema requires an IETF BCP-47 / ISO 639-1 code here
     # (e.g. "en"), not the language's English name -- matches the
