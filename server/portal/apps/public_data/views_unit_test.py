@@ -1,4 +1,5 @@
 import json
+import posixpath
 import re
 from unittest.mock import patch
 from urllib.parse import unquote
@@ -918,11 +919,33 @@ def test_publication_file_download_view_redirects_to_web_mirror(rf, settings, re
     settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = WEB_BASE_URL
     request = make_request(rf)
 
-    response = PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path="files/paper.pdf")
+    response = PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path="a.csv")
 
     assert response.status_code == 302
-    assert response["Location"] == f"{WEB_BASE_URL}/test.project-1/files/paper.pdf"
+    assert response["Location"] == f"{WEB_BASE_URL}/test.project-1/a.csv"
     assert not requests_mock.called
+
+
+@pytest.mark.parametrize("path", ["files/paper.pdf", "files/PAPER.PDF"])
+def test_publication_file_download_view_streams_pdfs_despite_web_mirror(
+    rf, settings, requests_mock, v1_publication, path
+):
+    """A PDF is relayed from Tapis even with a web mirror configured, so citation_pdf_url's bytes
+    come from the portal host rather than a redirect to another one."""
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = WEB_BASE_URL
+    v1_publication.tree = entity_tree({"type": "file", "name": posixpath.basename(path), "path": f"/{path}"})
+    v1_publication.save()
+    requests_mock.get(
+        f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1/{path}",
+        content=b"%PDF-1.7 bytes",
+    )
+    request = make_request(rf)
+
+    response = PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path=path)
+
+    assert response.status_code == 200
+    assert response["Content-Type"] == "application/pdf"
+    assert b"".join(response.streaming_content) == b"%PDF-1.7 bytes"
 
 
 def test_publication_file_download_view_redirects_into_republished_versions_directory(

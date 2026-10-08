@@ -557,7 +557,8 @@ def _get_citation_pdf_url(file_objs, project_id, request):
 
     Scholar requires citation_pdf_url to resolve in the same subdirectory as the citing landing
     page, which _get_publication_file_url's `file_download` route guarantees -- the same route
-    `distribution`/`contentUrl` is built against, so the two always agree.
+    `distribution`/`contentUrl` is built against, so the two always agree. That route serves PDFs
+    from the portal host itself even when a web mirror is configured (PublicationFileDownloadView).
     """
 
     for file_obj in file_objs:
@@ -1024,6 +1025,11 @@ class PublicationFileDownloadView(View):
     directly -- the URL in citation_pdf_url/`contentUrl` stays under the landing page's own path
     either way. Otherwise it falls back to relaying the bytes from Tapis.
 
+    PDFs are always relayed, never redirected: citation_pdf_url points at a PDF, and Scholar
+    requires it in the landing page's own subdirectory without saying whether it follows a
+    redirect to another host. Relaying keeps the PDF's bytes on the portal host. Publication PDFs
+    are papers, not multi-GB data, so holding a uWSGI worker for one is acceptable.
+
     Only serves paths the publication itself declares (_is_publication_file_path), checked
     before any redirect or Tapis call: without the check this route would relay (with the
     service account's token) or point at any path on the published system -- including files
@@ -1037,9 +1043,11 @@ class PublicationFileDownloadView(View):
             raise Http404(f"No publication found for project {project_id}")
         if not _is_publication_file_path(pub, path):
             raise Http404(f"Publication {project_id} has no file at {path}")
-        web_url = _get_published_web_url(f"{get_published_workspace_id(project_id, pub.version)}/{path}")
-        if web_url:
-            return HttpResponseRedirect(web_url)
+        content_type, _ = mimetypes.guess_type(posixpath.basename(path))
+        if content_type != "application/pdf":
+            web_url = _get_published_web_url(f"{get_published_workspace_id(project_id, pub.version)}/{path}")
+            if web_url:
+                return HttpResponseRedirect(web_url)
         return _stream_published_file(_get_published_system_id(project_id, pub.version), path)
 
 
