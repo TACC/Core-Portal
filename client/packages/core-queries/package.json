@@ -1,10 +1,15 @@
 {
-  "name": "@tacc/core-hooks",
+  "name": "@tacc/core-queries",
   "version": "1.0.0",
   "description": "",
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    }
   },
   "keywords": [],
   "author": "",
@@ -15,7 +20,7 @@
     "axios": "catalog:"
   },
   "devDependencies": {
-    "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "typescript": "catalog:"
   }
 }

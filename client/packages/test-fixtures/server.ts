@@ -1,5 +1,6 @@
 import { setupServer } from 'msw/node';
 import { newsHandlers } from './handlers/news';
+import { ticketsHandlers } from './handlers/tickets';
 
 import { http, HttpResponse } from 'msw';
 const exampleHandler = [
@@ -11,4 +12,8 @@ const exampleHandler = [
     });
   }),
 ];
-export const server = setupServer(...newsHandlers, ...exampleHandler);
+export const server = setupServer(
+  ...newsHandlers,
+  ...ticketsHandlers,
+  ...exampleHandler
+);

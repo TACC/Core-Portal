@@ -184,7 +184,6 @@ function Workbench() {
           </>
         )}
       </div>
-      <TicketCreateModal /* Top level modals */ />
     </div>
   );
 }
