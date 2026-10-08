@@ -854,21 +854,22 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
                 f"{CROISSANT_1_0}."
             )
     # Every cr:FileObject also needs a checksum, or Croissant validators reject the whole Dataset.
-    # Logged at debug, not warning: publications archived before the archive app wrote sha256
-    # manifests (app < 0.0.3) have no hashes until compute_publication_checksums backfills them, so
-    # until then this fires for every one of them on every page render and sitemap build. Raise it
-    # to a warning once the backfill has run, when an unhashed file is a real anomaly.
-    elif unhashed := [
+    # The warning below is commented out until checksums exist: publications archived before the
+    # archive app wrote sha256 manifests (app < 0.0.3) have no hashes until
+    # compute_publication_checksums backfills them, so until then it would fire for every one of
+    # them on every page render and sitemap build. Uncomment it once the backfill has run, when an
+    # unhashed file is a real anomaly worth noticing.
+    elif unhashed := [  # noqa: F841 -- used by the commented-out warning below
         file_object["@id"]
         for file_object in schema_org_json["distribution"]
         if file_object["@type"] == "cr:FileObject"
         and not any(file_object.get(field) for field in CROISSANT_FILE_CHECKSUM_FIELDS)
     ]:
         del schema_org_json["conformsTo"]
-        logger.debug(
-            f"Publication {project_id} has {len(unhashed)} file(s) with no md5/sha256 checksum (e.g. "
-            f"{unhashed[0]}), so its Dataset is emitted without conformsTo {CROISSANT_1_0}."
-        )
+        # logger.warning(
+        #     f"Publication {project_id} has {len(unhashed)} file(s) with no md5/sha256 checksum (e.g. "
+        #     f"{unhashed[0]}), so its Dataset is emitted without conformsTo {CROISSANT_1_0}."
+        # )
 
     return schema_org_json
 

@@ -1611,8 +1611,8 @@ def test_get_schema_org_json_unmapped_license_logs_and_omits_license(mock_logger
 def test_get_schema_org_json_unhashed_file_omits_conforms_to(mock_logger, rf, settings, publication):
     """Croissant requires an md5/sha256 checksum on every cr:FileObject, so a single unhashed file
     withholds the conformsTo claim -- while the rest of the Dataset (including that file's
-    distribution entry) is still emitted. Logged at debug only: until a publish-time hashing step
-    exists this applies to every publication with files, on every render."""
+    distribution entry) is still emitted. Not logged: the warning is commented out until existing
+    publications have checksums (see get_schema_org_json)."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     publication.tree = entity_tree({"type": "file", "name": "scan.tif", "path": "/sample1/scan.tif"})
     publication.save()
@@ -1631,8 +1631,6 @@ def test_get_schema_org_json_unhashed_file_omits_conforms_to(mock_logger, rf, se
     assert schema["license"] == LICENSE_URLS["ODC-BY 1.0"]
     assert len(schema["recordSet"]) == 1
     mock_logger.warning.assert_not_called()
-    mock_logger.debug.assert_called_once()
-    assert "sample1/scan.tif" in mock_logger.debug.call_args.args[0]
 
 
 def test_get_schema_org_json_every_file_hashed_keeps_conforms_to(rf, settings, publication):
