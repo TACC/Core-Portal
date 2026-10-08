@@ -63,13 +63,6 @@
   {% endif %}
 {% endblock %}
 {% block twitter_card %}{% if citation_context.cover_image_url %}summary_large_image{% else %}{{ block.super }}{% endif %}{% endblock %}
-{% block head_extra %}
-  <base href="{% url 'workbench:index' %}">
-{% endblock %}
-{% block styles %}
-  <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[0] %>">
-  <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[1] %>">
-{% endblock %}
 {% block content %}
   <div id="react-root">
     {% comment %}
@@ -91,6 +84,4 @@
 {% endblock %}
 {% block scripts %}
   <script> window.__INITIAL_SETUP_COMPLETE__ = {{ setup_complete|yesno:"true,false" }}; </script>
-  <script src="<%= htmlWebpackPlugin.files.js[0] %>"></script>
-  <script src="<%= htmlWebpackPlugin.files.js[1] %>"></script>
 {% endblock %}

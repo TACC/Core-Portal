@@ -2248,22 +2248,22 @@ def test_index_view_html_sensitive_metadata_stays_inside_its_tags(client, settin
 
 
 WORKBENCH_TEMPLATES = Path(__file__).resolve().parents[1] / "workbench/templates/portal/apps/workbench"
-# The only blocks the two templates are meant to differ in: index.j2 is the client build's template,
-# with webpack asset placeholders, and index.html is the dev template, which loads Vite or includes
-# the build's output.
-_BUILD_ONLY_BLOCKS = re.compile(r"{%\s*block\s+(styles|scripts)\s*%}.*?{%\s*endblock\s*%}", re.S)
+# The only block the two templates are meant to differ in: index.j2, the template CI and the tests
+# render, loads no client assets, and index.html, the one deployed, loads Vite or includes the
+# client build's output.
+_BUILD_ONLY_BLOCKS = re.compile(r"{%\s*block\s+scripts\s*%}.*?{%\s*endblock\s*%}", re.S)
 
 
-def test_workbench_index_html_and_j2_agree_outside_styles_and_scripts():
+def test_workbench_index_html_and_j2_agree_outside_scripts():
     """Tests render index.j2 (unit_test_settings.py), but local development renders index.html, and
-    the two are kept in sync by hand. Everything except the styles and scripts blocks -- the head
-    metadata, every block override and the server-rendered summary -- must be identical."""
+    the two are kept in sync by hand. Everything except the scripts block -- the head metadata,
+    every block override and the server-rendered summary -- must be identical."""
     j2 = (WORKBENCH_TEMPLATES / "index.j2").read_text()
     html = (WORKBENCH_TEMPLATES / "index.html").read_text()
 
     for template in (j2, html):
-        assert len(_BUILD_ONLY_BLOCKS.findall(template)) == 2
-        for block in ("google_citation_meta", "robots", "title", "head_extra", "content"):
+        assert len(_BUILD_ONLY_BLOCKS.findall(template)) == 1
+        for block in ("google_citation_meta", "robots", "title", "content"):
             assert re.search(rf"{{%\s*block\s+{block}\s*%}}", template), block
     assert _BUILD_ONLY_BLOCKS.sub("", j2) == _BUILD_ONLY_BLOCKS.sub("", html)
 

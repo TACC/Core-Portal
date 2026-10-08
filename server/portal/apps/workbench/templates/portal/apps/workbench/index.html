@@ -63,13 +63,6 @@
   {% endif %}
 {% endblock %}
 {% block twitter_card %}{% if citation_context.cover_image_url %}summary_large_image{% else %}{{ block.super }}{% endif %}{% endblock %}
-{% block head_extra %}
-  <base href="{% url 'workbench:index' %}">
-{% endblock %}
-{% block styles %}
-  <link rel="stylesheet" href="">
-  <link rel="stylesheet" href="">
-{% endblock %}
 {% block content %}
   <div id="react-root">
     {% comment %}
