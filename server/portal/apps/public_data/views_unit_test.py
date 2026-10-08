@@ -269,12 +269,29 @@ def test_get_distribution_skips_non_file_and_incomplete_entries(rf):
     request = make_request(rf)
     base_meta = {
         "fileObjs": [
-            {"type": "dir", "name": "folder", "path": "/folder"},
+            {"type": "folder", "name": "folder", "path": "/folder"},
             {"type": "file", "name": "", "path": "/no-name.csv"},
             {"type": "file", "name": "no-path.csv", "path": ""},
+            {"type": "dir", "name": "", "path": "/no-name-dir"},
+            {"type": "dir", "name": "no-path-dir", "path": "/"},
         ]
     }
     assert _get_distribution(base_meta["fileObjs"], "test.project-1", request) == []
+
+
+def test_get_distribution_builds_file_sets_for_directories(rf):
+    request = make_request(rf)
+    file_objs = [{"type": "dir", "name": "raw scans", "path": "/sample1/raw scans/"}]
+    distribution = _get_distribution(file_objs, "test.project-1", request)
+    assert distribution == [
+        {
+            "@type": "cr:FileSet",
+            "@id": f"{FILES_URL}sample1/raw%20scans/",
+            "name": "raw scans",
+            "encodingFormat": "application/octet-stream",
+            "includes": f"{FILES_URL}sample1/raw%20scans/**",
+        }
+    ]
 
 
 def test_get_distribution_percent_encodes_path_and_defaults_encoding_format(rf):
@@ -992,9 +1009,10 @@ def test_schema_org_and_citation_include_entity_node_files(rf, settings, publica
     citation_meta, schema, _ = get_citation_context(publication, request)
 
     distribution_ids = [file_object["@id"] for file_object in schema["distribution"]]
-    # Root-level data.csv first, then the entity's files; the directory isn't enumerated.
+    # Root-level data.csv first, then the entity's files; the directory is a FileSet, not enumerated.
     assert distribution_ids == [
-        f"{FILES_URL}{path}" for path in ("data.csv", "sample1/scan.tif", "sample1/paper.pdf", "sample1/table.csv")
+        f"{FILES_URL}{path}"
+        for path in ("data.csv", "sample1/scan.tif", "sample1/paper.pdf", "sample1/table.csv", "sample1/raw/")
     ]
     assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
     assert {record_set["@id"] for record_set in schema["recordSet"]} == {
@@ -1004,9 +1022,11 @@ def test_schema_org_and_citation_include_entity_node_files(rf, settings, publica
     assert citation_meta["entities"][0]["pdf_url"] == _get_publication_file_url(
         publication.project_id, "sample1/paper.pdf", request
     )
-    # Everything advertised is something the file route will actually serve.
-    for file_object in schema["distribution"]:
-        assert _is_publication_file_path(publication, unquote(file_object["@id"].removeprefix(FILES_URL)))
+    # Everything advertised is something the file route will actually serve: each FileObject's
+    # own path, and a file a FileSet's `includes` glob would match.
+    for entry in schema["distribution"]:
+        url = entry["contentUrl"] if entry["@type"] == "cr:FileObject" else entry["includes"].replace("**", "x.bin")
+        assert _is_publication_file_path(publication, unquote(url.removeprefix(FILES_URL)))
 
 
 def test_entity_only_files_still_make_publication_a_croissant_candidate(rf, settings, publication):
@@ -1213,6 +1233,36 @@ def test_get_schema_org_json_no_files_omits_conforms_to_and_distribution(rf, set
     schema = get_schema_org_json(publication, publication.project_id, request)
     assert "conformsTo" not in schema
     assert "distribution" not in schema
+
+
+def test_get_schema_org_json_directory_only_publication_conforms(rf, settings, publication):
+    """A publication whose only file object is a directory still gets a `distribution` (one
+    cr:FileSet) and claims Croissant: FileSets need no checksum, so there's nothing unhashed."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    request = make_request(rf)
+    publication.value = valid_base_meta(fileObjs=[{"type": "dir", "name": "scans", "path": "/scans"}])
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, request)
+    assert [file_set["@type"] for file_set in schema["distribution"]] == ["cr:FileSet"]
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+
+
+def test_get_schema_org_json_unhashed_file_beside_directory_drops_conforms_to(rf, settings, publication):
+    """A FileSet doesn't excuse an unhashed cr:FileObject next to it."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    request = make_request(rf)
+    publication.value = valid_base_meta(
+        fileObjs=[
+            {"type": "dir", "name": "scans", "path": "/scans"},
+            {"type": "file", "name": "data.csv", "path": "/data.csv"},
+        ]
+    )
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, request)
+    assert len(schema["distribution"]) == 2
+    assert "conformsTo" not in schema
 
 
 def test_get_schema_org_json_missing_non_croissant_field_raises(rf, publication):
@@ -2214,6 +2264,7 @@ def test_get_schema_org_json_passes_mlcroissant_validation(rf, settings, publica
                 "columns": [{"name": "porosity", "dataType": "sc:Float"}, {"name": "sample"}],
             },
             {"type": "file", "name": "scan.raw", "path": "/scans/scan.raw", "length": 123456789, "sha256": "b" * 64},
+            {"type": "dir", "name": "raw", "path": "/raw"},
         ]
     )
     publication.save()
@@ -2221,6 +2272,7 @@ def test_get_schema_org_json_passes_mlcroissant_validation(rf, settings, publica
     schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
     assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
     assert schema["recordSet"]
+    assert any(entry["@type"] == "cr:FileSet" for entry in schema["distribution"])
 
     jsonld_path = tmp_path / "croissant.json"
     jsonld_path.write_text(json.dumps(schema))

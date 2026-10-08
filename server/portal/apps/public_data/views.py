@@ -203,30 +203,36 @@ def _format_content_size(num_bytes):
 
 
 def _get_distribution(file_objs, project_id, request):
-    """Build the Croissant/schema.org `distribution` list (one cr:FileObject per published file)
-    from `file_objs` -- _get_publication_file_objs' combined list, so files attached to entity
-    nodes are listed alongside root-level ones, and every file listed here is one the
+    """Build the Croissant/schema.org `distribution` list (one cr:FileObject per published file,
+    one cr:FileSet per published directory) from `file_objs` -- _get_publication_file_objs'
+    combined list, so files attached to entity nodes are listed alongside root-level ones, and
+    every file listed here is one the
     PublicationFileDownloadView allow-list serves. Each `contentUrl` points at that view, which
     returns the file's own bytes -- Croissant consumers (and Google Dataset Search) fetch
     `contentUrl` expecting the file itself, not the datafiles app's generic download route, which
     returns a JSON envelope around a short-lived Tapis postit link for the SPA to follow.
 
-    Directory file objects are skipped: listing their contents would mean a Tapis listing call
-    on every page render. Files inside an associated directory are still downloadable (the
-    allow-list accepts them) but aren't enumerated here.
+    A directory file object becomes a cr:FileSet rather than having its contents enumerated:
+    listing them would mean a Tapis listing call on every page render. Its `includes` glob
+    matches everything under the directory's URL on the same route, which the allow-list
+    serves (see _is_publication_file_path).
     """
 
     distribution = []
     for file_obj in file_objs:
-        if file_obj.get("type") != "file":
+        file_type = file_obj.get("type")
+        if file_type not in ("file", "dir"):
             continue
         name = file_obj.get("name")
-        path = (file_obj.get("path") or "").lstrip("/")
+        path = (file_obj.get("path") or "").strip("/")
         if not name or not path:
             continue
 
         content_url = _get_publication_file_url(project_id, path, request)
         if content_url is None:
+            continue
+        if file_type == "dir":
+            distribution.append(_get_file_set(name, content_url))
             continue
         file_object = {
             "@type": "cr:FileObject",
@@ -254,6 +260,25 @@ def _get_distribution(file_objs, project_id, request):
         distribution.append(file_object)
 
     return distribution
+
+
+def _get_file_set(name, dir_url):
+    """Build the cr:FileSet for one published directory at `dir_url` (its _get_publication_file_url).
+
+    The trailing "/" keeps the `@id` distinct from a cr:FileObject `@id`, which never ends in
+    one. Croissant requires `encodingFormat` on a FileSet too, but a directory's contents can be
+    any mix of formats and nothing stored says which, so it gets the same generic fallback a
+    FileObject with an unrecognized extension does. FileSets carry no checksum: Croissant only
+    requires one on a cr:FileObject.
+    """
+
+    return {
+        "@type": "cr:FileSet",
+        "@id": f"{dir_url}/",
+        "name": name,
+        "encodingFormat": "application/octet-stream",
+        "includes": f"{dir_url}/**",
+    }
 
 
 def _get_cover_image_url(base_meta, project_id, request):
@@ -566,7 +591,7 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
     # A metadata-only / externally-hosted publication can legitimately have no files at all, and
     # so is never a Croissant candidate. Having files that failed to make it into `distribution`
     # (missing name/path on every fileObj) is a data bug instead -- worth a warning below.
-    has_files = any(file_obj.get("type") == "file" for file_obj in file_objs)
+    has_files = any(file_obj.get("type") in ("file", "dir") for file_obj in file_objs)
 
     # An unmapped license label is a misconfiguration (see _get_license), but not one worth
     # dropping the whole page from search over: log it, and emit the Dataset without `license`
@@ -709,7 +734,8 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
     elif unhashed := [
         file_object["@id"]
         for file_object in schema_org_json["distribution"]
-        if not any(file_object.get(field) for field in CROISSANT_FILE_CHECKSUM_FIELDS)
+        if file_object["@type"] == "cr:FileObject"
+        and not any(file_object.get(field) for field in CROISSANT_FILE_CHECKSUM_FIELDS)
     ]:
         del schema_org_json["conformsTo"]
         logger.debug(
