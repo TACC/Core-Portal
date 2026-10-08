@@ -26,7 +26,6 @@ async function doFormCompletion(container, user) {
   const nameInput = container.querySelector('input[name="subject"]');
   await user.click(nameInput);
   await user.keyboard('Unable to upload files');
-  // target: { value: 'Unable to upload files' },
 
   const descriptionInput = container.querySelector(
     'textarea[name="problem_description"]'

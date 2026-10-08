@@ -81,7 +81,6 @@ function TicketCreateForm({
     [authenticatedUser, initialSubject]
   );
 
-  //const [createdTicketId, setCreatedTicketId] = useState(undefined);
   const isAuthenticated = !!authenticatedUser?.username;
   const {
     mutateAsync: createTicket,

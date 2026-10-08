@@ -322,7 +322,6 @@ export const TicketHistory = ({ ticketId }) => {
 function TicketModal({ ticketId }) {
   const navigate = useNavigate();
   const modalAlwaysOpen = true;
-  //const ticketId = parseInt(useParams().ticketId ?? '');
   const { data: ticketData } = useQuery(ticketsQueries.getTicket(ticketId));
   const ticketSubject = ticketData?.Subject;
 

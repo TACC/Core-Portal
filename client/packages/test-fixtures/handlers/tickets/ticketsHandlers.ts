@@ -2,8 +2,6 @@ import { delay, http, HttpResponse } from 'msw';
 import listTicketsJson from './listTIckets.fixture.json';
 import ticketDetailJson from './ticketDetail.fixture.json';
 import ticketHistoryJson from './ticketHistory.fixture.json';
-//import newsSanitizedJson from './newsHandlersSanitized.fixture.json';
-//import newsUnsanitizedJson from './newsHandlersUnsanitized.fixture.json';
 
 export const handlers = [
   http.get('/api/tickets', ({ request }) => {
