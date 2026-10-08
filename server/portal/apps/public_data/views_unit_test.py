@@ -609,6 +609,24 @@ def test_get_citations_prefers_doi_identifier_and_includes_publisher():
     assert citation["publisher"] == {"@type": "Organization", "name": "Some Press"}
 
 
+def test_get_citations_emits_author_as_person():
+    """Google's Dataset guidelines want `author` as a Person/Organization object, not a bare string."""
+    base_meta = {
+        "relatedPublications": [
+            {"publicationType": "context", "publicationTitle": "Kept", "publicationAuthor": "Author A"}
+        ]
+    }
+    assert _get_citations(base_meta)[0]["author"] == {"@type": "Person", "name": "Author A"}
+
+
+@pytest.mark.parametrize("author", [None, ""])
+def test_get_citations_omits_missing_author(author):
+    base_meta = {
+        "relatedPublications": [{"publicationType": "context", "publicationTitle": "Kept", "publicationAuthor": author}]
+    }
+    assert "author" not in _get_citations(base_meta)[0]
+
+
 def test_get_citations_strips_empty_fields():
     base_meta = {
         "relatedPublications": [{"publicationType": "context", "publicationTitle": "Kept", "publicationAuthor": None}]
@@ -1745,7 +1763,7 @@ def test_index_view_revision_mismatch_logs_warning(mock_logger, client, settings
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     response = client.get(f"/published-datasets/test.project.published.{publication.project_id}v99/")
 
-    assert response.status_code == 200
+    assert response.status_code == 301
     mock_logger.warning.assert_called_once()
     assert str(publication.project_id) in mock_logger.warning.call_args[0][0]
 
@@ -1762,6 +1780,46 @@ def test_index_view_schema_org_validation_error_is_caught_and_logged(mock_logger
     assert response.context["setup_complete"] is False
     assert "schema_org_json" not in response.context
     mock_logger.exception.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "path_template",
+    [
+        "/published-datasets/test.project.published.{project_id}/",
+        "/published-datasets/test.project.published.{project_id}v1",
+        "/published-datasets/test.project.published.{project_id}v1/",
+        "/public-data/test.project.published.{project_id}",
+    ],
+)
+def test_index_view_redirects_non_canonical_urls(client, publication, path_template):
+    """Alternate forms of the landing URL 301 to the canonical path instead of serving 200 duplicates."""
+    canonical_path = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    response = client.get(path_template.format(project_id=publication.project_id))
+
+    assert response.status_code == 301
+    assert response["Location"] == canonical_path
+
+
+def test_index_view_redirect_keeps_query_string(client, publication):
+    canonical_path = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    response = client.get(f"{canonical_path}/?utm_source=x&a=1")
+
+    assert response.status_code == 301
+    assert response["Location"] == f"{canonical_path}?utm_source=x&a=1"
+
+
+def test_index_view_canonical_url_is_not_redirected(client, publication):
+    response = client.get(reverse("publications:index", kwargs={"project_id": publication.project_id}))
+    assert response.status_code == 200
+
+
+def test_index_view_unpublished_publication_is_not_redirected(client, publication):
+    """Only pages with a canonical URL redirect; a withdrawn tombstone answers wherever it's requested."""
+    publication.is_published = False
+    publication.save()
+
+    response = client.get(f"/published-datasets/test.project.published.{publication.project_id}/")
+    assert response.status_code == 200
 
 
 def test_index_view_fallback_route_has_no_publication_context(client):

@@ -74,13 +74,13 @@
       @import url("/static/site_cms/css/build/core-styles.header.css") layer(header);
     </style>
     {% if settings.PORTAL_CSS_FILENAMES|length %}
-    <!-- Project CSS -->
+    {% comment %}Project CSS{% endcomment %}
       {% for stylesheet in settings.PORTAL_CSS_FILENAMES %}
       <link rel="stylesheet" href="{{ stylesheet }}">
       {% endfor %}
     {% endif %}
     {% block styles %}{% endblock %}
-    <!-- used in google citation -->
+    {% comment %}used in google citation{% endcomment %}
     {% block google_citation_meta %}{% endblock %}
   </head>
   <body>
@@ -93,7 +93,7 @@
     {% include 'includes/footer.html' %}
     {% include 'includes/cms_ui.html' %}
     {% block scripts %}{% endblock %}
-    <!-- Bootstrap JS -->
+    {% comment %}Bootstrap JS{% endcomment %}
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>

@@ -301,7 +301,7 @@ Deployments are initiated via [Jenkins](https://jenkins01.tacc.utexas.edu/view/W
 
 ### Published Dataset Landing Pages and Sitemap
 
-Published datasets get server-rendered landing pages at `/published-datasets/<project id>` and a sitemap at `/published-datasets/sitemap.xml`. Camino's default nginx template doesn't route `/published-datasets` to the portal, so a deployment that publishes datasets needs its own nginx location for it. Without one, those URLs go to the CMS instead. DPMP's `publications.location.conf` in [Core Portal Deployments] is a working example:
+Published datasets get server-rendered landing pages at `/published-datasets/<PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX>.<project id>` (for example, `/published-datasets/drp.project.published.DRP-1149`) and a sitemap at `/published-datasets/sitemap.xml`. Camino's default nginx template doesn't route `/published-datasets` to the portal, so a deployment that publishes datasets needs its own nginx location for it. Without one, those URLs go to the CMS instead. DPMP's `publications.location.conf` in [Core Portal Deployments] is a working example:
 
 ```nginx
 location ~ ^/published-datasets {

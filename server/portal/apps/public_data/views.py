@@ -4,12 +4,18 @@ import logging
 import mimetypes
 import posixpath
 import re
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 
 import requests
 from django.conf import settings
 from django.core.cache import cache
-from django.http import Http404, HttpResponse, HttpResponseRedirect, StreamingHttpResponse
+from django.http import (
+    Http404,
+    HttpResponse,
+    HttpResponsePermanentRedirect,
+    HttpResponseRedirect,
+    StreamingHttpResponse,
+)
 from django.urls import NoReverseMatch, reverse
 from django.utils.html import escape
 from django.utils.http import content_disposition_header
@@ -502,10 +508,14 @@ def _get_citations(base_meta):
         if not title:
             continue
 
+        # Google's Dataset guidelines expect `author` to be a Person or Organization, not a bare
+        # string. The form only collects one free-text name with no type, so Person is assumed.
+        author = r_data.get("publicationAuthor")
+
         citation = {
             "@type": "CreativeWork",
             "name": title,
-            "author": r_data.get("publicationAuthor"),
+            "author": {"@type": "Person", "name": author} if author else None,
             "datePublished": r_data.get("publicationDateOfPublication"),
             "url": r_data.get("publicationLink"),
             # Prefer the DOI (a stabler, more citable identifier than a plain link) when one's
@@ -895,6 +905,21 @@ class IndexView(TemplateView):
         )
         context["DEBUG"] = settings.DEBUG
         return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        canonical_url = context.get("canonical_url")
+        if canonical_url:
+            # The landing page also answers at its trailing-slash and `vN` forms, and under the
+            # /public-data/ mount (portal/urls.py). Send those to the canonical path with a 301 so
+            # crawlers consolidate on one URL instead of seeing 200 duplicates. Only the path is
+            # changed: the host stays the request's own (see _get_configured_origin for why the
+            # canonical host can differ from the one serving this request).
+            canonical_path = urlsplit(canonical_url).path
+            if request.path != canonical_path:
+                query = request.META.get("QUERY_STRING")
+                return HttpResponsePermanentRedirect(f"{canonical_path}?{query}" if query else canonical_path)
+        return self.render_to_response(context)
 
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
