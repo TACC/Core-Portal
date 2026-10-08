@@ -29,6 +29,12 @@
           {% if entity.pdf_url %}<meta name="citation_pdf_url" content="{{ entity.pdf_url }}">{% endif %}
       {% endfor %}
       {% if schema_org_json %}
+      {% comment %}
+        The same JSON-LD as a standalone document, for Croissant loaders. Only set when it conforms.
+      {% endcomment %}
+      {% if citation_context.croissant_url %}
+      <link rel="alternate" type="application/ld+json" href="{{ citation_context.croissant_url }}">
+      {% endif %}
       <script type="application/ld+json">
           {{ schema_org_json|safe }}
       </script>

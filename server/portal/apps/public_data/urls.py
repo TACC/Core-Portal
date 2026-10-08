@@ -8,7 +8,12 @@ import re
 from django.conf import settings
 from django.urls import re_path
 
-from portal.apps.public_data.views import IndexView, PublicationCoverImageView, PublicationFileDownloadView
+from portal.apps.public_data.views import (
+    IndexView,
+    PublicationCoverImageView,
+    PublicationCroissantView,
+    PublicationFileDownloadView,
+)
 
 app_name = "public_data"
 
@@ -43,6 +48,13 @@ urlpatterns = [
         rf"^{published_prefix}\.(?P<project_id>{id_prefix}-[0-9]+)/cover-image$",
         PublicationCoverImageView.as_view(),
         name="cover_image",
+    ),
+    # The landing page's JSON-LD as a standalone document, for Croissant loaders that fetch a
+    # dataset by URL rather than scraping it out of HTML. Also before `index_fallback`.
+    re_path(
+        rf"^{published_prefix}\.(?P<project_id>{id_prefix}-[0-9]+)/croissant\.json$",
+        PublicationCroissantView.as_view(),
+        name="croissant",
     ),
     re_path(r"^.*$", IndexView.as_view(), name="index_fallback"),
 ]

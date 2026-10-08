@@ -597,6 +597,15 @@ def _get_citation_pdf_url(file_objs, project_id, request):
     return _get_publication_file_url(project_id, pdf_paths[0], request)
 
 
+def _get_croissant_url(project_id, request):
+    """Absolute URL of the publication's standalone JSON-LD document (public_data/urls.py's
+    `croissant` pattern), on the same origin as every other URL here. The landing page links to it
+    with <link rel="alternate">.
+    """
+
+    return f"{_get_configured_origin(request)}{reverse('publications:croissant', kwargs={'project_id': project_id})}"
+
+
 def get_schema_org_json(pub, project_id, request, file_objs=None):
     """Build a schema.org/Dataset JSON-LD object for a published project to embed directly in
     the page's <script type="application/ld+json"> tag for Google Dataset Search.
@@ -804,6 +813,10 @@ def get_citation_context(pub, request):
     # Page-level (not per-entity, like `keywords` above) since og:image/twitter:image are
     # single tags in <head>, not part of the citation_* block.
     citation_meta["cover_image_url"] = _get_cover_image_url(base_meta, pub.project_id, request)
+    # Linked only when the document claims Croissant conformance -- PublicationCroissantView
+    # 404s otherwise, so the page never links a Croissant loader to something it would reject.
+    if "conformsTo" in schema_org_json:
+        citation_meta["croissant_url"] = _get_croissant_url(pub.project_id, request)
     citation_meta["entities"] = [
         {
             "title": base_meta.get("title"),
@@ -1111,6 +1124,36 @@ class PublicationCoverImageView(View):
         if web_url:
             return HttpResponseRedirect(web_url)
         return _stream_published_file(root_system, cover_image_path)
+
+
+class PublicationCroissantView(View):
+    """Serve a publication's schema.org/Croissant JSON-LD -- the same document its landing page
+    embeds -- on its own, as application/ld+json. Croissant tooling (mlcroissant, dataset loaders)
+    loads a dataset from a URL that returns the JSON-LD itself, not an HTML page with it inside a
+    <script> tag.
+
+    Served only for publications whose landing page carries the JSON-LD (published and indexable,
+    with metadata that builds -- as for IndexView and SitemapView) and whose JSON-LD claims
+    Croissant conformance (`conformsTo`; see get_schema_org_json for what withholds it, e.g. a
+    file without a checksum). Anything else 404s, and the landing page only links here when it's
+    served. Any origin may fetch it, since it describes a public dataset and browser-based dataset
+    tools load it cross-origin.
+    """
+
+    def get(self, request, project_id):
+        pub = Publication.objects.filter(project_id=project_id, is_published=True, is_indexable=True).first()
+        if pub is None:
+            raise Http404(f"No published dataset for project {project_id}")
+        try:
+            schema_org_json = get_schema_org_json(pub, project_id, request)
+        except Exception as e:
+            logger.exception(f"Failed to build the Croissant JSON-LD for project {project_id}: {e}")
+            raise Http404(f"No Croissant metadata for project {project_id}") from e
+        if "conformsTo" not in schema_org_json:
+            raise Http404(f"Publication {project_id}'s metadata doesn't conform to Croissant")
+        response = HttpResponse(json.dumps(schema_org_json), content_type="application/ld+json")
+        response["Access-Control-Allow-Origin"] = "*"
+        return response
 
 
 class SchemaOrgValidationError(Exception):

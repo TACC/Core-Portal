@@ -17,6 +17,7 @@ from portal.apps.projects.schema_models.license_urls import LICENSE_URLS
 from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json
 from portal.apps.public_data.views import (
     PublicationCoverImageView,
+    PublicationCroissantView,
     PublicationFileDownloadView,
     SchemaOrgValidationError,
     _format_citation_author,
@@ -1223,6 +1224,95 @@ def test_cover_image_view_404s_for_unpublished_publication(rf, settings, publica
     with pytest.raises(Http404):
         PublicationCoverImageView.as_view()(request, project_id=publication.project_id)
     assert not requests_mock.called
+
+
+# ---------------------------------------------------------------------------
+# PublicationCroissantView
+# ---------------------------------------------------------------------------
+
+
+def test_croissant_route_serves_landing_pages_json_ld(client, publication):
+    url = reverse("publications:croissant", kwargs={"project_id": publication.project_id})
+
+    response = client.get(url)
+
+    assert response.status_code == 200
+    assert response["Content-Type"] == "application/ld+json"
+    assert response["Access-Control-Allow-Origin"] == "*"
+    page = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+    embedded = re.search(r'<script type="application/ld\+json">(.*?)</script>', page, re.DOTALL).group(1)
+    assert json.loads(response.content) == json.loads(embedded)
+
+
+def test_croissant_route_is_matched_before_index_fallback(publication):
+    url = reverse("publications:croissant", kwargs={"project_id": publication.project_id})
+
+    assert url == "/published-datasets/test.project.published.test.project-1/croissant.json"
+    assert resolve(url).url_name == "croissant"
+
+
+def test_croissant_route_does_not_html_escape_json(client, publication):
+    publication.value = valid_base_meta(title="Rocks <&> pores")
+    publication.save()
+    url = reverse("publications:croissant", kwargs={"project_id": publication.project_id})
+
+    assert json.loads(client.get(url).content)["name"] == "Rocks <&> pores"
+
+
+def test_croissant_view_404s_for_unknown_publication(rf):
+    with pytest.raises(Http404):
+        PublicationCroissantView.as_view()(make_request(rf), project_id="test.project-999")
+
+
+@pytest.mark.parametrize("field", ["is_published", "is_indexable"])
+def test_croissant_view_404s_for_publication_without_landing_page_metadata(rf, publication, field):
+    setattr(publication, field, False)
+    publication.save()
+
+    with pytest.raises(Http404):
+        PublicationCroissantView.as_view()(make_request(rf), project_id=publication.project_id)
+
+
+def test_croissant_view_404s_without_conformance(rf, publication):
+    """An unhashed file withholds conformsTo (see get_schema_org_json), so there's no Croissant to serve."""
+    publication.tree = entity_tree({"type": "file", "name": "scan.tif", "path": "/sample1/scan.tif"})
+    publication.save()
+
+    with pytest.raises(Http404):
+        PublicationCroissantView.as_view()(make_request(rf), project_id=publication.project_id)
+
+
+@patch("portal.apps.public_data.views.logger")
+def test_croissant_view_404s_and_logs_when_metadata_fails_to_build(mock_logger, rf, publication):
+    publication.value = valid_base_meta(title=None)
+    publication.save()
+
+    with pytest.raises(Http404):
+        PublicationCroissantView.as_view()(make_request(rf), project_id=publication.project_id)
+    mock_logger.exception.assert_called_once()
+
+
+def test_index_view_links_croissant_json_ld(client, settings, publication):
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://data.example.org/published-datasets"
+    body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+
+    croissant_url = "https://data.example.org/published-datasets/test.project.published.test.project-1/croissant.json"
+    assert f'<link rel="alternate" type="application/ld+json" href="{croissant_url}">' in body
+
+
+def test_index_view_omits_croissant_link_without_conformance(client, publication):
+    publication.tree = entity_tree({"type": "file", "name": "scan.tif", "path": "/sample1/scan.tif"})
+    publication.save()
+    body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+
+    assert '<script type="application/ld+json">' in body
+    assert 'rel="alternate" type="application/ld+json"' not in body
+
+
+def test_index_view_omits_croissant_link_off_landing_pages(client):
+    body = client.get("/published-datasets/not-a-real-project/").content.decode()
+
+    assert 'rel="alternate" type="application/ld+json"' not in body
 
 
 # ---------------------------------------------------------------------------
