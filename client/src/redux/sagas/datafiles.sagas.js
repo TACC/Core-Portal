@@ -1,4 +1,4 @@
-import { stringify } from 'query-string';
+import queryStringParser from 'query-string';
 import Cookies from 'js-cookie';
 import {
   takeLatest,
@@ -100,7 +100,7 @@ export async function fetchFilesUtil(
   nextPageToken = null
 ) {
   const operation = queryString || filter ? 'search' : 'listing';
-  const q = stringify({
+  const q = queryStringParser.stringify({
     limit,
     offset,
     query_string: queryString,
