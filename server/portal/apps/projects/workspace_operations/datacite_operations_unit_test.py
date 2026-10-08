@@ -114,8 +114,8 @@ def test_get_datacite_json_issued_date_reads_snake_case_key():
 @pytest.mark.django_db
 @pytest.mark.parametrize("stored", [None, "", "not a date", 2024])
 def test_get_datacite_json_issued_date_defaults_to_today(stored):
-    """A first publish has no publicationDate yet (publish_project sets it after minting), so the
-    DOI is issued today -- the same "now" publicationYear uses."""
+    """With no usable publicationDate in the tree (publish_project always writes one, so this is
+    only a fallback), the DOI is issued today -- the same "now" publicationYear uses."""
     result = get_datacite_json(make_pub_graph(minimal_base_meta(publicationDate=stored)), "test.project-1")
     assert result["dates"] == [{"date": datetime.date.today().isoformat(), "dateType": "Issued"}]
 

@@ -317,7 +317,7 @@ location ~ ^/published-datasets {
 
 The deployment also needs to:
 
-- Advertise the sitemap in its own robots.txt with `Sitemap: https://<host>/published-datasets/sitemap.xml`. Camino serves `/robots.txt` from the deployment, not from `server/conf/nginx/robots.txt`, which is only for local development.
+- Advertise the sitemap in its own robots.txt with `Sitemap: https://<host>/published-datasets/sitemap.xml`. Camino serves `/robots.txt` from `/var/www/robots.txt`, which is Camino's own `robots.txt.default` unless the deployment mounts its own file there (DPMP mounts `dpmp-<env>.robots.txt`). `server/conf/nginx/robots.txt` is only for local development.
 - Keep non-production hosts out of search indexes, for example by sending an `X-Robots-Tag: noindex` header (DPMP's pprd does this).
 - Set `_PORTAL_PUBLICATION_DATACITE_URL_PREFIX` to the public host, so DOIs and canonical URLs point at the landing pages.
 

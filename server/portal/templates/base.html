@@ -17,11 +17,11 @@
       public_data/urls.py's catch-all `index_fallback` route (r"^.*$") serves this same generic app shell -- same
       title/description, no unique content -- for literally any URL that isn't a publication landing page, since
       the workbench itself is a client-rendered, authenticated-by-default SPA with nothing server-rendered for a
-      crawler to index. Defaulting to noindex here (and letting only the publication route back in, via
-      IndexView's per-page block override below) keeps Search from indexing an unbounded number of near-duplicate,
-      contentless shell pages that would otherwise dilute relevance for the actual dataset pages this app wants
-      ranked. "follow" (rather than "nofollow") is kept so link equity still flows through this shell's real
-      static links (header/footer nav, docs, etc).
+      crawler to index. Defaulting to noindex here (and letting only the publication route back in, via the
+      robots block override in workbench/index.html) keeps Search from indexing an unbounded number of
+      near-duplicate, contentless shell pages that would otherwise dilute relevance for the actual dataset pages
+      this app wants ranked. "follow" (rather than "nofollow") is kept so link equity still flows through this
+      shell's real static links (header/footer nav, docs, etc).
     {% endcomment %}
     <meta name="robots" content="{% block robots %}noindex, follow{% endblock %}">
     {% comment %}

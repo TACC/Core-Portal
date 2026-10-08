@@ -133,10 +133,11 @@ def _get_rights_list(base_meta, project_id):
 def _get_issued_date(base_meta):
     """Return the publication's "YYYY-MM-DD" issue date for DataCite's `dates`.
 
-    `publicationDate` is set by publish_project only after the DOI is minted, so a first publish has
-    none yet and gets today's date -- the same "now" `publicationYear` uses. A republish, or
-    update_datacite_metadata's rebuild from a stored Publication, keeps the original date. It's
-    stored as a datetime in memory or an ISO string once saved (DjangoJSONEncoder).
+    publish_project writes the date into the tree before building this payload: the source project's
+    stored first-publish date on a republish, or the published project's `created` on a first publish.
+    update_datacite_metadata's rebuild from a stored Publication reads that same date. It's a
+    datetime in memory or an ISO string once saved (DjangoJSONEncoder). Today's date is only a
+    fallback for a tree with no usable date, the same "now" `publicationYear` uses.
     """
 
     stored = base_meta.get("publicationDate") or base_meta.get("publication_date")

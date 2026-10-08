@@ -8,8 +8,9 @@ canonical URL instead of maintaining two independently-drifting copies of
 this mapping.
 """
 
-# The publication form's "license" field (settings_forms.py /
-# dpmp.settings_forms.py) is a fixed `select`, not free text, so its stored
+# The publication form's "license" field (the deployment's settings_forms.py,
+# kept in Core-Portal-Deployments, e.g. digitalrocks/camino/settings_forms.py,
+# not in this repo) is a fixed `select`, not free text, so its stored
 # value should always be one of these known labels. schema.org/Croissant and
 # DataCite's `rightsList` both expect a license URL (or, for schema.org, a
 # CreativeWork), not a bare label, so map known labels to their canonical

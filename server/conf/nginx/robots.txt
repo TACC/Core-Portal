@@ -10,8 +10,9 @@ Disallow: /admin/
 # is this portal's SitemapView (published-dataset landing pages, public_data/views.py).
 # Crawlers only find the second one through this file, since it isn't at the root path.
 #
-# __SERVER_NAME__ is a placeholder, not a hostname: the `/robots.txt` location in this
-# directory's nginx.conf replaces every occurrence with that server block's $server_name
-# (sub_filter), so the Sitemap: lines always name the host nginx is configured for.
+# The host in the Sitemap: lines is a placeholder, not a hostname: the `/robots.txt` location
+# in this directory's nginx.conf replaces it with that server block's $server_name
+# (sub_filter, which rewrites every occurrence in this file -- so it's only spelled out on
+# those lines), so they always name the host nginx is configured for.
 Sitemap: https://__SERVER_NAME__/sitemap.xml
 Sitemap: https://__SERVER_NAME__/published-datasets/sitemap.xml
