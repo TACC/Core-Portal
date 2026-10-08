@@ -1,5 +1,7 @@
 """Helpers shared by the publish workflow and the public landing pages."""
 
+from django.urls import reverse
+
 
 def get_published_workspace_id(project_id, version):
     """Return the `{project_id}` / `{project_id}v{version}` id publish_project
@@ -11,6 +13,19 @@ def get_published_workspace_id(project_id, version):
 
     suffix = f"v{version}" if version and version > 1 else ""
     return f"{project_id}{suffix}"
+
+
+def get_landing_page_path(project_id, version):
+    """Return the landing-page path for a publication's current version: public_data/urls.py's
+    `index` route at `{prefix}.{get_published_workspace_id(project_id, version)}`. The client app
+    reads the published system id from this path, so it must name the version's own system: the
+    bare `{prefix}.{project_id}` is version 1's system and would show version 1's files.
+    """
+
+    kwargs = {"project_id": project_id}
+    if version and version > 1:
+        kwargs["revision"] = version
+    return reverse("publications:index", kwargs=kwargs)
 
 
 def get_publication_file_objs(publication):

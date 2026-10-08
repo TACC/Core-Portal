@@ -8,7 +8,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from portal.apps.publications.utils import get_publication_file_objs, get_published_workspace_id
+from portal.apps.publications.utils import (
+    get_landing_page_path,
+    get_publication_file_objs,
+    get_published_workspace_id,
+)
 
 
 @pytest.mark.parametrize(
@@ -17,6 +21,15 @@ from portal.apps.publications.utils import get_publication_file_objs, get_publis
 )
 def test_get_published_workspace_id(version, expected):
     assert get_published_workspace_id("DRP-1149", version) == expected
+
+
+@pytest.mark.parametrize(
+    "version,suffix",
+    [(None, ""), (1, ""), (2, "v2"), (10, "v10")],
+)
+def test_get_landing_page_path_names_the_versions_published_system(version, suffix):
+    path = get_landing_page_path("test.project-1", version)
+    assert path == f"/published-datasets/test.project.published.test.project-1{suffix}"
 
 
 def test_get_publication_file_objs_combines_root_and_entity_nodes_in_place():

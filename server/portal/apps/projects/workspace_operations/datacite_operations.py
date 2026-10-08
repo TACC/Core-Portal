@@ -6,7 +6,6 @@ import re
 import networkx as nx
 import requests
 from django.conf import settings
-from django.urls import reverse
 
 from portal.apps.projects.schema_models.doi import normalize_doi
 from portal.apps.projects.schema_models.keywords import normalize_keywords
@@ -17,6 +16,7 @@ from portal.apps.projects.schema_models.license_urls import (
 )
 from portal.apps.projects.schema_models.orcid import ORCID_URL_PREFIX, orcid_url
 from portal.apps.public_data.origin import get_configured_origin
+from portal.apps.publications.utils import get_landing_page_path
 
 logger = logging.getLogger(__name__)
 
@@ -284,8 +284,9 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
             "nor VANITY_BASE_URL is configured -- refusing to mint a DataCite "
             "DOI without a real landing-page URL to register it against."
         )
-    landing_page_path = reverse("publications:index", kwargs={"project_id": project_id})
-    datacite_json["url"] = f"{origin}{landing_page_path}"
+    # A republish's DOI points at that version's `vN` URL, the same one the
+    # landing page claims as canonical (see get_landing_page_path).
+    datacite_json["url"] = f"{origin}{get_landing_page_path(project_id, version)}"
     datacite_json["prefix"] = settings.PORTAL_PUBLICATION_DATACITE_SHOULDER
 
     # DataCite's schema requires an IETF BCP-47 / ISO 639-1 code here

@@ -27,7 +27,11 @@ from portal.apps.projects.schema_models.license_urls import resolve_license_url
 from portal.apps.projects.schema_models.orcid import orcid_url
 from portal.apps.public_data.origin import get_configured_origin
 from portal.apps.publications.models import Publication
-from portal.apps.publications.utils import get_publication_file_objs, get_published_workspace_id
+from portal.apps.publications.utils import (
+    get_landing_page_path,
+    get_publication_file_objs,
+    get_published_workspace_id,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -389,8 +393,8 @@ def _get_catalog_url(request):
     return f"{_get_configured_origin(request)}{reverse('publications:index_fallback')}"
 
 
-def _get_landing_page_url(project_id, request):
-    """Build the publication's landing-page URL, guaranteed absolute.
+def _get_landing_page_url(project_id, version, request):
+    """Build the landing-page URL for the publication's current `version`, guaranteed absolute.
 
     The path always comes from reversing public_data/urls.py's own `index` pattern (in the
     "publications" namespace, i.e. the `published-datasets/` mount) -- the one Django route that
@@ -406,10 +410,11 @@ def _get_landing_page_url(project_id, request):
     DATACITE_URL_PREFIX-driven host _get_configured_origin already resolves for file/distribution
     URLs -- see its docstring for why a deployment can be reachable at a different public host
     than the one serving this request.
+
+    A republish's URL carries its `vN` suffix -- see get_landing_page_path for why.
     """
 
-    path = reverse("publications:index", kwargs={"project_id": project_id})
-    return f"{_get_configured_origin(request)}{path}"
+    return f"{_get_configured_origin(request)}{get_landing_page_path(project_id, version)}"
 
 
 def _get_publication_file_url(project_id, path, request):
@@ -456,7 +461,7 @@ def _end_sentence(text):
     return text if text.endswith((".", "?", "!")) else f"{text}."
 
 
-def _get_cite_as(base_meta, doi, project_id, request):
+def _get_cite_as(base_meta, doi, project_id, version, request):
     """Build a plain-text citation for the Croissant `citeAs` property, following DataCite's
     recommended citation format (Creator(s) (PublicationYear). Title. Publisher. Identifier),
     in the APA style DataCite's own citation formatter produces -- e.g. "Lovelace, A., & Turing, A.
@@ -476,7 +481,7 @@ def _get_cite_as(base_meta, doi, project_id, request):
     publication_date = base_meta.get("publicationDate") or base_meta.get("publication_date") or ""
     year = publication_date[:4] if publication_date else ""
 
-    identifier = f"https://doi.org/{doi}" if doi else _get_landing_page_url(project_id, request)
+    identifier = f"https://doi.org/{doi}" if doi else _get_landing_page_url(project_id, version, request)
 
     creator_and_year = " ".join([*author_names, *([f"({year})"] if year else [])])
     sentences = [creator_and_year, base_meta.get("title"), settings.PORTAL_PUBLICATION_PUBLISHER]
@@ -645,7 +650,7 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
             creator["sameAs"] = same_as
         creators.append(creator)
 
-    landing_page_url = _get_landing_page_url(project_id, request)
+    landing_page_url = _get_landing_page_url(project_id, pub.version, request)
     schema_org_json = {
         "@context": copy.deepcopy(CROISSANT_1_0_CONTEXT),
         "@type": "Dataset",
@@ -658,7 +663,7 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
         # the final document. Set here only to keep its position in the serialized output.
         "conformsTo": CROISSANT_1_0,
         "description": base_meta.get("description"),
-        "citeAs": _get_cite_as(base_meta, doi, project_id, request),
+        "citeAs": _get_cite_as(base_meta, doi, project_id, pub.version, request),
         # Distinct from `citeAs` above -- see _get_citations' docstring. Optional/recommended
         # per Google's own Dataset structured-data guidance, not Croissant-required, so an empty
         # list here is fine and gets dropped by the empty-field cleanup below like `keywords`.
@@ -698,9 +703,9 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
         # republish), not from the URL's own `vN` suffix (see public_data/urls.py's `revision`
         # group) -- Publication is keyed by bare project_id and update_or_create'd in place on
         # republish, so it never retains old versions' value/tree. A stale `revision` in the URL
-        # (e.g. a DOI minted against v2, visited after a v3 republish) would still resolve here
-        # and render v3's content throughout, so claiming the URL's version number would
-        # contradict every other field in this same document. pub.version is the only value
+        # (e.g. a link to v2, visited after a v3 republish) is 301'd to v3's URL and renders v3's
+        # content throughout, so claiming the URL's version number would contradict every other
+        # field in this same document. pub.version is the only value
         # that's ever consistent with the content actually being rendered. A string, matching
         # DataCite's `version` (datacite_operations.py) -- schema.org allows Text there, and a bare
         # "2" satisfies Croissant's MAJOR[.MINOR[.PATCH]] pattern as-is.
@@ -873,13 +878,13 @@ class IndexView(TemplateView):
                     # specific version's content: Publication is keyed by bare project_id and always
                     # holds only the latest republish (see get_schema_org_json's `version` comment).
                     # A mismatch means this link was minted against an older version that's since
-                    # been superseded and is now silently rendering the current version instead --
-                    # worth knowing about even though there's no old content left to serve.
+                    # been superseded; get() 301s it to the current version's URL -- worth knowing
+                    # about even though there's no old content left to serve.
                     revision = kwargs.get("revision")
                     if revision is not None and int(revision) != pub.version:
                         logger.warning(
                             f"Publication {project_id} was requested at revision {revision}, but "
-                            f"its current version is {pub.version}; serving current content."
+                            f"its current version is {pub.version}; redirecting to the current version."
                         )
                     citation_context, schema_org_json, _ = get_citation_context(pub, self.request)
                     context["schema_org_json"] = dumps_json_ld(schema_org_json)
@@ -916,9 +921,10 @@ class IndexView(TemplateView):
         context = self.get_context_data(**kwargs)
         canonical_url = context.get("canonical_url")
         if canonical_url:
-            # The landing page also answers at its trailing-slash and `vN` forms, and under the
-            # /public-data/ mount (portal/urls.py). Send those to the canonical path with a 301 so
-            # crawlers consolidate on one URL instead of seeing 200 duplicates. Only the path is
+            # The landing page also answers at its trailing-slash form, at any other version's
+            # bare or `vN` form, and under the /public-data/ mount (portal/urls.py). Send those to
+            # the canonical path -- the current version's (see get_landing_page_path) -- with a 301
+            # so crawlers consolidate on one URL instead of seeing 200 duplicates. Only the path is
             # changed: the host stays the request's own (see _get_configured_origin for why the
             # canonical host can differ from the one serving this request).
             canonical_path = urlsplit(canonical_url).path
@@ -1171,7 +1177,7 @@ class SitemapView(View):
                     "metadata to restore it to search."
                 )
                 continue
-            loc = escape(_get_landing_page_url(pub.project_id, request))
+            loc = escape(_get_landing_page_url(pub.project_id, pub.version, request))
             lastmod = (pub.last_updated or pub.created).date().isoformat()
             entries.append(f"  <url>\n    <loc>{loc}</loc>\n    <lastmod>{lastmod}</lastmod>\n  </url>")
 

@@ -313,6 +313,15 @@ def test_get_datacite_json_url_prefers_datacite_url_prefix_origin_over_vanity():
 
 
 @pytest.mark.django_db
+@override_settings(PORTAL_PUBLICATION_DATACITE_URL_PREFIX="https://vanity.example.org/published-datasets")
+def test_get_datacite_json_url_names_a_republishs_version():
+    # A republish's DOI resolves to that version's own `vN` landing page, which the client app
+    # needs to load that version's files rather than version 1's.
+    result = get_datacite_json(make_pub_graph(minimal_base_meta()), "test.project-1", 2)
+    assert result["url"] == "https://vanity.example.org/published-datasets/test.project.published.test.project-1v2"
+
+
+@pytest.mark.django_db
 @override_settings(VANITY_BASE_URL="https://vanity.example.org", PORTAL_PUBLICATION_DATACITE_URL_PREFIX="/just/a/path")
 def test_get_datacite_json_url_falls_back_to_vanity_when_prefix_not_absolute():
     result = get_datacite_json(make_pub_graph(minimal_base_meta()), "test.project-1")

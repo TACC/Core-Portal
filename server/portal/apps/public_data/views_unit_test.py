@@ -40,6 +40,7 @@ from portal.apps.public_data.views import (
     get_schema_org_json,
 )
 from portal.apps.publications.models import Publication
+from portal.apps.publications.utils import get_landing_page_path
 
 # `PORTAL_PUBLICATION_DATACITE_URL_PREFIX` isn't defined at all in unit_test_settings.py (unlike
 # every real settings_custom module, which always sets `_PORTAL_PUBLICATION_DATACITE_URL_PREFIX`
@@ -461,14 +462,14 @@ def test_file_ids_differ_between_publications_with_the_same_file_name(rf, settin
 
 def test_get_landing_page_url(rf):
     request = make_request(rf)
-    url = _get_landing_page_url("test.project-1", request)
+    url = _get_landing_page_url("test.project-1", 1, request)
     assert url == "http://testserver" + reverse("publications:index", kwargs={"project_id": "test.project-1"})
 
 
 def test_get_landing_page_url_respects_configured_origin(rf, settings):
     settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://cep.test/data"
     request = make_request(rf)
-    url = _get_landing_page_url("test.project-1", request)
+    url = _get_landing_page_url("test.project-1", 1, request)
     assert url.startswith("https://cep.test/published-datasets/")
 
 
@@ -490,7 +491,7 @@ def test_get_cite_as_full_citation(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     request = make_request(rf)
     base_meta = {"authors": [full_author()], "publicationDate": "2024-05-01", "title": "Test Dataset"}
-    citation = _get_cite_as(base_meta, "10.1234/test-doi", "test.project-1", request)
+    citation = _get_cite_as(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
     assert citation == "Lovelace, A. (2024). Test Dataset. Test Publisher. https://doi.org/10.1234/test-doi"
 
 
@@ -498,8 +499,8 @@ def test_get_cite_as_falls_back_to_landing_page_without_doi(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     request = make_request(rf)
     base_meta = {"authors": [], "title": "Test Dataset"}
-    citation = _get_cite_as(base_meta, None, "test.project-1", request)
-    landing_page = _get_landing_page_url("test.project-1", request)
+    citation = _get_cite_as(base_meta, None, "test.project-1", 1, request)
+    landing_page = _get_landing_page_url("test.project-1", 1, request)
     assert citation == f"Test Dataset. Test Publisher. {landing_page}"
 
 
@@ -507,8 +508,8 @@ def test_get_cite_as_omits_missing_parts(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = None
     request = make_request(rf)
     base_meta = {}
-    citation = _get_cite_as(base_meta, None, "test.project-1", request)
-    landing_page = _get_landing_page_url("test.project-1", request)
+    citation = _get_cite_as(base_meta, None, "test.project-1", 1, request)
+    landing_page = _get_landing_page_url("test.project-1", 1, request)
     assert citation == landing_page
 
 
@@ -516,7 +517,7 @@ def test_get_cite_as_skips_authors_without_last_name(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     request = make_request(rf)
     base_meta = {"authors": [{"first_name": "NoLastName"}], "title": "Test Dataset"}
-    citation = _get_cite_as(base_meta, None, "test.project-1", request)
+    citation = _get_cite_as(base_meta, None, "test.project-1", 1, request)
     assert citation.startswith("Test Dataset.")
 
 
@@ -545,7 +546,7 @@ def test_get_cite_as_formats_authors_apa_style(rf, settings, authors, expected_c
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     request = make_request(rf)
     base_meta = {"authors": authors, "publicationDate": "2024-05-01", "title": "Test Dataset"}
-    citation = _get_cite_as(base_meta, "10.1234/test-doi", "test.project-1", request)
+    citation = _get_cite_as(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
     assert citation == f"{expected_creators} (2024). Test Dataset. Test Publisher. https://doi.org/10.1234/test-doi"
 
 
@@ -555,7 +556,7 @@ def test_get_cite_as_never_doubles_a_period(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher Inc."
     request = make_request(rf)
     base_meta = {"authors": [full_author()], "title": "Is this a dataset?"}
-    citation = _get_cite_as(base_meta, "10.1234/test-doi", "test.project-1", request)
+    citation = _get_cite_as(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
     assert citation == "Lovelace, A. Is this a dataset? Test Publisher Inc. https://doi.org/10.1234/test-doi"
     assert ".." not in citation
 
@@ -564,7 +565,7 @@ def test_get_cite_as_year_without_authors(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = None
     request = make_request(rf)
     base_meta = {"publicationDate": "2024-05-01", "title": "Test Dataset"}
-    citation = _get_cite_as(base_meta, "10.1234/test-doi", "test.project-1", request)
+    citation = _get_cite_as(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
     assert citation == "(2024). Test Dataset. https://doi.org/10.1234/test-doi"
 
 
@@ -1529,7 +1530,7 @@ def test_get_schema_org_json_dataset_id_is_landing_page_url(rf, publication):
     there's a DOI for `identifier`."""
     request = make_request(rf)
     schema = get_schema_org_json(publication, publication.project_id, request)
-    assert schema["@id"] == schema["url"] == _get_landing_page_url(publication.project_id, request)
+    assert schema["@id"] == schema["url"] == _get_landing_page_url(publication.project_id, publication.version, request)
 
 
 def test_get_schema_org_json_affiliation_comes_from_each_authors_own_institution(rf, publication):
@@ -1710,7 +1711,7 @@ def test_index_view_renders_trimmed_keywords_meta_tag(client, publication):
     publication.value = valid_base_meta(keywords=["one", " two"])
     publication.save()
 
-    body = client.get(reverse("publications:index", kwargs={"project_id": publication.project_id})).content.decode()
+    body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
 
     assert "<meta name=\"keywords\" content='one, two'>" in body
     assert '"keywords": ["one", "two"]' in body
@@ -1739,7 +1740,7 @@ def test_get_citation_context_cover_image_url_when_configured(rf, settings, publ
 
 def test_index_view_renders_publication(client, settings, publication):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
-    url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    url = get_landing_page_path(publication.project_id, publication.version)
     response = client.get(url)
 
     assert response.status_code == 200
@@ -1765,7 +1766,7 @@ def test_index_view_unpublished_publication_renders_noindex_without_metadata(
     publication.is_published = False
     publication.save()
 
-    url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    url = get_landing_page_path(publication.project_id, publication.version)
     response = client.get(url)
     body = response.content.decode()
 
@@ -1798,7 +1799,7 @@ def test_index_view_schema_org_validation_error_is_caught_and_logged(mock_logger
     publication.value = valid_base_meta(title=None)
     publication.save()
 
-    url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    url = get_landing_page_path(publication.project_id, publication.version)
     response = client.get(url)
 
     assert response.status_code == 200
@@ -1810,7 +1811,9 @@ def test_index_view_schema_org_validation_error_is_caught_and_logged(mock_logger
 @pytest.mark.parametrize(
     "path_template",
     [
+        "/published-datasets/test.project.published.{project_id}",
         "/published-datasets/test.project.published.{project_id}/",
+        "/published-datasets/test.project.published.{project_id}v3/",
         "/published-datasets/test.project.published.{project_id}v1",
         "/published-datasets/test.project.published.{project_id}v1/",
         "/public-data/test.project.published.{project_id}",
@@ -1818,15 +1821,28 @@ def test_index_view_schema_org_validation_error_is_caught_and_logged(mock_logger
 )
 def test_index_view_redirects_non_canonical_urls(client, publication, path_template):
     """Alternate forms of the landing URL 301 to the canonical path instead of serving 200 duplicates."""
-    canonical_path = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    canonical_path = get_landing_page_path(publication.project_id, publication.version)
     response = client.get(path_template.format(project_id=publication.project_id))
 
     assert response.status_code == 301
     assert response["Location"] == canonical_path
 
 
+def test_index_view_canonical_url_names_current_versions_system(client, publication):
+    """A republish's landing page lives at its own `vN` system id, which the client app reads off
+    the URL to load that version's files -- the bare id is version 1's system."""
+    canonical_path = get_landing_page_path(publication.project_id, publication.version)
+    assert canonical_path == f"/published-datasets/test.project.published.{publication.project_id}v3"
+
+    response = client.get(f"/published-datasets/test.project.published.{publication.project_id}")
+
+    assert response.status_code == 301
+    assert response["Location"] == canonical_path
+    assert client.get(canonical_path).context["canonical_url"] == f"http://testserver{canonical_path}"
+
+
 def test_index_view_redirect_keeps_query_string(client, publication):
-    canonical_path = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    canonical_path = get_landing_page_path(publication.project_id, publication.version)
     response = client.get(f"{canonical_path}/?utm_source=x&a=1")
 
     assert response.status_code == 301
@@ -1834,7 +1850,7 @@ def test_index_view_redirect_keeps_query_string(client, publication):
 
 
 def test_index_view_canonical_url_is_not_redirected(client, publication):
-    response = client.get(reverse("publications:index", kwargs={"project_id": publication.project_id}))
+    response = client.get(get_landing_page_path(publication.project_id, publication.version))
     assert response.status_code == 200
 
 
@@ -1868,7 +1884,7 @@ def test_index_view_fallback_route_has_no_publication_context(client):
 
 def test_index_view_renders_json_ld_script_tag(client, settings, publication):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
-    url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    url = get_landing_page_path(publication.project_id, publication.version)
     body = client.get(url).content.decode()
 
     match = re.search(r'<script type="application/ld\+json">(.*?)</script>', body, re.DOTALL)
@@ -1881,7 +1897,7 @@ def test_index_view_renders_json_ld_script_tag(client, settings, publication):
 
 def test_index_view_renders_citation_and_dc_meta_tags(client, settings, publication):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
-    url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    url = get_landing_page_path(publication.project_id, publication.version)
     body = client.get(url).content.decode()
 
     assert '<meta name="citation_title" content="Test Dataset">' in body
@@ -1912,7 +1928,7 @@ def test_index_view_renders_citation_pdf_url_when_pdf_present(client):
 
 
 def test_index_view_renders_title_and_description_from_publication(client, publication):
-    url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    url = get_landing_page_path(publication.project_id, publication.version)
     body = client.get(url).content.decode()
 
     title_match = re.search(r"<title>(.*?)</title>", body, re.DOTALL)
@@ -1927,7 +1943,7 @@ def test_index_view_names_publisher_on_landing_pages_only(client, settings, publ
     the portal namespace."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     if on_publication_route:
-        url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+        url = get_landing_page_path(publication.project_id, publication.version)
     else:
         url = "/published-datasets/"
     body = client.get(url).content.decode()
@@ -1944,7 +1960,7 @@ def test_index_view_names_publisher_on_landing_pages_only(client, settings, publ
 
 
 def test_index_view_publication_route_is_indexable(client, publication):
-    url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    url = get_landing_page_path(publication.project_id, publication.version)
     body = client.get(url).content.decode()
 
     assert 'content="' in body
@@ -1958,7 +1974,7 @@ def test_index_view_head_values_have_no_surrounding_whitespace(client, publicati
     """The overridden blocks render inside <title> and meta `content` attributes, so template
     indentation and newlines used to end up inside those values."""
     if on_publication_route:
-        url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+        url = get_landing_page_path(publication.project_id, publication.version)
     else:
         url = "/published-datasets/"
     body = client.get(url).content.decode()
@@ -1990,7 +2006,7 @@ def test_index_view_mid_publish_publication_is_noindex_without_metadata(client, 
     publication.is_indexable = False
     publication.save()
 
-    response = client.get(reverse("publications:index", kwargs={"project_id": publication.project_id}))
+    response = client.get(get_landing_page_path(publication.project_id, publication.version))
     body = response.content.decode()
 
     assert response.status_code == 200
@@ -2028,7 +2044,7 @@ def test_index_view_fallback_route_is_noindex(client):
 
 def test_index_view_renders_og_image_when_cover_image_configured(client, settings, publication):
     settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "root.system"
-    url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    url = get_landing_page_path(publication.project_id, publication.version)
     body = client.get(url).content.decode()
 
     expected_url = "http://testserver/published-datasets/test.project.published.test.project-1/cover-image"
@@ -2040,7 +2056,7 @@ def test_index_view_renders_og_image_when_cover_image_configured(client, setting
 
 
 def test_index_view_omits_og_image_without_cover_image_configured(client, publication):
-    url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    url = get_landing_page_path(publication.project_id, publication.version)
     body = client.get(url).content.decode()
 
     assert 'property="og:image"' not in body
@@ -2079,6 +2095,19 @@ def test_sitemap_view_lists_published_publications_in_order(client, settings):
     second_index = body.index("test.project-2")
     assert first_index < second_index
     assert "test.project-3" not in body
+
+
+def test_sitemap_view_lists_a_republishs_versioned_url(client, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    Publication.objects.create(
+        project_id="test.project-1", value=valid_base_meta(), tree={}, is_published=True, version=2
+    )
+
+    body = client.get(reverse("sitemap")).content.decode()
+
+    assert re.findall(r"<loc>(.*?)</loc>", body) == [
+        "http://testserver/published-datasets/test.project.published.test.project-1v2"
+    ]
 
 
 def test_sitemap_view_omits_mid_publish_publications(client, settings):
@@ -2271,7 +2300,7 @@ def test_datacite_url_matches_landing_page_url_and_sitemap(client, settings):
     pub_graph.add_node("NODE_ROOT", value={**base_meta, "projectId": "test.project.published.test.project-1"})
 
     datacite_url = get_datacite_json(pub_graph, pub.project_id)["url"]
-    landing_page_url = _get_landing_page_url(pub.project_id, make_request(RequestFactory()))
+    landing_page_url = _get_landing_page_url(pub.project_id, pub.version, make_request(RequestFactory()))
     sitemap_locs = re.findall(r"<loc>(.*?)</loc>", client.get(reverse("sitemap")).content.decode())
 
     assert datacite_url.startswith("https://vanity.example.org/")

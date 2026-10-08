@@ -81,7 +81,7 @@ def test_payload_matches_publish(publications, mock_upsert):
     run("test.project-1")
 
     payload = mock_upsert.call_args.args[0]
-    assert payload["url"] == "https://example.org/published-datasets/test.project.published.test.project-1"
+    assert payload["url"] == "https://example.org/published-datasets/test.project.published.test.project-1v2"
     assert payload["version"] == "2"
     assert payload["rightsList"] == [
         {

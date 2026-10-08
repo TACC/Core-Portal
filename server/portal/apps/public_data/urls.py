@@ -16,8 +16,11 @@ published_prefix = re.escape(settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX or
 id_prefix = re.escape(settings.PORTAL_PROJECTS_ID_PREFIX or "")
 
 urlpatterns = [
+    # The `vN` group is non-capturing so reverse() can build the versioned form
+    # (publications/utils.py's get_landing_page_path); Django can't reverse a
+    # capturing group that wraps a named one.
     re_path(
-        rf"^{published_prefix}\.(?P<project_id>{id_prefix}-[0-9]+)(v(?P<revision>[0-9]+))?/?$",
+        rf"^{published_prefix}\.(?P<project_id>{id_prefix}-[0-9]+)(?:v(?P<revision>[0-9]+))?/?$",
         IndexView.as_view(),
         name="index",
     ),
