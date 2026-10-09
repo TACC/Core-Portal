@@ -776,6 +776,17 @@ def test_publish_datacite_doi(requests_mock):
 
 
 @DATACITE_SETTINGS
+def test_publish_datacite_doi_with_url_moves_the_doi_in_the_same_request(requests_mock):
+    requests_mock.put("https://api.test.datacite.org/dois/10.1234/abc", json={"data": {}})
+    publish_datacite_doi("10.1234/abc", url="https://example.org/published-datasets/p.PRJ-1v2")
+    payload = requests_mock.last_request.json()
+    assert payload["data"]["attributes"] == {
+        "event": "publish",
+        "url": "https://example.org/published-datasets/p.PRJ-1v2",
+    }
+
+
+@DATACITE_SETTINGS
 def test_hide_datacite_doi(requests_mock):
     requests_mock.put(
         "https://api.test.datacite.org/dois/10.1234/abc",

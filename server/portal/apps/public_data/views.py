@@ -1144,8 +1144,9 @@ def _get_published_system_id(project_id, version):
     """Return the Tapis system a publication's current version was published to. Must match
     publish_project (project_publish_operations.py): version 1 publishes to
     `{prefix}.{project_id}`, every republish to its own `{prefix}.{project_id}v{version}` system.
-    Publication.version is the version publish_project last wrote, so this always points at the
-    files the landing page's metadata describes -- not version 1's.
+    Publication.version only moves to a version once publish_project_callback has its files in
+    place, so this always points at the files the landing page's metadata describes -- not
+    version 1's.
     """
 
     return f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{get_published_workspace_id(project_id, version)}"
