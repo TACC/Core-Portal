@@ -299,19 +299,27 @@ def test_get_distribution_builds_file_sets_inside_archive(rf):
     request = make_request(rf)
     file_objs = [{"type": "dir", "name": "raw scans", "path": "/sample1/raw scans/"}]
     archive = {"@type": ["cr:FileObject", "DataDownload"], "@id": ARCHIVE_URL, "contentUrl": ARCHIVE_URL}
-    distribution = _get_distribution(file_objs, "test.project-1", request, archive, "test.project-1v3")
+    distribution = _get_distribution(file_objs, "test.project-1", request, archive, "test.project-1v3", file_sets=True)
     assert distribution == [
         {
-            "@type": ["cr:FileSet", "DataDownload"],
+            "@type": "cr:FileSet",
             "@id": f"{FILES_URL}sample1/raw%20scans/",
             "name": "raw scans",
-            "contentUrl": ARCHIVE_URL,
             "encodingFormat": "application/octet-stream",
             "containedIn": {"@id": ARCHIVE_URL},
             "includes": "test.project-1v3/sample1/raw scans/**",
         },
         archive,
     ]
+
+
+def test_get_distribution_leaves_directories_out_without_file_sets(rf):
+    """The landing page's JSON-LD lists the ZIP but no FileSets: as DataDownloads for Google, each
+    would only repeat the ZIP's download under a directory's name."""
+    request = make_request(rf)
+    file_objs = [{"type": "dir", "name": "raw scans", "path": "/sample1/raw scans/"}]
+    archive = {"@type": ["cr:FileObject", "DataDownload"], "@id": ARCHIVE_URL, "contentUrl": ARCHIVE_URL}
+    assert _get_distribution(file_objs, "test.project-1", request, archive, "test.project-1v3") == [archive]
 
 
 def test_get_distribution_percent_encodes_path_and_defaults_encoding_format(rf):
@@ -1458,14 +1466,26 @@ def test_get_archive_file_object_none_without_checksum_or_web_mirror(rf, setting
 def test_schema_org_json_lists_archive_and_points_file_sets_into_it(rf, settings, archived_publication):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
 
-    schema = get_schema_org_json(archived_publication, archived_publication.project_id, make_request(rf))
+    schema = get_schema_org_json(
+        archived_publication, archived_publication.project_id, make_request(rf), file_sets=True
+    )
 
     file_set = next(entry for entry in schema["distribution"] if _has_type(entry, "cr:FileSet"))
-    assert file_set["@type"] == ["cr:FileSet", "DataDownload"]
-    assert file_set["contentUrl"] == ARCHIVE_URL
+    assert file_set["@type"] == "cr:FileSet"
+    assert "contentUrl" not in file_set
     assert file_set["containedIn"] == {"@id": ARCHIVE_URL}
     assert file_set["includes"] == "test.project-1v3/sample1/raw/**"
     assert file_set["@id"] == f"{FILES_URL}sample1/raw/"
+    assert schema["distribution"][-1]["@id"] == ARCHIVE_URL
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.1"
+
+
+def test_schema_org_json_for_landing_page_lists_archive_without_file_sets(rf, settings, archived_publication):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+
+    schema = get_schema_org_json(archived_publication, archived_publication.project_id, make_request(rf))
+
+    assert not any(_has_type(entry, "cr:FileSet") for entry in schema["distribution"])
     assert schema["distribution"][-1]["@id"] == ARCHIVE_URL
     assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.1"
 
@@ -1506,14 +1526,20 @@ def test_has_type(entry, expected):
     assert _has_type(entry, "cr:FileObject") is expected
 
 
-def test_schema_org_json_with_archive_passes_mlcroissant_validation(rf, settings, archived_publication, tmp_path):
-    """The ZIP entry (dual-typed, with its sha256) and FileSets `containedIn` it validate with no
-    errors or warnings, and mlcroissant keeps each FileSet's link to the ZIP -- which it silently
-    drops unless the 1.1 @context maps `containedIn` to cr:containedIn."""
+@pytest.mark.parametrize("file_sets", [True, False], ids=["croissant_document", "landing_page"])
+def test_schema_org_json_with_archive_passes_mlcroissant_validation(
+    rf, settings, archived_publication, tmp_path, file_sets
+):
+    """Both documents -- the standalone one with FileSets and the landing page's without -- validate
+    with no errors or warnings. The ZIP entry is dual-typed with its sha256, and mlcroissant keeps
+    each FileSet's link to the ZIP -- which it silently drops unless the 1.1 @context maps
+    `containedIn` to cr:containedIn."""
     mlc = pytest.importorskip("mlcroissant")
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
 
-    schema = get_schema_org_json(archived_publication, archived_publication.project_id, make_request(rf))
+    schema = get_schema_org_json(
+        archived_publication, archived_publication.project_id, make_request(rf), file_sets=file_sets
+    )
     assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.1"
     jsonld_path = tmp_path / "croissant.json"
     jsonld_path.write_text(json.dumps(schema))
@@ -1522,9 +1548,33 @@ def test_schema_org_json_with_archive_passes_mlcroissant_validation(rf, settings
     assert not metadata.ctx.issues.errors
     assert not metadata.ctx.issues.warnings
     archive_id = next(entry["@id"] for entry in schema["distribution"] if entry["encodingFormat"] == "application/zip")
-    file_sets = [entry for entry in metadata.distribution if isinstance(entry, mlc.FileSet)]
-    assert file_sets
-    assert all(file_set.contained_in == [archive_id] for file_set in file_sets)
+    assert any(isinstance(entry, mlc.FileObject) and entry.id == archive_id for entry in metadata.distribution)
+    loaded_file_sets = [entry for entry in metadata.distribution if isinstance(entry, mlc.FileSet)]
+    assert bool(loaded_file_sets) is file_sets
+    assert all(file_set.contained_in == [archive_id] for file_set in loaded_file_sets)
+
+
+@pytest.mark.parametrize("file_sets", [True, False], ids=["croissant_document", "landing_page"])
+def test_schema_org_json_lists_croissant_type_first(rf, settings, archived_publication, file_sets):
+    """mlcroissant reads only the first entry of a list-valued `@type`, so every dual-typed entry
+    must lead with its Croissant type to load as a FileObject or FileSet at all."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    archived_publication.value = valid_base_meta(
+        fileObjs=[
+            {"type": "dir", "name": "raw", "path": "/sample1/raw"},
+            {"type": "file", "name": "data.csv", "path": "/data.csv", "sha256": "a" * 64},
+        ]
+    )
+    archived_publication.save()
+
+    schema = get_schema_org_json(
+        archived_publication, archived_publication.project_id, make_request(rf), file_sets=file_sets
+    )
+
+    assert len(schema["distribution"]) == (3 if file_sets else 2)
+    for entry in schema["distribution"]:
+        types = entry["@type"] if isinstance(entry["@type"], list) else [entry["@type"]]
+        assert types[0] in ("cr:FileObject", "cr:FileSet"), entry["@id"]
 
 
 # ---------------------------------------------------------------------------
@@ -1543,6 +1593,22 @@ def test_croissant_route_serves_landing_pages_json_ld(client, publication):
     page = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
     embedded = re.search(r'<script type="application/ld\+json">(.*?)</script>', page, re.DOTALL).group(1)
     assert json.loads(response.content) == json.loads(embedded)
+
+
+def test_croissant_route_adds_file_sets_to_landing_pages_json_ld(client, archived_publication):
+    """With a ZIP, the standalone document is the landing page's JSON-LD plus a plain cr:FileSet
+    (no DataDownload, no contentUrl) for each published directory."""
+    url = reverse("publications:croissant", kwargs={"project_id": archived_publication.project_id})
+    served = json.loads(client.get(url).content)
+    page = client.get(get_landing_page_path(archived_publication.project_id, archived_publication.version))
+    embedded = json.loads(
+        re.search(r'<script type="application/ld\+json">(.*?)</script>', page.content.decode(), re.DOTALL).group(1)
+    )
+
+    file_sets = [entry for entry in served["distribution"] if _has_type(entry, "cr:FileSet")]
+    assert [(entry["@type"], "contentUrl" in entry) for entry in file_sets] == [("cr:FileSet", False)]
+    assert [entry for entry in served["distribution"] if entry not in file_sets] == embedded["distribution"]
+    assert {**served, "distribution": embedded["distribution"]} == embedded
 
 
 def test_croissant_route_is_matched_before_index_fallback(publication):
@@ -1719,18 +1785,28 @@ def test_get_schema_org_json_no_files_omits_conforms_to_and_distribution(rf, set
     assert "distribution" not in schema
 
 
-def test_get_schema_org_json_directory_only_publication_conforms_with_archive(rf, settings, archived_publication):
-    """A publication whose only file object is a directory gets a `distribution` (its cr:FileSet
-    and the ZIP holding it) and claims Croissant: FileSets need no checksum, so nothing is unhashed."""
+@pytest.mark.parametrize(
+    "file_sets,expected_types",
+    [
+        (True, ["cr:FileSet", ["cr:FileObject", "DataDownload"]]),
+        (False, [["cr:FileObject", "DataDownload"]]),
+    ],
+    ids=["croissant_document", "landing_page"],
+)
+def test_get_schema_org_json_directory_only_publication_conforms_with_archive(
+    rf, settings, archived_publication, file_sets, expected_types
+):
+    """A publication whose only file object is a directory gets a `distribution` (the ZIP holding
+    it, plus its cr:FileSet in the standalone document) and claims Croissant either way: FileSets
+    need no checksum, so nothing is unhashed."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     archived_publication.value = valid_base_meta(fileObjs=[{"type": "dir", "name": "scans", "path": "/scans"}])
     archived_publication.save()
 
-    schema = get_schema_org_json(archived_publication, archived_publication.project_id, make_request(rf))
-    assert [entry["@type"] for entry in schema["distribution"]] == [
-        ["cr:FileSet", "DataDownload"],
-        ["cr:FileObject", "DataDownload"],
-    ]
+    schema = get_schema_org_json(
+        archived_publication, archived_publication.project_id, make_request(rf), file_sets=file_sets
+    )
+    assert [entry["@type"] for entry in schema["distribution"]] == expected_types
     assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.1"
 
 
@@ -1761,19 +1837,22 @@ def test_get_schema_org_json_unhashed_file_beside_directory_drops_conforms_to(rf
     )
     archived_publication.save()
 
-    schema = get_schema_org_json(archived_publication, archived_publication.project_id, make_request(rf))
+    schema = get_schema_org_json(
+        archived_publication, archived_publication.project_id, make_request(rf), file_sets=True
+    )
     assert len(schema["distribution"]) == 3
     assert "conformsTo" not in schema
 
 
 def test_schema_org_json_distribution_entries_are_all_data_downloads(rf, settings, archived_publication):
-    """Google reads `distribution` as DataDownloads, each with a `contentUrl` -- an entry missing
-    either is an invalid object type or a missing required field in its Rich Results Test."""
+    """Google reads the landing page's `distribution` as DataDownloads, each with a `contentUrl` --
+    an entry missing either is an invalid object type or a missing required field in its Rich
+    Results Test. FileSets, which have no download of their own, are left out of it."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
 
     schema = get_schema_org_json(archived_publication, archived_publication.project_id, make_request(rf))
 
-    assert {entry["@type"][0] for entry in schema["distribution"]} == {"cr:FileObject", "cr:FileSet"}
+    assert {entry["@type"][0] for entry in schema["distribution"]} == {"cr:FileObject"}
     for entry in schema["distribution"]:
         assert _has_type(entry, "DataDownload"), entry["@id"]
         assert entry["contentUrl"].startswith("http"), entry["@id"]

@@ -349,10 +349,11 @@ class PublicationArchiveView(PublishedDatasetsMountMixin, View):
 
 
 class PublicationCroissantView(PublishedDatasetsMountMixin, View):
-    """Serve a publication's schema.org/Croissant JSON-LD -- the same document its landing page
-    embeds -- on its own, as application/ld+json with the Croissant 1.1 profile. Croissant tooling
-    (mlcroissant, dataset loaders) loads a dataset from a URL that returns the JSON-LD itself, not an
-    HTML page with it inside a <script> tag.
+    """Serve a publication's schema.org/Croissant JSON-LD -- the document its landing page embeds,
+    plus a cr:FileSet for each published directory (see _get_distribution) -- on its own, as
+    application/ld+json with the Croissant 1.1 profile. Croissant tooling (mlcroissant, dataset
+    loaders) loads a dataset from a URL that returns the JSON-LD itself, not an HTML page with it
+    inside a <script> tag.
 
     Served only for publications whose landing page carries the JSON-LD (published and indexable,
     with metadata that builds -- as for IndexView and SitemapView) and whose JSON-LD claims
@@ -367,7 +368,7 @@ class PublicationCroissantView(PublishedDatasetsMountMixin, View):
         if pub is None:
             raise Http404(f"No published dataset for project {project_id}")
         try:
-            schema_org_json = get_schema_org_json(pub, project_id, request)
+            schema_org_json = get_schema_org_json(pub, project_id, request, file_sets=True)
         except Exception as e:
             logger.exception(f"Failed to build the Croissant JSON-LD for project {project_id}: {e}")
             raise Http404(f"No Croissant metadata for project {project_id}") from e

@@ -199,6 +199,12 @@ def _format_content_size(num_bytes):
         size /= 1000
 
 
+# Every cr:FileObject in `distribution` is also typed schema.org DataDownload (see _get_distribution).
+# The Croissant type must come first: mlcroissant reads only the first entry of a list-valued
+# `@type`, so ["DataDownload", "cr:FileObject"] would no longer load as a FileObject.
+_FILE_OBJECT_TYPES = ("cr:FileObject", "DataDownload")
+
+
 def _has_type(entry, type_name):
     """Whether a JSON-LD node's `@type` -- a single type, or a list of them -- includes
     `type_name`."""
@@ -222,7 +228,7 @@ def _get_archive_file_object(pub, request):
     url_path = reverse(f"{get_landing_namespace()}:archive", kwargs={"project_id": pub.project_id})
     url = f"{get_publication_origin(request)}{url_path}"
     archive = {
-        "@type": ["cr:FileObject", "DataDownload"],
+        "@type": list(_FILE_OBJECT_TYPES),
         "@id": url,
         "name": get_archive_zip_path(get_published_workspace_id(pub.project_id, pub.version)).rsplit("/", 1)[-1],
         "contentUrl": url,
@@ -234,9 +240,9 @@ def _get_archive_file_object(pub, request):
     return archive
 
 
-def _get_distribution(file_objs, project_id, request, archive=None, archive_root=None):
-    """Build the Croissant/schema.org `distribution` list (one cr:FileObject per published file,
-    one cr:FileSet per published directory) from `file_objs` -- get_unique_publication_file_objs'
+def _get_distribution(file_objs, project_id, request, archive=None, archive_root=None, file_sets=False):
+    """Build the Croissant/schema.org `distribution` list (one cr:FileObject per published file and,
+    with `file_sets`, one cr:FileSet per published directory) from `file_objs` -- get_unique_publication_file_objs'
     combined list, so files attached to entity nodes are listed alongside root-level ones, and
     every file listed here is one the
     PublicationFileDownloadView allow-list serves. Each `contentUrl` points at that view, which
@@ -244,18 +250,22 @@ def _get_distribution(file_objs, project_id, request, archive=None, archive_root
     `contentUrl` expecting the file itself, not the datafiles app's generic download route, which
     returns a JSON envelope around a short-lived Tapis postit link for the SPA to follow.
 
-    Every entry is also typed schema.org DataDownload. Croissant lists FileObjects and FileSets in
-    `distribution` where schema.org expects DataDownloads, so Google's Rich Results Test and
-    validator.schema.org flag any entry without that type as an invalid object type
+    Every cr:FileObject is also typed schema.org DataDownload (_FILE_OBJECT_TYPES). Croissant lists
+    FileObjects in `distribution` where schema.org expects DataDownloads, so Google's Rich Results
+    Test and validator.schema.org flag an entry without that type as an invalid object type
     (mlcommons/croissant#725). mlcroissant still reads a dual-typed entry as its Croissant type.
 
     With `archive` (_get_archive_file_object's entry for the whole-publication ZIP), that entry is
-    listed last, and each directory file object becomes a cr:FileSet `containedIn` the ZIP rather
-    than having its contents enumerated, which would mean a Tapis listing call on every page
-    render. Its `includes` matches the directory under `archive_root`, the ZIP's top-level folder
-    (the published workspace id). Without `archive`, directories are left out: Croissant can't
-    expand a glob over HTTP, and Google requires a `contentUrl` on every DataDownload, which a
-    directory doesn't have.
+    listed last. Directories are only listed with both `archive` and `file_sets`, each as a
+    cr:FileSet `containedIn` the ZIP rather than having its contents enumerated, which would mean
+    a Tapis listing call on every page render. Its `includes` matches the directory under
+    `archive_root`, the ZIP's top-level folder (the published workspace id). Otherwise directories
+    are left out: Croissant can't expand a glob over HTTP, and the ZIP already covers their files.
+
+    `file_sets` is for the standalone Croissant document (PublicationCroissantView) only. The
+    landing page's JSON-LD, which Google reads, leaves directories out: Google requires a
+    `contentUrl` on every DataDownload, and the only one a directory has is the whole ZIP, which
+    would list the same download again under each directory's name.
     """
 
     distribution = []
@@ -272,11 +282,11 @@ def _get_distribution(file_objs, project_id, request, archive=None, archive_root
         if content_url is None:
             continue
         if file_type == "dir":
-            if archive:
+            if archive and file_sets:
                 distribution.append(_get_file_set(name, content_url, archive["@id"], f"{archive_root}/{path}"))
             continue
         file_object = {
-            "@type": ["cr:FileObject", "DataDownload"],
+            "@type": list(_FILE_OBJECT_TYPES),
             # The file's own absolute URL, not its relative path: a relative `@id` resolves against
             # the page's `<base href="/">` (base.html), not the landing page, so "data.csv" in two
             # different publications would name the same node. contentUrl is already absolute,
@@ -310,9 +320,9 @@ def _get_file_set(name, dir_url, archive_url, archive_dir):
     `containedIn` the whole-publication ZIP at `archive_url` and `includes` everything under
     `archive_dir`, the directory's path inside the ZIP.
 
-    Also typed DataDownload, with the ZIP as its `contentUrl`: Google requires one on every
-    DataDownload, and the ZIP is where the directory's bytes can be downloaded. mlcroissant's
-    FileSet has no `contentUrl`, so Croissant loaders ignore it and use `containedIn`.
+    Typed cr:FileSet only, with no `contentUrl`: Croissant defines neither for a FileSet, whose
+    bytes come from what it's `containedIn`. FileSets only appear in the standalone Croissant
+    document, not the landing page's JSON-LD that Google reads (see _get_distribution).
 
     `containedIn` is `cr:containedIn` in the 1.1 `@context`. Without that mapping mlcroissant
     1.1 silently drops the link to the ZIP.
@@ -325,10 +335,9 @@ def _get_file_set(name, dir_url, archive_url, archive_dir):
     """
 
     return {
-        "@type": ["cr:FileSet", "DataDownload"],
+        "@type": "cr:FileSet",
         "@id": f"{dir_url}/",
         "name": name,
-        "contentUrl": archive_url,
         "encodingFormat": "application/octet-stream",
         "containedIn": {"@id": archive_url},
         "includes": f"{archive_dir}/**",
@@ -426,11 +435,14 @@ def get_unique_publication_file_objs(pub):
     return list(by_path.values())
 
 
-def get_schema_org_json(pub, project_id, request, file_objs=None):
+def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=False):
     """Build a schema.org/Dataset JSON-LD object for a published project to embed directly in
     the page's <script type="application/ld+json"> tag for Google Dataset Search.
 
     `file_objs` is get_unique_publication_file_objs(pub), for a caller that already has it.
+    `file_sets` also lists published directories as cr:FileSets, for the standalone Croissant
+    document (see _get_distribution). It never changes whether `conformsTo` is claimed: FileSets
+    are only listed alongside the ZIP, which is listed either way.
     """
 
     base_meta = pub.value
@@ -554,6 +566,7 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
             request,
             archive=archive,
             archive_root=get_published_workspace_id(project_id, pub.version),
+            file_sets=file_sets,
         ),
         "recordSet": _get_record_sets(file_objs, project_id, request),
     }
