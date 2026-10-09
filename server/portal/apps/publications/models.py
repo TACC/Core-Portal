@@ -44,6 +44,13 @@ class Publication(models.Model):
     project_id = models.CharField(max_length=100, primary_key=True, editable=False)
     created = models.DateTimeField(default=timezone.now)
     is_published = models.BooleanField(default=True)
+    is_indexable = models.BooleanField(
+        default=True,
+        help_text=(
+            "Whether the landing page may be indexed and listed in the sitemap. A first publish clears it; it's set "
+            "once the files have been transferred and the DOI is findable. A republish leaves it unchanged."
+        ),
+    )
     last_updated = models.DateTimeField(auto_now=True)
     version = models.IntegerField(default=1)
     value = models.JSONField(
@@ -54,4 +61,16 @@ class Publication(models.Model):
     tree = models.JSONField(
         encoder=DjangoJSONEncoder,
         help_text=("JSON document containing the serialized publication tree"),
+    )
+    archive_sha256 = models.CharField(
+        max_length=64,
+        blank=True,
+        default="",
+        help_text=(
+            "sha256 of the current version's whole-publication ZIP, read from the archive job's "
+            "<workspace id>_archive.zip.sha256. Empty until it's loaded, and cleared on every publish."
+        ),
+    )
+    archive_size = models.BigIntegerField(
+        null=True, blank=True, help_text="Size in bytes of that ZIP, recorded with its sha256."
     )

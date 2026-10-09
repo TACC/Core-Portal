@@ -1,19 +1,81 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    {% include 'includes/analytics.html' %}
     <meta charset="utf-8">
+    {% comment %}
+      Analytics as early as possible in <head> (per Google's own gtag.js placement guidance), but after charset --
+      charset must be the first thing in <head> so the browser never has to re-parse the document if anything
+      before it isn't plain ASCII.
+    {% endcomment %}
+    {% include 'includes/analytics.html' %}
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{% block title %}{% endblock %}</title>
-    <meta name="viewport" content="width=device-width">
-    <meta name="description" content="{{ site.description }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% comment %}
+      The dataset-portal wording is only the default where PORTAL_NOINDEX_APP_SHELL marks this a portal whose
+      indexable pages are published-dataset landing pages (DPMP); other portals keep their site description.
+    {% endcomment %}
+    <meta name="description" content="{% block meta_description %}{% if settings.PORTAL_NOINDEX_APP_SHELL %}Explore published research datasets and computational tools on {{ settings.PORTAL_NAMESPACE }}.{% else %}{{ site.description }}{% endif %}{% endblock %}">
+    {% comment %}
+      public_data/urls.py's catch-all `index_fallback` route (r"^.*$") serves this same generic app shell -- same
+      title/description, no unique content -- for literally any URL that isn't a publication landing page, since
+      the workbench itself is a client-rendered, authenticated-by-default SPA with nothing server-rendered for a
+      crawler to index. Defaulting to noindex here (and letting only the publication route back in, via the
+      robots block override in workbench/index.html) keeps Search from indexing an unbounded number of
+      near-duplicate, contentless shell pages that would otherwise dilute relevance for the actual dataset pages
+      this app wants ranked. "follow" (rather than "nofollow") is kept so link equity still flows through this
+      shell's real static links (header/footer nav, docs, etc).
+      Opt-in per deployment (PORTAL_NOINDEX_APP_SHELL, set by DPMP): other portals emit no robots tag here, as
+      before. The block holds the whole tag so a page can emit none at all.
+    {% endcomment %}
+    {% block robots %}{% if settings.PORTAL_NOINDEX_APP_SHELL %}<meta name="robots" content="noindex, follow">{% endif %}{% endblock %}
+    {% comment %}
+      Open Graph / Twitter Card, so links shared externally (Slack, Discord, LinkedIn, X/Twitter, iMessage) get a
+      title+description(+image) preview card. og:image/twitter:image are emitted per-page (og_image block below,
+      publication route only) from that publication's own coverImage, since there's no portal-wide image worth
+      using as a fallback here (see PORTAL_ICON_FILENAME below: a .ico favicon per deployment, which most
+      unfurlers won't render as a card image) -- the generic app-shell route this template otherwise renders just
+      omits the tags. Twitter's own Card parser falls back to og:title/og:description/og:image when the
+      twitter:* equivalents are absent, and no other unfurler reads twitter:* tags at all, so
+      twitter:image/twitter:card are the only Twitter-specific tags needed here.
+      Emitted on publication landing pages (which set `canonical_url`), and on every page of a portal that sets
+      PORTAL_NOINDEX_APP_SHELL; other portals' app-shell pages get no share-card tags, as before.
+    {% endcomment %}
+    {% if canonical_url or settings.PORTAL_NOINDEX_APP_SHELL %}
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{% block og_site_name %}{{ settings.PORTAL_NAMESPACE }}{% endblock %}">
+    {% comment %}
+      Matches the `<html lang="en">` above (and DC.language/@language elsewhere in this document) -- og:locale
+      wants the longer language_TERRITORY form, not a bare language code, so "en" becomes "en_US" here rather
+      than being reused verbatim.
+    {% endcomment %}
+    <meta property="og:locale" content="en_US">
+    {% comment %}
+      `canonical_url` (set by public_data's IndexView, publication route only) is the same
+      get_landing_page_url-derived value already used for this page's JSON-LD `url` -- falls back to the current
+      request's own URL everywhere else, so og:url/canonical never claim a URL that disagrees with the page's own
+      structured data (a stale ?vN revision link, or a deployment where the DataCite URL prefix points at a
+      different host than the one serving this request).
+    {% endcomment %}
+    <meta property="og:url" content="{% if canonical_url %}{{ canonical_url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endif %}">
+    <meta property="og:title" content="{% block og_title %}{{ settings.PORTAL_NAMESPACE }} Workbench{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Explore published research datasets and computational tools on {{ settings.PORTAL_NAMESPACE }}.{% endblock %}">
+    {% block og_image %}{% endblock %}
+    {% comment %}
+      "summary_large_image" only makes sense once there's an actual image (og_image block above) to render large --
+      otherwise it's the same plain title+description card as "summary", just requesting a layout the unfurler
+      has nothing to fill.
+    {% endcomment %}
+    <meta name="twitter:card" content="{% block twitter_card %}summary{% endblock %}">
+    {% endif %}
     {% if settings.PORTAL_ICON_FILENAME %}
     <link rel="icon" href="{{ settings.PORTAL_ICON_FILENAME }}">
     {% else %}
     <link rel="icon" href="{% static 'img/favicon.ico' %}">
     {% endif %}
-    <link rel="canonical" href="{{request.get_full_path}}">
+    {% comment %}Without its query string, so tracking or filter parameters don't each claim a canonical URL.{% endcomment %}
+    <link rel="canonical" href="{% if canonical_url %}{{ canonical_url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endif %}">
     <base href="/">
     {% block head_extra %}{% endblock %}
     <style>
@@ -23,16 +85,13 @@
       @import url("/static/site_cms/css/build/core-styles.header.css") layer(header);
     </style>
     {% if settings.PORTAL_CSS_FILENAMES|length %}
-    <!-- Project CSS -->
+    {% comment %}Project CSS{% endcomment %}
       {% for stylesheet in settings.PORTAL_CSS_FILENAMES %}
       <link rel="stylesheet" href="{{ stylesheet }}">
       {% endfor %}
     {% endif %}
     {% block styles %}{% endblock %}
-    <!-- used in general search -->
-    <meta name="keywords" content=""> <!-- related experiements, subject; used in search -->
-    <meta name="author" content=""> <!-- author names -->
-    <!-- used in google citation -->
+    {% comment %}used in google citation{% endcomment %}
     {% block google_citation_meta %}{% endblock %}
   </head>
   <body>
@@ -45,7 +104,7 @@
     {% include 'includes/footer.html' %}
     {% include 'includes/cms_ui.html' %}
     {% block scripts %}{% endblock %}
-    <!-- Bootstrap JS -->
+    {% comment %}Bootstrap JS{% endcomment %}
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>

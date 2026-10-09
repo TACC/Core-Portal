@@ -32,6 +32,20 @@ class BaseFileMetadata(BaseMetadataModel):
     name: str | None = None
 
 
+class FileColumn(BaseMetadataModel):
+    """A single column/field discovered in a tabular file.
+
+    Nothing populates this yet: it's where a future publish-time column-extraction step (e.g. the
+    archive job reading CSV/TSV headers) would land, so the Croissant `recordSet` for a published
+    project can be built from stored metadata alone, with no file I/O at request time.
+    """
+
+    name: str
+    # Croissant's atomic data types -- the only values a Croissant consumer is guaranteed to be
+    # able to cast an extracted CSV/TSV cell to.
+    data_type: Literal["sc:Text", "sc:Integer", "sc:Float", "sc:Boolean", "sc:Date"] = "sc:Text"
+
+
 class FileObj(BaseMetadataModel):
     """A file associated with a project graph entity."""
 
@@ -44,6 +58,14 @@ class FileObj(BaseMetadataModel):
     last_modified: str | None = None
     uuid: str | None = None
     value: dict | None = None
+    columns: list[FileColumn] | None = None
+    # Content hash, lowercase hex. Populated after publish from the archive
+    # job's sha256 manifest (project_publish_operations.py's
+    # load_publication_file_checksums; backfilled by the
+    # compute_publication_checksums command), so the Croissant `distribution`
+    # built from stored metadata in public_data/schema_org.py can include a
+    # cr:FileObject `sha256` without hashing file content on every page request.
+    sha256: str | None = None
 
 
 class PartialTrashEntity(BaseMetadataModel):

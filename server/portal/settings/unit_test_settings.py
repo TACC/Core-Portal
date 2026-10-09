@@ -92,12 +92,26 @@ MIDDLEWARE = [
     "impersonate.middleware.ImpersonateMiddleware",  # must be AFTER django.contrib.auth
 ]
 
+# The checked-in workbench index.html is the dev template: with DEBUG off it includes "index.html",
+# the client build's output, which doesn't exist outside a built image. Tests render the index.j2
+# build template in its place instead, so the suite passes in a fresh checkout with index.html left
+# intact (public_data's tests also render the real index.html, with a stand-in for that output).
+WORKBENCH_INDEX_TEMPLATE = "portal/apps/workbench/index.html"
+with open(os.path.join(BASE_DIR, "apps/workbench/templates/portal/apps/workbench/index.j2")) as f:
+    WORKBENCH_INDEX_J2 = f.read()
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [os.path.join(BASE_DIR, "templates")],
-        "APP_DIRS": True,
         "OPTIONS": {
+            # locmem first, so it wins over the app's own index.html. These replace APP_DIRS, which
+            # can't be combined with an explicit `loaders` list.
+            "loaders": [
+                ("django.template.loaders.locmem.Loader", {WORKBENCH_INDEX_TEMPLATE: WORKBENCH_INDEX_J2}),
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
+            ],
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
@@ -106,9 +120,27 @@ TEMPLATES = [
                 "portal.utils.contextprocessors.analytics",
                 "portal.utils.contextprocessors.debug",
                 "portal.utils.contextprocessors.messages",
+                "django_settings_export.settings_export",
             ],
         },
     },
+]
+
+# Mirrors settings.py's own SETTINGS_EXPORT -- without this (and the context
+# processor above), every `{{ settings.* }}` reference in a template
+# (base.html's PORTAL_NAMESPACE/PORTAL_ICON_FILENAME/PORTAL_CSS_FILENAMES,
+# etc.) silently renders as an empty string under test settings, since Django
+# templates don't error on an undefined context variable.
+SETTINGS_EXPORT = [
+    "PORTAL_ICON_FILENAME",
+    "PORTAL_CSS_FILENAMES",
+    "DEBUG",
+    "GOOGLE_ANALYTICS_PROPERTY_ID",
+    "PORTAL_NAMESPACE",
+    "WORKBENCH_SETTINGS",
+    "DOCS_CHATBOT_URL",
+    "PORTAL_USER_ACCOUNT_SETUP_STEPS",
+    "PORTAL_NOINDEX_APP_SHELL",
 ]
 
 WSGI_APPLICATION = "portal.wsgi.application"
@@ -187,6 +219,12 @@ PORTAL_PROJECTS_USE_SET_FACL_JOB = False
 PROJECT_ADMIN_GROUP = "Project Admin"
 
 
+PORTAL_CSS_FILENAMES = []
+
+GOOGLE_ANALYTICS_PROPERTY_ID = None
+
+DOCS_CHATBOT_URL = None
+
 PORTAL_KEYS_MANAGER = "portal.apps.accounts.managers.ssh_keys.KeysManager"
 PORTAL_PROJECTS_PEMS_APP_ID = "pems.app-test"
 
@@ -198,7 +236,41 @@ PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = "test.project.published"
 
 PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = None
 
+PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = None
+
 PORTAL_PUBLICATION_PUBLISHER = None
+
+# On, as in DPMP, so the landing-page tests see the noindex app shell; the tests for portals that
+# leave it off override it.
+PORTAL_NOINDEX_APP_SHELL = True
+
+PORTAL_PUBLICATION_LICENSE_URLS = {}
+
+PORTAL_PUBLICATION_LICENSE_SPDX_IDS = {}
+
+PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX = "test.project.review"
+
+PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME = "test.project.review"
+
+PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = "PROJECT_REVIEWER"
+
+PORTAL_PUBLICATION_ARCHIVE_APP_ID = ""
+
+PORTAL_PUBLICATION_ARCHIVE_APP_VERSION = ""
+
+PORTAL_PUBLICATION_RANCH_SYSTEM_ID = ""
+
+PORTAL_PUBLICATION_DATACITE_SHOULDER = ""
+
+# A path, as on DPMP: landing pages are canonical under /published-datasets/ (get_landing_namespace),
+# on the request's own host. Tests for other portals override it.
+PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "/published-datasets"
+
+DATACITE_URL = "https://api.test.datacite.org/"
+
+DATACITE_USER = "test.datacite.user"
+
+DATACITE_PASS = "test-datacite-pass"
 
 PORTAL_PROJECTS_ID_PREFIX = "test.project"
 

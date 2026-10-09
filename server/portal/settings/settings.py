@@ -538,12 +538,18 @@ PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = getattr(
     settings_custom, "_PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME", None
 )
 
+# Public HTTP mirror of PORTAL_PROJECTS_PUBLISHED_ROOT_DIR (e.g. web.corral). When set, published
+# file/cover-image routes redirect here instead of relaying bytes through Tapis.
+PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = getattr(settings_custom, "_PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL", None)
+
 PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = getattr(settings_custom, "_PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME", None)
 
 PROJECT_ADMIN_GROUP = getattr(settings_custom, "_PROJECT_ADMIN_GROUP", "Project Admin")
 
 PORTAL_PUBLICATION_DATACITE_SHOULDER = getattr(settings_custom, "_PORTAL_PUBLICATION_DATACITE_SHOULDER", None)
 
+# Where DOIs resolve: `<prefix>/<published system id>`. A prefix whose path is /published-datasets (DPMP) also
+# makes that mount canonical for landing pages; with any other value they stay under /public-data.
 PORTAL_PUBLICATION_DATACITE_URL_PREFIX = getattr(settings_custom, "_PORTAL_PUBLICATION_DATACITE_URL_PREFIX", None)
 
 DATACITE_URL = getattr(settings_custom, "_DATACITE_URL", None)
@@ -573,6 +579,18 @@ PORTAL_APPS_NAMES_SEARCH = settings_custom._PORTAL_APPS_NAMES_SEARCH
 PORTAL_APPS_DEFAULT_TAB = getattr(settings_custom, "_PORTAL_APPS_DEFAULT_TAB", "")
 
 PORTAL_PUBLICATION_PUBLISHER = getattr(settings_custom, "_PORTAL_PUBLICATION_PUBLISHER", PORTAL_NAMESPACE)
+
+# Mark every page without its own robots tag (base.html) noindex. Only portals with published-dataset
+# landing pages want this (DPMP), so it's off by default. It also gives every page base.html's
+# dataset-portal description and share-card (Open Graph/Twitter) defaults.
+PORTAL_NOINDEX_APP_SHELL = getattr(settings_custom, "_PORTAL_NOINDEX_APP_SHELL", False)
+
+# License-deed URLs (and SPDX ids) for publish-form license labels beyond the built-in ones in
+# projects/schema_models/license_urls.py. A label with no URL is left out of DataCite's rightsList
+# and the landing page's `license`, and logged.
+PORTAL_PUBLICATION_LICENSE_URLS = getattr(settings_custom, "_PORTAL_PUBLICATION_LICENSE_URLS", {})
+
+PORTAL_PUBLICATION_LICENSE_SPDX_IDS = getattr(settings_custom, "_PORTAL_PUBLICATION_LICENSE_SPDX_IDS", {})
 
 PORTAL_PUBLICATION_ARCHIVE_APP_ID = getattr(settings_custom, "_PORTAL_PUBLICATION_ARCHIVE_APP_ID", None)
 
@@ -658,6 +676,7 @@ SETTINGS_EXPORT = [
     "WORKBENCH_SETTINGS",
     "DOCS_CHATBOT_URL",
     "PORTAL_USER_ACCOUNT_SETUP_STEPS",
+    "PORTAL_NOINDEX_APP_SHELL",
 ]
 
 """
