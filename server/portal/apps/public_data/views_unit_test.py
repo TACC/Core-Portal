@@ -2591,6 +2591,22 @@ def test_index_view_renders_citation_and_dc_meta_tags(client, settings, publicat
     assert '<meta name="DC.identifier" content="https://doi.org/10.1234/test-doi">' in body
 
 
+@pytest.mark.parametrize("overrides", [{"authors": []}, {"publicationDate": None}], ids=["no_authors", "no_date"])
+def test_index_view_omits_scholar_tags_without_authors_and_date(client, publication, overrides):
+    """Scholar requires at least one author and a publication date, so a partial citation_* set
+    isn't emitted. The Dublin Core tags and JSON-LD still are."""
+    publication.value = valid_base_meta(
+        fileObjs=[{"type": "file", "name": "paper.pdf", "path": "/files/paper.pdf"}], **overrides
+    )
+    publication.save()
+
+    body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+
+    assert 'name="citation_' not in body
+    assert '<meta name="DC.title" content="Test Dataset">' in body
+    assert "application/ld+json" in body
+
+
 def test_index_view_renders_citation_pdf_url_when_pdf_present(client):
     pub = Publication.objects.create(
         project_id="test.project-2",
@@ -3126,11 +3142,14 @@ def test_sitemap_page_out_of_range_404s(client, settings, page):
         assert client.get(reverse("sitemap_page", kwargs={"page": page})).status_code == 404
 
 
-def test_sitemap_page_one_matches_the_single_sitemap_under_the_limit(client, settings):
+def test_sitemap_has_no_numbered_pages_under_the_limit(client, settings):
+    """Numbered files only exist once sitemap.xml is an index listing them; otherwise
+    sitemap-1.xml would be an unlisted duplicate of sitemap.xml."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     _create_publications(2)
 
-    assert client.get(reverse("sitemap_page", kwargs={"page": 1})).content == client.get(reverse("sitemap")).content
+    assert client.get(reverse("sitemap")).status_code == 200
+    assert client.get(reverse("sitemap_page", kwargs={"page": 1})).status_code == 404
 
 
 def test_sitemap_index_and_pages_share_one_cached_build(client, settings):

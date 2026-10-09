@@ -17,20 +17,21 @@
           <meta name="DC.type" content="dataset">
           {% comment %}
             Google Scholar indexing tags: https://scholar.google.com/intl/en/scholar/inclusion.html#indexing
+            Scholar requires at least one author and a publication date, so without both none are emitted.
           {% endcomment %}
+          {% if entity.citation_authors and entity.citation_date %}
           <meta name="citation_title" content="{{ entity.title }}">
           {% for author in entity.citation_authors %}
           <meta name="citation_author" content="{{ author }}">
           {% endfor %}
-          {% if entity.citation_date %}
           <meta name="citation_publication_date" content="{{ entity.citation_date }}">
-          {% endif %}
           <meta name="citation_publisher" content="{{ publisher }}">
           {% if entity.doi %}<meta name="citation_doi" content="{{ entity.doi }}">{% endif %}
           {% if entity.abstract_url %}
           <meta name="citation_abstract_html_url" content="{{ entity.abstract_url }}">
           {% endif %}
           {% if entity.pdf_url %}<meta name="citation_pdf_url" content="{{ entity.pdf_url }}">{% endif %}
+          {% endif %}
       {% endfor %}
       {% if schema_org_json %}
       {% comment %}

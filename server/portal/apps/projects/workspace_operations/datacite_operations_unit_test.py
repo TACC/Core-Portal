@@ -928,8 +928,9 @@ def test_merge_registered_metadata_keeps_entries_of_kinds_the_portal_never_sends
         {"name": "Hosting University", "contributorType": "HostingInstitution"},
         {"name": "Grace Hopper", "contributorType": "ContactPerson"},
     ]
+    # The registered Issued date is the DOI's original one, which its publicationYear matches.
     assert merged["dates"] == [
-        {"date": "2015-06-11", "dateType": "Issued"},
+        {"date": "2015", "dateType": "Issued"},
         {"date": "2015-06-11", "dateType": "Accepted"},
     ]
     assert merged["relatedIdentifiers"] == [
@@ -982,6 +983,59 @@ def test_merge_registered_metadata_matches_creators_by_name_ignoring_case_and_sp
     (ada, _) = merge_registered_metadata(portal_metadata(), registered)["creators"]
 
     assert ada["nameIdentifiers"] == [ORCID]
+
+
+def test_merge_registered_metadata_sends_the_portals_issued_date_when_none_is_registered():
+    registered = {"dates": [{"date": "2015-06-11", "dateType": "Accepted"}, {"date": "", "dateType": "Issued"}]}
+
+    merged = merge_registered_metadata(
+        portal_metadata(dates=[{"date": "2016-01-02", "dateType": "Issued"}]), registered
+    )
+
+    assert merged["dates"] == [
+        {"date": "2016-01-02", "dateType": "Issued"},
+        {"date": "2015-06-11", "dateType": "Accepted"},
+    ]
+
+
+# Entries a pre-portal DOI (e.g. 10.17612/P7D96T) carries that the schema rejects.
+INVALID_CONTRIBUTOR = {"name": "Someone", "contributorType": None}
+INVALID_RELATION = {"relatedIdentifier": "", "relatedIdentifierType": "DOI", "relationType": "IsReferencedBy"}
+
+
+def test_merge_registered_metadata_drops_registered_entries_the_schema_rejects(caplog):
+    registered = {
+        "contributors": [INVALID_CONTRIBUTOR, {"name": "Grace Hopper", "contributorType": "Researcher"}],
+        "relatedIdentifiers": [
+            INVALID_RELATION,
+            {"relatedIdentifier": "10.1/paper", "relatedIdentifierType": "DOI", "relationType": "IsReferencedBy"},
+        ],
+    }
+
+    merged = merge_registered_metadata(portal_metadata(), registered)
+
+    assert INVALID_CONTRIBUTOR not in merged["contributors"]
+    assert {"name": "Grace Hopper", "contributorType": "Researcher"} in merged["contributors"]
+    assert INVALID_RELATION not in merged["relatedIdentifiers"]
+    assert {
+        "relatedIdentifier": "10.1/paper",
+        "relatedIdentifierType": "DOI",
+        "relationType": "IsReferencedBy",
+    } in merged["relatedIdentifiers"]
+    assert "Dropping 1 invalid registered contributors" in caplog.text
+    assert "Dropping 1 invalid registered relatedIdentifiers" in caplog.text
+
+
+def test_merge_registered_metadata_sends_a_cleaned_list_the_publication_lacks():
+    """Leaving the list out would leave DataCite's invalid entry in place, so its valid entries
+    (or none) are sent instead."""
+    kept = {"relatedIdentifier": "10.1/old", "relatedIdentifierType": "DOI", "relationType": "IsCitedBy"}
+    registered = {"contributors": [INVALID_CONTRIBUTOR], "relatedIdentifiers": [INVALID_RELATION, kept]}
+
+    merged = merge_registered_metadata(portal_metadata(contributors=[], relatedIdentifiers=[]), registered)
+
+    assert merged["contributors"] == []
+    assert merged["relatedIdentifiers"] == [kept]
 
 
 def test_merge_registered_metadata_with_nothing_registered_sends_the_portals_metadata():

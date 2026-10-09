@@ -59,7 +59,8 @@ def build_sitemap_entries(request):
 def render_sitemap(request, entries, page=None):
     """The sitemap XML for `entries` (build_sitemap_entries' list): with no `page`, one <urlset>
     listing them all, or past SITEMAP_MAX_URLS a <sitemapindex> of numbered sitemap files; with a
-    `page`, that numbered file's <urlset>. Raises Http404 for a page out of range.
+    `page`, that numbered file's <urlset>. Raises Http404 for a page out of range, and for any page
+    while there's no index to list them -- a sitemap-1.xml then would duplicate sitemap.xml.
     """
 
     page_count = max(1, -(-len(entries) // SITEMAP_MAX_URLS))
@@ -67,7 +68,7 @@ def render_sitemap(request, entries, page=None):
         if page_count == 1:
             return _render_urlset(entries)
         return _render_index(request, entries, page_count)
-    if 1 <= page <= page_count:
+    if page_count > 1 and 1 <= page <= page_count:
         return _render_urlset(entries[(page - 1) * SITEMAP_MAX_URLS : page * SITEMAP_MAX_URLS])
     raise Http404(f"No sitemap page {page}; there are {page_count}.")
 

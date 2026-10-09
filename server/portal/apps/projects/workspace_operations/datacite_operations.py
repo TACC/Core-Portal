@@ -403,6 +403,23 @@ def _creator_key(creator):
     return " ".join((creator.get("name") or "").casefold().split())
 
 
+# Registered entries the metadata schema rejects, which some pre-portal DOIs carry (e.g. a
+# contributor with no contributorType, or an empty relatedIdentifier). Sending one back would get the
+# whole update a 422, so they're dropped instead.
+_INVALID_REGISTERED_ENTRY = {
+    "contributors": lambda contributor: (
+        not (contributor.get("contributorType") and (contributor.get("name") or "").strip())
+    ),
+    "relatedIdentifiers": lambda related: (
+        not (
+            (related.get("relatedIdentifier") or "").strip()
+            and related.get("relatedIdentifierType")
+            and related.get("relationType")
+        )
+    ),
+}
+
+
 def merge_registered_metadata(metadata: dict, registered: dict) -> dict:
     """`metadata` (a get_datacite_json payload for a DOI that already exists) merged with what
     DataCite already holds for that DOI, so an update can't erase metadata the portal doesn't
@@ -413,15 +430,29 @@ def merge_registered_metadata(metadata: dict, registered: dict) -> dict:
     nothing of that kind: lists the publication leaves empty aren't sent at all, and registered
     entries of a kind the portal never produces (subjects with a scheme, non-Abstract descriptions,
     typed titles, contributor/date/relation types it doesn't send) are kept alongside its own. A
-    creator with the same name keeps its registered ORCID when the portal has none, and its
-    registered affiliation unless that's just the hosting institution the portal gave every author.
+    registered Issued date is kept too: it's the DOI's original issue date, which publicationYear
+    (never sent on an update) matches. A creator with the same name keeps its registered ORCID when
+    the portal has none, and its registered affiliation unless that's just the hosting institution
+    the portal gave every author. Registered entries the schema rejects (_INVALID_REGISTERED_ENTRY)
+    are dropped, and a list that had one is always sent, so DataCite's copy is cleaned too.
     """
 
     merged = dict(metadata)
+    registered = dict(registered)
+    invalid_fields = set()
+    for field, is_invalid in _INVALID_REGISTERED_ENTRY.items():
+        entries = registered.get(field) or []
+        valid = [entry for entry in entries if not is_invalid(entry)]
+        if len(valid) < len(entries):
+            logger.warning(f"Dropping {len(entries) - len(valid)} invalid registered {field} entries from the update.")
+            invalid_fields.add(field)
+            registered[field] = valid
 
     def keep(field, kept):
         if merged.get(field):
             merged[field] = merged[field] + [entry for entry in registered.get(field) or [] if kept(entry)]
+        elif field in invalid_fields:
+            merged[field] = registered[field]
         else:
             merged.pop(field, None)
 
@@ -436,10 +467,11 @@ def merge_registered_metadata(metadata: dict, registered: dict) -> dict:
         for contributor in registered.get("contributors") or []
         if contributor.get("contributorType") not in sent_contributor_types
     ]
-    sent_date_types = {date.get("dateType") for date in merged.get("dates", [])}
-    merged["dates"] = merged.get("dates", []) + [
-        date for date in registered.get("dates") or [] if date.get("dateType") not in sent_date_types
-    ]
+    registered_dates = registered.get("dates") or []
+    keeps_issued = any(date.get("dateType") == "Issued" and date.get("date") for date in registered_dates)
+    dates = [date for date in merged.get("dates", []) if not (keeps_issued and date.get("dateType") == "Issued")]
+    sent_date_types = {date.get("dateType") for date in dates}
+    merged["dates"] = dates + [date for date in registered_dates if date.get("dateType") not in sent_date_types]
     merged["descriptions"] = merged.get("descriptions", []) + [
         description
         for description in registered.get("descriptions") or []
@@ -449,7 +481,7 @@ def merge_registered_metadata(metadata: dict, registered: dict) -> dict:
         title for title in registered.get("titles") or [] if title.get("titleType")
     ]
     for field in ("contributors", "dates", "descriptions", "titles"):
-        if not merged[field]:
+        if not merged[field] and field not in invalid_fields:
             del merged[field]
 
     portal_affiliations = [
