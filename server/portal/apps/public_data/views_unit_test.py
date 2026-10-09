@@ -2551,6 +2551,42 @@ def test_index_view_publication_route_is_indexable(client, publication):
     assert "index, follow, max-image-preview:large" in robots_match.group(1)
 
 
+ROBOTS_META = re.compile(r'<meta name="robots" content="([^"]*)">')
+
+
+def test_index_view_app_shell_has_no_robots_tag_unless_portal_opts_in(client, settings):
+    """Only portals that set PORTAL_NOINDEX_APP_SHELL (DPMP) mark the app shell noindex."""
+    settings.PORTAL_NOINDEX_APP_SHELL = False
+
+    assert ROBOTS_META.search(client.get("/published-datasets/").content.decode()) is None
+
+
+def test_index_view_landing_page_is_indexable_without_portal_opt_in(client, settings, publication):
+    settings.PORTAL_NOINDEX_APP_SHELL = False
+    body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+
+    assert ROBOTS_META.findall(body) == ["index, follow, max-image-preview:large"]
+
+
+@pytest.mark.parametrize("state", ["withdrawn", "mid_publish"])
+@pytest.mark.parametrize("noindex_app_shell", [True, False])
+def test_index_view_unindexable_publication_is_noindex_either_way(
+    client, settings, publication, state, noindex_app_shell
+):
+    """A withdrawn or mid-publish landing page stays noindex whether or not the portal opts its app
+    shell in, and carries exactly one robots tag."""
+    settings.PORTAL_NOINDEX_APP_SHELL = noindex_app_shell
+    if state == "withdrawn":
+        publication.is_published = False
+    else:
+        publication.is_indexable = False
+    publication.save()
+
+    body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+
+    assert ROBOTS_META.findall(body) == ["noindex, follow"]
+
+
 @pytest.mark.parametrize("on_publication_route", [True, False])
 def test_index_view_head_values_have_no_surrounding_whitespace(client, publication, on_publication_route):
     """The overridden blocks render inside <title> and meta `content` attributes, so template

@@ -578,6 +578,10 @@ PORTAL_APPS_DEFAULT_TAB = getattr(settings_custom, "_PORTAL_APPS_DEFAULT_TAB", "
 
 PORTAL_PUBLICATION_PUBLISHER = getattr(settings_custom, "_PORTAL_PUBLICATION_PUBLISHER", PORTAL_NAMESPACE)
 
+# Mark every page without its own robots tag (base.html) noindex. Only portals with published-dataset
+# landing pages want this (DPMP), so it's off by default.
+PORTAL_NOINDEX_APP_SHELL = getattr(settings_custom, "_PORTAL_NOINDEX_APP_SHELL", False)
+
 PORTAL_PUBLICATION_ARCHIVE_APP_ID = getattr(settings_custom, "_PORTAL_PUBLICATION_ARCHIVE_APP_ID", None)
 
 PORTAL_PUBLICATION_ARCHIVE_APP_VERSION = getattr(settings_custom, "_PORTAL_PUBLICATION_ARCHIVE_APP_VERSION", None)
@@ -662,6 +666,7 @@ SETTINGS_EXPORT = [
     "WORKBENCH_SETTINGS",
     "DOCS_CHATBOT_URL",
     "PORTAL_USER_ACCOUNT_SETUP_STEPS",
+    "PORTAL_NOINDEX_APP_SHELL",
 ]
 
 """

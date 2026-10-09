@@ -22,8 +22,10 @@
       near-duplicate, contentless shell pages that would otherwise dilute relevance for the actual dataset pages
       this app wants ranked. "follow" (rather than "nofollow") is kept so link equity still flows through this
       shell's real static links (header/footer nav, docs, etc).
+      Opt-in per deployment (PORTAL_NOINDEX_APP_SHELL, set by DPMP): other portals emit no robots tag here, as
+      before. The block holds the whole tag so a page can emit none at all.
     {% endcomment %}
-    <meta name="robots" content="{% block robots %}noindex, follow{% endblock %}">
+    {% block robots %}{% if settings.PORTAL_NOINDEX_APP_SHELL %}<meta name="robots" content="noindex, follow">{% endif %}{% endblock %}
     {% comment %}
       Open Graph / Twitter Card, so links shared externally (Slack, Discord, LinkedIn, X/Twitter, iMessage) get a
       title+description(+image) preview card. og:image/twitter:image are emitted per-page (og_image block below,

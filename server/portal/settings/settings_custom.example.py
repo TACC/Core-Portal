@@ -251,6 +251,9 @@ _PROJECT_ADMIN_GROUP = "Project Admin"
 #######################
 
 _PORTAL_PUBLICATION_PUBLISHER = "CEP"
+# Mark the workbench app shell and every other page without its own robots tag noindex, so only
+# published-dataset landing pages get indexed. DPMP sets this to True.
+_PORTAL_NOINDEX_APP_SHELL = False
 _PORTAL_PUBLICATION_ARCHIVE_APP_ID = ""
 _PORTAL_PUBLICATION_ARCHIVE_APP_VERSION = ""
 _PORTAL_PUBLICATION_RANCH_SYSTEM_ID = ""

@@ -1038,15 +1038,17 @@ class IndexView(TemplateView):
                 if not pub.is_published:
                     # A withdrawn publication's DOI still resolves here (DataCite expects a
                     # tombstone page, not a 404), so the page still renders -- but with no
-                    # citation/JSON-LD metadata, which also leaves it at base.html's default
-                    # noindex. Matches SitemapView, which leaves it out for the same reason.
+                    # citation/JSON-LD metadata, and noindex. Matches SitemapView, which leaves it
+                    # out for the same reason.
                     logger.info(f"Publication {project_id} is unpublished; serving it without metadata.")
+                    context["noindex_publication"] = True
                 elif not pub.is_indexable:
                     # Mid first publish: the files are still being transferred, or the DOI isn't
                     # findable yet, so the page's file links and DOI wouldn't resolve. Served the same way
                     # until publish_publication_doi (project_publish_operations.py) marks it
                     # indexable; SitemapView leaves it out meanwhile.
                     logger.info(f"Publication {project_id} isn't indexable yet; serving it without metadata.")
+                    context["noindex_publication"] = True
                 else:
                     # `revision` (the URL's `vN` suffix -- see public_data/urls.py) can't select a
                     # specific version's content: Publication is keyed by bare project_id and always

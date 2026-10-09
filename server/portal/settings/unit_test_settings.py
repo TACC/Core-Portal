@@ -140,6 +140,7 @@ SETTINGS_EXPORT = [
     "WORKBENCH_SETTINGS",
     "DOCS_CHATBOT_URL",
     "PORTAL_USER_ACCOUNT_SETUP_STEPS",
+    "PORTAL_NOINDEX_APP_SHELL",
 ]
 
 WSGI_APPLICATION = "portal.wsgi.application"
@@ -238,6 +239,10 @@ PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = None
 PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = None
 
 PORTAL_PUBLICATION_PUBLISHER = None
+
+# On, as in DPMP, so the landing-page tests see the noindex app shell; the tests for portals that
+# leave it off override it.
+PORTAL_NOINDEX_APP_SHELL = True
 
 PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX = "test.project.review"
 
