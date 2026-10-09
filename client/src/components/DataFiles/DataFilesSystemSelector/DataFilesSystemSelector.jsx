@@ -6,12 +6,12 @@ import { DropdownSelector } from '_common';
 import styles from './DataFilesSystemSelector.module.scss';
 
 const DataFilesSystemSelector = ({
-  initialParams,
+  initialParams = {},
   section,
-  disabled,
+  disabled = false,
   operation,
-  showProjects,
-  excludedSystems, // System names to exclude (as in cep.home.xxx).
+  showProjects = false,
+  excludedSystems = [], // System names to exclude (as in cep.home.xxx).
 }) => {
   const dispatch = useDispatch();
   const modalProps = useSelector((state) => state.files.modalProps[operation]);
@@ -152,13 +152,6 @@ DataFilesSystemSelector.propTypes = {
   operation: PropTypes.string.isRequired,
   showProjects: PropTypes.bool,
   excludedSystems: PropTypes.arrayOf(PropTypes.string),
-};
-
-DataFilesSystemSelector.defaultProps = {
-  initialParams: {},
-  disabled: false,
-  showProjects: false,
-  excludedSystems: [],
 };
 
 export default DataFilesSystemSelector;

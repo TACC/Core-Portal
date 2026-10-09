@@ -1,20 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink as RRNavLink } from 'react-router-dom';
-import { Nav, NavItem, NavLink } from 'reactstrap';
+import { Nav, NavItem } from 'reactstrap';
 import Icon from '_common/Icon';
 import styles from './Sidebar.module.css';
 import emptyStringValidator from '_common/CommonUtils';
 
-const SidebarItem = ({ to, iconName, label, children, disabled, hidden }) => {
+const SidebarItem = ({
+  to,
+  iconName,
+  label,
+  children = null,
+  disabled = false,
+  hidden = false,
+}) => {
   return (
     <NavItem>
-      <NavLink
-        tag={RRNavLink}
+      <RRNavLink
         to={to}
-        disabled={disabled}
-        className={styles['link']}
-        activeClassName={styles['link--active']}
+        aria-disabled={disabled}
+        className={({ isActive }) =>
+          `nav-link ${styles['link']} ${isActive ? styles['link--active'] : ''}`
+        }
       >
         <div
           className={`${disabled ? styles['disabled'] : ''} ${
@@ -25,7 +32,7 @@ const SidebarItem = ({ to, iconName, label, children, disabled, hidden }) => {
           <span className={styles['text']}>{label}</span>
           {children}
         </div>
-      </NavLink>
+      </RRNavLink>
     </NavItem>
   );
 };
@@ -37,12 +44,6 @@ SidebarItem.propTypes = {
   children: PropTypes.node,
   disabled: PropTypes.bool,
   hidden: PropTypes.bool,
-};
-
-SidebarItem.defaultProps = {
-  children: null,
-  disabled: false,
-  hidden: false,
 };
 
 /**
@@ -65,10 +66,10 @@ const groupByCategory = (items) => {
 
 const Sidebar = ({
   sidebarItems,
-  addItemsBefore,
-  addItemsAfter,
-  loading,
-  isMain,
+  addItemsBefore = [],
+  addItemsAfter = [],
+  loading = false,
+  isMain = false,
 }) => {
   const groupedItems = groupByCategory(sidebarItems);
 
@@ -136,13 +137,6 @@ Sidebar.propTypes = {
   addItemsAfter: PropTypes.arrayOf(PropTypes.object),
   loading: PropTypes.bool,
   isMain: PropTypes.bool,
-};
-
-Sidebar.defaultProps = {
-  addItemsBefore: [],
-  addItemsAfter: [],
-  loading: false,
-  isMain: false,
 };
 
 export default Sidebar;

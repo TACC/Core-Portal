@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styles from './HighlightSearchTerm.module.scss';
 
-const HighlightSearchTerm = ({ searchTerm, content }) => {
+const HighlightSearchTerm = ({ searchTerm = '', content = '' }) => {
   if (!searchTerm) {
     return <>{content}</>;
   }
@@ -29,11 +29,6 @@ const HighlightSearchTerm = ({ searchTerm, content }) => {
 HighlightSearchTerm.propTypes = {
   searchTerm: PropTypes.string,
   content: PropTypes.string,
-};
-
-HighlightSearchTerm.defaultProps = {
-  searchTerm: '',
-  content: '',
 };
 
 export default HighlightSearchTerm;

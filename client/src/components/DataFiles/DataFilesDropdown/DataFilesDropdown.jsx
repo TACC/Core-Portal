@@ -19,7 +19,7 @@ const BreadcrumbsDropdown = ({
   path,
   basePath,
   section,
-  isPublic,
+  isPublic = false,
 }) => {
   // encode path to handle special characters
   path = path.split('/').map(encodeURIComponent).join('/');
@@ -40,21 +40,23 @@ const BreadcrumbsDropdown = ({
     : null;
 
   const handleNavigation = (targetPath) => {
-    if (!basePath) basePath = isPublic ? '/public-data' : '/workbench/data';
+    let effectiveBasePath = basePath;
+    if (!effectiveBasePath)
+      effectiveBasePath = isPublic ? '/public-data' : '/workbench/data';
     let url;
 
     if (scheme === 'projects' && targetPath === systemName) {
-      url = `${basePath}/${api}/projects/${rootProjectSystem}/${projectId}/`;
+      url = `${effectiveBasePath}/${api}/projects/${rootProjectSystem}/${projectId}/`;
     } else if (scheme === 'projects' && !targetPath) {
-      url = `${basePath}/${api}/projects/${rootProjectSystem}`;
+      url = `${effectiveBasePath}/${api}/projects/${rootProjectSystem}`;
     } else if (api === 'googledrive' && !targetPath) {
-      url = `${basePath}/${api}/${scheme}/${system}/`;
+      url = `${effectiveBasePath}/${api}/${scheme}/${system}/`;
     } else if (api === 'tapis' && scheme !== 'projects' && !targetPath) {
-      url = `${basePath}/${api}/${scheme}/${system}/`;
+      url = `${effectiveBasePath}/${api}/${scheme}/${system}/`;
     } else if (scheme === 'projects') {
-      url = `${basePath}/${api}/projects/${rootProjectSystem}/${system}${targetPath}`;
+      url = `${effectiveBasePath}/${api}/projects/${rootProjectSystem}/${system}${targetPath}`;
     } else {
-      url = `${basePath}/${api}/${scheme}/${system}${targetPath}/`;
+      url = `${effectiveBasePath}/${api}/${scheme}/${system}${targetPath}/`;
     }
 
     return url;
@@ -169,10 +171,6 @@ BreadcrumbsDropdown.propTypes = {
   path: PropTypes.string.isRequired,
   section: PropTypes.string,
   isPublic: PropTypes.bool,
-};
-
-BreadcrumbsDropdown.defaultProps = {
-  isPublic: false,
 };
 
 export default BreadcrumbsDropdown;

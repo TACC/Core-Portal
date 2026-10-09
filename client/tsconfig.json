@@ -1,29 +1,31 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
     "target": "ESNext",
     "paths": {
-      "_common/*": ["components/_common/*"],
-      "_common": ["components/_common"],
-      "_custom/*": ["components/_custom/*"],
-      "_custom": ["components/_custom"],
-      "utils/*": ["utils/*"]
+      "_common/*": ["./src/components/_common/*"],
+      "_common": ["./src/components/_common"],
+      "_custom/*": ["./src/components/_custom/*"],
+      "_custom": ["./src/components/_custom"],
+      "hooks/*": ["./src/hooks/*"],
+      "hooks": ["./src/hooks"],
+      "styles/*": ["./src/styles/*"],
+      "utils/*": ["./src/utils/*"]
     },
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": true,
-    "skipLibCheck": false,
-    "esModuleInterop": false,
+    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "types": ["vitest/globals", "@testing-library/jest-dom/vitest"]
   },
-  "include": ["./src"]
+  "include": ["./src", "./packages"]
 }

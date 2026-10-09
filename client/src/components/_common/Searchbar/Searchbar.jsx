@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { Button, DropdownSelector } from '_common';
 import { useSystemDisplayName } from 'hooks/datafiles';
@@ -8,30 +8,29 @@ import styles from './Searchbar.module.scss';
 
 const Searchbar = ({
   api,
-  scheme,
-  system,
-  path,
-  resultCount,
-  dataType,
+  scheme = '',
+  system = '',
+  path = '',
+  resultCount = 0,
+  dataType = '',
   filterTypes,
-  infiniteScroll,
+  infiniteScroll = true,
   forbidWhitespace,
-  className,
-  siteSearch,
+  className = '',
+  siteSearch = false,
   sectionName,
-  disabled,
+  disabled = false,
 }) => {
   const urlQueryParam = queryString.parse(window.location.search).query_string;
   const [query, setQuery] = useState(urlQueryParam);
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const { query_string: hasQuery, filter: filterType } = queryString.parse(
     location.search
   );
 
-  if (!sectionName) {
-    sectionName = useSystemDisplayName({ system, scheme, path });
-  }
+  const systemDisplayName = useSystemDisplayName({ system, scheme, path });
+  const displayName = sectionName || systemDisplayName;
 
   const allFilterTypesValue = `All ${dataType ? dataType : ''} Types`;
 
@@ -42,7 +41,7 @@ const Searchbar = ({
       filter: newFilter || undefined,
       page: !infiniteScroll ? 1 : undefined,
     });
-    history.push(`${location.pathname}?${updatedQuery}`);
+    navigate(`${location.pathname}?${updatedQuery}`);
   };
 
   const routeSearch = () => {
@@ -52,7 +51,7 @@ const Searchbar = ({
       query_string: query?.trim() || undefined,
       page: !infiniteScroll ? 1 : undefined,
     });
-    history.push(`${location.pathname}?${updatedQuery}`);
+    navigate(`${location.pathname}?${updatedQuery}`);
 
     if (siteSearch) window.dispatchEvent(new Event('portal.search'));
   };
@@ -73,7 +72,7 @@ const Searchbar = ({
       applyFilter(undefined);
     }
     setQuery('');
-    history.push(location.pathname);
+    navigate(location.pathname);
   };
 
   const getValidationMessage = (value) => {
@@ -93,7 +92,7 @@ const Searchbar = ({
 
   return (
     <form
-      aria-label={`${sectionName} Search`}
+      aria-label={`${displayName} Search`}
       className={`${className} ${styles['container']}`}
       onSubmit={onSubmit}
     >
@@ -117,9 +116,9 @@ const Searchbar = ({
           onChange={onChange}
           value={query || ''}
           name="query"
-          aria-label={`Search ${sectionName}`}
+          aria-label={`Search ${displayName}`}
           className={`form-control ${styles['input']}`}
-          placeholder={`Search ${sectionName}`}
+          placeholder={`Search ${displayName}`}
           data-testid="input"
           autoComplete="off"
           disabled={disabled}
@@ -148,7 +147,7 @@ const Searchbar = ({
           className={`${styles.results} ${disabled ? styles.hidden : ''}`}
           data-testid="summary-of-search-results"
         >
-          {resultCount} results in {sectionName || dataType}
+          {resultCount} results in {displayName || dataType}
         </div>
       )}
       {((hasQuery && !siteSearch) ||
@@ -182,18 +181,6 @@ Searchbar.propTypes = {
   className: PropTypes.string,
   siteSearch: PropTypes.bool,
   disabled: PropTypes.bool,
-};
-
-Searchbar.defaultProps = {
-  className: '',
-  scheme: '',
-  system: '',
-  path: '',
-  resultCount: 0,
-  siteSearch: false,
-  disabled: false,
-  infiniteScroll: true,
-  dataType: '',
 };
 
 export default Searchbar;

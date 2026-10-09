@@ -1,9 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import { Provider, useSelector } from 'react-redux';
+import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import AppsRoutes, { AppsLayout } from './AppLayout';
-import { MemoryRouter, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 import filesFixture from '../../DataFiles/fixtures/DataFiles.files.fixture';
@@ -17,14 +16,14 @@ import renderComponent from 'utils/testing';
 const mockStore = configureStore();
 
 function renderAppsRoutes(store, appId) {
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[`/applications/${appId}`]}>
-        <Route path="/:appId?">
-          <AppsRoutes />
-        </Route>
-      </MemoryRouter>
-    </Provider>
+  const history = createMemoryHistory();
+  history.push(`/applications/${appId}`);
+  return renderComponent(
+    <Routes>
+      <Route path="/applications/:appId?/*" element={<AppsRoutes />} />
+    </Routes>,
+    store,
+    history
   );
 }
 describe('AppsLayout', () => {

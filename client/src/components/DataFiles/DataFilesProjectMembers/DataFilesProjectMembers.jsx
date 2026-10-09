@@ -7,25 +7,28 @@ import { SystemRoleSelector, ProjectRoleSelector } from './_cells';
 import styles from './DataFilesProjectMembers.module.scss';
 import { useSystemRole } from './_cells/SystemRoleSelector';
 import './DataFilesProjectMembers.scss';
+import { useAuthenticatedUser, useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DataFilesProjectMembers = ({
   projectId,
   members,
   onAdd,
   onRemove,
-  onTransfer,
-  mode,
-  loading,
+  onTransfer = () => {},
+  mode = 'addremove',
+  loading = false,
 }) => {
   const dispatch = useDispatch();
 
   const userSearchResults = useSelector((state) => state.users.search.users);
-  const authenticatedUser = useSelector(
-    (state) => state.authenticatedUser.user.username
-  );
-  const projectsEnableMetadata = useSelector(
-    (state) => state.workbench.config.projectsEnableMetadata
-  );
+  const authenticatedUser = useAuthenticatedUser()?.username;
+
+  const {
+    data: {
+      config: { projectsEnableMetadata },
+    },
+  } = useWorkbenchConfig();
+
   const { query: authenticatedUserQuery } = useSystemRole(
     projectId ?? null,
     authenticatedUser ?? null
@@ -299,12 +302,6 @@ DataFilesProjectMembers.propTypes = {
   onTransfer: PropTypes.func,
   mode: PropTypes.string,
   loading: PropTypes.bool,
-};
-
-DataFilesProjectMembers.defaultProps = {
-  onTransfer: () => {},
-  mode: 'addremove',
-  loading: false,
 };
 
 export default DataFilesProjectMembers;

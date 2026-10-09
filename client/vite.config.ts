@@ -1,32 +1,34 @@
-import eslint from '@rollup/plugin-eslint';
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 
-// https://vitejs.dev/config/
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from 'vitest/config';
+
 export default defineConfig({
   base: '/core/static/',
-  css: { preprocessorOptions: { scss: { charset: false, api: 'modern' } } },
-  plugins: [
-    {
-      ...eslint({ include: 'src/**/*.+(js|jsx|ts|tsx)', fix: false }),
-      enforce: 'pre',
+
+  css: {
+    preprocessorOptions: {
+      scss: {
+        charset: false,
+      },
     },
-    react(),
-  ],
+  },
+
+  plugins: [react(), tailwindcss()],
 
   resolve: {
     alias: {
-      _common: resolve(__dirname, 'src/components/_common'),
-      _custom: resolve(__dirname, 'src/components/_custom'),
-      hooks: resolve(__dirname, 'src/hooks'),
-      utils: resolve(__dirname, 'src/utils'),
-      styles: resolve(__dirname, 'src/styles'),
+      _common: resolve(import.meta.dirname, 'src/components/_common'),
+      _custom: resolve(import.meta.dirname, 'src/components/_custom'),
+      hooks: resolve(import.meta.dirname, 'src/hooks'),
+      utils: resolve(import.meta.dirname, 'src/utils'),
+      styles: resolve(import.meta.dirname, 'src/styles'),
     },
   },
 
   server: {
-    origin: 'cep.test',
+    origin: 'https://cep.test',
     port: 3000,
     cors: {
       origin: ['https://cep.test'],
@@ -37,8 +39,12 @@ export default defineConfig({
       port: 3000,
     },
   },
+
   test: {
     globals: true,
     environment: 'jsdom',
+    testTimeout: 10_000,
+    maxWorkers: '50%', // Prevents local test flake due to resource contention
+    setupFiles: ['./vitest.setup.ts'],
   },
 });

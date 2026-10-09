@@ -5,11 +5,16 @@ import { PropTypes, shape, string, arrayOf } from 'prop-types';
 import { useTable } from 'react-table';
 import { Table } from 'reactstrap';
 import styles from './CustomDashboardSection.module.scss';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 function CustomDashboardSection({ className }) {
-  const { header, links } = useSelector(
-    (state) => state.workbench.config.customDashboardSection
-  );
+  const {
+    data: {
+      config: {
+        customDashboardSection: { header, links },
+      },
+    },
+  } = useWorkbenchConfig();
   const columns = useMemo(
     () => [
       {
@@ -52,10 +57,16 @@ const TableTemplate = ({ attributes }) => {
       <tbody {...getTableBodyProps()}>
         {rows.map((row) => {
           prepareRow(row);
+          const { key: rowKey, ...rowProps } = row.getRowProps();
           return (
-            <tr {...row.getRowProps()}>
+            <tr key={rowKey} {...rowProps}>
               {row.cells.map((cell) => {
-                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                const { key: cellKey, ...cellProps } = cell.getCellProps();
+                return (
+                  <td key={cellKey} {...cellProps}>
+                    {cell.render('Cell')}
+                  </td>
+                );
               })}
             </tr>
           );

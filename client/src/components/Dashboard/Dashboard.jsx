@@ -1,15 +1,16 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Link, Route, Switch } from 'react-router-dom';
-import { BrowserChecker, Section, SectionTableWrapper } from '_common';
+import { useSelector } from 'react-redux';
+import { Route, Routes, useParams } from 'react-router-dom';
+import { BrowserChecker, Section, SectionTableWrapper, Link } from '_common';
 import JobsView from '../Jobs';
-import Tickets, { TicketModal } from '../Tickets';
+import Tickets, { TicketCreateModal, TicketModal } from '../Tickets';
 import Sysmon from '../SystemMonitor';
 import UserNewsDashboard from '../UserNews';
 import * as ROUTES from '../../constants/routes';
 import './Dashboard.global.css';
 import styles from './Dashboard.module.css';
 import CustomDashboardSection from './CustomDashboardSection';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 function getPanelCount(standardApps = [], optionalApps = [], customApps = []) {
   return standardApps.length + optionalApps.length + customApps.length;
@@ -17,11 +18,16 @@ function getPanelCount(standardApps = [], optionalApps = [], customApps = []) {
 
 function Dashboard() {
   const {
-    hideApps,
-    hideManageAccount,
-    showUserNews = false,
-    customDashboardSection,
-  } = useSelector((state) => state.workbench.config);
+    data: {
+      config: {
+        hideApps,
+        hideManageAccount,
+        showUserNews = false,
+        customDashboardSection,
+      },
+    },
+  } = useWorkbenchConfig();
+
   const { hideSystemMonitor } = useSelector((state) => state.systemMonitor);
   const panelCount = getPanelCount(
     ['DashboardTickets', ...(showUserNews ? ['DashboardUserNews'] : [])],
@@ -70,31 +76,34 @@ function Dashboard() {
   );
 }
 
-function DashboardRoutes() {
-  const dispatch = useDispatch();
-
+function TicketCreateRoute() {
   return (
-    <Switch>
+    <TicketCreateModal
+      isModalOpen={true}
+      setIsModalOpen={() => null}
+      showAsModalOnDashboard
+    />
+  );
+}
+
+function TicketDetailRoute() {
+  const { ticketId } = useParams();
+  return <TicketModal ticketId={ticketId} />;
+}
+
+function DashboardRoutes() {
+  return (
+    <Routes>
       <Route
         exact
-        path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
-        render={() => {
-          dispatch({
-            type: 'TICKET_CREATE_OPEN_MODAL',
-          });
-        }}
+        path={`${ROUTES.TICKETS}/create`}
+        element={<TicketCreateRoute />}
       />
       <Route
-        path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/:ticketId`}
-        render={({ match: { params } }) => {
-          dispatch({
-            type: 'TICKET_DETAILED_VIEW_OPEN',
-            payload: { ticketId: Number(params.ticketId) },
-          });
-          return <TicketModal />;
-        }}
+        path={`${ROUTES.TICKETS}/:ticketId`}
+        element={<TicketDetailRoute />}
       />
-    </Switch>
+    </Routes>
   );
 }
 
@@ -135,8 +144,9 @@ function DashboardTickets() {
       header="My Tickets"
       headerActions={
         <Link
-          to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
-          className="btn btn-secondary btn-sm"
+          type="button"
+          className="c-button c-button--secondary"
+          href={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
         >
           New Ticket
         </Link>

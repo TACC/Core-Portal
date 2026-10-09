@@ -1,52 +1,22 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { findByText, screen } from '@testing-library/react';
 import TicketsView, { getStatusText } from './TicketsLayout';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import '@testing-library/jest-dom/extend-expect';
 import { BrowserRouter } from 'react-router-dom';
+import renderComponent from 'utils/testing';
+import { server } from '@tacc/test-fixtures';
+import { http, HttpResponse } from 'msw';
 
 const mockStore = configureStore();
-const initialMockState = {
-  content: [],
-  loading: false,
-  loadingError: false,
-  loadingErrorMessage: '',
-};
-
-const exampleTicketContent = [
-  {
-    id: '1',
-    Subject: 'Some subject',
-    Status: 'resolved',
-    Created: 'Fri Mar 22 09:17:27 2019',
-  },
-  {
-    id: '2',
-    Subject: 'Another subject',
-    Status: 'open',
-    Created: 'Fri Mar 23 10:17:00 2019',
-  },
-];
 
 function renderTicketsComponent(store) {
-  return render(
-    <Provider store={store}>
-      <BrowserRouter>
-        <TicketsView />
-      </BrowserRouter>
-    </Provider>
-  );
+  return renderComponent(<TicketsView />, store);
 }
 
 describe('TicketLayout', () => {
   it('renders tickets', () => {
-    const store = mockStore({
-      ticketList: {
-        ...initialMockState,
-        content: exampleTicketContent,
-      },
-    });
+    const store = mockStore({});
 
     const { getAllByRole } = renderTicketsComponent(store);
 
@@ -57,26 +27,24 @@ describe('TicketLayout', () => {
     expect(columnHeaders[3]).toHaveTextContent(/Ticket Status/);
   });
 
-  it('renders message when no tickets to show', () => {
-    const store = mockStore({
-      ticketList: {
-        ...initialMockState,
-      },
-    });
-    const { getByText } = renderTicketsComponent(store);
-    expect(getByText(/No tickets. You can add a ticket/)).toBeDefined();
-    expect(getByText(/here/).closest('a').getAttribute('href')).toEqual(
+  it('renders message when no tickets to show', async () => {
+    const store = mockStore({});
+
+    server.use(
+      http.get('/api/tickets', () => HttpResponse.json({ tickets: [] }))
+    );
+
+    renderTicketsComponent(store);
+    expect(
+      await screen.findByText(/No tickets. You can add a ticket/)
+    ).toBeDefined();
+    expect(screen.getByText(/here/).closest('a').getAttribute('href')).toEqual(
       '/workbench/dashboard/tickets/create/'
     );
   });
 
   it('renders when loading tickets', () => {
-    const store = mockStore({
-      ticketList: {
-        ...initialMockState,
-        loading: true,
-      },
-    });
+    const store = mockStore({});
 
     const { getByTestId } = renderTicketsComponent(store);
 
@@ -95,14 +63,13 @@ describe('TicketLayout', () => {
     }).toThrow(RangeError);
   });
 
-  it('renders an error message when unable to load tickets', () => {
-    const store = mockStore({
-      ticketList: {
-        ...initialMockState,
-        loadingError: true,
-      },
-    });
-    const { getByText } = renderTicketsComponent(store);
-    expect(getByText(/unable to retrieve/)).toBeDefined();
+  it('renders an error message when unable to load tickets', async () => {
+    const store = mockStore({});
+
+    server.use(
+      http.get('/api/tickets', () => new HttpResponse(null, { status: 404 }))
+    );
+    renderTicketsComponent(store);
+    expect(await screen.findByText(/unable to retrieve/)).toBeDefined();
   });
 });

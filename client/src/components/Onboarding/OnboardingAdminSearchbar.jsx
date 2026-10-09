@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import styles from './OnboardingAdminSearchbar.module.scss';
 
-const OnboardingAdminSearchbar = ({ className, disabled }) => {
+const OnboardingAdminSearchbar = ({ className = '', disabled = false }) => {
   const { query } = useSelector((state) => state.onboarding.admin);
   const [search, setSearch] = useState(query);
   const dispatch = useDispatch();
@@ -80,9 +80,4 @@ OnboardingAdminSearchbar.propTypes = {
   className: PropTypes.string,
   disabled: PropTypes.bool,
 };
-OnboardingAdminSearchbar.defaultProps = {
-  className: '',
-  disabled: false,
-};
-
 export default OnboardingAdminSearchbar;

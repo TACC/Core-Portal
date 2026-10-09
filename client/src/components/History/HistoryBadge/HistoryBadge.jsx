@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes, { number } from 'prop-types';
 import styles from './HistoryBadge.module.scss';
 
-const HistoryBadge = ({ unread, disabled }) => {
+const HistoryBadge = ({ unread, disabled = false }) => {
   const rootStyle = disabled ? 'root disabled' : 'root';
   if (unread) {
     return (
@@ -16,10 +16,6 @@ const HistoryBadge = ({ unread, disabled }) => {
 HistoryBadge.propTypes = {
   unread: number.isRequired,
   disabled: PropTypes.bool,
-};
-
-HistoryBadge.defaultProps = {
-  disabled: false,
 };
 
 export default HistoryBadge;

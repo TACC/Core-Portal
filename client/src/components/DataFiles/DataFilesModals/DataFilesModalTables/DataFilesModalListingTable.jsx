@@ -145,9 +145,9 @@ const DataFilesModalListingTable = ({
   data,
   operationName,
   operationCallback,
-  operationOnlyForFolders,
-  operationAllowedOnRootFolder,
-  disabled,
+  operationOnlyForFolders = false,
+  operationAllowedOnRootFolder = false,
+  disabled = false,
 }) => {
   const { loading, error, params, fetchMore } = useFileListing('modal');
 
@@ -285,12 +285,6 @@ DataFilesModalListingTable.propTypes = {
   disabled: PropTypes.bool,
   operationOnlyForFolders: PropTypes.bool,
   operationAllowedOnRootFolder: PropTypes.bool,
-};
-
-DataFilesModalListingTable.defaultProps = {
-  disabled: false,
-  operationOnlyForFolders: false,
-  operationAllowedOnRootFolder: false,
 };
 
 export default DataFilesModalListingTable;

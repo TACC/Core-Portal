@@ -204,7 +204,7 @@ function UIPatternsSection() {
 
 export default UIPatternsSection;
 
-function UIPatternsSectionTableInfinite({ className }) {
+function UIPatternsSectionTableInfinite({ className = '' }) {
   const tableData = [
     {
       col1: 'Hello',
@@ -243,11 +243,8 @@ UIPatternsSectionTableInfinite.propTypes = {
   /** Additional className for the root element */
   className: PropTypes.string,
 };
-UIPatternsSectionTableInfinite.defaultProps = {
-  className: '',
-};
 
-function UIPatternsSectionTablePlain({ className }) {
+function UIPatternsSectionTablePlain({ className = '' }) {
   return (
     <table className={className}>
       <thead>
@@ -276,7 +273,4 @@ function UIPatternsSectionTablePlain({ className }) {
 UIPatternsSectionTablePlain.propTypes = {
   /** Additional className for the root element */
   className: PropTypes.string,
-};
-UIPatternsSectionTablePlain.defaultProps = {
-  className: '',
 };

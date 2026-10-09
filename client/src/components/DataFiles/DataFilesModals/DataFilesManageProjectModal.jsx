@@ -1,21 +1,27 @@
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button, Message } from '_common';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
 import styles from './DataFilesManageProject.module.scss';
 import { useAddonComponents } from 'hooks/datafiles';
+import {
+  useAuthenticatedUserOrThrow,
+  useWorkbenchConfig,
+} from '@tacc/core-hooks';
+
+const NOT_LOADING_OR_ERRORED = { loading: false, error: false };
 
 const DataFilesManageProjectModal = () => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [transferMode, setTransferMode] = useState(false);
   const isOpen = useSelector((state) => state.files.modals.manageproject);
   const { members, projectId } = useSelector(
     (state) => state.projects.metadata
   );
-  const { user } = useSelector((state) => state.authenticatedUser);
+  const user = useAuthenticatedUserOrThrow();
   const { loading, error } = useSelector((state) => {
     if (
       state.projects.operation &&
@@ -23,10 +29,7 @@ const DataFilesManageProjectModal = () => {
     ) {
       return state.projects.operation;
     }
-    return {
-      loading: false,
-      error: false,
-    };
+    return NOT_LOADING_OR_ERRORED;
   });
 
   const canEditSystem = members
@@ -41,10 +44,12 @@ const DataFilesManageProjectModal = () => {
     return projectSystem?.readOnly || !canEditSystem;
   });
 
-  const portalName = useSelector((state) => state.workbench.portalName);
-  const projectsEnableMetadata = useSelector(
-    (state) => state.workbench.config.projectsEnableMetadata
-  );
+  const {
+    data: {
+      portalName,
+      config: { projectsEnableMetadata = false },
+    },
+  } = useWorkbenchConfig();
 
   const { DataFilesManageProjectModalAddon } = useAddonComponents({
     portalName,
@@ -91,7 +96,7 @@ const DataFilesManageProjectModal = () => {
       });
       if (removedUser.user.username === user.username) {
         toggle();
-        history.push('/workbench/data/tapis/projects');
+        navigate('/workbench/data/tapis/projects');
       }
     },
     [projectId, dispatch, history, toggle]

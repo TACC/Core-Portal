@@ -1,9 +1,11 @@
 import React, { useState, useContext, useCallback, useEffect } from 'react';
-import StepWizard, { StepWizardChildProps } from 'react-step-wizard';
+import StepWizardModule, { StepWizardChildProps } from 'react-step-wizard';
 import { Button } from '_common';
 import { WizardStep } from '.';
 import { Formik, Form, useFormikContext } from 'formik';
 import styles from './Wizard.module.css';
+
+const StepWizard = (StepWizardModule as any).default ?? StepWizardModule;
 
 export type WizardContextType = Partial<StepWizardChildProps>;
 

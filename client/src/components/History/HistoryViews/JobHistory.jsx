@@ -8,7 +8,7 @@ import JobsView from '../../Jobs';
 import './JobHistory.module.scss';
 import './HistoryViews.scss';
 
-const JobHistory = ({ className }) => {
+const JobHistory = ({ className = '' }) => {
   const { notifs, loading } = useSelector(
     (state) => ({
       notifs: state.notifications.list.notifs,
@@ -40,8 +40,4 @@ JobHistory.propTypes = {
   /** Any additional className(s) for the root element */
   className: PropTypes.string,
 };
-JobHistory.defaultProps = {
-  className: '',
-};
-
 export default JobHistory;

@@ -1,7 +1,7 @@
 /* FP-993: Create and use a common Uploader component */
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
@@ -17,6 +17,7 @@ import { useUpload } from 'hooks/datafiles/mutations';
 import DataFilesUploadModalListingTable from './DataFilesUploadModalListing/DataFilesUploadModalListingTable';
 
 import styles from './DataFilesUploadModal.module.scss';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 export const LAYOUT_CLASS_MAP = {
   compact: 'is-compact',
@@ -25,21 +26,25 @@ export const LAYOUT_CLASS_MAP = {
 export const DEFAULT_LAYOUT = 'default';
 export const LAYOUTS = ['', ...Object.keys(LAYOUT_CLASS_MAP)];
 
-const DataFilesUploadModal = ({ className, layout }) => {
-  const history = useHistory();
+const DataFilesUploadModal = ({ className = '', layout = DEFAULT_LAYOUT }) => {
+  const navigate = useNavigate();
   const location = useLocation();
 
   const reloadCallback = () => {
-    history.push(location.pathname);
+    navigate(location.pathname);
   };
-  const portalName = useSelector((state) => state.workbench.portalName);
+
+  const {
+    data: {
+      portalName,
+      config: {
+        uploadModalMaxSizeLabel: maxSizeLabel = '2GB',
+        uploadModalMaxSizeValue: maxSize = 2 * 1024 * 1024 * 1024,
+      },
+    },
+  } = useWorkbenchConfig();
+
   const { DataFilesUploadModalAddon } = useAddonComponents({ portalName });
-  const maxSizeLabel = useSelector(
-    (state) => state.workbench.config.uploadModalMaxSizeLabel
-  );
-  const maxSize = useSelector(
-    (state) => state.workbench.config.uploadModalMaxSizeValue
-  );
 
   const { getStatus: getModalStatus, toggle } = useModal();
   const isOpen = getModalStatus('upload');
@@ -183,9 +188,4 @@ DataFilesUploadModal.propTypes = {
   /** Layout */
   layout: PropTypes.oneOf(LAYOUTS),
 };
-DataFilesUploadModal.defaultProps = {
-  className: '',
-  layout: DEFAULT_LAYOUT,
-};
-
 export default DataFilesUploadModal;

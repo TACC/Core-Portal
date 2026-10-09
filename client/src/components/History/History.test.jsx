@@ -1,12 +1,11 @@
 import React from 'react';
-import { BrowserRouter, MemoryRouter } from 'react-router-dom';
+import { BrowserRouter, Route, Routes as RouterRoutes } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import Routes from './History';
-import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
 // TODOv3: dropV2Jobs
@@ -38,7 +37,6 @@ describe('History Routes', () => {
             loadingError: false,
             loadingErrorMessage: '',
           },
-          workbench: { ...workbench, config: { hideDataFiles: false } },
           apps: {
             appIcons: {},
           },
@@ -75,29 +73,24 @@ describe('History Routes', () => {
       apps: {
         appIcons: {},
       },
-      workbench: { ...workbench, config: { hideDataFiles: false } },
     });
 
     renderComponent(
-      <MemoryRouter
-        initialEntries={[
-          '/workbench/history/jobs/793e9e90-53c3-4168-a26b-17230e2e4156-007',
-        ]}
-      >
-        <Routes />
-      </MemoryRouter>,
+      <RouterRoutes>
+        <Route path="/workbench/history/*" element={<Routes />} />
+      </RouterRoutes>,
       store,
       history
     );
 
     expect(store.getActions()).toEqual([
+      { type: 'GET_JOBS', params: { offset: 0, queryString: '' } },
       {
         type: 'GET_JOB_DETAILS',
         payload: {
           jobUuid: '793e9e90-53c3-4168-a26b-17230e2e4156-007',
         },
       },
-      { type: 'GET_JOBS', params: { offset: 0, queryString: '' } },
     ]);
   });
 });

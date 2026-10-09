@@ -22,7 +22,7 @@ const BreadcrumbLink = ({
   path,
   children,
   section,
-  isPublic,
+  isPublic = false,
 }) => {
   const { fetchListing } = useFileListing(section);
   const onClick = (e) => {
@@ -72,10 +72,6 @@ BreadcrumbLink.propTypes = {
   children: PropTypes.element.isRequired,
   isPublic: PropTypes.bool,
 };
-BreadcrumbLink.defaultProps = {
-  isPublic: false,
-};
-
 const RootProjectsLink = ({ api, section, operation, label }) => {
   const { setProps } = useModal();
   if (section === 'modal') {
@@ -118,9 +114,9 @@ const DataFilesBreadcrumbs = ({
   system,
   path,
   section,
-  operation,
-  isPublic,
-  className,
+  operation = 'select',
+  isPublic = false,
+  className = '',
 }) => {
   const paths = [];
   const pathComps = [];
@@ -213,10 +209,4 @@ DataFilesBreadcrumbs.propTypes = {
   /** Additional className for the root element */
   className: PropTypes.string,
 };
-DataFilesBreadcrumbs.defaultProps = {
-  isPublic: false,
-  className: '',
-  operation: 'select',
-};
-
 export default DataFilesBreadcrumbs;

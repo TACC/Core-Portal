@@ -5,7 +5,7 @@ import { useTable } from 'react-table';
 import { capitalize } from 'lodash';
 import styles from './AllocationsTeamTable.module.scss';
 
-const AllocationsTeamTable = ({ rawData, clickHandler, visible }) => {
+const AllocationsTeamTable = ({ rawData = [], clickHandler, visible = {} }) => {
   const data = React.useMemo(() => rawData, [rawData]);
   const columns = React.useMemo(
     () => [
@@ -13,11 +13,12 @@ const AllocationsTeamTable = ({ rawData, clickHandler, visible }) => {
         Header: 'listing',
         accessor: (el) => el,
         Cell: (el) => {
-          const { firstName, lastName } = el.value;
+          const { firstName, lastName, username } = el.value;
           return (
-            <span className={styles.content}>
+            <>
               {capitalize(firstName)} {capitalize(lastName)}
-            </span>
+              <small className={styles.username}>{username}</small>
+            </>
           );
         },
       },
@@ -38,18 +39,25 @@ const AllocationsTeamTable = ({ rawData, clickHandler, visible }) => {
       <tbody {...getTableBodyProps()}>
         {rows.map((row) => {
           prepareRow(row);
+          const { key: rowKey, ...rowProps } = row.getRowProps({
+            onClick: () => {
+              clickHandler(row.values.listing);
+            },
+          });
           return (
             <tr
-              {...row.getRowProps({
-                onClick: () => {
-                  clickHandler(row.values.listing);
-                },
-              })}
+              key={rowKey}
+              {...rowProps}
               className={getStyleName(row.values.listing)}
             >
-              {row.cells.map((cell) => (
-                <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-              ))}
+              {row.cells.map((cell) => {
+                const { key: cellKey, ...cellProps } = cell.getCellProps();
+                return (
+                  <td key={cellKey} className={styles.content} {...cellProps}>
+                    {cell.render('Cell')}
+                  </td>
+                );
+              })}
             </tr>
           );
         })}
@@ -67,5 +75,4 @@ AllocationsTeamTable.propTypes = {
     username: string.isRequired,
   }),
 };
-AllocationsTeamTable.defaultProps = { visible: {}, rawData: [] };
 export default AllocationsTeamTable;

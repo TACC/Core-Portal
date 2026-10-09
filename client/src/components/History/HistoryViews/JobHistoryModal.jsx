@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  useHistory,
+  useNavigate,
   useLocation,
   NavLink as RRNavLink,
 } from 'react-router-dom';
@@ -26,10 +26,11 @@ import { getStatusText } from '../../Jobs/JobsStatus';
 import * as ROUTES from '../../../constants/routes';
 import styles from './JobHistoryModal.module.scss';
 import './JobHistoryModal.css';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const placeHolder = '...';
 
-function DataFilesLink({ path, children, disabled }) {
+function DataFilesLink({ path, children = null, disabled = false }) {
   const text = children || path;
   return (
     <NavLink
@@ -49,11 +50,6 @@ DataFilesLink.propTypes = {
   disabled: PropTypes.bool,
 };
 
-DataFilesLink.defaultProps = {
-  children: null,
-  disabled: false,
-};
-
 const reduceInputParameters = (data) =>
   data.reduce((acc, item) => {
     acc[item.label] = item.value;
@@ -62,17 +58,19 @@ const reduceInputParameters = (data) =>
 
 function JobHistoryContent({
   jobDetails,
-  jobDisplay,
-  jobName,
+  jobDisplay = {},
+  jobName = '',
   toggle,
   // TODOv3: dropV2Jobs
   version,
 }) {
   const dispatch = useDispatch();
 
-  const hideDataFiles = useSelector(
-    (state) => state.workbench.config.hideDataFiles
-  );
+  const {
+    data: {
+      config: { hideDataFiles },
+    },
+  } = useWorkbenchConfig();
 
   // TODOv3: dropV2Jobs
   const outputLocation =
@@ -281,12 +279,7 @@ JobHistoryContent.propTypes = {
   // TODOv3: dropV2Jobs
   version: PropTypes.string.isRequired,
 };
-JobHistoryContent.defaultProps = {
-  jobName: '',
-  jobDisplay: {},
-};
-
-function JobHistoryModal({ uuid, version }) {
+function JobHistoryModal({ uuid, version = 'v3' }) {
   const { loading, loadingError, job, display } = useSelector((state) => {
     if (version === 'v3') {
       return state.jobDetail;
@@ -312,25 +305,29 @@ function JobHistoryModal({ uuid, version }) {
 
   const query = queryStringParser.parse(useLocation().search);
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const close = () => {
     // TODOv3: dropV2Jobs
     if (version === 'v3') {
-      history.push(
+      navigate(
         `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}${
           query.query_string ? `?query_string=${query.query_string}` : ''
         }`,
         {
-          fromJobHistoryModal: true,
+          state: {
+            fromJobHistoryModal: true,
+          },
         }
       );
     } else {
-      history.push(
+      navigate(
         `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBSV2}${
           query.query_string ? `?query_string=${query.query_string}` : ''
         }`,
         {
-          fromJobHistoryModal: true,
+          state: {
+            fromJobHistoryModal: true,
+          },
         }
       );
     }
@@ -387,9 +384,4 @@ JobHistoryModal.propTypes = {
   // TODOv3: dropV2Jobs
   version: PropTypes.string.isRequired,
 };
-// TODOv3: dropV2Jobs
-JobHistoryModal.defaultProps = {
-  version: 'v3',
-};
-
 export default JobHistoryModal;

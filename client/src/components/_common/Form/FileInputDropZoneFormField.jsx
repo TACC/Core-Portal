@@ -9,9 +9,9 @@ import './FormField.scss';
 function FileInputDropZoneFormField({
   id,
   isSubmitted,
-  description,
+  description = undefined,
   maxSizeMessage,
-  maxSize,
+  maxSize = Infinity,
 }) {
   const [field, , helpers] = useField(id);
 
@@ -58,11 +58,6 @@ FileInputDropZoneFormField.propTypes = {
   description: PropTypes.string,
   maxSizeMessage: PropTypes.string.isRequired,
   maxSize: PropTypes.number,
-};
-
-FileInputDropZoneFormField.defaultProps = {
-  description: undefined,
-  maxSize: Infinity,
 };
 
 export default FileInputDropZoneFormField;

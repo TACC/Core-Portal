@@ -2,10 +2,13 @@ import { fetchUtil, FetchError } from './fetchUtil';
 import Cookies from 'js-cookie';
 import { vi } from 'vitest';
 
-global.fetch = vi.fn();
+//global.fetch = vi.fn();
 Cookies.get = vi.fn().mockImplementation(() => 'test-cookie');
 
 describe('fetchUtil', () => {
+  beforeEach(() => {
+    global.fetch = vi.fn();
+  });
   afterEach(() => {
     fetch.mockClear();
   });

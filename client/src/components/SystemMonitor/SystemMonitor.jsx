@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 import styles from './SystemMonitor.module.scss';
 
-const SystemsList = ({ system }) => {
+const SystemsList = ({ system = '' }) => {
   let systemList = useSelector((state) => state.systemMonitor.list);
 
   systemList = system
@@ -71,28 +71,39 @@ const SystemsList = ({ system }) => {
       }`}
     >
       <thead>
-        {headerGroups.map((headerGroup) => (
-          <tr
-            {...headerGroup.getHeaderGroupProps()}
-            className={styles['header']}
-          >
-            {headerGroup.headers.map((column) => (
-              <th key={column.Header}>{column.render('Header')}</th>
-            ))}
-          </tr>
-        ))}
+        {headerGroups.map((headerGroup) => {
+          const { key: headerGroupKey, ...headerGroupProps } =
+            headerGroup.getHeaderGroupProps();
+          return (
+            <tr
+              key={headerGroupKey}
+              {...headerGroupProps}
+              className={styles['header']}
+            >
+              {headerGroup.headers.map((column) => (
+                <th key={column.Header}>{column.render('Header')}</th>
+              ))}
+            </tr>
+          );
+        })}
       </thead>
       <tbody {...getTableBodyProps()} className={styles['rows']}>
         {rows.length ? (
-          rows.map((row, idx) => {
+          rows.map((row) => {
             prepareRow(row);
+            const { key: rowKey, ...rowProps } = row.getRowProps();
             return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => (
-                  <td {...cell.getCellProps({ test: cell.column.testProp })}>
-                    {cell.render('Cell')}
-                  </td>
-                ))}
+              <tr key={rowKey} {...rowProps}>
+                {row.cells.map((cell) => {
+                  const { key: cellKey, ...cellProps } = cell.getCellProps({
+                    test: cell.column.testProp,
+                  });
+                  return (
+                    <td key={cellKey} {...cellProps}>
+                      {cell.render('Cell')}
+                    </td>
+                  );
+                })}
               </tr>
             );
           })
@@ -109,11 +120,8 @@ const SystemsList = ({ system }) => {
 SystemsList.propTypes = {
   system: PropTypes.string,
 };
-SystemsList.defaultProps = {
-  system: '',
-};
 
-const SystemMonitorView = ({ system }) => {
+const SystemMonitorView = ({ system = '' }) => {
   const { loading } = useSelector((state) => state.systemMonitor);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -128,9 +136,6 @@ const SystemMonitorView = ({ system }) => {
 
 SystemMonitorView.propTypes = {
   system: PropTypes.string,
-};
-SystemMonitorView.defaultProps = {
-  system: '',
 };
 
 export default SystemMonitorView;

@@ -4,11 +4,23 @@ import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs.j
 import BreadcrumbsDropdown from '../DataFilesDropdown/DataFilesDropdown.jsx';
 import styles from './CombinedBreadcrumbs.module.scss';
 
-const CombinedBreadcrumbs = (props) => {
+const CombinedBreadcrumbs = ({
+  isPublic = false,
+  className = '',
+  ...props
+}) => {
   return (
     <div className={styles['combined-breadcrumbs']}>
-      <BreadcrumbsDropdown {...props} />
-      <DataFilesBreadcrumbs {...props} />
+      <BreadcrumbsDropdown
+        isPublic={isPublic}
+        className={className}
+        {...props}
+      />
+      <DataFilesBreadcrumbs
+        isPublic={isPublic}
+        className={className}
+        {...props}
+      />
     </div>
   );
 };
@@ -22,11 +34,6 @@ CombinedBreadcrumbs.propTypes = {
   isPublic: PropTypes.bool,
   basePath: PropTypes.string,
   className: PropTypes.string,
-};
-
-CombinedBreadcrumbs.defaultProps = {
-  isPublic: false,
-  className: '',
 };
 
 export default CombinedBreadcrumbs;

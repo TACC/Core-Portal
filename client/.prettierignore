@@ -1,5 +1,6 @@
 # vendor
 node_modules
+
 # vendor: copied
 icon.fonts.css
 
@@ -7,4 +8,6 @@ icon.fonts.css
 coverage
 build
 dist
-**/*.css
+
+# generated CSS
+**/*.min.css

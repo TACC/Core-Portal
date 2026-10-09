@@ -46,10 +46,10 @@ import './SectionMessages.css';
  * </SectionMessages>
  */
 function SectionMessages({
-  children,
-  className,
-  messageComponentName,
-  introMessageText,
+  children = '',
+  className = '',
+  messageComponentName = '',
+  introMessageText = '',
 }) {
   const introMessageContent =
     introMessageText || MESSAGES[messageComponentName];
@@ -96,11 +96,4 @@ SectionMessages.propTypes = {
   /** Custom intro text (can overwrite message from `messageComponentName`) */
   introMessageText: PropTypes.string,
 };
-SectionMessages.defaultProps = {
-  children: '',
-  className: '',
-  messageComponentName: '',
-  introMessageText: '',
-};
-
 export default SectionMessages;

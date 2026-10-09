@@ -7,6 +7,7 @@ import { Button, SectionHeader, SectionTableWrapper } from '_common';
 import { IntegrationModal } from './ManageAccountModals';
 import './ManageAccount.scss';
 import styles from './ManageAccountTables.module.css';
+import TicketCreateModal from '../Tickets/TicketCreateModal';
 
 export const TableTemplate = ({ attributes }) => {
   const { getTableProps, rows, prepareRow } = useTable(attributes);
@@ -19,17 +20,19 @@ export const TableTemplate = ({ attributes }) => {
       <tbody>
         {rows.map((row) => {
           prepareRow(row);
+          const { key: rowKey, ...rowProps } = row.getRowProps();
           return row.cells.map((cell) => {
             const className =
               cell.column.Header === 'Research Bio' ? 'research-bio' : null;
+            const { key: cellKey, ...cellProps } = cell.getCellProps({
+              className,
+            });
             return (
-              <tr {...row.getRowProps()} key={cell.getCellProps().key}>
+              <tr {...rowProps} key={cellKey}>
                 <th className={className}>
                   <span>{cell.column.render('Header')}</span>
                 </th>
-                <td {...cell.getCellProps({ className })} key={null}>
-                  {cell.render('Cell')}
-                </td>
+                <td {...cellProps}>{cell.render('Cell')}</td>
               </tr>
             );
           });
@@ -108,8 +111,8 @@ export const ProfileInformation = () => {
 };
 
 const LicenseCell = ({ cell: { value } }) => {
-  const dispatch = useDispatch();
   const [modal, setModal] = React.useState(false);
+  const [isTicketModalOpen, setIsTicketModalOpen] = React.useState(false);
   const toggle = () => setModal(!modal);
   const { license_type: type, template_html: __html } = value;
   return (
@@ -132,21 +135,16 @@ const LicenseCell = ({ cell: { value } }) => {
         </ModalHeader>
         <ModalBody>
           <div dangerouslySetInnerHTML={{ __html }} />
-          <Button
-            onClick={() =>
-              dispatch({
-                type: 'TICKET_CREATE_OPEN_MODAL',
-                payload: {
-                  subject: `${type} Activation`,
-                },
-              })
-            }
-            type="link"
-          >
+          <Button onClick={() => setIsTicketModalOpen(true)} type="link">
             New Ticket
           </Button>
         </ModalBody>
       </Modal>
+      <TicketCreateModal
+        isModalOpen={isTicketModalOpen}
+        setIsModalOpen={setIsTicketModalOpen}
+        initialSubject={`${type} Activation`}
+      />
     </div>
   );
 };
@@ -290,7 +288,7 @@ export const PasswordInformation = () => {
     </article>
   );
 };
-const WebsiteCell = ({ cell: { value } }) => {
+const WebsiteCell = ({ cell: { value } = { value: '' } }) => {
   const website = value ? value.trim() : '';
   if (website) {
     const url = !/^(?:f|ht)tps?:\/\//.test(website)
@@ -307,8 +305,7 @@ const WebsiteCell = ({ cell: { value } }) => {
 WebsiteCell.propTypes = {
   cell: shape({ value: string }),
 };
-WebsiteCell.defaultProps = { cell: { value: '' } };
-const OrcidCell = ({ cell: { value } }) => (
+const OrcidCell = ({ cell: { value } = { value: '' } }) => (
   <a
     className="wb-link"
     href={`https://orcid.org/${value}`}
@@ -319,4 +316,3 @@ const OrcidCell = ({ cell: { value } }) => (
   </a>
 );
 OrcidCell.propTypes = WebsiteCell.propTypes;
-OrcidCell.defaultProps = WebsiteCell.defaultProps;

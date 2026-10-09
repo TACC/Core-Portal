@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form, useFormikContext } from 'formik';
@@ -11,6 +11,7 @@ import {
   SectionMessage,
 } from '_common';
 import * as Yup from 'yup';
+import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
 import './AppForm.scss';
 import SystemsPushKeysModal from '_common/SystemsPushKeysModal';
@@ -48,6 +49,7 @@ import {
 
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const appShape = PropTypes.shape({
   loading: PropTypes.bool,
@@ -133,7 +135,7 @@ export const AppDetail = () => {
       {!app.definition && <AppPlaceholder apps={hasApps} />}
       {app.definition.appType === 'html' ? (
         <div id="appDetail-wrapper" className="has-external-app">
-          {parse(app.definition.html)}
+          {parse(DOMPurify.sanitize(app.definition.html))}
         </div>
       ) : (
         <div id="appDetail-wrapper" className="has-internal-app">
@@ -231,7 +233,7 @@ const AppInfo = ({ app }) => {
     <div className="appInfo-wrapper">
       <h5 className="appInfo-title">{app.definition.label}</h5>
       <div className="appInfo-description">
-        {parse(app.definition.description || '')}
+        {parse(DOMPurify.sanitize(app.definition.description || ''))}
       </div>
       {app.definition.notes.helpUrl ? (
         <a
@@ -259,10 +261,21 @@ export const AppSchemaForm = ({ app }) => {
   useEffect(() => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });
   }, [dispatch]);
+  const allocationsState = useSelector((state) => state.allocations);
+  const storageState = useSelector((state) => state.systems.storage);
+  const jobSubmission = useSelector((state) => state.jobs.submit);
+  const systemMonitor = useSelector((state) => state.systemMonitor);
+
+  const {
+    data: {
+      isTACCPortal,
+      config: { hideManageAccount },
+    },
+  } = useWorkbenchConfig();
+
   const {
     allocations,
     portalAlloc,
-    jobSubmission,
     hasDefaultAllocation,
     defaultStorageHost,
     hasStorageSystems,
@@ -272,15 +285,12 @@ export const AppSchemaForm = ({ app }) => {
     defaultArchivePath,
     isTMSSystem,
     allocationToExecSysMap,
-    hideManageAccount,
-    isTACCPortal,
-  } = useSelector((state) => {
+  } = useMemo(() => {
     const allocationToExecSysMap = buildMapOfAllocationsToExecSystems(
       app,
-      state.allocations
+      allocationsState
     );
-    const { defaultHost, configuration, defaultSystemId } =
-      state.systems.storage;
+    const { defaultHost, configuration, defaultSystemId } = storageState;
     const isTMSSystem = pushKeysSystem?.defaultAuthnMethod === 'TMS_KEYS';
 
     const hasCorral =
@@ -295,20 +305,17 @@ export const AppSchemaForm = ({ app }) => {
       ? `${defaultSystem.homeDir}/tapis-jobs-archive/${'${JobCreateDate}'}/${'${JobName}-${JobUUID}'}`
       : '';
 
-    const isTACCPortal = state.workbench.isTACCPortal;
-
     return {
       allocations: getAllocationList(
         app,
-        state.allocations,
+        allocationsState,
         allocationToExecSysMap
       ),
-      portalAlloc: state.allocations.portal_alloc,
-      jobSubmission: state.jobs.submit,
+      portalAlloc: allocationsState.portal_alloc,
       hasDefaultAllocation:
-        state.allocations.loading ||
-        state.systems.storage.loading ||
-        state.allocations.hosts[defaultHost] || // User has allocation on default storage system
+        allocationsState.loading ||
+        storageState.loading ||
+        allocationsState.hosts[defaultHost] || // User has allocation on default storage system
         hasCorral || // If default storage system is Corral, no allocation needed
         !defaultSystem || // If default storage system is not found, assume no allocation needed
         defaultSystem?.notes?.noAllocationRequired || // If default storage system has note that allocation is not required, no allocation needed
@@ -316,24 +323,29 @@ export const AppSchemaForm = ({ app }) => {
         isTACCPortal === false, // If not a TACC portal, we are not tracking allocations
       defaultStorageHost: defaultHost,
       hasStorageSystems: configuration.length,
-      downSystems: state.systemMonitor
-        ? state.systemMonitor.list
+      downSystems: systemMonitor
+        ? systemMonitor.list
             .filter((currSystem) => !currSystem.is_operational)
             .map((downSys) => downSys.hostname)
         : [],
       execSystem:
         getDefaultExecSystem(
           app,
-          allocationToExecSysMap.get(state.allocations.portal_alloc) ?? []
+          allocationToExecSysMap.get(allocationsState.portal_alloc) ?? []
         ) ?? null,
       defaultSystemId,
       defaultArchivePath,
       isTMSSystem,
       allocationToExecSysMap,
-      hideManageAccount: state.workbench.config.hideManageAccount,
-      isTACCPortal,
     };
-  }, shallowEqual);
+  }, [
+    app,
+    pushKeysSystem,
+    allocationsState,
+    storageState,
+    systemMonitor,
+    isTACCPortal,
+  ]);
 
   const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = (e) => {

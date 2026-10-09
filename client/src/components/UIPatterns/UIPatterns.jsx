@@ -10,6 +10,18 @@ import UIPatternsPaginator from './UIPatternsPaginator';
 import UIPatternsButton from './UIPatternsButton';
 import styles from './UIPatterns.module.scss';
 import UIPatternsSidebar from './UIPatternsSidebar';
+import { Button } from '@tacc/core-components/components/ui/button';
+
+const BUTTON_VARIANTS = [
+  'default',
+  'outline',
+  'secondary',
+  'ghost',
+  'destructive',
+  'link',
+];
+const BUTTON_TEXT_SIZES = ['xs', 'sm', 'default', 'lg'];
+const BUTTON_ICON_SIZES = ['icon-xs', 'icon-sm', 'icon', 'icon-lg'];
 
 function UIPatterns() {
   return (
@@ -19,6 +31,61 @@ function UIPatterns() {
       header="UI Patterns"
       content={
         <>
+          <h1 style={{ marginTop: '2rem' }}>Version 4</h1>
+          <div className={styles['list-item']}>
+            <h6>Button (ShadCN) &mdash; variant &times; size</h6>
+            {BUTTON_VARIANTS.map((variant) => (
+              <div
+                key={variant}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  flexWrap: 'wrap',
+                  marginBottom: '0.5rem',
+                }}
+              >
+                <span
+                  style={{
+                    width: 80,
+                    fontFamily: 'monospace',
+                    fontSize: '0.75rem',
+                  }}
+                >
+                  {variant}
+                </span>
+                {BUTTON_TEXT_SIZES.map((size) => (
+                  <Button key={size} variant={variant} size={size}>
+                    {size}
+                  </Button>
+                ))}
+                {BUTTON_ICON_SIZES.map((size) => (
+                  <Button
+                    key={size}
+                    variant={variant}
+                    size={size}
+                    aria-label={size}
+                  >
+                    &#9733;
+                  </Button>
+                ))}
+              </div>
+            ))}
+          </div>
+          <div className={styles['list-item']}>
+            <h6>Button (ShadCN) &mdash; disabled</h6>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              {BUTTON_VARIANTS.map((variant) => (
+                <Button key={variant} variant={variant} disabled>
+                  {variant}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <hr />
+
+          <h1 style={{ marginTop: '2rem' }}>Version 3</h1>
           <div className={styles['list-item']}>
             <h6>Section</h6>
             <UIPatternsSection />

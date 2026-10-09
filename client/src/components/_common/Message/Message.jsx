@@ -80,14 +80,14 @@ export const DEFAULT_SCOPE = 'inline'; // FAQ: Historical support for default
  * ...
  */
 const Message = ({
-  ariaLabel,
+  ariaLabel = 'message',
   children,
-  className,
-  dataTestid,
-  onDismiss,
-  canDismiss,
-  isVisible,
-  scope,
+  className = '',
+  dataTestid = undefined,
+  onDismiss = () => {},
+  canDismiss = false,
+  isVisible = true,
+  scope = '',
   type,
 }) => {
   const typeMap = TYPE_MAP[type];
@@ -189,14 +189,4 @@ Message.propTypes = {
   /** Message type or severity */
   type: PropTypes.oneOf(TYPES).isRequired,
 };
-Message.defaultProps = {
-  ariaLabel: 'message',
-  className: '',
-  canDismiss: false,
-  dataTestid: undefined,
-  isVisible: true,
-  onDismiss: () => {},
-  scope: '', // RFE: Require scope; remove this line
-};
-
 export default Message;

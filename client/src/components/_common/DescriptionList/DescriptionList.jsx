@@ -18,7 +18,12 @@ export const DENSITY_CLASS_MAP = {
 export const DEFAULT_DENSITY = 'default';
 export const DENSITIES = ['', ...Object.keys(DENSITY_CLASS_MAP)];
 
-const DescriptionList = ({ className, data, density, direction }) => {
+const DescriptionList = ({
+  className = '',
+  data,
+  density = DEFAULT_DENSITY,
+  direction = DEFAULT_DIRECTION,
+}) => {
   const modifierClasses = [];
   modifierClasses.push(DENSITY_CLASS_MAP[density || DEFAULT_DENSITY]);
   modifierClasses.push(DIRECTION_CLASS_MAP[direction || DEFAULT_DIRECTION]);
@@ -74,10 +79,4 @@ DescriptionList.propTypes = {
   /** Layout direction */
   direction: PropTypes.oneOf(DIRECTIONS),
 };
-DescriptionList.defaultProps = {
-  className: '',
-  density: DEFAULT_DENSITY,
-  direction: DEFAULT_DIRECTION,
-};
-
 export default DescriptionList;
