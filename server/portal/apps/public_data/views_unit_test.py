@@ -19,6 +19,7 @@ from django.utils.html import escape
 from portal.apps.projects.schema_models.license_urls import LICENSE_URLS
 from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json
 from portal.apps.public_data.views import (
+    PublicationArchiveView,
     PublicationCoverImageView,
     PublicationCroissantView,
     PublicationFileDownloadView,
@@ -27,6 +28,7 @@ from portal.apps.public_data.views import (
     _format_citation_date,
     _format_content_size,
     _get_apa_citation,
+    _get_archive_file_object,
     _get_bibtex_citation,
     _get_citation_pdf_url,
     _get_citations,
@@ -39,6 +41,7 @@ from portal.apps.public_data.views import (
     _get_publication_file_objs,
     _get_publication_file_url,
     _get_record_sets,
+    _has_type,
     _is_publication_file_path,
     dumps_json_ld,
     get_citation_context,
@@ -1312,6 +1315,162 @@ def test_cover_image_view_404s_for_unpublished_publication(rf, settings, publica
     with pytest.raises(Http404):
         PublicationCoverImageView.as_view()(request, project_id=publication.project_id)
     assert not requests_mock.called
+
+
+# ---------------------------------------------------------------------------
+# Whole-publication ZIP: PublicationArchiveView and its `distribution` entry
+# ---------------------------------------------------------------------------
+
+ARCHIVE_URL = "http://testserver/published-datasets/test.project.published.test.project-1/archive.zip"
+ARCHIVE_SHA256 = "e" * 64
+
+
+@pytest.fixture
+def archived_publication(publication, settings):
+    """`publication` (v3) with its ZIP's checksum stored and a web mirror configured."""
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = WEB_BASE_URL
+    publication.archive_sha256 = ARCHIVE_SHA256
+    publication.archive_size = 3_000_000_000
+    publication.value = valid_base_meta(
+        fileObjs=[
+            *valid_base_meta()["fileObjs"],
+            {"type": "dir", "name": "raw", "path": "/sample1/raw"},
+        ]
+    )
+    publication.save()
+    return publication
+
+
+def test_archive_route_is_matched_before_subpath_not_found(publication):
+    url = reverse("publications:archive", kwargs={"project_id": publication.project_id})
+
+    assert url == "/published-datasets/test.project.published.test.project-1/archive.zip"
+    assert resolve(url).url_name == "archive"
+
+
+def test_archive_route_redirects_to_current_versions_zip_on_web_mirror(client, archived_publication, requests_mock):
+    response = client.get(reverse("publications:archive", kwargs={"project_id": archived_publication.project_id}))
+
+    assert response.status_code == 302
+    assert response["Location"] == f"{WEB_BASE_URL}/archive/test.project-1v3/test.project-1v3_archive.zip"
+    assert not requests_mock.called
+
+
+@pytest.mark.parametrize("missing", ["checksum", "web_mirror", "published"])
+def test_archive_view_404s_without_checksum_web_mirror_or_publication(rf, settings, archived_publication, missing):
+    if missing == "checksum":
+        archived_publication.archive_sha256 = ""
+    elif missing == "published":
+        archived_publication.is_published = False
+    else:
+        settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = None
+    archived_publication.save()
+
+    with pytest.raises(Http404):
+        PublicationArchiveView.as_view()(make_request(rf), project_id=archived_publication.project_id)
+
+
+def test_archive_view_404s_for_unknown_publication(rf, settings, db):
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = WEB_BASE_URL
+
+    with pytest.raises(Http404):
+        PublicationArchiveView.as_view()(make_request(rf), project_id="test.project-999")
+
+
+def test_get_archive_file_object(rf, archived_publication):
+    assert _get_archive_file_object(archived_publication, make_request(rf)) == {
+        "@type": ["cr:FileObject", "DataDownload"],
+        "@id": ARCHIVE_URL,
+        "name": "test.project-1v3_archive.zip",
+        "contentUrl": ARCHIVE_URL,
+        "encodingFormat": "application/zip",
+        "contentSize": "3.0 GB",
+        "sha256": ARCHIVE_SHA256,
+    }
+
+
+def test_get_archive_file_object_without_size_omits_content_size(rf, archived_publication):
+    archived_publication.archive_size = None
+
+    assert "contentSize" not in _get_archive_file_object(archived_publication, make_request(rf))
+
+
+@pytest.mark.parametrize("missing", ["checksum", "web_mirror"])
+def test_get_archive_file_object_none_without_checksum_or_web_mirror(rf, settings, archived_publication, missing):
+    if missing == "checksum":
+        archived_publication.archive_sha256 = ""
+    else:
+        settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = None
+
+    assert _get_archive_file_object(archived_publication, make_request(rf)) is None
+
+
+def test_schema_org_json_lists_archive_and_points_file_sets_into_it(rf, settings, archived_publication):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+
+    schema = get_schema_org_json(archived_publication, archived_publication.project_id, make_request(rf))
+
+    file_set = next(entry for entry in schema["distribution"] if entry["@type"] == "cr:FileSet")
+    assert file_set["containedIn"] == {"@id": ARCHIVE_URL}
+    assert file_set["includes"] == "test.project-1v3/sample1/raw/**"
+    assert file_set["@id"] == f"{FILES_URL}sample1/raw/"
+    assert schema["distribution"][-1]["@id"] == ARCHIVE_URL
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+
+
+@pytest.mark.parametrize("missing", ["checksum", "web_mirror"])
+def test_schema_org_json_without_archive_keeps_http_glob_file_sets(rf, settings, archived_publication, missing):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    if missing == "checksum":
+        archived_publication.archive_sha256 = ""
+    else:
+        settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = None
+
+    schema = get_schema_org_json(archived_publication, archived_publication.project_id, make_request(rf))
+
+    assert all(entry["@id"] != ARCHIVE_URL for entry in schema["distribution"])
+    file_set = next(entry for entry in schema["distribution"] if entry["@type"] == "cr:FileSet")
+    assert "containedIn" not in file_set
+    assert file_set["includes"] == f"{FILES_URL}sample1/raw/**"
+
+
+def test_schema_org_json_fileless_publication_lists_no_archive(rf, settings, archived_publication):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    archived_publication.value = valid_base_meta(fileObjs=[])
+
+    schema = get_schema_org_json(archived_publication, archived_publication.project_id, make_request(rf))
+
+    assert "distribution" not in schema
+
+
+@pytest.mark.parametrize(
+    "entry,expected",
+    [
+        ({"@type": "cr:FileObject"}, True),
+        ({"@type": ["cr:FileObject", "DataDownload"]}, True),
+        ({"@type": ["cr:FileSet", "DataDownload"]}, False),
+        ({"@type": "cr:FileSet"}, False),
+        ({}, False),
+    ],
+)
+def test_has_type(entry, expected):
+    assert _has_type(entry, "cr:FileObject") is expected
+
+
+def test_schema_org_json_with_archive_passes_mlcroissant_validation(rf, settings, archived_publication, tmp_path):
+    """The ZIP entry (dual-typed, with its sha256) and FileSets `containedIn` it validate with no
+    errors or warnings."""
+    mlc = pytest.importorskip("mlcroissant")
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+
+    schema = get_schema_org_json(archived_publication, archived_publication.project_id, make_request(rf))
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+    jsonld_path = tmp_path / "croissant.json"
+    jsonld_path.write_text(json.dumps(schema))
+
+    issues = mlc.Dataset(jsonld=jsonld_path).metadata.ctx.issues
+    assert not issues.errors
+    assert not issues.warnings
 
 
 # ---------------------------------------------------------------------------

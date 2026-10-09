@@ -21,7 +21,9 @@ class Command(BaseCommand):
 
     By default each publication gets a checksum-only archive job (manifests only -- no ZIP, no Ranch
     transfer; needs archive app 0.0.3+), and its manifest is loaded when the job ends. --load-only
-    skips the job and loads a manifest that already exists.
+    skips the job and loads a manifest that already exists. Either way, the ZIP's own checksum is
+    loaded too when one exists; --hash-archive has the job write it for the publication's existing
+    ZIP, which reads the whole ZIP once more.
 
     Examples:
 
@@ -32,6 +34,10 @@ class Command(BaseCommand):
         Compute checksums for every published publication:
 
         >>> ./manage.py compute_publication_checksums --all
+
+        Also hash each publication's existing ZIP:
+
+        >>> ./manage.py compute_publication_checksums --all --hash-archive
 
         Load manifests that already exist, without submitting jobs:
 
@@ -49,6 +55,9 @@ class Command(BaseCommand):
         parser.add_argument("project_ids", nargs="*", help="Publication project ids, e.g. DRP-1149.")
         parser.add_argument("--all", action="store_true", help="Every published publication.")
         parser.add_argument("--load-only", action="store_true", help="Load existing manifests; submit no jobs.")
+        parser.add_argument(
+            "--hash-archive", action="store_true", help="Also hash each publication's existing ZIP (reads it again)."
+        )
         parser.add_argument("--dry-run", action="store_true", help="List publications without acting on them.")
 
     def handle(self, *args, **options):
@@ -74,7 +83,9 @@ class Command(BaseCommand):
             else:
                 workspace_id = get_published_workspace_id(publication.project_id, publication.version)
                 try:
-                    job = archive_publication_files(workspace_id, checksum_only=True)
+                    job = archive_publication_files(
+                        workspace_id, checksum_only=True, hash_archive=options["hash_archive"]
+                    )
                 except ValueError as e:
                     raise CommandError(str(e)) from e
                 poll_publication_archive_job.apply_async(

@@ -29,6 +29,7 @@ from portal.apps.projects.schema_models.orcid import orcid_url
 from portal.apps.public_data.origin import get_configured_origin
 from portal.apps.publications.models import Publication
 from portal.apps.publications.utils import (
+    get_archive_zip_path,
     get_landing_page_path,
     get_publication_file_objs,
     get_published_workspace_id,
@@ -236,7 +237,41 @@ def _format_content_size(num_bytes):
         size /= 1000
 
 
-def _get_distribution(file_objs, project_id, request):
+def _has_type(entry, type_name):
+    """Whether a JSON-LD node's `@type` -- a single type, or a list of them -- includes
+    `type_name`."""
+
+    types = entry.get("@type")
+    return type_name in (types if isinstance(types, list) else [types])
+
+
+def _get_archive_file_object(pub, request):
+    """Build the `distribution` entry for the current version's whole-publication ZIP, or return
+    None when it can't be listed: no sha256 stored for it yet (Croissant requires one on every
+    cr:FileObject; archive app 0.0.3+ writes it -- see load_publication_file_checksums), or no web
+    mirror for PublicationArchiveView to redirect to.
+
+    Typed both cr:FileObject and schema.org DataDownload, so Google's Dataset structured data --
+    which describes `distribution` as DataDownloads -- sees a download of the whole dataset too.
+    """
+
+    if not pub.archive_sha256 or not settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL:
+        return None
+    url = f"{_get_configured_origin(request)}{reverse('publications:archive', kwargs={'project_id': pub.project_id})}"
+    archive = {
+        "@type": ["cr:FileObject", "DataDownload"],
+        "@id": url,
+        "name": get_archive_zip_path(get_published_workspace_id(pub.project_id, pub.version)).rsplit("/", 1)[-1],
+        "contentUrl": url,
+        "encodingFormat": "application/zip",
+    }
+    if pub.archive_size is not None:
+        archive["contentSize"] = _format_content_size(pub.archive_size)
+    archive["sha256"] = pub.archive_sha256
+    return archive
+
+
+def _get_distribution(file_objs, project_id, request, archive=None, archive_root=None):
     """Build the Croissant/schema.org `distribution` list (one cr:FileObject per published file,
     one cr:FileSet per published directory) from `file_objs` -- _get_publication_file_objs'
     combined list, so files attached to entity nodes are listed alongside root-level ones, and
@@ -250,6 +285,11 @@ def _get_distribution(file_objs, project_id, request):
     listing them would mean a Tapis listing call on every page render. Its `includes` glob
     matches everything under the directory's URL on the same route, which the allow-list
     serves (see _is_publication_file_path).
+
+    With `archive` (_get_archive_file_object's entry for the whole-publication ZIP), that entry is
+    listed last, and each cr:FileSet points into it instead: `containedIn` the ZIP, matching its
+    directory under `archive_root`, the ZIP's top-level folder (the published workspace id). That
+    is the form a Croissant loader can expand into files; an HTTP glob can't be listed.
     """
 
     distribution = []
@@ -266,7 +306,10 @@ def _get_distribution(file_objs, project_id, request):
         if content_url is None:
             continue
         if file_type == "dir":
-            distribution.append(_get_file_set(name, content_url))
+            if archive:
+                distribution.append(_get_file_set(name, content_url, archive["@id"], f"{archive_root}/{path}"))
+            else:
+                distribution.append(_get_file_set(name, content_url))
             continue
         file_object = {
             "@type": "cr:FileObject",
@@ -293,11 +336,17 @@ def _get_distribution(file_objs, project_id, request):
 
         distribution.append(file_object)
 
+    if archive:
+        distribution.append(archive)
     return distribution
 
 
-def _get_file_set(name, dir_url):
+def _get_file_set(name, dir_url, archive_id=None, archive_dir=None):
     """Build the cr:FileSet for one published directory at `dir_url` (its _get_publication_file_url).
+
+    With `archive_id`, the set is `containedIn` that whole-publication ZIP entry and `includes`
+    everything under `archive_dir`, the directory's path inside the ZIP. Otherwise it `includes`
+    everything under the directory's own URL.
 
     The trailing "/" keeps the `@id` distinct from a cr:FileObject `@id`, which never ends in
     one. Croissant requires `encodingFormat` on a FileSet too, but a directory's contents can be
@@ -306,13 +355,18 @@ def _get_file_set(name, dir_url):
     requires one on a cr:FileObject.
     """
 
-    return {
+    file_set = {
         "@type": "cr:FileSet",
         "@id": f"{dir_url}/",
         "name": name,
         "encodingFormat": "application/octet-stream",
-        "includes": f"{dir_url}/**",
     }
+    if archive_id:
+        file_set["containedIn"] = {"@id": archive_id}
+        file_set["includes"] = f"{archive_dir}/**"
+    else:
+        file_set["includes"] = f"{dir_url}/**"
+    return file_set
 
 
 def _get_cover_image_url(base_meta, project_id, request):
@@ -809,7 +863,13 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
             "name": settings.PORTAL_PUBLICATION_PUBLISHER,
             "url": _get_catalog_url(request),
         },
-        "distribution": _get_distribution(file_objs, project_id, request),
+        "distribution": _get_distribution(
+            file_objs,
+            project_id,
+            request,
+            archive=_get_archive_file_object(pub, request) if has_files else None,
+            archive_root=get_published_workspace_id(project_id, pub.version),
+        ),
         "recordSet": _get_record_sets(file_objs, project_id, request),
     }
 
@@ -864,7 +924,7 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
     elif unhashed := [  # noqa: F841 -- used by the commented-out warning below
         file_object["@id"]
         for file_object in schema_org_json["distribution"]
-        if file_object["@type"] == "cr:FileObject"
+        if _has_type(file_object, "cr:FileObject")
         and not any(file_object.get(field) for field in CROISSANT_FILE_CHECKSUM_FIELDS)
     ]:
         del schema_org_json["conformsTo"]
@@ -1216,6 +1276,26 @@ class PublicationCoverImageView(View):
         if web_url:
             return HttpResponseRedirect(web_url)
         return _stream_published_file(root_system, cover_image_path)
+
+
+class PublicationArchiveView(View):
+    """Redirect to the current version's whole-publication ZIP on the web mirror, for the landing
+    page's `distribution` entry for it (_get_archive_file_object). The ZIPs can run to tens of GB,
+    so they're never relayed through the portal: without a web mirror there's no ZIP here. Also
+    404s for an unpublished (withdrawn) publication, and until the ZIP's sha256 is stored -- it's
+    only written once the ZIP is complete, so a ZIP without one may be partial or missing.
+    """
+
+    def get(self, request, project_id):
+        pub = Publication.objects.filter(project_id=project_id, is_published=True).first()
+        web_url = (
+            _get_published_web_url(get_archive_zip_path(get_published_workspace_id(project_id, pub.version)))
+            if pub and pub.archive_sha256
+            else None
+        )
+        if not web_url:
+            raise Http404(f"No archive for publication {project_id}")
+        return HttpResponseRedirect(web_url)
 
 
 class PublicationCroissantView(View):

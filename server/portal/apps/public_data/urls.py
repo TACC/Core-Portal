@@ -10,6 +10,7 @@ from django.urls import re_path
 
 from portal.apps.public_data.views import (
     IndexView,
+    PublicationArchiveView,
     PublicationCoverImageView,
     PublicationCroissantView,
     PublicationFileDownloadView,
@@ -50,6 +51,13 @@ urlpatterns = [
         rf"^{published_prefix}\.(?P<project_id>{id_prefix}-[0-9]+)/cover-image$",
         PublicationCoverImageView.as_view(),
         name="cover_image",
+    ),
+    # The whole-publication ZIP, for the landing page's `distribution` entry for it. Also before
+    # `index_fallback`.
+    re_path(
+        rf"^{published_prefix}\.(?P<project_id>{id_prefix}-[0-9]+)/archive\.zip$",
+        PublicationArchiveView.as_view(),
+        name="archive",
     ),
     # The landing page's JSON-LD as a standalone document, for Croissant loaders that fetch a
     # dataset by URL rather than scraping it out of HTML. Also before `index_fallback`.

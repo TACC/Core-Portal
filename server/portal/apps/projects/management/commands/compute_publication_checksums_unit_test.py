@@ -50,8 +50,8 @@ def test_all_submits_checksum_only_jobs_for_each_versions_workspace(publications
     output = run("--all")
 
     assert [(c.args, c.kwargs) for c in mock_archive.call_args_list] == [
-        (("test.project-1v3",), {"checksum_only": True}),
-        (("test.project-2",), {"checksum_only": True}),
+        (("test.project-1v3",), {"checksum_only": True, "hash_archive": False}),
+        (("test.project-2",), {"checksum_only": True, "hash_archive": False}),
     ]
     assert [c.kwargs["args"] for c in mock_poll.call_args_list] == [
         ["job-test.project-1v3", "test.project-1", 3],
@@ -59,6 +59,12 @@ def test_all_submits_checksum_only_jobs_for_each_versions_workspace(publications
     ]
     mock_load.assert_not_called()
     assert "Submit checksum job for test.project-1 v3" in output
+
+
+def test_hash_archive_asks_jobs_to_hash_existing_zips(publications, mock_archive, mock_poll, mock_load):
+    run("test.project-2", "--hash-archive")
+
+    mock_archive.assert_called_once_with("test.project-2", checksum_only=True, hash_archive=True)
 
 
 def test_load_only_loads_existing_manifests_without_jobs(publications, mock_archive, mock_poll, mock_load):

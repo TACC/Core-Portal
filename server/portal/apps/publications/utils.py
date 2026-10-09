@@ -15,6 +15,15 @@ def get_published_workspace_id(project_id, version):
     return f"{project_id}{suffix}"
 
 
+def get_archive_zip_path(workspace_id):
+    """Return the path, relative to PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME (and so to its web
+    mirror), of the whole-publication ZIP the archive job builds for a published workspace
+    (get_published_workspace_id). Every file in it is under a top-level `{workspace_id}/` folder.
+    """
+
+    return f"archive/{workspace_id}/{workspace_id}_archive.zip"
+
+
 def get_landing_page_path(project_id, version):
     """Return the landing-page path for a publication's current version: public_data/urls.py's
     `index` route at `{prefix}.{get_published_workspace_id(project_id, version)}`. The client app
