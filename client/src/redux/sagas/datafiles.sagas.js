@@ -14,6 +14,7 @@ import { fetchUtil } from 'utils/fetchUtil';
 import truncateMiddle from '../../utils/truncateMiddle';
 import { fetchAppDefinitionUtil } from './apps.sagas';
 import { getCompressParams } from 'utils/getCompressParams';
+import { queryClient } from '../../queryClient';
 
 /**
  * Utility function to replace instances of 2 or more slashes in a URL with
@@ -991,7 +992,8 @@ const getExtractParams = (file, latestExtract, defaultAllocation) => {
   });
 };
 
-export const extractAppSelector = (state) => state.workbench.config.extractApp;
+export const extractAppSelector = (state) =>
+  queryClient.getQueriesData(['workbench']).config.extractApp;
 
 export function* extractFiles(action) {
   try {
@@ -1052,7 +1054,7 @@ export function* watchExtract() {
 }
 
 export const compressAppSelector = (state) =>
-  state.workbench.config.compressApp;
+  queryClient.getQueryData(['workbench']).config.compressApp;
 
 export const systemsSelector = (state) => state.systems.storage.configuration;
 

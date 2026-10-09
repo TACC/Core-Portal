@@ -5,18 +5,23 @@ import styles from '../PublicationWizard.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAddonComponents } from 'hooks/datafiles';
 import { useFormikContext } from 'formik';
+import {
+  useAuthenticatedUserOrThrow,
+  useWorkbenchConfig,
+} from '@tacc/core-hooks';
 
 // Review the project's data tree before publication.
 const ReviewProjectStructure = ({ projectId }) => {
   const dispatch = useDispatch();
-  const portalName = useSelector((state) => state.workbench.portalName);
+  const {
+    data: { portalName },
+  } = useWorkbenchConfig();
   const { DataFilesProjectTree } = useAddonComponents({ portalName });
 
   const { errors } = useFormikContext();
-
+  const { username } = useAuthenticatedUserOrThrow();
   const canEdit = useSelector((state) => {
     const { members } = state.projects.metadata;
-    const { username } = state.authenticatedUser.user;
     const currentUser = members.find(
       (member) => member.user?.username === username
     );

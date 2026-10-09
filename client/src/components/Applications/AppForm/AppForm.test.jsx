@@ -1,8 +1,6 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import { BrowserRouter } from 'react-router-dom';
 import renderComponent from 'utils/testing';
 import { AppSchemaForm, AppDetail } from './AppForm';
 import allocationsFixture from './fixtures/AppForm.allocations.fixture';
@@ -60,13 +58,7 @@ const initialMockState = {
 };
 
 function renderAppSchemaFormComponent(store, app) {
-  return render(
-    <Provider store={store}>
-      <BrowserRouter>
-        <AppSchemaForm app={app} />
-      </BrowserRouter>
-    </Provider>
-  );
+  return renderComponent(<AppSchemaForm app={app} />, store);
 }
 
 describe('AppSchemaForm', () => {

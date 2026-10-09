@@ -12,10 +12,11 @@
   "type": "module",
   "dependencies": {
     "@tanstack/react-query": "catalog:",
+    "@tacc/core-queries": "workspace:",
     "axios": "catalog:"
   },
   "devDependencies": {
     "typescript": "catalog:",
-    "vitest": "^5.0.1"
+    "vitest": "catalog:"
   }
 }

@@ -49,12 +49,22 @@ const initialMockState = {
   },
 };
 
+const projectUser = {
+  username: 'username',
+  first_name: 'User',
+  last_name: 'Name',
+  email: 'user@name.com',
+};
+
 describe('DataFilesManageProjectModal', () => {
   it('renders the manage project modal', () => {
     const store = mockStore(initialMockState);
-    const { getAllByText, debug } = renderComponent(
+    const { getAllByText } = renderComponent(
       <DataFilesManageProjectModal />,
-      store
+      store,
+      undefined,
+      undefined,
+      projectUser
     );
 
     // Check that the authenticated user sees the Change Ownership option
