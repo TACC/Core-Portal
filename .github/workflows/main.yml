@@ -90,7 +90,7 @@ jobs:
           cache-dependency-path: "client/pnpm-lock.yaml"
           package-json-file: "client/package.json"
 
-      - name: npm ci
+      - name: pnpm ci
         run: |
           cd client
           pnpm ci
