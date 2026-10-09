@@ -787,6 +787,28 @@ def test_publish_datacite_doi_with_url_moves_the_doi_in_the_same_request(request
 
 
 @DATACITE_SETTINGS
+def test_publish_datacite_doi_with_metadata_sends_it_with_the_event(requests_mock):
+    requests_mock.put("https://api.test.datacite.org/dois/10.1234/abc", json={"data": {}})
+    metadata = {
+        "titles": [{"title": "v2"}],
+        "version": "2",
+        "publicationYear": 2026,
+        "url": "https://example.org/published-datasets/p.PRJ-1v2",
+        "event": "hide",
+    }
+    publish_datacite_doi("10.1234/abc", metadata=metadata)
+    attributes = requests_mock.last_request.json()["data"]["attributes"]
+    # An update keeps the year originally registered, and the event is always `publish`.
+    assert attributes == {
+        "titles": [{"title": "v2"}],
+        "version": "2",
+        "url": "https://example.org/published-datasets/p.PRJ-1v2",
+        "event": "publish",
+    }
+    assert "publicationYear" in metadata  # the caller's dict isn't changed
+
+
+@DATACITE_SETTINGS
 def test_hide_datacite_doi(requests_mock):
     requests_mock.put(
         "https://api.test.datacite.org/dois/10.1234/abc",

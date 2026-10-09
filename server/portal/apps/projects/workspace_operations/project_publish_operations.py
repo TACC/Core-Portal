@@ -123,7 +123,13 @@ def publish_project_callback(
     review_project_id, published_project_id, archive_project_id, project_id=None, version=None
 ):
     service_client = service_account()
-    update_and_cleanup_review_project(review_project_id, PublicationRequest.Status.APPROVED)
+    try:
+        update_and_cleanup_review_project(review_project_id, PublicationRequest.Status.APPROVED)
+    except (ProjectMetadata.DoesNotExist, PublicationRequest.DoesNotExist):
+        # poll_tapis_file_transfer retries this whole callback if a later step fails, and an earlier
+        # attempt has already approved the request and deleted the review project. Every step below
+        # is safe to repeat, so carry on rather than fail before the switch, DOI and archive steps.
+        logger.warning(f"Review project {review_project_id} was already approved and cleaned up; continuing.")
 
     # Make system public for listing
     service_client.systems.shareSystemPublic(systemId=published_project_id)
@@ -496,18 +502,20 @@ def publish_project(self, project_id: str, version: int | None = 1):
                 existing_doi = source_project.value.get("doi", None)
                 logger.info(f"Attempting to mint DataCite DOI for project {project_id}, existing DOI: {existing_doi}")
 
-                datacite_json = get_datacite_json(publication_tree, project_id, version)
                 if existing_doi and not settings.DEBUG:
-                    # Left out, so DataCite keeps the DOI's current URL: a republish's DOI keeps
-                    # resolving to the live version until publish_publication_doi moves it to this
-                    # version, once its files are in place. Under DEBUG the DOI is never findable,
-                    # so the URL is updated here as before.
-                    datacite_json.pop("url", None)
-                datacite_resp = upsert_datacite_json(datacite_json, doi=existing_doi)
-                doi = datacite_resp["data"]["id"]
-                if doi != existing_doi:
-                    new_doi = doi
-                logger.info(f"Successfully minted DataCite DOI for project {project_id}: {doi}")
+                    # Nothing is sent yet, so the DOI keeps the live version's URL and metadata:
+                    # publish_publication_doi sends this version's metadata, URL and the publish
+                    # event together once its files are in place. Under DEBUG the DOI is never
+                    # findable, so the draft is updated here instead.
+                    doi = existing_doi
+                    logger.info(f"Reusing DataCite DOI {doi} for project {project_id}; it's updated after transfer.")
+                else:
+                    datacite_json = get_datacite_json(publication_tree, project_id, version)
+                    datacite_resp = upsert_datacite_json(datacite_json, doi=existing_doi)
+                    doi = datacite_resp["data"]["id"]
+                    if doi != existing_doi:
+                        new_doi = doi
+                    logger.info(f"Successfully minted DataCite DOI for project {project_id}: {doi}")
             except Exception as e:
                 logger.error(f"Error minting DataCite DOI for project {project_id}: {e}")
                 raise Exception(f"Error minting DOI for project {project_id}: {e}")
@@ -583,16 +591,29 @@ def publish_publication_doi(self, project_id: str, doi: str, version: int | None
     """Make a publication's DOI findable at DataCite, then mark its landing page indexable. Queued by
     publish_project_callback once the publication's files have been transferred (see
     _queue_publish_publication_doi). The same request moves the DOI's URL to `version`'s landing
-    page, unless a newer version is live by now. Retried with backoff; once retries run out,
-    `withdraw_publication --restore <project_id>` sends the same `publish` event and marks it
-    indexable.
+    page and sends that version's metadata, unless a newer version is live by now. Retried with
+    backoff; once retries run out, `withdraw_publication --restore <project_id>` sends the same
+    `publish` event and marks it indexable.
     """
 
     url = None
-    if version is not None and Publication.objects.filter(project_id=project_id, version=version).exists():
-        url = get_datacite_url(project_id, version)
+    metadata = None
+    publication = (
+        Publication.objects.filter(project_id=project_id, version=version).first() if version is not None else None
+    )
+    if publication:
+        try:
+            # Rebuilt from the version now live, so a republish's title, description and version
+            # reach DataCite with its URL rather than while the old version is still served.
+            metadata = get_datacite_json(nx.node_link_graph(publication.tree), project_id, version)
+        except Exception:
+            logger.exception(
+                f"Could not build DataCite metadata for {project_id} v{version}; publishing {doi} with its URL "
+                f"only. Run `update_datacite_metadata {project_id}` once the metadata is fixed."
+            )
+            url = get_datacite_url(project_id, version)
     try:
-        publish_datacite_doi(doi, url=url)
+        publish_datacite_doi(doi, url=url, metadata=metadata)
     except Exception as e:
         logger.error(
             f"Error publishing DataCite DOI {doi} for project {project_id} (attempt {self.request.retries + 1} of "

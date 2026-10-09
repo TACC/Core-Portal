@@ -12,10 +12,10 @@ from portal.apps.publications.models import Publication
 class Command(BaseCommand):
     """Re-send DataCite metadata for publications that already have a DOI
 
-    publish_project sends get_datacite_json's payload only when a publication is (re)published, so a
+    get_datacite_json's payload is only sent when a publication is (re)published, so a
     DOI minted before that payload changed (e.g. before rightsList, subjects, creator `name` and ORCID
     nameIdentifiers were added) keeps its old metadata. This rebuilds the payload from each stored
-    Publication, exactly as publish_project does, and updates the DOI in place. The DOI's state
+    Publication, exactly as publish_publication_doi does, and updates the DOI in place. The DOI's state
     (draft/findable) isn't changed, and its publicationYear is left as originally registered.
 
     Examples:

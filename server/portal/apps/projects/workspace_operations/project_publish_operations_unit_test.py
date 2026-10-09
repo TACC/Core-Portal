@@ -314,6 +314,55 @@ def test_publish_project_callback_for_a_superseded_version_leaves_doi_alone_but_
     mock_archive.assert_called_once_with("archive-1")
 
 
+def test_publish_project_callback_retry_after_cleanup_still_switches_publishes_and_archives(mocker, settings, caplog):
+    """A first attempt approved the request and deleted the review project, then failed (here,
+    submitting the archive job). poll_tapis_file_transfer's retry must still finish publishing."""
+    settings.DEBUG = False
+    mock_publish_doi = _mock_publish_project_callback_steps(mocker)
+    mock_cleanup = mocker.patch(f"{DIR}.update_and_cleanup_review_project", wraps=update_and_cleanup_review_project)
+    mock_switch = mocker.patch(f"{DIR}._switch_publication_to_version", return_value=True)
+    mock_archive = mocker.patch(f"{DIR}.archive_publication_files", return_value=SimpleNamespace(uuid="job-1"))
+    mock_poll = mocker.patch.object(poll_publication_archive_job, "apply_async")
+    Publication.objects.create(project_id="test.project-1", value={"doi": "10.5555/minted-doi"}, tree={})
+
+    # No review project remains, as after a completed cleanup.
+    publish_project_callback(
+        "test.project.review.test.project-1", "published-1", "archive-1", project_id="test.project-1", version=1
+    )
+
+    mock_cleanup.assert_called_once()
+    assert "already approved and cleaned up" in caplog.text
+    mock_switch.assert_called_once_with("test.project-1", 1, "published-1")
+    mock_publish_doi.assert_called_once_with(args=["test.project-1", "10.5555/minted-doi"], kwargs={"version": 1})
+    mock_archive.assert_called_once_with("archive-1")
+    mock_poll.assert_called_once_with(args=["job-1", "test.project-1", 1], countdown=60)
+
+
+def test_publish_project_callback_retry_with_no_pending_request_continues(mocker, settings, caplog):
+    """The review project survived but its request is no longer PENDING."""
+    settings.DEBUG = True
+    _mock_publish_project_callback_steps(mocker)
+    mocker.patch(f"{DIR}.update_and_cleanup_review_project", side_effect=PublicationRequest.DoesNotExist)
+    mock_archive = mocker.patch(f"{DIR}.archive_publication_files", return_value=SimpleNamespace(uuid="job-1"))
+
+    publish_project_callback("review-1", "published-1", "archive-1", project_id="test.project-1", version=1)
+
+    assert "already approved and cleaned up" in caplog.text
+    mock_archive.assert_called_once_with("archive-1")
+
+
+def test_publish_project_callback_other_cleanup_errors_still_fail(mocker):
+    """Only an already-finished cleanup is skipped; anything else fails the attempt so it's retried."""
+    _mock_publish_project_callback_steps(mocker)
+    mocker.patch(f"{DIR}.update_and_cleanup_review_project", side_effect=RuntimeError("tapis down"))
+    mock_archive = mocker.patch(f"{DIR}.archive_publication_files")
+
+    with pytest.raises(RuntimeError, match="tapis down"):
+        publish_project_callback("review-1", "published-1", "archive-1", project_id="test.project-1", version=1)
+
+    mock_archive.assert_not_called()
+
+
 # ---------------------------------------------------------------------------
 # _switch_publication_to_version
 # ---------------------------------------------------------------------------
@@ -621,8 +670,11 @@ def test_publish_project_republish_leaves_live_version_until_files_are_in_place(
 
     publication = Publication.objects.get(project_id="test.project-1")
     assert (publication.version, publication.value, publication.archive_sha256) == (1, {"title": "v1"}, H1)
-    # Without `url`, DataCite keeps the DOI resolving to v1.
-    assert "url" not in mock_upsert.call_args.args[0]
+    # Nothing goes to DataCite yet, so the DOI keeps v1's URL and metadata until
+    # publish_publication_doi sends v2's.
+    mock_upsert.assert_not_called()
+    source_project_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.test.project-1"
+    assert ProjectMetadata.get_project_by_id(source_project_id).value["doi"] == "10.5555/existing-doi"
 
 
 def test_publish_project_debug_republish_still_updates_draft_doi_url(mocker, settings):
@@ -778,8 +830,8 @@ def test_publish_project_failure_after_mint_rolls_back_and_never_publishes_doi(
     mocker, settings, django_capture_on_commit_callbacks
 ):
     """A step after the mint fails: the publish rolls back and the DOI is never made findable (it
-    would resolve to a 404), but the draft DOI is kept on the source project, so the retry updates
-    that draft instead of minting a second one."""
+    would resolve to a 404), but the draft DOI is kept on the source project, so the retry reuses
+    that draft instead of minting a second one. publish_publication_doi sends its metadata later."""
     fixtures = _setup_publish_project_fixtures(settings)
     settings.DEBUG = False
 
@@ -803,7 +855,11 @@ def test_publish_project_failure_after_mint_rolls_back_and_never_publishes_doi(
     with pytest.raises(RuntimeError, match="tapis down"):
         publish_project(project_id="test.project-1", version=1)
 
-    assert mock_upsert.call_args_list[1].kwargs["doi"] == "10.5555/minted-doi"
+    # Only the first attempt called DataCite: the retry found the draft DOI and minted nothing.
+    mock_upsert.assert_called_once()
+    assert mock_upsert.call_args.kwargs["doi"] is None
+    source_project.refresh_from_db()
+    assert source_project.value["doi"] == "10.5555/minted-doi"
 
 
 def test_publish_project_failure_with_existing_doi_leaves_source_project_unchanged(mocker, settings):
@@ -826,16 +882,20 @@ def test_publish_project_failure_with_existing_doi_leaves_source_project_unchang
 
 
 def test_publish_publication_doi_makes_doi_findable_and_page_indexable(mocker):
-    Publication.objects.create(project_id="test.project-1", version=2, value={}, tree={}, is_indexable=False)
+    tree = nx.node_link_data(make_graph({"title": "v2", "projectId": "published.test.project-1v2"}))
+    Publication.objects.create(project_id="test.project-1", version=2, value={}, tree=tree, is_indexable=False)
     last_updated = Publication.objects.get(project_id="test.project-1").last_updated
-    mocker.patch(f"{DIR}.get_datacite_url", return_value="https://example.org/v2")
+    metadata = {"titles": [{"title": "v2"}], "version": "2", "url": "https://example.org/v2"}
+    mock_datacite_json = mocker.patch(f"{DIR}.get_datacite_json", return_value=metadata)
     mock_publish = mocker.patch(f"{DIR}.publish_datacite_doi")
     mock_retry = mocker.patch.object(publish_publication_doi, "retry")
 
     publish_publication_doi("test.project-1", "10.5555/minted-doi", version=2)
 
-    # The DOI moves to v2's landing page now that v2's files are in place.
-    mock_publish.assert_called_once_with("10.5555/minted-doi", url="https://example.org/v2")
+    # v2's metadata and landing-page URL reach DataCite together, now that v2's files are in place.
+    graph, project_id, version = mock_datacite_json.call_args.args
+    assert (graph.nodes["NODE_ROOT"]["value"]["title"], project_id, version) == ("v2", "test.project-1", 2)
+    mock_publish.assert_called_once_with("10.5555/minted-doi", url=None, metadata=metadata)
     mock_retry.assert_not_called()
     publication = Publication.objects.get(project_id="test.project-1")
     assert publication.is_indexable
@@ -867,20 +927,36 @@ def test_publish_publication_doi_without_version_marks_current_publication_index
 
     publish_publication_doi("test.project-1", "10.5555/minted-doi")
 
-    mock_publish.assert_called_once_with("10.5555/minted-doi", url=None)
+    mock_publish.assert_called_once_with("10.5555/minted-doi", url=None, metadata=None)
     assert Publication.objects.get(project_id="test.project-1").is_indexable
 
 
 def test_publish_publication_doi_for_a_superseded_version_leaves_doi_url_alone(mocker):
     """v3 went live before v2's task ran: moving the DOI to v2 would point it at an old version."""
     Publication.objects.create(project_id="test.project-1", version=3, value={}, tree={})
+    mock_datacite_json = mocker.patch(f"{DIR}.get_datacite_json")
     mock_url = mocker.patch(f"{DIR}.get_datacite_url")
     mock_publish = mocker.patch(f"{DIR}.publish_datacite_doi")
 
     publish_publication_doi("test.project-1", "10.5555/minted-doi", version=2)
 
+    mock_datacite_json.assert_not_called()
     mock_url.assert_not_called()
-    mock_publish.assert_called_once_with("10.5555/minted-doi", url=None)
+    mock_publish.assert_called_once_with("10.5555/minted-doi", url=None, metadata=None)
+
+
+def test_publish_publication_doi_still_moves_url_when_metadata_fails_to_build(mocker, caplog):
+    """Making the DOI findable at the live version matters more than refreshing its metadata."""
+    Publication.objects.create(project_id="test.project-1", version=2, value={}, tree={}, is_indexable=False)
+    mocker.patch(f"{DIR}.get_datacite_json", side_effect=KeyError("projectId"))
+    mocker.patch(f"{DIR}.get_datacite_url", return_value="https://example.org/v2")
+    mock_publish = mocker.patch(f"{DIR}.publish_datacite_doi")
+
+    publish_publication_doi("test.project-1", "10.5555/minted-doi", version=2)
+
+    mock_publish.assert_called_once_with("10.5555/minted-doi", url="https://example.org/v2", metadata=None)
+    assert "update_datacite_metadata test.project-1" in caplog.text
+    assert Publication.objects.get(project_id="test.project-1").is_indexable
 
 
 def test_publish_publication_doi_failure_leaves_page_unindexable(mocker):

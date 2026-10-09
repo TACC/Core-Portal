@@ -56,6 +56,10 @@ export const drpMetadataValidate = (values) => {
   if (!values.cover_image) {
     errors.cover_image = 'Cover image is required';
   }
+  // Without a license the published dataset can't claim Croissant conformance.
+  if (!values.license) {
+    errors.license = 'License is required';
+  }
   return errors;
 };
 

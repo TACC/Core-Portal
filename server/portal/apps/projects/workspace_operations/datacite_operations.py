@@ -396,13 +396,16 @@ def upsert_datacite_json(datacite_json: dict, doi: str | None = None):
     return _check_datacite_response(res, f"update of {doi}" if doi else "DOI creation")
 
 
-def publish_datacite_doi(doi: str, url: str | None = None):
+def publish_datacite_doi(doi: str, url: str | None = None, metadata: dict | None = None):
     """
     Set a DOI's status to `Findable` in Datacite, and its URL to `url` when
-    given. Raises DataCiteError if DataCite rejects it (e.g. metadata that
-    fails full schema validation).
+    given. `metadata` (a get_datacite_json payload) is sent in the same request,
+    so a republish's new metadata and URL reach DataCite together. As with any
+    update, its publicationYear is left out. Raises DataCiteError if DataCite
+    rejects it (e.g. metadata that fails full schema validation).
     """
-    attributes = {"event": "publish"}
+    attributes = {**(metadata or {}), "event": "publish"}
+    attributes.pop("publicationYear", None)
     if url:
         attributes["url"] = url
     payload = {"data": {"type": "dois", "attributes": attributes}}
