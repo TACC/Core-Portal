@@ -4,9 +4,12 @@ import { useSelector } from 'react-redux';
 import RequestAccessForm from './RequestAccessForm';
 import BrowserChecker from '../_common/BrowserChecker';
 import styles from './RequestAccess.module.scss';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 function RequestAccess() {
-  const portalName = useSelector((state) => state.workbench.portalName);
+  const {
+    data: { portalName },
+  } = useWorkbenchConfig();
   return (
     <>
       <Navbar className={styles['request-access-title']}>Request Access</Navbar>

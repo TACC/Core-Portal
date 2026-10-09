@@ -10,25 +10,31 @@ import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProject
 import { useAddonComponents, useFileListing } from 'hooks/datafiles';
 import getDefaultProjectSystem from 'utils/getDefaultProjectSystem';
 import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
+import {
+  useAuthenticatedUserOrThrow,
+  useWorkbenchConfig,
+} from '@tacc/core-hooks';
 
 const DataFilesAddProjectModal = () => {
   const navigate = useNavigate();
   const match = useMatch('/workbench/data/*');
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.authenticatedUser);
+  const user = useAuthenticatedUserOrThrow();
   const [members, setMembers] = useState(
     user ? [{ user, access: 'owner' }] : []
   );
-  const minDescriptionLength =
-    useSelector((state) => state.workbench.config.minDescriptionLength) ?? 50;
-  const maxTitleLength =
-    useSelector((state) => state.workbench.config.maxTitleLength) ?? 150;
-  const enableWorkspaceKeywords =
-    useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
-    true;
 
-  // logic to render addonComponents for DRP
-  const portalName = useSelector((state) => state.workbench.portalName);
+  const {
+    data: {
+      portalName,
+      config: {
+        minDescriptionLength = 50,
+        maxTitleLength = 150,
+        enableWorkspaceKeywords = true,
+      },
+    },
+  } = useWorkbenchConfig();
+
   const { DataFilesAddProjectModalAddon } = useAddonComponents({ portalName });
 
   useEffect(() => {

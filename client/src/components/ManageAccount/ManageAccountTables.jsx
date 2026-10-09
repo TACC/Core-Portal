@@ -7,6 +7,7 @@ import { Button, SectionHeader, SectionTableWrapper } from '_common';
 import { IntegrationModal } from './ManageAccountModals';
 import './ManageAccount.scss';
 import styles from './ManageAccountTables.module.css';
+import TicketCreateModal from '../Tickets/TicketCreateModal';
 
 export const TableTemplate = ({ attributes }) => {
   const { getTableProps, rows, prepareRow } = useTable(attributes);
@@ -110,8 +111,8 @@ export const ProfileInformation = () => {
 };
 
 const LicenseCell = ({ cell: { value } }) => {
-  const dispatch = useDispatch();
   const [modal, setModal] = React.useState(false);
+  const [isTicketModalOpen, setIsTicketModalOpen] = React.useState(false);
   const toggle = () => setModal(!modal);
   const { license_type: type, template_html: __html } = value;
   return (
@@ -134,21 +135,16 @@ const LicenseCell = ({ cell: { value } }) => {
         </ModalHeader>
         <ModalBody>
           <div dangerouslySetInnerHTML={{ __html }} />
-          <Button
-            onClick={() =>
-              dispatch({
-                type: 'TICKET_CREATE_OPEN_MODAL',
-                payload: {
-                  subject: `${type} Activation`,
-                },
-              })
-            }
-            type="link"
-          >
+          <Button onClick={() => setIsTicketModalOpen(true)} type="link">
             New Ticket
           </Button>
         </ModalBody>
       </Modal>
+      <TicketCreateModal
+        isModalOpen={isTicketModalOpen}
+        setIsModalOpen={setIsTicketModalOpen}
+        initialSubject={`${type} Activation`}
+      />
     </div>
   );
 };
