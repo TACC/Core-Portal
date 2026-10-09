@@ -94,8 +94,8 @@ MIDDLEWARE = [
 
 # The checked-in workbench index.html is the dev template: with DEBUG off it includes "index.html",
 # the client build's output, which doesn't exist outside a built image. Tests render the index.j2
-# build template in its place instead -- the same swap CI makes by copying index.j2 over index.html
-# -- so the suite passes in a fresh checkout without that copy step.
+# build template in its place instead, so the suite passes in a fresh checkout with index.html left
+# intact (public_data's tests also render the real index.html, with a stand-in for that output).
 WORKBENCH_INDEX_TEMPLATE = "portal/apps/workbench/index.html"
 with open(os.path.join(BASE_DIR, "apps/workbench/templates/portal/apps/workbench/index.j2")) as f:
     WORKBENCH_INDEX_J2 = f.read()
