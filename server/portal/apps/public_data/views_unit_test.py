@@ -1,6 +1,7 @@
 import json
 import posixpath
 import re
+from copy import deepcopy
 from html.parser import HTMLParser
 from pathlib import Path
 from unittest.mock import patch
@@ -19,18 +20,18 @@ from django.utils.html import escape
 from portal.apps.projects.schema_models.license_urls import LICENSE_URLS
 from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json
 from portal.apps.public_data.citations import (
-    _format_citation_author,
-    _format_citation_date,
-    _get_apa_citation,
-    _get_bibtex_citation,
-    _get_citation_pdf_url,
-    _get_citations,
+    format_citation_author,
+    format_citation_date,
+    get_apa_citation,
+    get_bibtex_citation,
+    get_citation_pdf_url,
+    get_citations,
 )
 from portal.apps.public_data.links import (
-    _get_configured_origin,
-    _get_cover_image_url,
-    _get_landing_page_url,
-    _get_publication_file_url,
+    get_cover_image_url,
+    get_landing_page_url,
+    get_publication_file_url,
+    get_publication_origin,
 )
 from portal.apps.public_data.schema_org import (
     SchemaOrgValidationError,
@@ -39,12 +40,12 @@ from portal.apps.public_data.schema_org import (
     _get_distribution,
     _get_license,
     _get_orcid_same_as,
-    _get_publication_file_objs,
     _get_record_sets,
     _has_type,
     dumps_json_ld,
     get_citation_context,
     get_schema_org_json,
+    get_unique_publication_file_objs,
 )
 from portal.apps.public_data.views import (
     PublicationArchiveView,
@@ -193,27 +194,27 @@ def test_get_orcid_same_as_missing(author):
 
 
 # ---------------------------------------------------------------------------
-# _get_configured_origin
+# get_publication_origin
 # ---------------------------------------------------------------------------
 
 
 def test_get_configured_origin_uses_configured_absolute_prefix(rf, settings):
     settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://cep.test/data/tapis/projects/x"
     request = make_request(rf)
-    assert _get_configured_origin(request) == "https://cep.test"
+    assert get_publication_origin(request) == "https://cep.test"
 
 
 def test_get_configured_origin_falls_back_to_request_host(rf, settings):
     settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = ""
     request = make_request(rf)
-    assert _get_configured_origin(request) == "http://testserver"
+    assert get_publication_origin(request) == "http://testserver"
 
 
 def test_get_configured_origin_falls_back_when_prefix_not_absolute(rf, settings):
     # A bare path (no scheme/netloc) is "set" but not usable as an origin.
     settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "/just/a/path"
     request = make_request(rf)
-    assert _get_configured_origin(request) == "http://testserver"
+    assert get_publication_origin(request) == "http://testserver"
 
 
 # ---------------------------------------------------------------------------
@@ -326,26 +327,26 @@ def test_get_distribution_percent_encodes_path_and_defaults_encoding_format(rf):
 
 
 # ---------------------------------------------------------------------------
-# _get_cover_image_url
+# get_cover_image_url
 # ---------------------------------------------------------------------------
 
 
 def test_get_cover_image_url_none_without_cover_image(rf, settings):
     settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "root.system"
     request = make_request(rf)
-    assert _get_cover_image_url({}, "test.project-1", request) is None
+    assert get_cover_image_url({}, "test.project-1", request) is None
 
 
 def test_get_cover_image_url_none_without_root_system(rf, settings):
     settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = None
     request = make_request(rf)
-    assert _get_cover_image_url({"coverImage": "/cover.png"}, "test.project-1", request) is None
+    assert get_cover_image_url({"coverImage": "/cover.png"}, "test.project-1", request) is None
 
 
 def test_get_cover_image_url_builds_url(rf, settings):
     settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "root.system"
     request = make_request(rf)
-    url = _get_cover_image_url({"coverImage": "/cover.png"}, "test.project-1", request)
+    url = get_cover_image_url({"coverImage": "/cover.png"}, "test.project-1", request)
     assert url == "http://testserver/published-datasets/test.project.published.test.project-1/cover-image"
 
 
@@ -473,13 +474,13 @@ def test_file_ids_differ_between_publications_with_the_same_file_name(rf, settin
 
 
 # ---------------------------------------------------------------------------
-# _get_landing_page_url / _get_publication_file_url
+# get_landing_page_url / get_publication_file_url
 # ---------------------------------------------------------------------------
 
 
 def test_get_landing_page_url(rf):
     request = make_request(rf)
-    url = _get_landing_page_url("test.project-1", 1, request)
+    url = get_landing_page_url("test.project-1", 1, request)
     assert url == "http://testserver" + reverse("publications:index", kwargs={"project_id": "test.project-1"})
 
 
@@ -490,13 +491,13 @@ def test_get_landing_page_url(rf):
 def test_get_landing_page_url_respects_configured_origin(rf, settings, prefix, mount):
     settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = prefix
     request = make_request(rf)
-    url = _get_landing_page_url("test.project-1", 1, request)
+    url = get_landing_page_url("test.project-1", 1, request)
     assert url == f"https://cep.test/{mount}/test.project.published.test.project-1"
 
 
 def test_get_publication_file_url(rf):
     request = make_request(rf)
-    url = _get_publication_file_url("test.project-1", "sub dir/data file.pdf", request)
+    url = get_publication_file_url("test.project-1", "sub dir/data file.pdf", request)
     expected_path = reverse(
         "publications:file_download", kwargs={"project_id": "test.project-1", "path": "sub dir/data file.pdf"}
     )
@@ -504,7 +505,7 @@ def test_get_publication_file_url(rf):
 
 
 # ---------------------------------------------------------------------------
-# _get_apa_citation
+# get_apa_citation
 # ---------------------------------------------------------------------------
 
 
@@ -512,7 +513,7 @@ def test_get_apa_citation_full_citation(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     request = make_request(rf)
     base_meta = {"authors": [full_author()], "publicationDate": "2024-05-01", "title": "Test Dataset"}
-    citation = _get_apa_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
+    citation = get_apa_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
     assert citation == "Lovelace, A. (2024). Test Dataset. Test Publisher. https://doi.org/10.1234/test-doi"
 
 
@@ -520,8 +521,8 @@ def test_get_apa_citation_falls_back_to_landing_page_without_doi(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     request = make_request(rf)
     base_meta = {"authors": [], "title": "Test Dataset"}
-    citation = _get_apa_citation(base_meta, None, "test.project-1", 1, request)
-    landing_page = _get_landing_page_url("test.project-1", 1, request)
+    citation = get_apa_citation(base_meta, None, "test.project-1", 1, request)
+    landing_page = get_landing_page_url("test.project-1", 1, request)
     assert citation == f"Test Dataset. Test Publisher. {landing_page}"
 
 
@@ -529,8 +530,8 @@ def test_get_apa_citation_omits_missing_parts(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = None
     request = make_request(rf)
     base_meta = {}
-    citation = _get_apa_citation(base_meta, None, "test.project-1", 1, request)
-    landing_page = _get_landing_page_url("test.project-1", 1, request)
+    citation = get_apa_citation(base_meta, None, "test.project-1", 1, request)
+    landing_page = get_landing_page_url("test.project-1", 1, request)
     assert citation == landing_page
 
 
@@ -538,7 +539,7 @@ def test_get_apa_citation_skips_authors_without_last_name(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     request = make_request(rf)
     base_meta = {"authors": [{"first_name": "NoLastName"}], "title": "Test Dataset"}
-    citation = _get_apa_citation(base_meta, None, "test.project-1", 1, request)
+    citation = get_apa_citation(base_meta, None, "test.project-1", 1, request)
     assert citation.startswith("Test Dataset.")
 
 
@@ -567,7 +568,7 @@ def test_get_apa_citation_formats_authors_apa_style(rf, settings, authors, expec
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     request = make_request(rf)
     base_meta = {"authors": authors, "publicationDate": "2024-05-01", "title": "Test Dataset"}
-    citation = _get_apa_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
+    citation = get_apa_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
     assert citation == f"{expected_creators} (2024). Test Dataset. Test Publisher. https://doi.org/10.1234/test-doi"
 
 
@@ -577,7 +578,7 @@ def test_get_apa_citation_never_doubles_a_period(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher Inc."
     request = make_request(rf)
     base_meta = {"authors": [full_author()], "title": "Is this a dataset?"}
-    citation = _get_apa_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
+    citation = get_apa_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
     assert citation == "Lovelace, A. Is this a dataset? Test Publisher Inc. https://doi.org/10.1234/test-doi"
     assert ".." not in citation
 
@@ -586,12 +587,12 @@ def test_get_apa_citation_year_without_authors(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = None
     request = make_request(rf)
     base_meta = {"publicationDate": "2024-05-01", "title": "Test Dataset"}
-    citation = _get_apa_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
+    citation = get_apa_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, request)
     assert citation == "(2024). Test Dataset. https://doi.org/10.1234/test-doi"
 
 
 # ---------------------------------------------------------------------------
-# _get_bibtex_citation
+# get_bibtex_citation
 # ---------------------------------------------------------------------------
 
 
@@ -599,7 +600,7 @@ def test_get_bibtex_citation_full_entry(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     base_meta = {"authors": [full_author()], "publicationDate": "2024-05-01", "title": "Test Dataset"}
 
-    citation = _get_bibtex_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, make_request(rf))
+    citation = get_bibtex_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, make_request(rf))
 
     assert citation == (
         "@misc{lovelace2024,\n"
@@ -617,9 +618,9 @@ def test_get_bibtex_citation_without_doi_links_landing_page_and_omits_missing_pa
     settings.PORTAL_PUBLICATION_PUBLISHER = None
     request = make_request(rf)
 
-    citation = _get_bibtex_citation({"title": "Test Dataset"}, None, "test.project-1", 2, request)
+    citation = get_bibtex_citation({"title": "Test Dataset"}, None, "test.project-1", 2, request)
 
-    landing_page = _get_landing_page_url("test.project-1", 2, request)
+    landing_page = get_landing_page_url("test.project-1", 2, request)
     assert citation == f"@misc{{testproject1,\n  title = {{Test Dataset}},\n  url = {{{landing_page}}}\n}}"
 
 
@@ -633,7 +634,7 @@ def test_get_bibtex_citation_joins_authors_with_and_skipping_those_without_last_
         "title": "Test Dataset",
     }
 
-    citation = _get_bibtex_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, make_request(rf))
+    citation = get_bibtex_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, make_request(rf))
 
     assert "  author = {Lovelace, Ada and Turing},\n" in citation
     assert citation.startswith("@misc{lovelace,\n")
@@ -643,7 +644,7 @@ def test_get_bibtex_citation_escapes_tex_special_characters(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "R&D {Lab}"
     base_meta = {"title": "50% of #1 pores_x at $5 ~ a^b \\ c\nnext line", "authors": []}
 
-    citation = _get_bibtex_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, make_request(rf))
+    citation = get_bibtex_citation(base_meta, "10.1234/test-doi", "test.project-1", 1, make_request(rf))
 
     assert (
         r"  title = {50\% of \#1 pores\_x at \$5 \textasciitilde{} a\textasciicircum{}b \textbackslash{} c next line},"
@@ -653,7 +654,7 @@ def test_get_bibtex_citation_escapes_tex_special_characters(rf, settings):
 
 
 def test_get_bibtex_citation_keeps_doi_verbatim_but_drops_braces(rf, settings):
-    citation = _get_bibtex_citation({"title": "T"}, "10.1234/a_b{c}", "test.project-1", 1, make_request(rf))
+    citation = get_bibtex_citation({"title": "T"}, "10.1234/a_b{c}", "test.project-1", 1, make_request(rf))
 
     assert "  doi = {10.1234/a_bc},\n" in citation
 
@@ -669,13 +670,13 @@ def test_get_bibtex_citation_keeps_doi_verbatim_but_drops_braces(rf, settings):
 def test_get_bibtex_citation_key(rf, last_name, date, expected_key):
     base_meta = {"authors": [{"first_name": "A", "last_name": last_name}], "publicationDate": date, "title": "T"}
 
-    citation = _get_bibtex_citation(base_meta, None, "test.project-1", 1, make_request(rf))
+    citation = get_bibtex_citation(base_meta, None, "test.project-1", 1, make_request(rf))
 
     assert citation.startswith(f"@misc{{{expected_key},\n")
 
 
 # ---------------------------------------------------------------------------
-# _get_citations
+# get_citations
 # ---------------------------------------------------------------------------
 
 
@@ -694,7 +695,7 @@ def test_get_citations_filters_by_type_and_requires_title():
             {"publicationType": "linked_dataset", "publicationTitle": "Also kept"},
         ]
     }
-    citations = _get_citations(base_meta)
+    citations = get_citations(base_meta)
     assert [c["name"] for c in citations] == ["Kept", "Also kept"]
 
 
@@ -710,7 +711,7 @@ def test_get_citations_prefers_doi_identifier_and_includes_publisher():
             }
         ]
     }
-    citation = _get_citations(base_meta)[0]
+    citation = get_citations(base_meta)[0]
     assert citation["identifier"] == "https://doi.org/10.1/kept"
     assert citation["publisher"] == {"@type": "Organization", "name": "Some Press"}
 
@@ -722,7 +723,7 @@ def test_get_citations_emits_author_as_person():
             {"publicationType": "context", "publicationTitle": "Kept", "publicationAuthor": "Author A"}
         ]
     }
-    assert _get_citations(base_meta)[0]["author"] == {"@type": "Person", "name": "Author A"}
+    assert get_citations(base_meta)[0]["author"] == {"@type": "Person", "name": "Author A"}
 
 
 @pytest.mark.parametrize("author", [None, ""])
@@ -730,14 +731,14 @@ def test_get_citations_omits_missing_author(author):
     base_meta = {
         "relatedPublications": [{"publicationType": "context", "publicationTitle": "Kept", "publicationAuthor": author}]
     }
-    assert "author" not in _get_citations(base_meta)[0]
+    assert "author" not in get_citations(base_meta)[0]
 
 
 def test_get_citations_strips_empty_fields():
     base_meta = {
         "relatedPublications": [{"publicationType": "context", "publicationTitle": "Kept", "publicationAuthor": None}]
     }
-    citation = _get_citations(base_meta)[0]
+    citation = get_citations(base_meta)[0]
     assert "author" not in citation
     assert "publisher" not in citation
     assert "identifier" not in citation
@@ -759,16 +760,16 @@ def test_get_citations_normalizes_related_doi(entered_doi, expected):
             {"publicationType": "context", "publicationTitle": "Kept", "publicationDoi": entered_doi}
         ]
     }
-    assert _get_citations(base_meta)[0].get("identifier") == expected
+    assert get_citations(base_meta)[0].get("identifier") == expected
 
 
 # ---------------------------------------------------------------------------
-# _format_citation_author / _format_citation_date
+# format_citation_author / format_citation_date
 # ---------------------------------------------------------------------------
 
 
 def test_format_citation_author_last_first():
-    assert _format_citation_author({"first_name": "Ada", "last_name": "Lovelace"}) == "Lovelace, Ada"
+    assert format_citation_author({"first_name": "Ada", "last_name": "Lovelace"}) == "Lovelace, Ada"
 
 
 @pytest.mark.parametrize(
@@ -780,7 +781,7 @@ def test_format_citation_author_last_first():
     ],
 )
 def test_format_citation_author_fallback(author, expected):
-    assert _format_citation_author(author) == expected
+    assert format_citation_author(author) == expected
 
 
 @pytest.mark.parametrize(
@@ -796,11 +797,11 @@ def test_format_citation_author_fallback(author, expected):
     ],
 )
 def test_format_citation_date(date_value, expected):
-    assert _format_citation_date(date_value) == expected
+    assert format_citation_date(date_value) == expected
 
 
 # ---------------------------------------------------------------------------
-# _get_citation_pdf_url
+# get_citation_pdf_url
 # ---------------------------------------------------------------------------
 
 
@@ -812,8 +813,8 @@ def test_get_citation_pdf_url_finds_only_pdf(rf):
             {"type": "file", "name": "paper.pdf", "path": "/entity/paper.pdf"},
         ]
     }
-    url = _get_citation_pdf_url(base_meta["fileObjs"], "test.project-1", request)
-    assert url == _get_publication_file_url("test.project-1", "entity/paper.pdf", request)
+    url = get_citation_pdf_url(base_meta["fileObjs"], "test.project-1", request)
+    assert url == get_publication_file_url("test.project-1", "entity/paper.pdf", request)
 
 
 def test_get_citation_pdf_url_none_when_several_pdfs(rf):
@@ -825,7 +826,7 @@ def test_get_citation_pdf_url_none_when_several_pdfs(rf):
             {"type": "file", "name": "supplement.pdf", "path": "/supplement.pdf"},
         ]
     }
-    assert _get_citation_pdf_url(base_meta["fileObjs"], "test.project-1", request) is None
+    assert get_citation_pdf_url(base_meta["fileObjs"], "test.project-1", request) is None
 
 
 def test_get_citation_pdf_url_ignores_incomplete_entries_when_counting(rf):
@@ -838,20 +839,20 @@ def test_get_citation_pdf_url_ignores_incomplete_entries_when_counting(rf):
             {"type": "file", "name": "paper.pdf", "path": "/paper.pdf"},
         ]
     }
-    url = _get_citation_pdf_url(base_meta["fileObjs"], "test.project-1", request)
-    assert url == _get_publication_file_url("test.project-1", "paper.pdf", request)
+    url = get_citation_pdf_url(base_meta["fileObjs"], "test.project-1", request)
+    assert url == get_publication_file_url("test.project-1", "paper.pdf", request)
 
 
 def test_get_citation_pdf_url_none_when_no_pdf(rf):
     request = make_request(rf)
     base_meta = {"fileObjs": [{"type": "file", "name": "readme.txt", "path": "/readme.txt"}]}
-    assert _get_citation_pdf_url(base_meta["fileObjs"], "test.project-1", request) is None
+    assert get_citation_pdf_url(base_meta["fileObjs"], "test.project-1", request) is None
 
 
 def test_get_citation_pdf_url_skips_incomplete_entries(rf):
     request = make_request(rf)
     base_meta = {"fileObjs": [{"type": "file", "name": "", "path": "/x.pdf"}, {"type": "dir", "name": "x.pdf"}]}
-    assert _get_citation_pdf_url(base_meta["fileObjs"], "test.project-1", request) is None
+    assert get_citation_pdf_url(base_meta["fileObjs"], "test.project-1", request) is None
 
 
 # ---------------------------------------------------------------------------
@@ -1194,7 +1195,7 @@ def test_file_download_route_redirects_to_web_mirror_through_url_resolver(client
 
 
 # ---------------------------------------------------------------------------
-# _get_publication_file_objs / _is_publication_file_path
+# get_unique_publication_file_objs / _is_publication_file_path
 # ---------------------------------------------------------------------------
 
 
@@ -1231,7 +1232,7 @@ def test_schema_org_and_citation_include_entity_node_files(rf, settings, publica
         f"{FILES_URL}data.csv#records",
         f"{FILES_URL}sample1/table.csv#records",
     }
-    assert citation_meta["entities"][0]["pdf_url"] == _get_publication_file_url(
+    assert citation_meta["entities"][0]["pdf_url"] == get_publication_file_url(
         publication.project_id, "sample1/paper.pdf", request
     )
     # Everything advertised is something the file route will actually serve.
@@ -1260,7 +1261,7 @@ def test_get_publication_file_objs_combines_root_and_entity_nodes_deduped_by_pat
         {"type": "file", "name": "data.csv", "path": "data.csv"},
     )
 
-    paths = sorted(file_obj["path"].strip("/") for file_obj in _get_publication_file_objs(publication))
+    paths = sorted(file_obj["path"].strip("/") for file_obj in get_unique_publication_file_objs(publication))
 
     assert paths == ["data.csv", "files/paper.pdf"]
 
@@ -1272,15 +1273,15 @@ def test_get_publication_file_objs_skips_file_objects_without_a_path(publication
         {"type": "file", "name": "root.bin", "path": "/"},
     )
 
-    assert [file_obj["path"] for file_obj in _get_publication_file_objs(publication)] == ["/data.csv"]
+    assert [file_obj["path"] for file_obj in get_unique_publication_file_objs(publication)] == ["/data.csv"]
 
 
 def test_get_publication_file_objs_tolerates_empty_tree_and_valueless_nodes(publication):
     publication.tree = {"nodes": [{"id": "NODE_ROOT"}, {"id": "x", "value": None}]}
-    assert [file_obj["path"] for file_obj in _get_publication_file_objs(publication)] == ["/data.csv"]
+    assert [file_obj["path"] for file_obj in get_unique_publication_file_objs(publication)] == ["/data.csv"]
 
     publication.tree = {}
-    assert [file_obj["path"] for file_obj in _get_publication_file_objs(publication)] == ["/data.csv"]
+    assert [file_obj["path"] for file_obj in get_unique_publication_file_objs(publication)] == ["/data.csv"]
 
 
 @pytest.mark.parametrize(
@@ -1802,7 +1803,7 @@ def test_get_schema_org_json_files_without_usable_distribution_drops_conforms_to
     """Files present (has_files True) but none carry a usable name, so `distribution` ends up
     empty. That's no longer fatal: the plain Dataset is still emitted, just without the Croissant
     claim, and the data bug is logged. (A file object with no path at all can't be identified or
-    served, so _get_publication_file_objs drops it outright -- it doesn't count as a file.)"""
+    served, so get_unique_publication_file_objs drops it outright -- it doesn't count as a file.)"""
     request = make_request(rf)
     publication.value = valid_base_meta(fileObjs=[{"type": "file", "name": "", "path": "/unnamed.csv"}])
     publication.save()
@@ -1974,7 +1975,7 @@ def test_get_schema_org_json_dataset_id_is_landing_page_url(rf, publication):
     there's a DOI for `identifier`."""
     request = make_request(rf)
     schema = get_schema_org_json(publication, publication.project_id, request)
-    assert schema["@id"] == schema["url"] == _get_landing_page_url(publication.project_id, publication.version, request)
+    assert schema["@id"] == schema["url"] == get_landing_page_url(publication.project_id, publication.version, request)
 
 
 def test_get_schema_org_json_affiliation_comes_from_each_authors_own_institution(rf, publication):
@@ -2109,7 +2110,7 @@ def test_get_citation_context_collects_file_objects_once(rf, publication):
     publication.save()
 
     with patch(
-        "portal.apps.public_data.schema_org._get_publication_file_objs", wraps=_get_publication_file_objs
+        "portal.apps.public_data.schema_org.get_unique_publication_file_objs", wraps=get_unique_publication_file_objs
     ) as mock_file_objs:
         citation_meta, schema, _ = get_citation_context(publication, make_request(rf))
 
@@ -2562,24 +2563,41 @@ def test_index_view_html_sensitive_metadata_stays_inside_its_tags(client, settin
 
 
 WORKBENCH_TEMPLATES = Path(__file__).resolve().parents[1] / "workbench/templates/portal/apps/workbench"
-# The only block the two templates are meant to differ in: index.j2, the template CI and the tests
-# render, loads no client assets, and index.html, the one deployed, loads Vite or includes the
-# client build's output.
-_BUILD_ONLY_BLOCKS = re.compile(r"{%\s*block\s+scripts\s*%}.*?{%\s*endblock\s*%}", re.S)
+_TEMPLATE_BLOCKS = re.compile(r"{%\s*block\s+(\w+)\s*%}")
 
 
-def test_workbench_index_html_and_j2_agree_outside_scripts():
-    """Tests render index.j2 (unit_test_settings.py), but local development renders index.html, and
-    the two are kept in sync by hand. Everything except the scripts block -- the head metadata,
-    every block override and the server-rendered summary -- must be identical."""
+def test_workbench_index_html_and_j2_share_index_base():
+    """Tests render index.j2 (unit_test_settings.py), but deployments render index.html. Both extend
+    index_base.html, which holds the head metadata, every block override and the server-rendered
+    summary, and index.html overrides only how the client app is loaded."""
     j2 = (WORKBENCH_TEMPLATES / "index.j2").read_text()
     html = (WORKBENCH_TEMPLATES / "index.html").read_text()
+    base = (WORKBENCH_TEMPLATES / "index_base.html").read_text()
 
     for template in (j2, html):
-        assert len(_BUILD_ONLY_BLOCKS.findall(template)) == 1
-        for block in ("google_citation_meta", "robots", "title", "content"):
-            assert re.search(rf"{{%\s*block\s+{block}\s*%}}", template), block
-    assert _BUILD_ONLY_BLOCKS.sub("", j2) == _BUILD_ONLY_BLOCKS.sub("", html)
+        assert template.startswith('{% extends "portal/apps/workbench/index_base.html" %}')
+    assert _TEMPLATE_BLOCKS.findall(j2) == []
+    assert _TEMPLATE_BLOCKS.findall(html) == ["scripts"]
+    for block in ("google_citation_meta", "robots", "title", "content", "scripts"):
+        assert block in _TEMPLATE_BLOCKS.findall(base), block
+
+
+def test_index_view_renders_deployed_index_html(client, settings, publication):
+    """The deployed index.html, rendered with a stand-in for the client build's index.html it
+    includes, serves the same landing-page metadata and summary as index.j2."""
+    engine = deepcopy(settings.TEMPLATES[0])
+    engine["OPTIONS"]["loaders"] = [
+        ("django.template.loaders.locmem.Loader", {"index.html": "<!-- client build -->"}),
+        *engine["OPTIONS"]["loaders"][1:],
+    ]
+    settings.TEMPLATES = [engine]
+    body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+
+    assert "<!-- client build -->" in body
+    assert "window.__INITIAL_SETUP_COMPLETE__" in body
+    assert '<meta name="citation_title" content="Test Dataset">' in body
+    assert '<script type="application/ld+json">' in body
+    assert "<h1>Test Dataset</h1>" in body
 
 
 def test_index_view_renders_citation_and_dc_meta_tags(client, settings, publication):
@@ -3184,7 +3202,7 @@ def test_datacite_url_matches_landing_page_url_and_sitemap(client, settings):
     pub_graph.add_node("NODE_ROOT", value={**base_meta, "projectId": "test.project.published.test.project-1"})
 
     datacite_url = get_datacite_json(pub_graph, pub.project_id)["url"]
-    landing_page_url = _get_landing_page_url(pub.project_id, pub.version, make_request(RequestFactory()))
+    landing_page_url = get_landing_page_url(pub.project_id, pub.version, make_request(RequestFactory()))
     sitemap_locs = re.findall(r"<loc>(.*?)</loc>", client.get(reverse("sitemap")).content.decode())
 
     assert datacite_url.startswith("https://vanity.example.org/")
@@ -3299,8 +3317,8 @@ def test_unreversible_file_is_skipped_not_fatal(mock_logger, rf, settings, publi
     request = make_request(rf)
     with patch("portal.apps.public_data.links.reverse", side_effect=reverse_rejecting_bad):
         distribution = _get_distribution(file_objs, "test.project-1", request)
-        pdf_url = _get_citation_pdf_url(file_objs, "test.project-1", request)
-        assert _get_publication_file_url("test.project-1", "bad.pdf", request) is None
+        pdf_url = get_citation_pdf_url(file_objs, "test.project-1", request)
+        assert get_publication_file_url("test.project-1", "bad.pdf", request) is None
 
     assert [file_object["@id"] for file_object in distribution] == [f"{FILES_URL}good.csv"]
     assert pdf_url is None

@@ -144,7 +144,7 @@ def test_get_datacite_json_omits_dates_without_a_publication_date(caplog, stored
 @pytest.mark.django_db
 def test_get_datacite_json_with_institution_and_authors():
     """The publication-level institution is the HostingInstitution contributor and every creator's
-    affiliation, as on main; an author's own institution is ignored."""
+    affiliation; an author's own institution is ignored."""
     base_meta = minimal_base_meta(
         institution="Test University",
         authors=[
@@ -230,7 +230,7 @@ def test_get_datacite_json_strips_institution_whitespace():
 @pytest.mark.django_db
 @pytest.mark.parametrize("author_institution", [None, "", "   ", "Analytical Engine Society"])
 def test_get_datacite_json_affiliation_is_publication_institution(author_institution):
-    """Every author is affiliated with the publication's (stripped) institution, as on main,
+    """Every author is affiliated with the publication's (stripped) institution,
     whatever their own institution field holds."""
     author_field = {} if author_institution is None else {"institution": author_institution}
     base_meta = minimal_base_meta(

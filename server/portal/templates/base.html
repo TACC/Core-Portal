@@ -53,7 +53,7 @@
     <meta property="og:locale" content="en_US">
     {% comment %}
       `canonical_url` (set by public_data's IndexView, publication route only) is the same
-      _get_landing_page_url-derived value already used for this page's JSON-LD `url` -- falls back to the current
+      get_landing_page_url-derived value already used for this page's JSON-LD `url` -- falls back to the current
       request's own URL everywhere else, so og:url/canonical never claim a URL that disagrees with the page's own
       structured data (a stale ?vN revision link, or a deployment where the DataCite URL prefix points at a
       different host than the one serving this request).

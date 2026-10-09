@@ -9,7 +9,7 @@ from django.http import Http404
 from django.urls import reverse
 from django.utils.html import escape
 
-from portal.apps.public_data.links import _get_configured_origin, _get_landing_page_url
+from portal.apps.public_data.links import get_landing_page_url, get_publication_origin
 from portal.apps.public_data.schema_org import get_citation_context
 from portal.apps.publications.models import Publication
 
@@ -50,7 +50,7 @@ def build_sitemap_entries(request):
                 "metadata to restore it to search."
             )
             continue
-        loc = escape(_get_landing_page_url(pub.project_id, pub.version, request))
+        loc = escape(get_landing_page_url(pub.project_id, pub.version, request))
         lastmod = (pub.last_updated or pub.created).date().isoformat()
         entries.append((loc, lastmod))
     return entries
@@ -84,7 +84,7 @@ def _render_index(request, entries, page_count):
     that changed. More than SITEMAP_MAX_URLS files (2.5 billion publications) isn't handled.
     """
 
-    origin = _get_configured_origin(request)
+    origin = get_publication_origin(request)
     sitemaps = []
     for page in range(1, page_count + 1):
         page_entries = entries[(page - 1) * SITEMAP_MAX_URLS : page * SITEMAP_MAX_URLS]

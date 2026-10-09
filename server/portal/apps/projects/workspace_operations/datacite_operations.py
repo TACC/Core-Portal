@@ -45,8 +45,8 @@ def _check_datacite_response(res, action):
 
     DataCite reports failures as a non-2xx status with a JSON:API `errors` array -- e.g. a 422
     when a DOI's metadata fails schema validation, which drafts are lenient about but the
-    `publish` event (draft -> findable) enforces in full. Callers used to return that body as if
-    it were a success, so a DOI could silently stay a draft. An `errors` array on a 2xx is
+    `publish` event (draft -> findable) enforces in full. Treating that body as a success would
+    let a DOI silently stay a draft. An `errors` array on a 2xx is
     treated as a failure too, as is a body that isn't JSON at all (e.g. a proxy's HTML error page).
     """
 
@@ -230,7 +230,7 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
             # DataCite's schema requires `name` on every creator (the other
             # name parts below are supplementary) -- "Family, Given" is
             # DataCite's own recommended form, the same convention
-            # _format_citation_author (public_data/citations.py) already uses
+            # format_citation_author (public_data/citations.py) already uses
             # for Scholar's citation_author tag.
             "name": ", ".join(part for part in (last_name, first_name) if part),
             "nameType": "Personal",
@@ -241,8 +241,8 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
         if last_name:
             creator["familyName"] = last_name
         # Every creator is affiliated with the publication-level `institution`
-        # (also the HostingInstitution contributor below), as on main; an
-        # author's own `institution`, if any, is ignored. DataCite requires
+        # (also the HostingInstitution contributor below); an author's own
+        # `institution`, if any, is ignored. DataCite requires
         # `name` on every affiliation, and allows only strings (no null) for it
         # and for schemeUri/affiliationIdentifier/affiliationIdentifierScheme. So
         # `affiliation` is left out entirely when the publication has no
@@ -281,8 +281,7 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
         {
             "descriptionType": "Abstract",
             "description": base_meta["description"],
-            # Matches the `language` field below -- an IETF BCP-47 / ISO 639-1
-            # code, not the non-standard "en-Us" this used to say.
+            # Matches the `language` field below -- an IETF BCP-47 / ISO 639-1 code.
             "lang": "en",
         }
     ]
@@ -307,19 +306,13 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
     if version is not None:
         datacite_json["version"] = str(version)
 
-    # DataCite requires `url` to be the DOI's actual resolvable landing page
-    # -- once minted, this is what doi.org redirects to, so getting it wrong
-    # isn't a cosmetic SEO problem the way public_data/links.py's landing-page
-    # URL used to be (see _get_landing_page_url's docstring): it silently
-    # registers a supposedly-permanent DOI that 404s. Built the same way
-    # _get_landing_page_url now is -- reversing public_data/urls.py's own
-    # `index` route, rather than hand-concatenating
-    # PORTAL_PUBLICATION_DATACITE_URL_PREFIX, which doesn't reliably point at
-    # that route. The origin comes from the same get_configured_origin() the
-    # landing page's canonical/JSON-LD/sitemap URLs use, so the DOI can't be
-    # registered against a different host than the page claims for itself
-    # (VANITY_BASE_URL alone can fall back to an internal hostname, e.g.
-    # _WH_BASE_URL). See get_datacite_url.
+    # DataCite requires `url` to be the DOI's resolvable landing page -- once
+    # minted, it's what doi.org redirects to, so a wrong value registers a
+    # supposedly-permanent DOI that 404s. When PORTAL_PUBLICATION_DATACITE_URL_PREFIX
+    # is an absolute URL, it's that prefix plus the version's published system
+    # id (`<prefix>/<system prefix>.<project id>[vN]`), which for DPMP is the
+    # landing page's canonical URL. Otherwise it's VANITY_BASE_URL plus the
+    # landing page's path. See get_datacite_url.
     datacite_json["url"] = get_datacite_url(project_id, version)
     datacite_json["prefix"] = settings.PORTAL_PUBLICATION_DATACITE_SHOULDER
     # Sent on every create and update (see DATACITE_SCHEMA_VERSION).

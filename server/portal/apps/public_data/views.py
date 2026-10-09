@@ -18,13 +18,13 @@ from django.urls import reverse
 from django.utils.http import content_disposition_header
 from django.views.generic.base import TemplateView, View
 
-from portal.apps.public_data.links import _get_configured_origin
+from portal.apps.public_data.links import get_publication_origin
 from portal.apps.public_data.schema_org import (
     CROISSANT_1_1_MEDIA_TYPE,
-    _get_publication_file_objs,
     dumps_json_ld,
     get_citation_context,
     get_schema_org_json,
+    get_unique_publication_file_objs,
 )
 from portal.apps.public_data.sitemap import SITEMAP_CACHE_SECONDS, build_sitemap_entries, render_sitemap
 from portal.apps.publications.models import Publication
@@ -101,11 +101,11 @@ class IndexView(TemplateView):
                     context["schema_org_json"] = dumps_json_ld(schema_org_json)
                     context["citation_context"] = citation_context
                     context["publisher"] = settings.PORTAL_PUBLICATION_PUBLISHER
-                    # Reuse the same _get_landing_page_url-derived value already resolved for the
+                    # Reuse the same get_landing_page_url-derived value already resolved for the
                     # JSON-LD's own `url` (rather than falling back to base.html's default
                     # request.build_absolute_uri) so <link rel="canonical">/og:url can't disagree
                     # with what this same page's structured data claims as its URL -- see
-                    # _get_landing_page_url's docstring for why that's not just the current
+                    # get_landing_page_url's docstring for why that's not just the current
                     # request's own URL (a stale ?vN revision link, or a deployment where
                     # PORTAL_PUBLICATION_DATACITE_URL_PREFIX points at a different host than the
                     # one serving this request).
@@ -136,7 +136,7 @@ class IndexView(TemplateView):
             # bare or `vN` form, and under the /public-data/ mount (portal/urls.py). Send those to
             # the canonical path -- the current version's (see get_landing_page_path) -- with a 301
             # so crawlers consolidate on one URL instead of seeing 200 duplicates. Only the path is
-            # changed: the host stays the request's own (see _get_configured_origin for why the
+            # changed: the host stays the request's own (see get_publication_origin for why the
             # canonical host can differ from the one serving this request).
             canonical_path = urlsplit(canonical_url).path
             if request.path != canonical_path:
@@ -158,7 +158,7 @@ def _is_publication_file_path(pub, path):
 
     if any(segment in ("", ".", "..") for segment in path.split("/")):
         return False
-    for file_obj in _get_publication_file_objs(pub):
+    for file_obj in get_unique_publication_file_objs(pub):
         file_obj_path = file_obj["path"].strip("/")
         if file_obj.get("type") == "file" and path == file_obj_path:
             return True
@@ -267,7 +267,7 @@ class PublishedDatasetsMountMixin:
 class PublicationFileDownloadView(PublishedDatasetsMountMixin, View):
     """Serve one published file's bytes at a URL in the same directory as its publication's
     landing page (public_data/urls.py's `file_download` pattern, under the bare project id --
-    see _get_publication_file_url), rather than the datafiles app's generic
+    see get_publication_file_url), rather than the datafiles app's generic
     `/api/datafiles/tapis/download/...` route. Two reasons: Google Scholar requires citation_pdf_url
     to resolve in the same subdirectory as the citing landing page, and every consumer of
     citation_pdf_url/`contentUrl` expects the file itself -- see _stream_published_file's docstring
@@ -397,7 +397,7 @@ class SitemapView(View):
     builds each <loc> as f"{protocol}://{domain}{location()}" against django.contrib.sites'
     configured Site (not installed here -- see INSTALLED_APPS), which in any case only knows a
     single domain -- whereas a publication's real landing-page URL is already resolved
-    per-deployment by _get_landing_page_url (via PORTAL_PUBLICATION_DATACITE_URL_PREFIX), which
+    per-deployment by get_landing_page_url (via PORTAL_PUBLICATION_DATACITE_URL_PREFIX), which
     some deployments point at a different host entirely. Reusing that same helper keeps every
     <loc> here byte-identical to the `url`/canonical link the corresponding page already claims
     for itself, instead of adding a second, independently-drifting way to build the same URL.
@@ -433,7 +433,7 @@ class SitemapView(View):
         return HttpResponse(render_sitemap(request, entries, page), content_type="application/xml")
 
     def _get_entries(self, request):
-        cache_key = f"public_data:sitemap_entries:{_get_configured_origin(request)}"
+        cache_key = f"public_data:sitemap_entries:{get_publication_origin(request)}"
         try:
             entries = cache.get(cache_key)
         except Exception:

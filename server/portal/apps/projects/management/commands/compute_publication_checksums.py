@@ -3,7 +3,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from portal.apps.projects.workspace_operations.project_publish_operations import (
-    _ARCHIVE_JOB_POLL_SECONDS,
+    ARCHIVE_JOB_POLL_SECONDS,
     archive_publication_files,
     load_publication_file_checksums,
     poll_publication_archive_job,
@@ -89,6 +89,6 @@ class Command(BaseCommand):
                 except ValueError as e:
                     raise CommandError(str(e)) from e
                 poll_publication_archive_job.apply_async(
-                    args=[job.uuid, publication.project_id, publication.version], countdown=_ARCHIVE_JOB_POLL_SECONDS
+                    args=[job.uuid, publication.project_id, publication.version], countdown=ARCHIVE_JOB_POLL_SECONDS
                 )
             self.stdout.write(f"{action} {label}")

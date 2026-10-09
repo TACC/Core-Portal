@@ -17,20 +17,20 @@ from portal.apps.projects.schema_models.keywords import normalize_keywords
 from portal.apps.projects.schema_models.license_urls import resolve_license_url
 from portal.apps.projects.schema_models.orcid import orcid_url
 from portal.apps.public_data.citations import (
-    _format_citation_author,
-    _format_citation_date,
-    _get_apa_citation,
-    _get_bibtex_citation,
-    _get_citation_pdf_url,
-    _get_citations,
+    format_citation_author,
+    format_citation_date,
+    get_apa_citation,
+    get_bibtex_citation,
+    get_citation_pdf_url,
+    get_citations,
 )
 from portal.apps.public_data.links import (
-    _get_catalog_url,
-    _get_configured_origin,
-    _get_cover_image_url,
-    _get_croissant_url,
-    _get_landing_page_url,
-    _get_publication_file_url,
+    get_catalog_url,
+    get_cover_image_url,
+    get_croissant_url,
+    get_landing_page_url,
+    get_publication_file_url,
+    get_publication_origin,
 )
 from portal.apps.publications.utils import (
     get_archive_zip_path,
@@ -58,7 +58,7 @@ GOOGLE_DATASET_DESCRIPTION_LENGTH = (50, 5000)
 # schema.org Dataset -- it's still valid, and still eligible for Dataset Search -- but drops
 # the `conformsTo` claim rather than asserting Croissant conformance it doesn't have.
 # `url`/`identifier` are also Croissant-required, but always present: they come from
-# _get_landing_page_url, which can't return an empty value (see the comment in
+# get_landing_page_url, which can't return an empty value (see the comment in
 # get_schema_org_json).
 REQUIRED_CROISSANT_FIELDS = ("license", "creator", "datePublished", "distribution")
 
@@ -220,7 +220,7 @@ def _get_archive_file_object(pub, request):
     if not pub.archive_sha256 or not settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL:
         return None
     url_path = reverse(f"{get_landing_namespace()}:archive", kwargs={"project_id": pub.project_id})
-    url = f"{_get_configured_origin(request)}{url_path}"
+    url = f"{get_publication_origin(request)}{url_path}"
     archive = {
         "@type": ["cr:FileObject", "DataDownload"],
         "@id": url,
@@ -236,7 +236,7 @@ def _get_archive_file_object(pub, request):
 
 def _get_distribution(file_objs, project_id, request, archive=None, archive_root=None):
     """Build the Croissant/schema.org `distribution` list (one cr:FileObject per published file,
-    one cr:FileSet per published directory) from `file_objs` -- _get_publication_file_objs'
+    one cr:FileSet per published directory) from `file_objs` -- get_unique_publication_file_objs'
     combined list, so files attached to entity nodes are listed alongside root-level ones, and
     every file listed here is one the
     PublicationFileDownloadView allow-list serves. Each `contentUrl` points at that view, which
@@ -268,7 +268,7 @@ def _get_distribution(file_objs, project_id, request, archive=None, archive_root
         if not name or not path:
             continue
 
-        content_url = _get_publication_file_url(project_id, path, request)
+        content_url = get_publication_file_url(project_id, path, request)
         if content_url is None:
             continue
         if file_type == "dir":
@@ -306,7 +306,7 @@ def _get_distribution(file_objs, project_id, request, archive=None, archive_root
 
 
 def _get_file_set(name, dir_url, archive_url, archive_dir):
-    """Build the cr:FileSet for one published directory at `dir_url` (its _get_publication_file_url),
+    """Build the cr:FileSet for one published directory at `dir_url` (its get_publication_file_url),
     `containedIn` the whole-publication ZIP at `archive_url` and `includes` everything under
     `archive_dir`, the directory's path inside the ZIP.
 
@@ -371,7 +371,7 @@ def _get_record_sets(file_objs, project_id, request):
         # The same absolute URL _get_distribution uses as this file's cr:FileObject "@id" (see its
         # comment), so `source.fileObject.@id` below cross-references the matching `distribution`
         # entry. A file with no URL has no `distribution` entry to reference, so no recordSet.
-        file_url = _get_publication_file_url(project_id, path, request)
+        file_url = get_publication_file_url(project_id, path, request)
         if file_url is None:
             continue
         # "#records" can't collide with any other @id in the document: reverse() and quote() both
@@ -407,7 +407,7 @@ def _get_record_sets(file_objs, project_id, request):
     return record_sets
 
 
-def _get_publication_file_objs(pub):
+def get_unique_publication_file_objs(pub):
     """Every file object associated anywhere in the publication, deduplicated by path.
 
     Files are associated with whichever project-graph node their folder belongs to
@@ -430,14 +430,14 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
     """Build a schema.org/Dataset JSON-LD object for a published project to embed directly in
     the page's <script type="application/ld+json"> tag for Google Dataset Search.
 
-    `file_objs` is _get_publication_file_objs(pub), for a caller that already has it.
+    `file_objs` is get_unique_publication_file_objs(pub), for a caller that already has it.
     """
 
     base_meta = pub.value
     doi = base_meta.get("doi")
-    # Root-level and entity-node files together -- see _get_publication_file_objs.
+    # Root-level and entity-node files together -- see get_unique_publication_file_objs.
     if file_objs is None:
-        file_objs = _get_publication_file_objs(pub)
+        file_objs = get_unique_publication_file_objs(pub)
 
     # A metadata-only / externally-hosted publication can legitimately have no files at all, and
     # so is never a Croissant candidate. Having files that failed to make it into `distribution`
@@ -483,7 +483,7 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
             creator["sameAs"] = same_as
         creators.append(creator)
 
-    landing_page_url = _get_landing_page_url(project_id, pub.version, request)
+    landing_page_url = get_landing_page_url(project_id, pub.version, request)
     schema_org_json = {
         "@context": copy.deepcopy(CROISSANT_1_1_CONTEXT),
         "@type": "Dataset",
@@ -496,11 +496,11 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
         # the final document. Set here only to keep its position in the serialized output.
         "conformsTo": CROISSANT_1_1,
         "description": base_meta.get("description"),
-        "citeAs": _get_bibtex_citation(base_meta, doi, project_id, pub.version, request),
-        # Distinct from `citeAs` above -- see _get_citations' docstring. Optional/recommended
+        "citeAs": get_bibtex_citation(base_meta, doi, project_id, pub.version, request),
+        # Distinct from `citeAs` above -- see get_citations' docstring. Optional/recommended
         # per Google's own Dataset structured-data guidance, not Croissant-required, so an empty
         # list here is fine and gets dropped by the empty-field cleanup below like `keywords`.
-        "citation": _get_citations(base_meta),
+        "citation": get_citations(base_meta),
         "license": license_url,
         # Every publication this view serves is published to the public, unauthenticated Tapis
         # download route built in _get_distribution -- there's no embargo/access-tier concept in
@@ -522,7 +522,7 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
         "publisher": {
             "@type": "Organization",
             "name": settings.PORTAL_PUBLICATION_PUBLISHER,
-            "url": f"{_get_configured_origin(request)}/",
+            "url": f"{get_publication_origin(request)}/",
         },
         # Trimmed list, the same one DataCite's `subjects` gets (projects/schema_models/keywords.py).
         "keywords": normalize_keywords(base_meta.get("keywords")),
@@ -546,7 +546,7 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
         "includedInDataCatalog": {
             "@type": "DataCatalog",
             "name": settings.PORTAL_PUBLICATION_PUBLISHER,
-            "url": _get_catalog_url(request),
+            "url": get_catalog_url(request),
         },
         "distribution": _get_distribution(
             file_objs,
@@ -560,15 +560,6 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
 
     # Drop empty/unset fields so the JSON-LD stays clean
     schema_org_json = {k: v for k, v in schema_org_json.items() if v not in (None, [], "")}
-
-    # `url` (and `identifier`, when there's no DOI to use instead) used to fall back to
-    # PORTAL_PUBLICATION_DATACITE_URL_PREFIX directly, which could silently degrade to a
-    # technically-absolute-but-meaningless URL when that setting was unset/blank -- not
-    # something the empty-value checks below would catch. _get_landing_page_url now always
-    # reverses public_data/urls.py's own `index` route instead (see its docstring), which can't
-    # produce that kind of meaningless value: it's either a real, working landing-page URL, or
-    # reverse() raises NoReverseMatch outright. So there's nothing left for this function to
-    # separately guard against here.
 
     missing = [field for field in REQUIRED_DATASET_FIELDS if field not in schema_org_json]
     if missing:
@@ -601,22 +592,15 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
                 f"{CROISSANT_1_1}."
             )
     # Every cr:FileObject also needs a checksum, or Croissant validators reject the whole Dataset.
-    # The warning below is commented out until checksums exist: publications archived before the
-    # archive app wrote sha256 manifests (app < 0.0.3) have no hashes until
-    # compute_publication_checksums backfills them, so until then it would fire for every one of
-    # them on every page render and sitemap build. Uncomment it once the backfill has run, when an
-    # unhashed file is a real anomaly worth noticing.
-    elif unhashed := [  # noqa: F841 -- used by the commented-out warning below
-        file_object["@id"]
-        for file_object in schema_org_json["distribution"]
-        if _has_type(file_object, "cr:FileObject")
+    # Not logged: publications archived before the archive app wrote sha256 manifests (app < 0.0.3)
+    # have no hashes until compute_publication_checksums backfills them, so a warning would fire for
+    # every one of them on every page render and sitemap build.
+    elif any(
+        _has_type(file_object, "cr:FileObject")
         and not any(file_object.get(field) for field in CROISSANT_FILE_CHECKSUM_FIELDS)
-    ]:
+        for file_object in schema_org_json["distribution"]
+    ):
         del schema_org_json["conformsTo"]
-        # logger.warning(
-        #     f"Publication {project_id} has {len(unhashed)} file(s) with no md5/sha256 checksum (e.g. "
-        #     f"{unhashed[0]}), so its Dataset is emitted without conformsTo {CROISSANT_1_1}."
-        # )
 
     return schema_org_json
 
@@ -628,7 +612,7 @@ def get_citation_context(pub, request):
     (https://scholar.google.com/intl/en/scholar/inclusion.html#indexing).
     """
 
-    file_objs = _get_publication_file_objs(pub)
+    file_objs = get_unique_publication_file_objs(pub)
     # Built first so its already-resolved `url` and `distribution` (with real, absolute
     # download URLs) can be reused below instead of recomputed.
     schema_org_json = get_schema_org_json(pub, pub.project_id, request, file_objs)
@@ -643,11 +627,11 @@ def get_citation_context(pub, request):
     citation_meta["keywords"] = ", ".join(normalize_keywords(base_meta.get("keywords")))
     # Page-level (not per-entity, like `keywords` above) since og:image/twitter:image are
     # single tags in <head>, not part of the citation_* block.
-    citation_meta["cover_image_url"] = _get_cover_image_url(base_meta, pub.project_id, request)
+    citation_meta["cover_image_url"] = get_cover_image_url(base_meta, pub.project_id, request)
     # Linked only when the document claims Croissant conformance -- PublicationCroissantView
     # 404s otherwise, so the page never links a Croissant loader to something it would reject.
     if "conformsTo" in schema_org_json:
-        citation_meta["croissant_url"] = _get_croissant_url(pub.project_id, request)
+        citation_meta["croissant_url"] = get_croissant_url(pub.project_id, request)
     citation_meta["entities"] = [
         {
             "title": base_meta.get("title"),
@@ -677,14 +661,14 @@ def get_citation_context(pub, request):
             ],
             # One "Last, First" string per author -- the template emits one <meta
             # name="citation_author"> tag per entry, as Scholar's guide asks for.
-            "citation_authors": [name for name in (_format_citation_author(author) for author in authors) if name],
+            "citation_authors": [name for name in (format_citation_author(author) for author in authors) if name],
             "publication_date": publication_date,
-            "citation_date": _format_citation_date(publication_date),
-            "pdf_url": _get_citation_pdf_url(file_objs, pub.project_id, request),
+            "citation_date": format_citation_date(publication_date),
+            "pdf_url": get_citation_pdf_url(file_objs, pub.project_id, request),
             "abstract_url": schema_org_json.get("url"),
             # For the visible summary: a readable APA citation, and the same BibTeX entry the
             # JSON-LD gives as `citeAs`.
-            "apa_citation": _get_apa_citation(base_meta, base_meta.get("doi"), pub.project_id, pub.version, request),
+            "apa_citation": get_apa_citation(base_meta, base_meta.get("doi"), pub.project_id, pub.version, request),
             "bibtex_citation": schema_org_json.get("citeAs"),
         }
     ]

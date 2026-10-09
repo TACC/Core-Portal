@@ -52,7 +52,7 @@ _SHA256_MANIFEST_LINE = re.compile(r"(\\?)([0-9a-fA-F]{64}) [ *](.+)")
 _CHECKSUM_ONLY_MIN_APP_VERSION = (0, 0, 3)
 
 _TERMINAL_JOB_STATES = ("FINISHED", "CANCELLED", "FAILED")
-_ARCHIVE_JOB_POLL_SECONDS = 60
+ARCHIVE_JOB_POLL_SECONDS = 60
 # The archive app's own limit is 120 minutes (maxMinutes); this also allows for time queued.
 _ARCHIVE_JOB_MAX_POLLS = 6 * 60
 
@@ -151,7 +151,7 @@ def publish_project_callback(
     # publication can be backfilled with the compute_publication_checksums management command.
     if project_id:
         poll_publication_archive_job.apply_async(
-            args=[archive_job.uuid, project_id, version], countdown=_ARCHIVE_JOB_POLL_SECONDS
+            args=[archive_job.uuid, project_id, version], countdown=ARCHIVE_JOB_POLL_SECONDS
         )
 
 
@@ -347,7 +347,7 @@ def poll_publication_archive_job(self, job_uuid, project_id, version=None, attem
         )
         return
     self.apply_async(
-        args=[job_uuid, project_id, version], kwargs={"attempt": attempt + 1}, countdown=_ARCHIVE_JOB_POLL_SECONDS
+        args=[job_uuid, project_id, version], kwargs={"attempt": attempt + 1}, countdown=ARCHIVE_JOB_POLL_SECONDS
     )
 
 

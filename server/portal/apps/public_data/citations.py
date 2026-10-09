@@ -10,7 +10,7 @@ import unicodedata
 from django.conf import settings
 
 from portal.apps.projects.schema_models.doi import doi_url, normalize_doi
-from portal.apps.public_data.links import _get_landing_page_url, _get_publication_file_url
+from portal.apps.public_data.links import get_landing_page_url, get_publication_file_url
 
 # Characters that are special to (La)TeX inside a BibTeX field value, and how to write each one
 # literally, so a title like "Pores & 50% porosity" can't break the entry or the document citing it.
@@ -48,7 +48,7 @@ def _end_sentence(text):
     return text if text.endswith((".", "?", "!")) else f"{text}."
 
 
-def _get_apa_citation(base_meta, doi, project_id, version, request):
+def get_apa_citation(base_meta, doi, project_id, version, request):
     """Build a plain-text citation for the landing page's visible summary, following DataCite's
     recommended citation format (Creator(s) (PublicationYear). Title. Publisher. Identifier),
     in the APA style DataCite's own citation formatter produces -- e.g. "Lovelace, A., & Turing, A.
@@ -66,7 +66,7 @@ def _get_apa_citation(base_meta, doi, project_id, version, request):
     publication_date = base_meta.get("publicationDate") or base_meta.get("publication_date") or ""
     year = publication_date[:4] if publication_date else ""
 
-    identifier = doi_url(doi) or _get_landing_page_url(project_id, version, request)
+    identifier = doi_url(doi) or get_landing_page_url(project_id, version, request)
 
     creator_and_year = " ".join([*author_names, *([f"({year})"] if year else [])])
     sentences = [creator_and_year, base_meta.get("title"), settings.PORTAL_PUBLICATION_PUBLISHER]
@@ -108,17 +108,17 @@ def _get_bibtex_key(base_meta, project_id):
     return re.sub(r"[^A-Za-z0-9]", "", project_id)
 
 
-def _get_bibtex_citation(base_meta, doi, project_id, version, request):
+def get_bibtex_citation(base_meta, doi, project_id, version, request):
     """Build a BibTeX entry for the Croissant `citeAs` property, whose spec asks for BibTeX
     ("Ideally, citations should be expressed using the bibtex format"). It's an @misc entry, the
     type DataCite's own BibTeX export uses for a dataset, with the same parts as the APA citation
-    (_get_apa_citation): authors as "Family, Given" joined by "and" (those without a last name are
+    (get_apa_citation): authors as "Family, Given" joined by "and" (those without a last name are
     left out, as in the APA form), title, publisher, year, and the DOI, or the landing page's URL
     when there's no DOI. Missing parts are left out.
     """
 
     authors = [
-        _bibtex_value(_format_citation_author(author))
+        _bibtex_value(format_citation_author(author))
         for author in base_meta.get("authors", [])
         if (author.get("last_name") or "").strip()
     ]
@@ -129,18 +129,18 @@ def _get_bibtex_citation(base_meta, doi, project_id, version, request):
         ("publisher", _bibtex_value(settings.PORTAL_PUBLICATION_PUBLISHER or "")),
         ("year", re.sub(r"[^0-9]", "", publication_date[:4])),
         ("doi", _bibtex_verbatim(normalize_doi(doi) or "")),
-        ("url", _bibtex_verbatim(doi_url(doi) or _get_landing_page_url(project_id, version, request))),
+        ("url", _bibtex_verbatim(doi_url(doi) or get_landing_page_url(project_id, version, request))),
     ]
     body = ",\n".join(f"  {name} = {{{value}}}" for name, value in fields if value)
     return f"@misc{{{_get_bibtex_key(base_meta, project_id)},\n{body}\n}}"
 
 
-def _get_citations(base_meta):
+def get_citations(base_meta):
     """Build the schema.org `citation` list -- CreativeWork entries for academic articles the
     data provider recommends citing in addition to the dataset itself
     (https://developers.google.com/search/docs/appearance/structured-data/dataset) -- from the
     publication's `relatedPublications` entries. This is a distinct property from Croissant's
-    own `citeAs` (built by _get_bibtex_citation above): `citeAs` says how to cite *this* dataset,
+    own `citeAs` (built by get_bibtex_citation above): `citeAs` says how to cite *this* dataset,
     `citation` recommends *other* works to cite alongside it.
 
     Only "context" and "linked_dataset" entries are used: those describe a publication this
@@ -182,7 +182,7 @@ def _get_citations(base_meta):
     return citations
 
 
-def _format_citation_author(author):
+def format_citation_author(author):
     """Format one author as "Last, First" -- the order Google Scholar's indexing guide asks
     citation_author tags to use (https://scholar.google.com/intl/en/scholar/inclusion.html#indexing).
     Falls back to whichever name part is present if the other is missing, and to "" (filtered
@@ -196,7 +196,7 @@ def _format_citation_author(author):
     return last_name or first_name
 
 
-def _format_citation_date(date_value):
+def format_citation_date(date_value):
     """Reformat a stored ISO-ish date ("YYYY-MM-DD", optionally with a time component) into
     the slash-separated "YYYY/MM/DD" form (or "YYYY/MM"/"YYYY" for a partial date) that Google
     Scholar's citation_publication_date expects. A value that isn't recognizably ISO-formatted
@@ -212,16 +212,16 @@ def _format_citation_date(date_value):
     return date_value
 
 
-def _get_citation_pdf_url(file_objs, project_id, request):
+def get_citation_pdf_url(file_objs, project_id, request):
     """The publication's PDF for Google Scholar's citation_pdf_url, only when it has exactly one.
 
-    `file_objs` is _get_publication_file_objs' combined list, so a PDF attached to an entity node
+    `file_objs` is get_unique_publication_file_objs' combined list, so a PDF attached to an entity node
     counts too. citation_pdf_url claims the PDF is the article's full text, and nothing in the
     metadata says which file that is. With several PDFs (papers, reports, supplements) any pick
     could be wrong, so none is emitted; with one, it's the only candidate.
 
     Scholar requires citation_pdf_url to resolve in the same subdirectory as the citing landing
-    page, which _get_publication_file_url's `file_download` route guarantees -- the same route
+    page, which get_publication_file_url's `file_download` route guarantees -- the same route
     `distribution`/`contentUrl` is built against, so the two always agree. That route serves PDFs
     from the portal host itself even when a web mirror is configured (PublicationFileDownloadView).
     """
@@ -240,4 +240,4 @@ def _get_citation_pdf_url(file_objs, project_id, request):
 
     if len(pdf_paths) != 1:
         return None
-    return _get_publication_file_url(project_id, pdf_paths[0], request)
+    return get_publication_file_url(project_id, pdf_paths[0], request)
