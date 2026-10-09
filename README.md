@@ -303,29 +303,6 @@ Deployments are initiated via [Jenkins](https://jenkins01.tacc.utexas.edu/view/W
 2. Update deployment settings, particularly the `PORTAL_TAG` environment variable in [Core Portal Deployments](https://github.com/TACC/Core-Portal-Deployments) with new tag name
 3. Deploy new image with [Jenkins](https://jenkins01.tacc.utexas.edu/view/WMA%20CEP/job/Core_Portal_Deploy/)
 
-### Published Dataset Landing Pages and Sitemap
-
-Published datasets get server-rendered landing pages at `/published-datasets/<PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX>.<project id>` (for example, `/published-datasets/drp.project.published.DRP-1149`) and a sitemap at `/published-datasets/sitemap.xml`. Past 50,000 publications (the sitemap protocol's limit for one file), that URL becomes a sitemap index listing numbered files at `/published-datasets/sitemap-1.xml`, `-2.xml` and so on, so robots.txt never needs to change. Camino's default nginx template doesn't route `/published-datasets` to the portal, so a deployment that publishes datasets needs its own nginx location for it. Without one, those URLs go to the CMS instead. DPMP's `publications.location.conf` in [Core Portal Deployments] is a working example:
-
-```nginx
-location ~ ^/published-datasets {
-    uwsgi_read_timeout 60s;
-    uwsgi_send_timeout 600s;
-    uwsgi_pass  portal_core;
-    include     /etc/nginx/uwsgi_params;
-    # Camino's cep-headers.conf sets `sub_filter_types *`. Limiting it to HTML keeps
-    # published files streamed through this route from losing their Content-Length.
-    sub_filter_types text/html;
-}
-```
-
-The deployment also needs to:
-
-- Advertise the sitemap in its own robots.txt with `Sitemap: https://<host>/published-datasets/sitemap.xml`. Camino serves `/robots.txt` from `/var/www/robots.txt`, which is Camino's own `robots.txt.default` unless the deployment mounts its own file there (DPMP mounts `dpmp-<env>.robots.txt`). `server/conf/nginx/robots.txt` is only for local development.
-- Keep non-production hosts out of search indexes, for example by sending an `X-Robots-Tag: noindex` header (DPMP's pprd does this).
-- Set `_PORTAL_PUBLICATION_DATACITE_URL_PREFIX` to the public host, so DOIs and canonical URLs point at the landing pages.
-- Set `_PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL` to the published files' public web mirror to list each publication's whole ZIP as a download on its landing page (at `<landing page>/archive.zip`, redirecting to the mirror). The ZIP is only listed once the archive job has stored its sha256 (archive app 0.0.3+), and never without a mirror, since ZIPs are too large to relay through the portal.
-
 ### Contributing
 
 #### Development Workflow
@@ -358,6 +335,29 @@ We use a modifed version of [GitFlow](https://datasift.github.io/gitflow/Introdu
 5. Commit successful changes to a [Core Styles] branch.
 
 - _Note: [If you run `pnpm install` or `pnpm ci`, the link is destroyed.](https://github.com/npm/cli/issues/2380#issuecomment-1029967927) Repeat the above steps to restore it._
+
+### Published Dataset Landing Pages and Sitemap
+
+Published datasets get server-rendered landing pages at `/published-datasets/<PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX>.<project id>` (for example, `/published-datasets/drp.project.published.DRP-1149`) and a sitemap at `/published-datasets/sitemap.xml`. Past 50,000 publications (the sitemap protocol's limit for one file), that URL becomes a sitemap index listing numbered files at `/published-datasets/sitemap-1.xml`, `-2.xml` and so on, so robots.txt never needs to change. Camino's default nginx template doesn't route `/published-datasets` to the portal, so a deployment that publishes datasets needs its own nginx location for it. Without one, those URLs go to the CMS instead. DPMP's `publications.location.conf` in [Core Portal Deployments] is a working example:
+
+```nginx
+location ~ ^/published-datasets {
+    uwsgi_read_timeout 60s;
+    uwsgi_send_timeout 600s;
+    uwsgi_pass  portal_core;
+    include     /etc/nginx/uwsgi_params;
+    # Camino's cep-headers.conf sets `sub_filter_types *`. Limiting it to HTML keeps
+    # published files streamed through this route from losing their Content-Length.
+    sub_filter_types text/html;
+}
+```
+
+The deployment also needs to:
+
+- Advertise the sitemap in its own robots.txt with `Sitemap: https://<host>/published-datasets/sitemap.xml`. Camino serves `/robots.txt` from `/var/www/robots.txt`, which is Camino's own `robots.txt.default` unless the deployment mounts its own file there (DPMP mounts `dpmp-<env>.robots.txt`). `server/conf/nginx/robots.txt` is only for local development.
+- Keep non-production hosts out of search indexes, for example by sending an `X-Robots-Tag: noindex` header (DPMP's pprd does this).
+- Set `_PORTAL_PUBLICATION_DATACITE_URL_PREFIX` to the public host, so DOIs and canonical URLs point at the landing pages.
+- Set `_PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL` to the published files' public web mirror to list each publication's whole ZIP as a download on its landing page (at `<landing page>/archive.zip`, redirecting to the mirror). The ZIP is only listed once the archive job has stored its sha256 (archive app 0.0.3+), and never without a mirror, since ZIPs are too large to relay through the portal. Published folders are only listed in `distribution` inside the ZIP, so without a mirror they're left out. File URLs then relay bytes from Tapis instead of redirecting to the mirror. DPMP sets the mirror on prod only, so pprd can't be used to test the ZIP, the folder entries or the redirects.
 
 #### Best Practices
 

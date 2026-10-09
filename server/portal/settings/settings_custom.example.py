@@ -238,6 +238,8 @@ _PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "cep.project.published"
 # Public HTTP mirror of _PORTAL_PROJECTS_PUBLISHED_ROOT_DIR (e.g. web.corral). When set, published
 # file and cover-image URLs on landing pages 302-redirect here instead of streaming bytes through
 # Tapis and uWSGI. Leave as None to stream from Tapis (fine for local dev; slow for large files).
+# Without it, landing pages also list no whole-publication ZIP (`archive.zip` returns 404) and
+# leave published folders out of `distribution`, since folders are only listed inside the ZIP.
 # e.g. "https://web.corral.tacc.utexas.edu/digitalporousmedia"
 _PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = None
 
