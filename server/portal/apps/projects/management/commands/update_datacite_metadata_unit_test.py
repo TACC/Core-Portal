@@ -99,13 +99,32 @@ def test_payload_matches_publish(publications, mock_upsert):
     assert "publicationYear" not in payload
 
 
-def test_dry_run_sends_nothing(publications, mock_upsert):
+def test_dry_run_sends_nothing(publications, mock_upsert, mocker):
+    mocker.patch(f"{DIR}.get_registered_doi_attributes", return_value={})
     out, _ = run("--all", "--dry-run")
 
     mock_upsert.assert_not_called()
     assert "Would update 10.12345/aaaa (test.project-1 v2):" in out
     assert '"rightsUri": "https://opendatacommons.org/licenses/by/1-0/"' in out
     assert "publicationYear" not in out
+
+
+def test_dry_run_prints_the_payload_merged_with_registered_metadata(publications, mock_upsert, mocker):
+    """What --dry-run prints is what an update would send, registered metadata included."""
+    registered = {"subjects": [{"subject": "Porous materials", "subjectScheme": "LCSH"}]}
+    mock_read = mocker.patch(f"{DIR}.get_registered_doi_attributes", return_value=registered)
+
+    out, _ = run("test.project-1", "--dry-run")
+
+    mock_read.assert_called_once_with("10.12345/aaaa")
+    assert '"subjectScheme": "LCSH"' in out
+
+
+def test_dry_run_reports_unreadable_registered_metadata(publications, mock_upsert, mocker):
+    mocker.patch(f"{DIR}.get_registered_doi_attributes", side_effect=DataCiteError("DataCite read of x failed"))
+
+    with pytest.raises(CommandError, match="test.project-1"):
+        run("test.project-1", "--dry-run")
 
 
 def test_rejected_update_is_reported_and_the_rest_continue(publications, mocker):

@@ -29,6 +29,7 @@ from portal.apps.public_data.sitemap import SITEMAP_CACHE_SECONDS, build_sitemap
 from portal.apps.publications.models import Publication
 from portal.apps.publications.utils import (
     get_archive_zip_path,
+    get_landing_namespace,
     get_published_workspace_id,
 )
 
@@ -38,6 +39,21 @@ logger = logging.getLogger(__name__)
 # (tapipy's files.getContents returns the entire file as one bytes object), since a published
 # dataset's files can run to multiple GB.
 _FILE_STREAM_CHUNK_SIZE = 64 * 1024
+
+# The only types a relayed file is displayed inline as. Anything else -- HTML, SVG, XML -- could
+# run script on the portal's own origin, so it's sent as an application/octet-stream download.
+_INLINE_FILE_CONTENT_TYPES = frozenset(
+    {
+        "application/pdf",
+        "image/gif",
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "text/csv",
+        "text/plain",
+        "text/tab-separated-values",
+    }
+)
 
 
 class IndexView(TemplateView):
@@ -217,25 +233,31 @@ def _stream_published_file(system, path):
 
     file_name = posixpath.basename(path)
     content_type, _ = mimetypes.guess_type(file_name)
-    response = StreamingHttpResponse(body(), content_type=content_type or "application/octet-stream")
-    # inline, not attachment: a PDF or cover image should render in the browser/unfurler.
-    response["Content-Disposition"] = content_disposition_header(False, file_name)
+    # A PDF or cover image renders in the browser/unfurler; any other type is downloaded instead.
+    inline = content_type in _INLINE_FILE_CONTENT_TYPES
+    response = StreamingHttpResponse(body(), content_type=content_type if inline else "application/octet-stream")
+    response["Content-Disposition"] = content_disposition_header(not inline, file_name)
+    # Published files are author-supplied, so none may run script as the portal. Not for PDFs:
+    # browsers refuse to open a PDF in a sandboxed document, and its script runs in the viewer.
+    if content_type != "application/pdf":
+        response["Content-Security-Policy"] = "sandbox"
     if upstream.headers.get("Content-Length"):
         response["Content-Length"] = upstream.headers["Content-Length"]
     return response
 
 
 class PublishedDatasetsMountMixin:
-    """301 a publication's file, cover image, ZIP or Croissant route under the /public-data/ mount
-    (portal/urls.py's `public` namespace) to the same route under /published-datasets/, the one
+    """301 a publication's file, cover image, ZIP or Croissant route under the other mount of
+    public_data/urls.py (portal/urls.py) to the same route under get_landing_namespace()'s, the one
     the landing page links to, so crawlers don't see 200 duplicates -- as IndexView.get does for
     the landing page itself. Keeps the query string.
     """
 
     def dispatch(self, request, *args, **kwargs):
         match = request.resolver_match
-        if match and match.namespace != "publications":
-            path = reverse(f"publications:{match.url_name}", kwargs=kwargs)
+        namespace = get_landing_namespace()
+        if match and match.namespace != namespace:
+            path = reverse(f"{namespace}:{match.url_name}", kwargs=kwargs)
             query = request.META.get("QUERY_STRING")
             return HttpResponsePermanentRedirect(f"{path}?{query}" if query else path)
         return super().dispatch(request, *args, **kwargs)

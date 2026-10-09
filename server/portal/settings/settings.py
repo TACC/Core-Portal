@@ -548,6 +548,8 @@ PROJECT_ADMIN_GROUP = getattr(settings_custom, "_PROJECT_ADMIN_GROUP", "Project 
 
 PORTAL_PUBLICATION_DATACITE_SHOULDER = getattr(settings_custom, "_PORTAL_PUBLICATION_DATACITE_SHOULDER", None)
 
+# Where DOIs resolve: `<prefix>/<published system id>`. A prefix whose path is /published-datasets (DPMP) also
+# makes that mount canonical for landing pages; with any other value they stay under /public-data.
 PORTAL_PUBLICATION_DATACITE_URL_PREFIX = getattr(settings_custom, "_PORTAL_PUBLICATION_DATACITE_URL_PREFIX", None)
 
 DATACITE_URL = getattr(settings_custom, "_DATACITE_URL", None)

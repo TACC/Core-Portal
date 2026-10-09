@@ -16,7 +16,7 @@ from portal.apps.projects.schema_models.license_urls import (
 )
 from portal.apps.projects.schema_models.orcid import ORCID_URL_PREFIX, orcid_url
 from portal.apps.public_data.origin import get_configured_origin
-from portal.apps.publications.utils import get_landing_page_path
+from portal.apps.publications.utils import get_landing_page_path, get_published_workspace_id
 
 logger = logging.getLogger(__name__)
 
@@ -161,12 +161,20 @@ def _get_issued_date(base_meta):
 
 
 def get_datacite_url(project_id: str, version: int | None = None):
-    """Build the landing-page URL a DOI resolves to. There's no `request` here to fall back on the
-    way the views do -- this runs from Celery tasks -- so VANITY_BASE_URL is only the fallback when
-    PORTAL_PUBLICATION_DATACITE_URL_PREFIX isn't absolute.
+    """Build the landing-page URL a DOI resolves to: the version's published system id under
+    PORTAL_PUBLICATION_DATACITE_URL_PREFIX, when that's an absolute URL. For DPMP that's the
+    landing page's own canonical URL (get_landing_page_path), and every other portal's DOIs keep
+    resolving where they always have. There's no `request` here to fall back on the way the views
+    do -- this runs from Celery tasks -- so otherwise the landing page's path is used on
+    VANITY_BASE_URL.
     """
 
-    origin = get_configured_origin() or settings.VANITY_BASE_URL
+    prefix = settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX
+    if get_configured_origin():
+        workspace_id = get_published_workspace_id(project_id, version)
+        return f"{prefix.rstrip('/')}/{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{workspace_id}"
+
+    origin = settings.VANITY_BASE_URL
     if not origin:
         raise ValueError(
             "Neither PORTAL_PUBLICATION_DATACITE_URL_PREFIX (as an absolute URL) "
@@ -371,14 +379,111 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
     return datacite_json
 
 
+# Relation types get_datacite_json sends. Any other relation already registered on a DOI (e.g. a
+# pre-portal DOI's IsReferencedBy) is something the portal can't express, so updates keep it.
+_PORTAL_RELATION_TYPES = frozenset({"References", "IsPartOf", "IsCitedBy", "IsDocumentedBy"})
+
+
+def get_registered_doi_attributes(doi: str) -> dict:
+    """The metadata DataCite currently holds for `doi`, as its JSON:API `attributes`. Raises
+    DataCiteError if DataCite doesn't return it. Authenticated, so a draft DOI is readable too.
+    """
+
+    res = requests.get(
+        f"{settings.DATACITE_URL.strip('/')}/dois/{doi}",
+        # Affiliations as objects, the form they're sent in, rather than DataCite's default strings.
+        params={"affiliation": "true"},
+        auth=(settings.DATACITE_USER, settings.DATACITE_PASS),
+        timeout=30,
+    )
+    return _check_datacite_response(res, f"read of {doi}")["data"]["attributes"]
+
+
+def _creator_key(creator):
+    return " ".join((creator.get("name") or "").casefold().split())
+
+
+def merge_registered_metadata(metadata: dict, registered: dict) -> dict:
+    """`metadata` (a get_datacite_json payload for a DOI that already exists) merged with what
+    DataCite already holds for that DOI, so an update can't erase metadata the portal doesn't
+    collect. DataCite replaces every list attribute sent wholesale, and DOIs registered before the
+    portal (or edited at DataCite) carry metadata no publication tree has.
+
+    The portal's values win for what it collects. Registered values are kept where the portal has
+    nothing of that kind: lists the publication leaves empty aren't sent at all, and registered
+    entries of a kind the portal never produces (subjects with a scheme, non-Abstract descriptions,
+    typed titles, contributor/date/relation types it doesn't send) are kept alongside its own. A
+    creator with the same name keeps its registered ORCID when the portal has none, and its
+    registered affiliation unless that's just the hosting institution the portal gave every author.
+    """
+
+    merged = dict(metadata)
+
+    def keep(field, kept):
+        if merged.get(field):
+            merged[field] = merged[field] + [entry for entry in registered.get(field) or [] if kept(entry)]
+        else:
+            merged.pop(field, None)
+
+    keep("subjects", lambda subject: subject.get("subjectScheme"))
+    keep("relatedIdentifiers", lambda related: related.get("relationType") not in _PORTAL_RELATION_TYPES)
+    if not merged.get("rightsList"):
+        merged.pop("rightsList", None)
+
+    sent_contributor_types = {contributor.get("contributorType") for contributor in merged.get("contributors", [])}
+    merged["contributors"] = merged.get("contributors", []) + [
+        contributor
+        for contributor in registered.get("contributors") or []
+        if contributor.get("contributorType") not in sent_contributor_types
+    ]
+    sent_date_types = {date.get("dateType") for date in merged.get("dates", [])}
+    merged["dates"] = merged.get("dates", []) + [
+        date for date in registered.get("dates") or [] if date.get("dateType") not in sent_date_types
+    ]
+    merged["descriptions"] = merged.get("descriptions", []) + [
+        description
+        for description in registered.get("descriptions") or []
+        if description.get("descriptionType") != "Abstract"
+    ]
+    merged["titles"] = merged.get("titles", []) + [
+        title for title in registered.get("titles") or [] if title.get("titleType")
+    ]
+    for field in ("contributors", "dates", "descriptions", "titles"):
+        if not merged[field]:
+            del merged[field]
+
+    portal_affiliations = [
+        [{"name": contributor.get("name")}]
+        for contributor in registered.get("contributors") or []
+        if contributor.get("contributorType") == "HostingInstitution"
+    ]
+    registered_creators = {_creator_key(creator): creator for creator in registered.get("creators") or []}
+    creators = []
+    for creator in merged.get("creators", []):
+        match = registered_creators.get(_creator_key(creator))
+        if match:
+            creator = dict(creator)
+            if match.get("nameIdentifiers") and not creator.get("nameIdentifiers"):
+                creator["nameIdentifiers"] = match["nameIdentifiers"]
+            affiliation = [{"name": entry.get("name")} for entry in match.get("affiliation") or []]
+            if affiliation and affiliation not in portal_affiliations:
+                creator["affiliation"] = match["affiliation"]
+        creators.append(creator)
+    if "creators" in merged:
+        merged["creators"] = creators
+    return merged
+
+
 def upsert_datacite_json(datacite_json: dict, doi: str | None = None):
     """
     Create a draft DOI in datacite with the specified metadata. If a DOI is
-    specified, the metadata for that DOI is updated instead. Raises DataCiteError
-    if DataCite rejects the request.
+    specified, the metadata for that DOI is updated instead, merged with what
+    DataCite already holds for it (merge_registered_metadata). Raises
+    DataCiteError if DataCite rejects the request.
     """
     if doi:
         datacite_json.pop("publicationYear", None)
+        datacite_json = merge_registered_metadata(datacite_json, get_registered_doi_attributes(doi))
 
     datacite_payload = {
         "data": {
@@ -412,9 +517,12 @@ def publish_datacite_doi(doi: str, url: str | None = None, metadata: dict | None
     Set a DOI's status to `Findable` in Datacite, and its URL to `url` when
     given. `metadata` (a get_datacite_json payload) is sent in the same request,
     so a republish's new metadata and URL reach DataCite together. As with any
-    update, its publicationYear is left out. Raises DataCiteError if DataCite
+    update, its publicationYear is left out, and it's merged with what DataCite
+    already holds (merge_registered_metadata). Raises DataCiteError if DataCite
     rejects it (e.g. metadata that fails full schema validation).
     """
+    if metadata:
+        metadata = merge_registered_metadata(metadata, get_registered_doi_attributes(doi))
     attributes = {**(metadata or {}), "event": "publish"}
     attributes.pop("publicationYear", None)
     if url:

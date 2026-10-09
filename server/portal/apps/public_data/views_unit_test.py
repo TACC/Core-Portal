@@ -4,7 +4,7 @@ import re
 from html.parser import HTMLParser
 from pathlib import Path
 from unittest.mock import patch
-from urllib.parse import unquote
+from urllib.parse import unquote, urlsplit
 from xml.etree import ElementTree
 
 import networkx as nx
@@ -56,17 +56,7 @@ from portal.apps.public_data.views import (
 from portal.apps.publications.models import Publication
 from portal.apps.publications.utils import get_landing_page_path
 
-# `PORTAL_PUBLICATION_DATACITE_URL_PREFIX` isn't defined at all in unit_test_settings.py (unlike
-# every real settings_custom module, which always sets `_PORTAL_PUBLICATION_DATACITE_URL_PREFIX`
-# and so always ends up with a value -- even if None -- via settings.py's getattr default). Any
-# test that reaches `_get_configured_origin` needs this attribute to exist, so define it here for
-# every test in this module rather than special-casing each one.
 pytestmark = pytest.mark.django_db
-
-
-@pytest.fixture(autouse=True)
-def _datacite_url_prefix(settings):
-    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = ""
 
 
 # SitemapView caches its body, so a sitemap built by one test mustn't be served to the next.
@@ -493,11 +483,15 @@ def test_get_landing_page_url(rf):
     assert url == "http://testserver" + reverse("publications:index", kwargs={"project_id": "test.project-1"})
 
 
-def test_get_landing_page_url_respects_configured_origin(rf, settings):
-    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://cep.test/data"
+@pytest.mark.parametrize(
+    "prefix,mount",
+    [("https://cep.test/published-datasets", "published-datasets"), ("https://cep.test/data", "public-data")],
+)
+def test_get_landing_page_url_respects_configured_origin(rf, settings, prefix, mount):
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = prefix
     request = make_request(rf)
     url = _get_landing_page_url("test.project-1", 1, request)
-    assert url.startswith("https://cep.test/published-datasets/")
+    assert url == f"https://cep.test/{mount}/test.project.published.test.project-1"
 
 
 def test_get_publication_file_url(rf):
@@ -936,6 +930,8 @@ def test_publication_file_download_view_streams_file_bytes(rf, requests_mock, v1
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
     assert response["Content-Disposition"] == 'inline; filename="paper.pdf"'
+    # Browsers won't open a PDF in a sandboxed document.
+    assert "Content-Security-Policy" not in response
     assert response["Content-Length"] == "14"
     assert b"".join(response.streaming_content) == b"%PDF-1.7 bytes"
     assert requests_mock.last_request.headers["X-Tapis-Token"] == "test"
@@ -952,6 +948,45 @@ def test_publication_file_download_view_percent_encodes_tapis_path(rf, requests_
 
     assert response["Content-Type"] == "application/octet-stream"
     assert b"".join(response.streaming_content) == b"bytes"
+
+
+@pytest.mark.parametrize("name", ["page.html", "page.htm", "image.svg", "feed.xml", "page.xhtml", "script.js"])
+def test_publication_file_download_view_downloads_scriptable_types(rf, requests_mock, name):
+    """An author-supplied HTML, SVG or XML file shown inline would run script on the portal's
+    origin, so it's sent as a sandboxed octet-stream download."""
+    Publication.objects.create(
+        project_id="test.project-1",
+        value=valid_base_meta(fileObjs=[{"type": "file", "name": name, "path": f"/{name}"}]),
+        tree={},
+        version=1,
+    )
+    requests_mock.get(f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1/{name}", content=b"<script>")
+
+    response = PublicationFileDownloadView.as_view()(make_request(rf), project_id="test.project-1", path=name)
+
+    assert response["Content-Type"] == "application/octet-stream"
+    assert response["Content-Disposition"] == f'attachment; filename="{name}"'
+    assert response["Content-Security-Policy"] == "sandbox"
+
+
+@pytest.mark.parametrize(
+    "name,content_type",
+    [("cover.png", "image/png"), ("cover.jpg", "image/jpeg"), ("notes.txt", "text/plain"), ("a.csv", "text/csv")],
+)
+def test_publication_file_download_view_shows_safe_types_inline_sandboxed(rf, requests_mock, name, content_type):
+    Publication.objects.create(
+        project_id="test.project-1",
+        value=valid_base_meta(fileObjs=[{"type": "file", "name": name, "path": f"/{name}"}]),
+        tree={},
+        version=1,
+    )
+    requests_mock.get(f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1/{name}", content=b"bytes")
+
+    response = PublicationFileDownloadView.as_view()(make_request(rf), project_id="test.project-1", path=name)
+
+    assert response["Content-Type"] == content_type
+    assert response["Content-Disposition"] == f'inline; filename="{name}"'
+    assert response["Content-Security-Policy"] == "sandbox"
 
 
 @pytest.mark.parametrize("tapis_status", [400, 404])
@@ -2366,6 +2401,31 @@ def test_publication_routes_under_public_data_mount_redirect_to_published_datase
     assert response["Location"] == f"/published-datasets/test.project.published.test.project-1/{suffix}"
 
 
+@pytest.mark.parametrize("prefix", [None, "", "https://cep.test/public-data", "https://cep.test/data/tapis/projects"])
+def test_other_portals_landing_pages_stay_under_public_data(client, settings, publication, prefix):
+    """A portal whose prefix doesn't point at /published-datasets -- which Camino doesn't route to
+    the portal -- keeps its landing pages, and every URL they link to, under /public-data/."""
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = prefix
+    path = "/public-data/test.project.published.test.project-1v3"
+
+    response = client.get(path)
+
+    assert response.status_code == 200
+    assert urlsplit(response.context["canonical_url"]).path == path
+    schema_org_json = json.loads(response.context["schema_org_json"])
+    assert all("/published-datasets/" not in entry["@id"] for entry in schema_org_json["distribution"])
+
+
+@pytest.mark.parametrize("suffix", ["files/data.csv", "croissant.json"])
+def test_other_portals_publication_routes_redirect_to_public_data(client, settings, publication, suffix):
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = ""
+
+    response = client.get(f"/published-datasets/test.project.published.test.project-1/{suffix}")
+
+    assert response.status_code == 301
+    assert response["Location"] == f"/public-data/test.project.published.test.project-1/{suffix}"
+
+
 ENTITY_ID = "0b6a2a8e-6f1d-4c7e-9a3b-2f5d8c1e4a90"
 
 
@@ -3184,7 +3244,7 @@ def test_newline_filename_download_streams_from_tapis_without_mirror(client, req
     assert response.status_code == 200
     assert b"".join(response.streaming_content) == b"bytes"
     # Django encodes the non-quotable name as filename*= rather than putting a raw newline in a header.
-    assert response["Content-Disposition"] == "inline; filename*=utf-8''a%0Ab.bin"
+    assert response["Content-Disposition"] == "attachment; filename*=utf-8''a%0Ab.bin"
 
 
 def test_undeclared_newline_path_is_still_404(client, settings, v1_publication):

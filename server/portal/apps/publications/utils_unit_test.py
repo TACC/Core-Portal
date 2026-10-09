@@ -9,6 +9,7 @@ from types import SimpleNamespace
 import pytest
 
 from portal.apps.publications.utils import (
+    get_landing_namespace,
     get_landing_page_path,
     get_publication_file_objs,
     get_published_workspace_id,
@@ -30,6 +31,29 @@ def test_get_published_workspace_id(version, expected):
 def test_get_landing_page_path_names_the_versions_published_system(version, suffix):
     path = get_landing_page_path("test.project-1", version)
     assert path == f"/published-datasets/test.project.published.test.project-1{suffix}"
+
+
+@pytest.mark.parametrize(
+    "prefix,namespace",
+    [
+        ("/published-datasets", "publications"),
+        ("https://digitalporousmedia.org/published-datasets", "publications"),
+        ("https://digitalporousmedia.org/published-datasets/", "publications"),
+        (None, "public"),
+        ("", "public"),
+        ("https://cep.test/public-data", "public"),
+        ("https://cep.test/data/tapis/projects", "public"),
+        ("https://cep.test/published-datasets/elsewhere", "public"),
+    ],
+)
+def test_get_landing_namespace_follows_the_datacite_url_prefix(settings, prefix, namespace):
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = prefix
+    assert get_landing_namespace() == namespace
+
+
+def test_get_landing_page_path_is_under_public_data_for_other_portals(settings):
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = None
+    assert get_landing_page_path("test.project-1", 2) == "/public-data/test.project.published.test.project-1v2"
 
 
 def test_get_publication_file_objs_combines_root_and_entity_nodes_in_place():

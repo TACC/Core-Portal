@@ -34,6 +34,7 @@ from portal.apps.public_data.links import (
 )
 from portal.apps.publications.utils import (
     get_archive_zip_path,
+    get_landing_namespace,
     get_publication_file_objs,
     get_published_workspace_id,
 )
@@ -210,7 +211,8 @@ def _get_archive_file_object(pub, request):
 
     if not pub.archive_sha256 or not settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL:
         return None
-    url = f"{_get_configured_origin(request)}{reverse('publications:archive', kwargs={'project_id': pub.project_id})}"
+    url_path = reverse(f"{get_landing_namespace()}:archive", kwargs={"project_id": pub.project_id})
+    url = f"{_get_configured_origin(request)}{url_path}"
     archive = {
         "@type": ["cr:FileObject", "DataDownload"],
         "@id": url,

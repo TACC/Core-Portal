@@ -262,7 +262,9 @@ PORTAL_PUBLICATION_RANCH_SYSTEM_ID = ""
 
 PORTAL_PUBLICATION_DATACITE_SHOULDER = ""
 
-PORTAL_PUBLICATION_DATACITE_URL_PREFIX = ""
+# A path, as on DPMP: landing pages are canonical under /published-datasets/ (get_landing_namespace),
+# on the request's own host. Tests for other portals override it.
+PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "/published-datasets"
 
 DATACITE_URL = "https://api.test.datacite.org/"
 

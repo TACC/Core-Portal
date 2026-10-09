@@ -12,7 +12,7 @@ from django.conf import settings
 from django.urls import NoReverseMatch, reverse
 
 from portal.apps.public_data.origin import get_configured_origin
-from portal.apps.publications.utils import get_landing_page_path
+from portal.apps.publications.utils import get_landing_namespace, get_landing_page_path
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ def _get_cover_image_url(base_meta, project_id, request):
     if not settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME:
         return None
 
-    url_path = reverse("publications:cover_image", kwargs={"project_id": project_id})
+    url_path = reverse(f"{get_landing_namespace()}:cover_image", kwargs={"project_id": project_id})
     return f"{_get_configured_origin(request)}{url_path}"
 
 
@@ -68,14 +68,14 @@ def _get_catalog_url(request):
     catch-all, the route that serves that page, on the same origin as every other URL here.
     """
 
-    return f"{_get_configured_origin(request)}{reverse('publications:index_fallback')}"
+    return f"{_get_configured_origin(request)}{reverse(f'{get_landing_namespace()}:index_fallback')}"
 
 
 def _get_landing_page_url(project_id, version, request):
     """Build the landing-page URL for the publication's current `version`, guaranteed absolute.
 
-    The path always comes from reversing public_data/urls.py's own `index` pattern (in the
-    "publications" namespace, i.e. the `published-datasets/` mount) -- the one Django route that
+    The path always comes from reversing public_data/urls.py's own `index` pattern (under
+    get_landing_namespace()'s mount, `published-datasets/` for DPMP) -- the one Django route that
     actually renders this page's JSON-LD/citation meta tags, via IndexView -- rather than hand-
     concatenating PORTAL_PUBLICATION_DATACITE_URL_PREFIX and project_id the way this used to.
     That concatenation could (and for at least one deployment, did) produce a URL nothing
@@ -116,7 +116,7 @@ def _get_publication_file_url(project_id, path, request):
     """
 
     try:
-        url_path = reverse("publications:file_download", kwargs={"project_id": project_id, "path": path})
+        url_path = reverse(f"{get_landing_namespace()}:file_download", kwargs={"project_id": project_id, "path": path})
     except NoReverseMatch:
         logger.warning(f"Publication {project_id}: no file_download URL for {path!r}; omitting that file.")
         return None
@@ -129,4 +129,5 @@ def _get_croissant_url(project_id, request):
     with <link rel="alternate">.
     """
 
-    return f"{_get_configured_origin(request)}{reverse('publications:croissant', kwargs={'project_id': project_id})}"
+    url_path = reverse(f"{get_landing_namespace()}:croissant", kwargs={"project_id": project_id})
+    return f"{_get_configured_origin(request)}{url_path}"

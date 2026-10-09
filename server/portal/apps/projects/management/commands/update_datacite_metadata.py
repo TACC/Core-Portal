@@ -5,7 +5,12 @@ import json
 import networkx as nx
 from django.core.management.base import BaseCommand, CommandError
 
-from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json, upsert_datacite_json
+from portal.apps.projects.workspace_operations.datacite_operations import (
+    get_datacite_json,
+    get_registered_doi_attributes,
+    merge_registered_metadata,
+    upsert_datacite_json,
+)
 from portal.apps.publications.models import Publication
 
 
@@ -16,7 +21,9 @@ class Command(BaseCommand):
     DOI minted before that payload changed (e.g. before rightsList, subjects, creator `name` and ORCID
     nameIdentifiers were added) keeps its old metadata. This rebuilds the payload from each stored
     Publication, exactly as publish_publication_doi does, and updates the DOI in place. The DOI's state
-    (draft/findable) isn't changed, and its publicationYear is left as originally registered.
+    (draft/findable) isn't changed, and its publicationYear is left as originally registered. The
+    payload is merged with what DataCite already holds (merge_registered_metadata), so metadata the
+    publication doesn't carry -- e.g. a pre-portal DOI's subjects and ORCIDs -- is kept.
 
     Examples:
 
@@ -26,7 +33,7 @@ class Command(BaseCommand):
         Update every published publication:
         >>> ./manage.py update_datacite_metadata --all
 
-        Print the payload that would be sent, without sending it:
+        Print the payload that would be sent, without sending it (DataCite is still read, to merge):
         >>> ./manage.py update_datacite_metadata --all --dry-run
     """
 
@@ -74,7 +81,13 @@ class Command(BaseCommand):
             datacite_json.pop("publicationYear", None)
 
             if options["dry_run"]:
-                self.stdout.write(f"Would update {doi} ({label}):\n{json.dumps(datacite_json, indent=2)}")
+                try:
+                    merged = merge_registered_metadata(datacite_json, get_registered_doi_attributes(doi))
+                except Exception as e:
+                    failed.append(publication.project_id)
+                    self.stderr.write(f"Failed {label} ({doi}): couldn't read its registered metadata: {e}")
+                    continue
+                self.stdout.write(f"Would update {doi} ({label}):\n{json.dumps(merged, indent=2)}")
                 continue
 
             # A rejected update (e.g. a 422 schema error) raises DataCiteError, with DataCite's own

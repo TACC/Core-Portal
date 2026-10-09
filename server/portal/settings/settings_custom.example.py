@@ -264,6 +264,8 @@ _PORTAL_PUBLICATION_ARCHIVE_APP_ID = ""
 _PORTAL_PUBLICATION_ARCHIVE_APP_VERSION = ""
 _PORTAL_PUBLICATION_RANCH_SYSTEM_ID = ""
 _PORTAL_PUBLICATION_DATACITE_SHOULDER = ""
+# Where DOIs resolve, e.g. "https://cep.test/public-data". DPMP's path is /published-datasets, which
+# also makes that mount canonical for landing pages and the files and documents they link to.
 _PORTAL_PUBLICATION_DATACITE_URL_PREFIX = ""
 _DATACITE_URL = "https://api.test.datacite.org/"
 

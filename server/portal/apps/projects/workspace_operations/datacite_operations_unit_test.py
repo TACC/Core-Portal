@@ -5,6 +5,8 @@
 """
 
 import datetime
+import json
+import re
 
 import networkx as nx
 import pytest
@@ -17,7 +19,9 @@ from portal.apps.projects.workspace_operations.datacite_operations import (
     DataCiteError,
     get_datacite_json,
     get_doi_publication_date,
+    get_registered_doi_attributes,
     hide_datacite_doi,
+    merge_registered_metadata,
     publish_datacite_doi,
     upsert_datacite_json,
 )
@@ -28,6 +32,13 @@ DATACITE_SETTINGS = override_settings(
     DATACITE_PASS="datacite-pass",
     PORTAL_PUBLICATION_DATACITE_SHOULDER="10.1234",
 )
+
+
+@pytest.fixture(autouse=True)
+def registered_doi(requests_mock):
+    """Updates first read what DataCite holds for the DOI (merge_registered_metadata); by default,
+    nothing."""
+    return requests_mock.get(re.compile(r"https://api\.test\.datacite\.org/dois/.+"), json={"data": {"attributes": {}}})
 
 
 def make_pub_graph(base_meta):
@@ -351,8 +362,18 @@ def test_get_datacite_json_url_names_a_republishs_version():
 @override_settings(VANITY_BASE_URL="https://vanity.example.org", PORTAL_PUBLICATION_DATACITE_URL_PREFIX="/just/a/path")
 def test_get_datacite_json_url_falls_back_to_vanity_when_prefix_not_absolute():
     result = get_datacite_json(make_pub_graph(minimal_base_meta()), "test.project-1")
-    expected_path = reverse("publications:index", kwargs={"project_id": "test.project-1"})
+    expected_path = reverse("public:index", kwargs={"project_id": "test.project-1"})
     assert result["url"] == f"https://vanity.example.org{expected_path}"
+
+
+@pytest.mark.django_db
+@override_settings(PORTAL_PUBLICATION_DATACITE_URL_PREFIX="https://cep.test/data/tapis/projects/")
+@pytest.mark.parametrize("version,suffix", [(None, ""), (1, ""), (3, "v3")])
+def test_get_datacite_url_keeps_other_portals_dois_under_their_prefix(version, suffix):
+    """A portal whose prefix doesn't point at /published-datasets registers DOIs where it always
+    has: the version's published system id under its prefix."""
+    result = get_datacite_json(make_pub_graph(minimal_base_meta()), "test.project-1", version)
+    assert result["url"] == f"https://cep.test/data/tapis/projects/test.project.published.test.project-1{suffix}"
 
 
 # ---------------------------------------------------------------------------
@@ -783,6 +804,199 @@ def test_upsert_datacite_json_strips_trailing_slash_from_datacite_url(requests_m
     requests_mock.post("https://api.test.datacite.org/dois", json={"data": {}})
     upsert_datacite_json({}, doi=None)
     assert requests_mock.last_request.url == "https://api.test.datacite.org/dois"
+
+
+@DATACITE_SETTINGS
+def test_upsert_datacite_json_update_keeps_registered_metadata_the_publication_lacks(requests_mock):
+    """A pre-portal DOI's subjects aren't erased by a tree with no keywords."""
+    requests_mock.get(DOI_URL, json={"data": {"attributes": {"subjects": [{"subject": "Porous media"}]}}})
+    requests_mock.put(DOI_URL, json={"data": {"id": "10.1234/abc"}})
+
+    upsert_datacite_json({"titles": [{"title": "T"}], "subjects": []}, doi="10.1234/abc")
+
+    get_request, put_request = requests_mock.request_history[-2:]
+    assert get_request.qs == {"affiliation": ["true"]}
+    assert get_request.headers["Authorization"].startswith("Basic ")
+    assert "subjects" not in put_request.json()["data"]["attributes"]
+
+
+@DATACITE_SETTINGS
+def test_upsert_datacite_json_create_reads_nothing(requests_mock, registered_doi):
+    requests_mock.post("https://api.test.datacite.org/dois", json={"data": {"id": "10.1234/new"}})
+
+    upsert_datacite_json({"titles": [{"title": "T"}]})
+
+    assert not registered_doi.called
+
+
+@DATACITE_SETTINGS
+def test_update_isnt_sent_when_registered_metadata_cant_be_read(requests_mock):
+    """Updating blind could erase what the DOI holds, so a failed read fails the update."""
+    requests_mock.get(DOI_URL, status_code=503, text="<html>down</html>")
+    put = requests_mock.put(DOI_URL, json={"data": {}})
+
+    with pytest.raises(DataCiteError, match="read of 10.1234/abc failed"):
+        upsert_datacite_json({"titles": [{"title": "T"}]}, doi="10.1234/abc")
+    with pytest.raises(DataCiteError, match="read of 10.1234/abc failed"):
+        publish_datacite_doi("10.1234/abc", metadata={"titles": [{"title": "T"}]})
+    assert not put.called
+
+
+@DATACITE_SETTINGS
+def test_get_registered_doi_attributes(requests_mock):
+    requests_mock.get(DOI_URL, json={"data": {"attributes": {"titles": [{"title": "T"}]}}})
+
+    assert get_registered_doi_attributes("10.1234/abc") == {"titles": [{"title": "T"}]}
+
+
+# ---------------------------------------------------------------------------
+# merge_registered_metadata
+# ---------------------------------------------------------------------------
+
+ORCID = {"nameIdentifier": "https://orcid.org/0000-0002-1825-0097", "nameIdentifierScheme": "ORCID"}
+
+# What a pre-portal DOI registered at DataCite looks like: richer than any publication tree.
+LEGACY_REGISTERED = {
+    "creators": [
+        {"name": "Lovelace, Ada", "nameIdentifiers": [ORCID], "affiliation": [{"name": "Own University"}]},
+        {"name": "Turing, Alan", "affiliation": [{"name": "Hosting University"}]},
+    ],
+    "titles": [{"title": "Old title"}, {"title": "A subtitle", "titleType": "Subtitle"}],
+    "subjects": [
+        {"subject": "free text"},
+        {"subject": "Porous materials", "subjectScheme": "LCSH", "schemeUri": "https://id.loc.gov/"},
+    ],
+    "contributors": [
+        {"name": "Hosting University", "contributorType": "HostingInstitution"},
+        {"name": "Grace Hopper", "contributorType": "ContactPerson"},
+    ],
+    "dates": [{"date": "2015", "dateType": "Issued"}, {"date": "2015-06-11", "dateType": "Accepted"}],
+    "descriptions": [
+        {"description": "Old abstract", "descriptionType": "Abstract"},
+        {"description": "How it was measured", "descriptionType": "Methods"},
+    ],
+    "relatedIdentifiers": [
+        {"relatedIdentifier": "10.1/old", "relatedIdentifierType": "DOI", "relationType": "IsCitedBy"},
+        {"relatedIdentifier": "10.1/paper", "relatedIdentifierType": "DOI", "relationType": "IsReferencedBy"},
+    ],
+    "rightsList": [{"rights": "Old license"}],
+}
+
+
+def portal_metadata(**overrides):
+    metadata = {
+        "creators": [
+            {"name": "Lovelace, Ada", "affiliation": [{"name": "Hosting University"}]},
+            {"name": "Turing, Alan", "affiliation": [{"name": "Hosting University"}]},
+        ],
+        "titles": [{"title": "New title"}],
+        "subjects": [{"subject": "rocks"}],
+        "contributors": [{"name": "Hosting University", "contributorType": "HostingInstitution"}],
+        "dates": [{"date": "2015-06-11", "dateType": "Issued"}],
+        "descriptions": [{"description": "New abstract", "descriptionType": "Abstract"}],
+        "relatedIdentifiers": [
+            {"relatedIdentifier": "10.1/new", "relatedIdentifierType": "DOI", "relationType": "IsCitedBy"}
+        ],
+        "rightsList": [{"rights": "ODC-BY 1.0"}],
+        "version": "2",
+    }
+    metadata.update(overrides)
+    return metadata
+
+
+def test_merge_registered_metadata_portal_values_win_for_what_it_collects():
+    merged = merge_registered_metadata(portal_metadata(), LEGACY_REGISTERED)
+
+    assert merged["titles"] == [{"title": "New title"}, {"title": "A subtitle", "titleType": "Subtitle"}]
+    assert merged["descriptions"] == [
+        {"description": "New abstract", "descriptionType": "Abstract"},
+        {"description": "How it was measured", "descriptionType": "Methods"},
+    ]
+    assert merged["rightsList"] == [{"rights": "ODC-BY 1.0"}]
+    assert merged["version"] == "2"
+
+
+def test_merge_registered_metadata_keeps_entries_of_kinds_the_portal_never_sends():
+    merged = merge_registered_metadata(portal_metadata(), LEGACY_REGISTERED)
+
+    # Free-text subjects are the portal's (keywords); a controlled-vocabulary one isn't.
+    assert merged["subjects"] == [
+        {"subject": "rocks"},
+        {"subject": "Porous materials", "subjectScheme": "LCSH", "schemeUri": "https://id.loc.gov/"},
+    ]
+    assert merged["contributors"] == [
+        {"name": "Hosting University", "contributorType": "HostingInstitution"},
+        {"name": "Grace Hopper", "contributorType": "ContactPerson"},
+    ]
+    assert merged["dates"] == [
+        {"date": "2015-06-11", "dateType": "Issued"},
+        {"date": "2015-06-11", "dateType": "Accepted"},
+    ]
+    assert merged["relatedIdentifiers"] == [
+        {"relatedIdentifier": "10.1/new", "relatedIdentifierType": "DOI", "relationType": "IsCitedBy"},
+        {"relatedIdentifier": "10.1/paper", "relatedIdentifierType": "DOI", "relationType": "IsReferencedBy"},
+    ]
+
+
+def test_merge_registered_metadata_leaves_lists_the_publication_lacks_alone():
+    """Not sending a list attribute leaves DataCite's value as it is."""
+    merged = merge_registered_metadata(
+        portal_metadata(subjects=[], relatedIdentifiers=[], rightsList=[]), LEGACY_REGISTERED
+    )
+
+    assert "subjects" not in merged
+    assert "relatedIdentifiers" not in merged
+    assert "rightsList" not in merged
+
+
+def test_merge_registered_metadata_keeps_creators_orcid_and_own_affiliation():
+    merged = merge_registered_metadata(portal_metadata(), LEGACY_REGISTERED)
+
+    ada, alan = merged["creators"]
+    assert ada["nameIdentifiers"] == [ORCID]
+    assert ada["affiliation"] == [{"name": "Own University"}]
+    # The hosting institution the portal gave every author isn't an affiliation of the author's own.
+    assert alan == {"name": "Turing, Alan", "affiliation": [{"name": "Hosting University"}]}
+
+
+def test_merge_registered_metadata_portal_orcid_wins_and_institution_changes_reach_datacite():
+    registered = {
+        "creators": [{"name": "Lovelace, Ada", "affiliation": [{"name": "Old Host"}], "nameIdentifiers": [ORCID]}],
+        "contributors": [{"name": "Old Host", "contributorType": "HostingInstitution"}],
+    }
+    new_orcid = {"nameIdentifier": "https://orcid.org/0000-0001-5109-3700", "nameIdentifierScheme": "ORCID"}
+    metadata = portal_metadata(
+        creators=[{"name": "Lovelace, Ada", "affiliation": [{"name": "New Host"}], "nameIdentifiers": [new_orcid]}],
+        contributors=[{"name": "New Host", "contributorType": "HostingInstitution"}],
+    )
+
+    (ada,) = merge_registered_metadata(metadata, registered)["creators"]
+
+    assert ada["nameIdentifiers"] == [new_orcid]
+    assert ada["affiliation"] == [{"name": "New Host"}]
+
+
+def test_merge_registered_metadata_matches_creators_by_name_ignoring_case_and_spacing():
+    registered = {"creators": [{"name": "lovelace,  ada", "nameIdentifiers": [ORCID]}]}
+
+    (ada, _) = merge_registered_metadata(portal_metadata(), registered)["creators"]
+
+    assert ada["nameIdentifiers"] == [ORCID]
+
+
+def test_merge_registered_metadata_with_nothing_registered_sends_the_portals_metadata():
+    metadata = portal_metadata()
+
+    assert merge_registered_metadata(metadata, {}) == metadata
+
+
+def test_merge_registered_metadata_doesnt_change_its_arguments():
+    metadata, registered = portal_metadata(), json.loads(json.dumps(LEGACY_REGISTERED))
+
+    merge_registered_metadata(metadata, registered)
+
+    assert metadata == portal_metadata()
+    assert registered == LEGACY_REGISTERED
 
 
 # ---------------------------------------------------------------------------
