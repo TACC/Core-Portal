@@ -98,7 +98,7 @@ jobs:
       - name: Client Side Unit Tests
         run: |
           cd client
-          pnpm run test
+          pnpm run test --maxWorkers='100%'
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4

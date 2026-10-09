@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 import Jobs from './Jobs';
 import { createMemoryHistory } from 'history';
 import { default as jobsList } from './Jobs.fixture';
@@ -7,9 +7,7 @@ import { default as jobsList } from './Jobs.fixture';
 import { default as jobsV2List } from './JobsV2.fixture';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import { BrowserRouter } from 'react-router-dom';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
-import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 import renderComponent from 'utils/testing';
 import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
 
@@ -33,19 +31,12 @@ describe('Jobs View', () => {
     const store = mockStore({
       notifications,
       jobs: { ...jobs, list: jobsList },
-      workbench: { ...workbench, config: { hideDataFiles: false } },
       apps: {
         appIcons: {},
       },
     });
 
-    render(
-      <Provider store={store}>
-        <BrowserRouter>
-          <Jobs />
-        </BrowserRouter>
-      </Provider>
-    );
+    renderComponent(<Jobs />, store);
 
     expect(store.getActions()).toEqual([
       { type: 'GET_JOBS', params: { offset: 0, queryString: '' } },
@@ -66,10 +57,6 @@ describe('Jobs View', () => {
         ...appIconMockState,
       },
       notifications,
-      workbench: {
-        ...workbench,
-        config: { hideDataFiles: false },
-      },
     });
 
     const history = createMemoryHistory();
@@ -94,10 +81,6 @@ describe('Jobs View', () => {
         ...appIconMockState,
       },
       notifications,
-      workbench: {
-        ...workbench,
-        config: { hideDataFiles: false },
-      },
     });
 
     const history = createMemoryHistory();
@@ -124,10 +107,6 @@ describe('Jobs View', () => {
         ...appIconMockState,
       },
       notifications,
-      workbench: {
-        ...workbench,
-        config: { hideDataFiles: false },
-      },
     });
     const history = createMemoryHistory();
     history.push('/jobs');
@@ -139,19 +118,12 @@ describe('Jobs View', () => {
     const store = mockStore({
       notifications,
       jobs: { ...jobs, list: jobsList },
-      workbench: { ...workbench, config: { hideDataFiles: false } },
       apps: {
         appIcons: {},
       },
     });
 
-    const { container } = render(
-      <Provider store={store}>
-        <BrowserRouter>
-          <Jobs />
-        </BrowserRouter>
-      </Provider>
-    );
+    const { container } = renderComponent(<Jobs />, store);
 
     const scrollContainer = container.querySelector('.table-container');
 

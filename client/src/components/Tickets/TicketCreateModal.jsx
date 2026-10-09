@@ -1,28 +1,26 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Modal, ModalHeader } from 'reactstrap';
 import TicketCreateForm from './TicketCreateForm';
 import * as ROUTES from '../../constants/routes';
 import './TicketCreateModal.scss';
+import { useAuthenticatedUser } from '@tacc/core-hooks';
 
-function TicketCreateModal() {
-  const dispatch = useDispatch();
+function TicketCreateModal({
+  isModalOpen,
+  setIsModalOpen,
+  initialSubject,
+  showAsModalOnDashboard,
+  provideDashBoardLinkOnSuccess,
+}) {
   const navigate = useNavigate();
   const location = useLocation();
-  const authenticatedUser = useSelector(
-    (state) => state.authenticatedUser.user
-  );
-  const {
-    modalOpen,
-    subject,
-    showAsModalOnDashboard,
-    provideDashBoardLinkOnSuccess,
-  } = useSelector((state) => state.ticketCreateModal);
+  const authenticatedUser = useAuthenticatedUser();
 
   useEffect(() => {
     if (
-      modalOpen &&
+      isModalOpen &&
       showAsModalOnDashboard &&
       location.path !==
         `${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`
@@ -31,12 +29,10 @@ function TicketCreateModal() {
         `${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`
       );
     }
-  }, [showAsModalOnDashboard, modalOpen]);
+  }, [showAsModalOnDashboard, isModalOpen]);
 
   const close = () => {
-    dispatch({
-      type: 'TICKET_CREATE_CLOSE_MODAL',
-    });
+    setIsModalOpen(false);
 
     if (showAsModalOnDashboard) {
       navigate(`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`);
@@ -46,7 +42,7 @@ function TicketCreateModal() {
   return (
     <Modal
       modalClassName="ticket-create-modal"
-      isOpen={modalOpen}
+      isOpen={isModalOpen}
       toggle={close}
       size="lg"
       contentClassName="ticket-create-modal-content"
@@ -57,7 +53,7 @@ function TicketCreateModal() {
       <TicketCreateForm
         authenticatedUser={authenticatedUser}
         provideDashBoardLinkOnSuccess={provideDashBoardLinkOnSuccess}
-        initialSubject={subject}
+        initialSubject={initialSubject}
       />
     </Modal>
   );

@@ -16,6 +16,7 @@ import { LoadingSpinner, SectionMessage } from '_common';
 import './DataFilesTable.scss';
 import styles from './DataFilesTable.module.scss';
 import * as ROUTES from '../../../constants/routes';
+import { useAuthenticatedUser } from '@tacc/core-hooks';
 
 /**
  * Returns true if scroll position is within threshold pixels of the bottom of a list.
@@ -42,9 +43,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
 
   const dispatch = useDispatch();
   const system = useSelector((state) => state.pushKeys.target);
-  const currentUser = useSelector(
-    (state) => state.authenticatedUser.user?.username
-  );
+  const currentUser = useAuthenticatedUser()?.username;
   const currSystem = useSelector((state) =>
     state.systems.definitions.list.find(
       (sysDef) => sysDef.id === state.files.params.FilesListing.system

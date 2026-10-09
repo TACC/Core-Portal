@@ -1,21 +1,16 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { Route, Routes, useParams } from 'react-router-dom';
-import {
-  BrowserChecker,
-  Section,
-  SectionTableWrapper,
-  Button,
-  Link,
-} from '_common';
+import { BrowserChecker, Section, SectionTableWrapper, Link } from '_common';
 import JobsView from '../Jobs';
-import Tickets, { TicketModal } from '../Tickets';
+import Tickets, { TicketCreateModal, TicketModal } from '../Tickets';
 import Sysmon from '../SystemMonitor';
 import UserNewsDashboard from '../UserNews';
 import * as ROUTES from '../../constants/routes';
 import './Dashboard.global.css';
 import styles from './Dashboard.module.css';
 import CustomDashboardSection from './CustomDashboardSection';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 function getPanelCount(standardApps = [], optionalApps = [], customApps = []) {
   return standardApps.length + optionalApps.length + customApps.length;
@@ -23,11 +18,16 @@ function getPanelCount(standardApps = [], optionalApps = [], customApps = []) {
 
 function Dashboard() {
   const {
-    hideApps,
-    hideManageAccount,
-    showUserNews = false,
-    customDashboardSection,
-  } = useSelector((state) => state.workbench.config);
+    data: {
+      config: {
+        hideApps,
+        hideManageAccount,
+        showUserNews = false,
+        customDashboardSection,
+      },
+    },
+  } = useWorkbenchConfig();
+
   const { hideSystemMonitor } = useSelector((state) => state.systemMonitor);
   const panelCount = getPanelCount(
     ['DashboardTickets', ...(showUserNews ? ['DashboardUserNews'] : [])],
@@ -77,31 +77,25 @@ function Dashboard() {
 }
 
 function TicketCreateRoute() {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch({
-      type: 'TICKET_CREATE_OPEN_MODAL',
-    });
-  }, [dispatch]);
-  return null;
+  return (
+    <TicketCreateModal
+      isModalOpen={true}
+      setIsModalOpen={() => null}
+      showAsModalOnDashboard
+    />
+  );
 }
 
 function TicketDetailRoute() {
-  const dispatch = useDispatch();
   const { ticketId } = useParams();
-  useEffect(() => {
-    dispatch({
-      type: 'TICKET_DETAILED_VIEW_OPEN',
-      payload: { ticketId: Number(ticketId) },
-    });
-  }, [dispatch, ticketId]);
-  return <TicketModal />;
+  return <TicketModal ticketId={ticketId} />;
 }
 
 function DashboardRoutes() {
   return (
     <Routes>
       <Route
+        exact
         path={`${ROUTES.TICKETS}/create`}
         element={<TicketCreateRoute />}
       />

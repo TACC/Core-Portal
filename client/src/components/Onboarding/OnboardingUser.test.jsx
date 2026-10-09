@@ -1,23 +1,14 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import { BrowserRouter } from 'react-router-dom';
 import OnboardingUser from './OnboardingUser';
 import { onboardingUserFixture } from '../../redux/sagas/fixtures/onboarding.fixture';
 import { initialState as initialMockState } from '../../redux/reducers/onboarding.reducers';
-import { initialTicketCreateState as ticketCreate } from '../../redux/reducers/tickets.reducers';
+import renderComponent from 'utils/testing';
 
 const mockStore = configureStore();
 
-function renderOnboardingUserComponent(store) {
-  return render(
-    <Provider store={store}>
-      <BrowserRouter>
-        <OnboardingUser />
-      </BrowserRouter>
-    </Provider>
-  );
+function renderOnboardingUserComponent(store, config, user) {
+  return renderComponent(<OnboardingUser />, store, undefined, config, user);
 }
 
 const genericState = (error, loading) => {
@@ -30,8 +21,6 @@ const genericState = (error, loading) => {
         loading,
       },
     },
-    authenticatedUser: {},
-    ticketCreate,
     workbench: {
       config: {},
     },
@@ -62,13 +51,12 @@ describe('Onboarding User View', () => {
   it('supports customizable route for continue button', () => {
     const state = {
       ...genericState(null, false),
-      workbench: {
-        config: { onboardingCompleteRedirect: '/custom_route/' },
-      },
     };
     const store = mockStore(state);
 
-    const { getByText } = renderOnboardingUserComponent(store);
+    const { getByText } = renderOnboardingUserComponent(store, {
+      config: { onboardingCompleteRedirect: '/custom_route/' },
+    });
     expect(
       getByText(/Continue/)
         .closest('a')
@@ -86,14 +74,11 @@ describe('Onboarding User View', () => {
   it('renders staff user interface', () => {
     const state = {
       ...genericState(null, false),
-      authenticatedUser: {
-        user: {
-          isStaff: true,
-        },
-      },
     };
     const store = mockStore(state);
-    const { getByText } = renderOnboardingUserComponent(store);
+    const { getByText } = renderOnboardingUserComponent(store, undefined, {
+      isStaff: true,
+    });
     expect(getByText(/Last, First/)).toBeDefined();
     expect(getByText(/Approve/)).toBeDefined();
     expect(getByText(/Deny/)).toBeDefined();

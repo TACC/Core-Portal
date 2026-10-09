@@ -5,6 +5,7 @@ import { Alert, Button, FormGroup, Spinner } from 'reactstrap';
 import { FormField } from '_common';
 import * as Yup from 'yup';
 import styles from './RequestAccessForm.module.scss';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const formSchema = Yup.object().shape({
   username: Yup.string().required('Required'),
@@ -20,7 +21,9 @@ const defaultValues = {
 
 const RequestAccessForm = () => {
   const dispatch = useDispatch();
-  const portalName = useSelector((state) => state.workbench.portalName);
+  const {
+    data: { portalName },
+  } = useWorkbenchConfig();
   const loading = useSelector((state) => state.requestAccess.loading);
   const ticketId = useSelector((state) => state.requestAccess.createdTicketId);
   const error = useSelector((state) => state.requestAccess.error);

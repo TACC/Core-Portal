@@ -6,14 +6,13 @@ import { useTable } from 'react-table';
 import { LoadingSpinner, Message } from '_common';
 import styles from './AllocationsManageTeamTable.module.scss';
 import TASProjectRoleSelector from './AllocationsTASProjectRoleSelector';
+import { useAuthenticatedUserOrThrow } from '@tacc/core-hooks';
 
 const AllocationsManageTeamTable = ({ rawData, projectId }) => {
   const dispatch = useDispatch();
   const { removingUserOperation } = useSelector((state) => state.allocations);
   const data = React.useMemo(() => rawData, [rawData]);
-  const authenticatedUser = useSelector(
-    (state) => state.authenticatedUser.user.username
-  );
+  const authenticatedUser = useAuthenticatedUserOrThrow();
 
   const currentUserRole = data.find(
     (u) => u.username == authenticatedUser

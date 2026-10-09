@@ -49,6 +49,7 @@ import {
 
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const appShape = PropTypes.shape({
   loading: PropTypes.bool,
@@ -264,10 +265,13 @@ export const AppSchemaForm = ({ app }) => {
   const storageState = useSelector((state) => state.systems.storage);
   const jobSubmission = useSelector((state) => state.jobs.submit);
   const systemMonitor = useSelector((state) => state.systemMonitor);
-  const hideManageAccount = useSelector(
-    (state) => state.workbench.config.hideManageAccount
-  );
-  const isTACCPortal = useSelector((state) => state.workbench.isTACCPortal);
+
+  const {
+    data: {
+      isTACCPortal,
+      config: { hideManageAccount },
+    },
+  } = useWorkbenchConfig();
 
   const {
     allocations,
