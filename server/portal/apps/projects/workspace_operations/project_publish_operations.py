@@ -15,6 +15,7 @@ from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps.projects.schema_models import constants
 from portal.apps.projects.workspace_operations.datacite_operations import (
     get_datacite_json,
+    get_datacite_url,
     publish_datacite_doi,
     upsert_datacite_json,
 )
@@ -127,11 +128,11 @@ def publish_project_callback(
     # Make system public for listing
     service_client.systems.shareSystemPublic(systemId=published_project_id)
 
-    # The files are on the published system now, so the DOI can't resolve to a landing page whose
-    # file links 404. A transfer poll queued before this step existed (no `project_id`) belongs to a
-    # publish_project that already made its DOI findable itself. The landing page becomes indexable
-    # once the DOI is findable -- right away under DEBUG, where DOIs stay drafts.
-    if project_id:
+    # The files are on the published system now, so the landing page and DOI can move to this
+    # version without linking to files that 404. A transfer poll queued before this step existed (no
+    # `project_id`) belongs to a publish_project that already did both itself. The landing page
+    # becomes indexable once the DOI is findable -- right away under DEBUG, where DOIs stay drafts.
+    if project_id and _switch_publication_to_version(project_id, version, published_project_id):
         if settings.DEBUG:
             _mark_publication_indexable(project_id, version)
         else:
@@ -146,6 +147,40 @@ def publish_project_callback(
         poll_publication_archive_job.apply_async(
             args=[archive_job.uuid, project_id, version], countdown=_ARCHIVE_JOB_POLL_SECONDS
         )
+
+
+def _switch_publication_to_version(project_id, version, published_system_id):
+    """Point the Publication row (the landing page, its file routes and the sitemap) and the search
+    index at `version`, from the graph and metadata publish_project stored on that version's
+    published system. Returns False, changing nothing, when a newer version is already live.
+    """
+
+    current = Publication.objects.filter(project_id=project_id).first()
+    if current and version is not None and current.version > version:
+        logger.warning(f"Not switching publication {project_id} to v{version}: v{current.version} is already live.")
+        return False
+
+    published_project = ProjectMetadata.get_project_by_id(published_system_id)
+    publication_values = {
+        "value": published_project.value,
+        "tree": published_project.project_graph.value,
+        "version": version,
+        # The ZIP checksum belongs to the version it was computed for; this version's is loaded
+        # once its archive job ends (load_publication_file_checksums).
+        "archive_sha256": "",
+        "archive_size": None,
+    }
+    Publication.objects.update_or_create(
+        project_id=project_id,
+        defaults=publication_values,
+        # A first publish isn't indexable until its DOI is findable, so the landing page stays
+        # noindex and out of the sitemap meanwhile. A republish keeps its is_indexable as it was:
+        # its DOI already resolves.
+        create_defaults={**publication_values, "is_indexable": False},
+    )
+    index_publication(project_id)
+    logger.info(f"Publication {project_id} now serves v{version}.")
+    return True
 
 
 def _unescape_manifest_path(path):
@@ -448,12 +483,6 @@ def publish_project(self, project_id: str, version: int | None = 1):
 
             published_project = ProjectMetadata.get_project_by_id(published_system_id)
 
-            ProjectMetadata.objects.create(
-                name=constants.PROJECT_GRAPH,
-                base_project=published_project,
-                value=nx.node_link_data(publication_tree),
-            )
-
             source_project = ProjectMetadata.get_project_by_id(source_project_id)
             # The first publish's date, kept on every republish so `datePublished`, the citation
             # date and DataCite's `Issued` date all stay the original; what changed in a republish
@@ -468,6 +497,12 @@ def publish_project(self, project_id: str, version: int | None = 1):
                 logger.info(f"Attempting to mint DataCite DOI for project {project_id}, existing DOI: {existing_doi}")
 
                 datacite_json = get_datacite_json(publication_tree, project_id, version)
+                if existing_doi and not settings.DEBUG:
+                    # Left out, so DataCite keeps the DOI's current URL: a republish's DOI keeps
+                    # resolving to the live version until publish_publication_doi moves it to this
+                    # version, once its files are in place. Under DEBUG the DOI is never findable,
+                    # so the URL is updated here as before.
+                    datacite_json.pop("url", None)
                 datacite_resp = upsert_datacite_json(datacite_json, doi=existing_doi)
                 doi = datacite_resp["data"]["id"]
                 if doi != existing_doi:
@@ -482,40 +517,24 @@ def publish_project(self, project_id: str, version: int | None = 1):
             source_project.value["publicationDate"] = publication_date
             source_project.save()
 
-            pub_tree = nx.node_link_graph(published_project.project_graph.value)
-            pub_tree.nodes["NODE_ROOT"]["version"] = version
-            pub_tree.nodes["NODE_ROOT"]["value"]["doi"] = doi
-            pub_tree.nodes["NODE_ROOT"]["value"]["publicationDate"] = publication_date
-            published_project.project_graph.value = nx.node_link_data(pub_tree)
+            publication_tree.nodes["NODE_ROOT"]["version"] = version
+            publication_tree.nodes["NODE_ROOT"]["value"]["doi"] = doi
+            # Stored on this version's published system, where _switch_publication_to_version reads
+            # it once the files are in place.
+            ProjectMetadata.objects.create(
+                name=constants.PROJECT_GRAPH,
+                base_project=published_project,
+                value=nx.node_link_data(publication_tree),
+            )
             published_project.value["doi"] = doi
             published_project.value["publicationDate"] = publication_date
             published_project.save()
 
-            publication_values = {
-                "value": published_project.value,
-                "tree": nx.node_link_data(pub_tree),
-                "version": version,
-                # The ZIP checksum belongs to the version it was computed for; this version's is
-                # loaded once its archive job ends (load_publication_file_checksums).
-                "archive_sha256": "",
-                "archive_size": None,
-            }
-            pub_metadata, _ = Publication.objects.update_or_create(
-                project_id=project_id,
-                defaults=publication_values,
-                # A first publish isn't indexable until publish_project_callback has the files in
-                # place and the DOI is findable, so the landing page stays noindex and out of the
-                # sitemap meanwhile. A republish keeps its is_indexable as it was: its DOI already
-                # resolves, so the page stays in search while the new version's files transfer.
-                create_defaults={**publication_values, "is_indexable": False},
-            )
+            # The Publication row, search index and DOI aren't switched to this version here:
+            # publish_project_callback does that once the file transfer below has completed, so
+            # the landing page and DOI never point at files that aren't there yet.
 
-            # The DOI isn't made findable here: publish_project_callback does that once the file
-            # transfer below has completed, so it never resolves to a page whose files 404.
-
-            upload_metadata_file(published_workspace_id, pub_metadata.tree)
-
-            index_publication(project_id)
+            upload_metadata_file(published_workspace_id, nx.node_link_data(publication_tree))
 
             # transfer files
             client = service_account()
@@ -526,8 +545,8 @@ def publish_project(self, project_id: str, version: int | None = 1):
                 project_meta.value.get("coverImage", None),
             )
 
-            # Queued on commit, so the callback (which reads the Publication row to find the DOI) never
-            # runs before that row is committed, and a publish that rolls back queues nothing.
+            # Queued on commit, so the callback (which reads the graph and DOI stored above) never
+            # runs before they're committed, and a publish that rolls back queues nothing.
             transaction.on_commit(
                 partial(
                     poll_tapis_file_transfer.apply_async,
@@ -563,13 +582,17 @@ def publish_project(self, project_id: str, version: int | None = 1):
 def publish_publication_doi(self, project_id: str, doi: str, version: int | None = None):
     """Make a publication's DOI findable at DataCite, then mark its landing page indexable. Queued by
     publish_project_callback once the publication's files have been transferred (see
-    _queue_publish_publication_doi). Retried with backoff; once retries run out,
+    _queue_publish_publication_doi). The same request moves the DOI's URL to `version`'s landing
+    page, unless a newer version is live by now. Retried with backoff; once retries run out,
     `withdraw_publication --restore <project_id>` sends the same `publish` event and marks it
     indexable.
     """
 
+    url = None
+    if version is not None and Publication.objects.filter(project_id=project_id, version=version).exists():
+        url = get_datacite_url(project_id, version)
     try:
-        publish_datacite_doi(doi)
+        publish_datacite_doi(doi, url=url)
     except Exception as e:
         logger.error(
             f"Error publishing DataCite DOI {doi} for project {project_id} (attempt {self.request.retries + 1} of "

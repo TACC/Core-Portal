@@ -153,6 +153,24 @@ def _get_issued_date(base_meta):
     return datetime.date.today().isoformat()
 
 
+def get_datacite_url(project_id: str, version: int | None = None):
+    """Build the landing-page URL a DOI resolves to. There's no `request` here to fall back on the
+    way the views do -- this runs from Celery tasks -- so VANITY_BASE_URL is only the fallback when
+    PORTAL_PUBLICATION_DATACITE_URL_PREFIX isn't absolute.
+    """
+
+    origin = get_configured_origin() or settings.VANITY_BASE_URL
+    if not origin:
+        raise ValueError(
+            "Neither PORTAL_PUBLICATION_DATACITE_URL_PREFIX (as an absolute URL) "
+            "nor VANITY_BASE_URL is configured -- refusing to mint a DataCite "
+            "DOI without a real landing-page URL to register it against."
+        )
+    # A republish's DOI points at that version's `vN` URL, the same one the
+    # landing page claims as canonical (see get_landing_page_path).
+    return f"{origin}{get_landing_page_path(project_id, version)}"
+
+
 def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | None = None):
     """
     Generate datacite payload for a publishable entity. `pub_graph` is the
@@ -282,19 +300,8 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
     # landing page's canonical/JSON-LD/sitemap URLs use, so the DOI can't be
     # registered against a different host than the page claims for itself
     # (VANITY_BASE_URL alone can fall back to an internal hostname, e.g.
-    # _WH_BASE_URL). There's no `request` here to fall back on the way the
-    # views do -- this runs from a Celery task (publish_project) -- so
-    # VANITY_BASE_URL is only the fallback when the prefix isn't absolute.
-    origin = get_configured_origin() or settings.VANITY_BASE_URL
-    if not origin:
-        raise ValueError(
-            "Neither PORTAL_PUBLICATION_DATACITE_URL_PREFIX (as an absolute URL) "
-            "nor VANITY_BASE_URL is configured -- refusing to mint a DataCite "
-            "DOI without a real landing-page URL to register it against."
-        )
-    # A republish's DOI points at that version's `vN` URL, the same one the
-    # landing page claims as canonical (see get_landing_page_path).
-    datacite_json["url"] = f"{origin}{get_landing_page_path(project_id, version)}"
+    # _WH_BASE_URL). See get_datacite_url.
+    datacite_json["url"] = get_datacite_url(project_id, version)
     datacite_json["prefix"] = settings.PORTAL_PUBLICATION_DATACITE_SHOULDER
     # Sent on every create and update (see DATACITE_SCHEMA_VERSION).
     datacite_json["schemaVersion"] = DATACITE_SCHEMA_VERSION
@@ -389,12 +396,16 @@ def upsert_datacite_json(datacite_json: dict, doi: str | None = None):
     return _check_datacite_response(res, f"update of {doi}" if doi else "DOI creation")
 
 
-def publish_datacite_doi(doi: str):
+def publish_datacite_doi(doi: str, url: str | None = None):
     """
-    Set a DOI's status to `Findable` in Datacite. Raises DataCiteError if
-    DataCite rejects it (e.g. metadata that fails full schema validation).
+    Set a DOI's status to `Findable` in Datacite, and its URL to `url` when
+    given. Raises DataCiteError if DataCite rejects it (e.g. metadata that
+    fails full schema validation).
     """
-    payload = {"data": {"type": "dois", "attributes": {"event": "publish"}}}
+    attributes = {"event": "publish"}
+    if url:
+        attributes["url"] = url
+    payload = {"data": {"type": "dois", "attributes": attributes}}
 
     res = requests.put(
         f"{settings.DATACITE_URL.strip('/')}/dois/{doi}",
