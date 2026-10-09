@@ -16,13 +16,11 @@ const UserNewsBrowse = () => {
 
   if (isPending) return <LoadingSpinner />;
   if (isError)
-    return (
-      <p className={styles['news-message']}>Unable to load user updates</p>
-    );
+    return <p className={styles['news-message']}>Unable to load user news</p>;
 
   return (
     <Section
-      header="User Updates"
+      header="User News"
       headerClassName={styles['browse-header']}
       contentShouldScroll
       content={
