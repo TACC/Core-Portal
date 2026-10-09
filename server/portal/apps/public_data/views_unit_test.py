@@ -265,7 +265,7 @@ def test_get_distribution_builds_file_objects(rf):
     distribution = _get_distribution(base_meta["fileObjs"], "test.project-1", request)
     assert len(distribution) == 1
     file_object = distribution[0]
-    assert file_object["@type"] == "cr:FileObject"
+    assert file_object["@type"] == ["cr:FileObject", "DataDownload"]
     assert file_object["@id"] == f"{FILES_URL}data.csv"
     assert file_object["name"] == "data.csv"
     assert (
@@ -291,18 +291,29 @@ def test_get_distribution_skips_non_file_and_incomplete_entries(rf):
     assert _get_distribution(base_meta["fileObjs"], "test.project-1", request) == []
 
 
-def test_get_distribution_builds_file_sets_for_directories(rf):
+def test_get_distribution_omits_directories_without_archive(rf):
+    """Without a ZIP, a directory has no `contentUrl` for Google and no glob Croissant can expand."""
     request = make_request(rf)
     file_objs = [{"type": "dir", "name": "raw scans", "path": "/sample1/raw scans/"}]
-    distribution = _get_distribution(file_objs, "test.project-1", request)
+    assert _get_distribution(file_objs, "test.project-1", request) == []
+
+
+def test_get_distribution_builds_file_sets_inside_archive(rf):
+    request = make_request(rf)
+    file_objs = [{"type": "dir", "name": "raw scans", "path": "/sample1/raw scans/"}]
+    archive = {"@type": ["cr:FileObject", "DataDownload"], "@id": ARCHIVE_URL, "contentUrl": ARCHIVE_URL}
+    distribution = _get_distribution(file_objs, "test.project-1", request, archive, "test.project-1v3")
     assert distribution == [
         {
-            "@type": "cr:FileSet",
+            "@type": ["cr:FileSet", "DataDownload"],
             "@id": f"{FILES_URL}sample1/raw%20scans/",
             "name": "raw scans",
+            "contentUrl": ARCHIVE_URL,
             "encodingFormat": "application/octet-stream",
-            "includes": f"{FILES_URL}sample1/raw%20scans/**",
-        }
+            "containedIn": {"@id": ARCHIVE_URL},
+            "includes": "test.project-1v3/sample1/raw scans/**",
+        },
+        archive,
     ]
 
 
@@ -1170,10 +1181,9 @@ def test_schema_org_and_citation_include_entity_node_files(rf, settings, publica
     citation_meta, schema, _ = get_citation_context(publication, request)
 
     distribution_ids = [file_object["@id"] for file_object in schema["distribution"]]
-    # Root-level data.csv first, then the entity's files; the directory is a FileSet, not enumerated.
+    # Root-level data.csv first, then the entity's files; with no ZIP, the directory is left out.
     assert distribution_ids == [
-        f"{FILES_URL}{path}"
-        for path in ("data.csv", "sample1/scan.tif", "sample1/paper.pdf", "sample1/table.csv", "sample1/raw/")
+        f"{FILES_URL}{path}" for path in ("data.csv", "sample1/scan.tif", "sample1/paper.pdf", "sample1/table.csv")
     ]
     assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
     assert {record_set["@id"] for record_set in schema["recordSet"]} == {
@@ -1183,11 +1193,9 @@ def test_schema_org_and_citation_include_entity_node_files(rf, settings, publica
     assert citation_meta["entities"][0]["pdf_url"] == _get_publication_file_url(
         publication.project_id, "sample1/paper.pdf", request
     )
-    # Everything advertised is something the file route will actually serve: each FileObject's
-    # own path, and a file a FileSet's `includes` glob would match.
+    # Everything advertised is something the file route will actually serve.
     for entry in schema["distribution"]:
-        url = entry["contentUrl"] if entry["@type"] == "cr:FileObject" else entry["includes"].replace("**", "x.bin")
-        assert _is_publication_file_path(publication, unquote(url.removeprefix(FILES_URL)))
+        assert _is_publication_file_path(publication, unquote(entry["contentUrl"].removeprefix(FILES_URL)))
 
 
 def test_entity_only_files_still_make_publication_a_croissant_candidate(rf, settings, publication):
@@ -1410,7 +1418,9 @@ def test_schema_org_json_lists_archive_and_points_file_sets_into_it(rf, settings
 
     schema = get_schema_org_json(archived_publication, archived_publication.project_id, make_request(rf))
 
-    file_set = next(entry for entry in schema["distribution"] if entry["@type"] == "cr:FileSet")
+    file_set = next(entry for entry in schema["distribution"] if _has_type(entry, "cr:FileSet"))
+    assert file_set["@type"] == ["cr:FileSet", "DataDownload"]
+    assert file_set["contentUrl"] == ARCHIVE_URL
     assert file_set["containedIn"] == {"@id": ARCHIVE_URL}
     assert file_set["includes"] == "test.project-1v3/sample1/raw/**"
     assert file_set["@id"] == f"{FILES_URL}sample1/raw/"
@@ -1419,7 +1429,7 @@ def test_schema_org_json_lists_archive_and_points_file_sets_into_it(rf, settings
 
 
 @pytest.mark.parametrize("missing", ["checksum", "web_mirror"])
-def test_schema_org_json_without_archive_keeps_http_glob_file_sets(rf, settings, archived_publication, missing):
+def test_schema_org_json_without_archive_omits_directories(rf, settings, archived_publication, missing):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     if missing == "checksum":
         archived_publication.archive_sha256 = ""
@@ -1428,10 +1438,7 @@ def test_schema_org_json_without_archive_keeps_http_glob_file_sets(rf, settings,
 
     schema = get_schema_org_json(archived_publication, archived_publication.project_id, make_request(rf))
 
-    assert all(entry["@id"] != ARCHIVE_URL for entry in schema["distribution"])
-    file_set = next(entry for entry in schema["distribution"] if entry["@type"] == "cr:FileSet")
-    assert "containedIn" not in file_set
-    assert file_set["includes"] == f"{FILES_URL}sample1/raw/**"
+    assert [entry["@id"] for entry in schema["distribution"]] == [f"{FILES_URL}data.csv"]
 
 
 def test_schema_org_json_fileless_publication_lists_no_archive(rf, settings, archived_publication):
@@ -1641,34 +1648,64 @@ def test_get_schema_org_json_no_files_omits_conforms_to_and_distribution(rf, set
     assert "distribution" not in schema
 
 
-def test_get_schema_org_json_directory_only_publication_conforms(rf, settings, publication):
-    """A publication whose only file object is a directory still gets a `distribution` (one
-    cr:FileSet) and claims Croissant: FileSets need no checksum, so there's nothing unhashed."""
+def test_get_schema_org_json_directory_only_publication_conforms_with_archive(rf, settings, archived_publication):
+    """A publication whose only file object is a directory gets a `distribution` (its cr:FileSet
+    and the ZIP holding it) and claims Croissant: FileSets need no checksum, so nothing is unhashed."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
-    request = make_request(rf)
-    publication.value = valid_base_meta(fileObjs=[{"type": "dir", "name": "scans", "path": "/scans"}])
-    publication.save()
+    archived_publication.value = valid_base_meta(fileObjs=[{"type": "dir", "name": "scans", "path": "/scans"}])
+    archived_publication.save()
 
-    schema = get_schema_org_json(publication, publication.project_id, request)
-    assert [file_set["@type"] for file_set in schema["distribution"]] == ["cr:FileSet"]
+    schema = get_schema_org_json(archived_publication, archived_publication.project_id, make_request(rf))
+    assert [entry["@type"] for entry in schema["distribution"]] == [
+        ["cr:FileSet", "DataDownload"],
+        ["cr:FileObject", "DataDownload"],
+    ]
     assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
 
 
-def test_get_schema_org_json_unhashed_file_beside_directory_drops_conforms_to(rf, settings, publication):
+@patch("portal.apps.public_data.views.logger")
+def test_get_schema_org_json_directory_only_publication_without_archive_lists_nothing(
+    mock_logger, rf, settings, publication
+):
+    """Without a ZIP, a directory-only publication has nothing to list -- like a fileless one, so it
+    is neither a Croissant candidate nor a data bug worth a warning on every render."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    publication.value = valid_base_meta(fileObjs=[{"type": "dir", "name": "scans", "path": "/scans"}])
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
+    assert "distribution" not in schema
+    assert "conformsTo" not in schema
+    mock_logger.warning.assert_not_called()
+
+
+def test_get_schema_org_json_unhashed_file_beside_directory_drops_conforms_to(rf, settings, archived_publication):
     """A FileSet doesn't excuse an unhashed cr:FileObject next to it."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
-    request = make_request(rf)
-    publication.value = valid_base_meta(
+    archived_publication.value = valid_base_meta(
         fileObjs=[
             {"type": "dir", "name": "scans", "path": "/scans"},
             {"type": "file", "name": "data.csv", "path": "/data.csv"},
         ]
     )
-    publication.save()
+    archived_publication.save()
 
-    schema = get_schema_org_json(publication, publication.project_id, request)
-    assert len(schema["distribution"]) == 2
+    schema = get_schema_org_json(archived_publication, archived_publication.project_id, make_request(rf))
+    assert len(schema["distribution"]) == 3
     assert "conformsTo" not in schema
+
+
+def test_schema_org_json_distribution_entries_are_all_data_downloads(rf, settings, archived_publication):
+    """Google reads `distribution` as DataDownloads, each with a `contentUrl` -- an entry missing
+    either is an invalid object type or a missing required field in its Rich Results Test."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+
+    schema = get_schema_org_json(archived_publication, archived_publication.project_id, make_request(rf))
+
+    assert {entry["@type"][0] for entry in schema["distribution"]} == {"cr:FileObject", "cr:FileSet"}
+    for entry in schema["distribution"]:
+        assert _has_type(entry, "DataDownload"), entry["@id"]
+        assert entry["contentUrl"].startswith("http"), entry["@id"]
 
 
 def test_get_schema_org_json_missing_non_croissant_field_raises(rf, publication):
@@ -3104,7 +3141,8 @@ def test_get_schema_org_json_passes_mlcroissant_validation(rf, settings, publica
     schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
     assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
     assert schema["recordSet"]
-    assert any(entry["@type"] == "cr:FileSet" for entry in schema["distribution"])
+    # No ZIP here, so the directory is left out; the archived test above covers FileSets.
+    assert not any(_has_type(entry, "cr:FileSet") for entry in schema["distribution"])
 
     jsonld_path = tmp_path / "croissant.json"
     jsonld_path.write_text(json.dumps(schema))
