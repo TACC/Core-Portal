@@ -100,14 +100,16 @@ def _get_rights_list(base_meta, project_id):
     license_urls.py) that public_data/views.py's `_get_license` resolves the
     schema.org/Croissant `license` field from, so DataCite's record and this
     publication's own landing page never disagree about what its license
-    resolves to. `license` is optional on the publish form (unlike Croissant,
-    which requires it whenever a publication has files -- see
-    REQUIRED_CROISSANT_FIELDS in public_data/views.py), so an unset license
-    just means no `rightsList` entry here, not a fatal error. An unmapped
-    *label* (present, but with no LICENSE_URLS entry) is still a
-    misconfiguration worth failing the DOI mint over -- the same reasoning
-    `_get_license` uses -- rather than silently minting a DOI with a
-    missing/bare-text rights URI.
+    resolves to. The DPMP publish wizard requires `license`
+    (drpMetadataValidate), but the server doesn't enforce it, and publications
+    made before it was required, or in other portals, may have none. So an
+    unset license just means no `rightsList` entry here, not a fatal error
+    (Croissant still requires one -- see REQUIRED_CROISSANT_FIELDS in
+    public_data/views.py -- so such a publication's landing page makes no
+    Croissant claim). An unmapped *label* (present, but with no LICENSE_URLS
+    entry) is still a misconfiguration worth failing the DOI mint over -- the
+    same reasoning `_get_license` uses -- rather than silently minting a DOI
+    with a missing/bare-text rights URI.
     """
 
     license_value = base_meta.get("license")
