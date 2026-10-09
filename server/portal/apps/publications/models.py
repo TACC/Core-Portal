@@ -62,3 +62,15 @@ class Publication(models.Model):
         encoder=DjangoJSONEncoder,
         help_text=("JSON document containing the serialized publication tree"),
     )
+    archive_sha256 = models.CharField(
+        max_length=64,
+        blank=True,
+        default="",
+        help_text=(
+            "sha256 of the current version's whole-publication ZIP, read from the archive job's "
+            "<workspace id>_archive.zip.sha256. Empty until it's loaded, and cleared on every publish."
+        ),
+    )
+    archive_size = models.BigIntegerField(
+        null=True, blank=True, help_text="Size in bytes of that ZIP, recorded with its sha256."
+    )

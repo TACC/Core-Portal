@@ -20,6 +20,7 @@ from portal.apps.projects.workspace_operations.project_publish_operations import
     _add_values_to_tree,
     _check_transfer_status,
     _parse_sha256_manifest,
+    _read_archive_checksum,
     _read_sha256_manifest,
     _record_minted_doi,
     _transfer_cover_image,
@@ -385,6 +386,26 @@ def test_archive_publication_files_submits_job(mocker, settings):
     assert "checksumOnly" not in env_vars
 
 
+@pytest.mark.parametrize(
+    "checksum_only,hash_archive,expected",
+    [(True, True, "true"), (True, False, None), (False, True, None), (False, False, None)],
+)
+def test_archive_publication_files_hash_archive_only_with_checksum_only(
+    mocker, settings, checksum_only, hash_archive, expected
+):
+    """hashArchive asks a checksum-only job to hash the existing ZIP; a full run always hashes the
+    ZIP it builds, so it's never sent then."""
+    settings.PORTAL_PUBLICATION_ARCHIVE_APP_VERSION = "0.0.3"
+    client = mocker.patch(f"{DIR}.service_account").return_value
+    client.systems.getSystem.return_value = SimpleNamespace(rootDir="/published/root")
+
+    archive_publication_files("test.project-1v2", checksum_only=checksum_only, hash_archive=hash_archive)
+
+    _, kwargs = client.jobs.submitJob.call_args
+    env_vars = {v["key"]: v["value"] for v in kwargs["parameterSet"]["envVariables"]}
+    assert env_vars.get("hashArchive") == expected
+
+
 def test_archive_publication_files_checksum_only_sets_env_var(mocker, settings):
     settings.PORTAL_PUBLICATION_ARCHIVE_APP_VERSION = "0.0.3"
     client = mocker.patch(f"{DIR}.service_account").return_value
@@ -511,6 +532,28 @@ def test_publish_project_republish_keeps_is_indexable(mocker, settings, is_index
     assert publication.version == 2
     assert publication.value["doi"] == "10.5555/existing-doi"
     assert publication.is_indexable is is_indexable
+
+
+def test_publish_project_republish_clears_previous_versions_archive_checksum(mocker, settings):
+    """v1's ZIP checksum doesn't describe v2's ZIP; v2's is loaded once its archive job ends."""
+    _setup_publish_project_fixtures(settings, existing_doi="10.5555/existing-doi")
+    create_project(f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.test.project-1v2", value={"title": "v2"})
+    Publication.objects.create(
+        project_id="test.project-1", version=1, value={"title": "v1"}, tree={}, archive_sha256=H1, archive_size=10
+    )
+    mocker.patch(f"{DIR}.get_datacite_json", return_value={"titles": []})
+    mocker.patch(f"{DIR}.upsert_datacite_json", return_value={"data": {"id": "10.5555/existing-doi"}})
+    mocker.patch(f"{DIR}.upload_metadata_file")
+    mocker.patch(f"{DIR}.index_publication")
+    mocker.patch(f"{DIR}.service_account")
+    mocker.patch(f"{DIR}._transfer_files", return_value=SimpleNamespace(uuid="transfer-uuid-8"))
+    mocker.patch(f"{DIR}._transfer_cover_image")
+    mocker.patch.object(poll_tapis_file_transfer, "apply_async")
+
+    publish_project(project_id="test.project-1", version=2)
+
+    publication = Publication.objects.get(project_id="test.project-1")
+    assert (publication.version, publication.archive_sha256, publication.archive_size) == (2, "", None)
 
 
 def test_publish_project_republish_keeps_original_publication_date(mocker, settings):
@@ -1102,6 +1145,61 @@ def test_read_sha256_manifest_returns_none_when_missing(mocker):
 
 
 # ---------------------------------------------------------------------------
+# ZIP checksum: _read_archive_checksum
+# ---------------------------------------------------------------------------
+
+
+def test_read_archive_checksum_reads_sha256_file_and_zip_size(mocker, settings):
+    client = mocker.patch(f"{DIR}.service_account").return_value
+    client.files.getContents.return_value = f"{H1.upper()}  DRP-1129v2_archive.zip\n".encode()
+    client.files.listFiles.return_value = [SimpleNamespace(name="DRP-1129v2_archive.zip", size=123456789)]
+
+    assert _read_archive_checksum("DRP-1129v2") == (H1, 123456789)
+    system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
+    client.files.getContents.assert_called_once_with(
+        systemId=system, path="archive/DRP-1129v2/DRP-1129v2_archive.zip.sha256"
+    )
+    client.files.listFiles.assert_called_once_with(systemId=system, path="archive/DRP-1129v2/DRP-1129v2_archive.zip")
+
+
+def test_read_archive_checksum_without_size_in_listing(mocker):
+    client = mocker.patch(f"{DIR}.service_account").return_value
+    client.files.getContents.return_value = f"{H1}  DRP-1149_archive.zip".encode()
+    client.files.listFiles.return_value = [SimpleNamespace(name="DRP-1149_archive.zip")]
+
+    assert _read_archive_checksum("DRP-1149") == (H1, None)
+
+
+@pytest.mark.parametrize("failing", ["getContents", "listFiles"])
+def test_read_archive_checksum_returns_none_when_hash_or_zip_missing(mocker, failing):
+    client = mocker.patch(f"{DIR}.service_account").return_value
+    client.files.getContents.return_value = f"{H1}  DRP-1149_archive.zip\n".encode()
+    client.files.listFiles.return_value = [SimpleNamespace(size=1)]
+    getattr(client.files, failing).side_effect = Exception("404")
+
+    assert _read_archive_checksum("DRP-1149") is None
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        f"{H1}  DRP-1149v2_archive.zip\n",  # another version's ZIP
+        f"{H1}  DRP-1149/data.csv\n",  # a file manifest line
+        f"{H1}  DRP-1149_archive.zip\n{H2}  DRP-1149_archive.zip\n",  # more than one line
+        "\\" + H1 + "  DRP-1149_archive.zip\n",  # escaped name: not the ZIP's plain name
+        f"{'d' * 63}  DRP-1149_archive.zip\n",
+        "",
+    ],
+)
+def test_read_archive_checksum_rejects_anything_but_one_line_for_that_zip(mocker, content):
+    client = mocker.patch(f"{DIR}.service_account").return_value
+    client.files.getContents.return_value = content.encode()
+    client.files.listFiles.return_value = [SimpleNamespace(size=1)]
+
+    assert _read_archive_checksum("DRP-1149") is None
+
+
+# ---------------------------------------------------------------------------
 # load_publication_file_checksums
 # ---------------------------------------------------------------------------
 
@@ -1120,8 +1218,16 @@ def node_link_tree(*entity_file_objs):
 
 
 @pytest.fixture
-def mock_manifest(mocker):
-    """Patch the manifest fetch; set `.return_value` to the parsed {path: sha256} mapping."""
+def mock_archive_checksum(mocker):
+    """Patch the ZIP checksum fetch; set `.return_value` to (sha256, size). Defaults to None, no
+    ZIP checksum."""
+    return mocker.patch(f"{DIR}._read_archive_checksum", return_value=None)
+
+
+@pytest.fixture
+def mock_manifest(mocker, mock_archive_checksum):
+    """Patch the manifest fetch; set `.return_value` to the parsed {path: sha256} mapping. The ZIP
+    checksum fetch is patched too (mock_archive_checksum), so no test reaches Tapis."""
     return mocker.patch(f"{DIR}._read_sha256_manifest")
 
 
@@ -1250,6 +1356,72 @@ def test_load_publication_file_checksums_without_manifest_changes_nothing(mocker
     load_publication_file_checksums("test.project-1", 1)
 
     mock_save.assert_not_called()
+
+
+def test_load_publication_file_checksums_stores_archive_checksum_without_file_manifest(
+    mocker, mock_manifest, mock_archive_checksum
+):
+    Publication.objects.create(
+        project_id="test.project-1",
+        version=3,
+        value={"title": "T", "fileObjs": [{"type": "file", "name": "a.bin", "path": "/a.bin"}]},
+        tree={},
+    )
+    mock_manifest.return_value = None
+    mock_archive_checksum.return_value = (H1, 2048)
+
+    load_publication_file_checksums("test.project-1", 3)
+
+    mock_archive_checksum.assert_called_once_with("test.project-1v3")
+    publication = Publication.objects.get(project_id="test.project-1")
+    assert (publication.archive_sha256, publication.archive_size) == (H1, 2048)
+    assert "sha256" not in publication.value["fileObjs"][0]
+
+
+def test_load_publication_file_checksums_saves_file_and_archive_checksums_together(
+    mocker, mock_manifest, mock_archive_checksum
+):
+    Publication.objects.create(
+        project_id="test.project-1",
+        version=1,
+        value={"title": "T", "fileObjs": [{"type": "file", "name": "a.bin", "path": "/a.bin"}]},
+        tree={},
+    )
+    mock_manifest.return_value = {"a.bin": H1}
+    mock_archive_checksum.return_value = (H2, 99)
+    mock_save = mocker.patch.object(Publication, "save")
+
+    load_publication_file_checksums("test.project-1", 1)
+
+    mock_save.assert_called_once_with(update_fields=["value", "tree", "archive_sha256", "archive_size", "last_updated"])
+
+
+def test_load_publication_file_checksums_skips_save_when_archive_checksum_unchanged(
+    mocker, mock_manifest, mock_archive_checksum
+):
+    Publication.objects.create(
+        project_id="test.project-1", version=1, value={"title": "T"}, tree={}, archive_sha256=H1, archive_size=5
+    )
+    mock_manifest.return_value = None
+    mock_archive_checksum.return_value = (H1, 5)
+    mock_save = mocker.patch.object(Publication, "save")
+
+    load_publication_file_checksums("test.project-1", 1)
+
+    mock_save.assert_not_called()
+
+
+def test_load_publication_file_checksums_discards_archive_checksum_after_republish(
+    mock_manifest, mock_archive_checksum
+):
+    Publication.objects.create(project_id="test.project-1", version=2, value={"title": "T"}, tree={})
+    mock_manifest.return_value = None
+    mock_archive_checksum.return_value = (H1, 5)
+
+    load_publication_file_checksums("test.project-1", 1)
+
+    mock_archive_checksum.assert_called_once_with("test.project-1")  # v1's ZIP
+    assert Publication.objects.get(project_id="test.project-1").archive_sha256 == ""
 
 
 def test_load_publication_file_checksums_discards_manifest_after_republish(mock_manifest):

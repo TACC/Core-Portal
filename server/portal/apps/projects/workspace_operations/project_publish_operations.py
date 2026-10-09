@@ -21,7 +21,11 @@ from portal.apps.projects.workspace_operations.datacite_operations import (
 from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
 from portal.apps.projects.workspace_operations.shared_workspace_operations import remove_user
 from portal.apps.publications.models import Publication, PublicationRequest
-from portal.apps.publications.utils import get_publication_file_objs, get_published_workspace_id
+from portal.apps.publications.utils import (
+    get_archive_zip_path,
+    get_publication_file_objs,
+    get_published_workspace_id,
+)
 from portal.apps.search.tasks import index_publication
 from portal.libs.agave.utils import service_account, user_account
 
@@ -32,6 +36,10 @@ logger = logging.getLogger(__name__)
 # to PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME. From app version 0.0.3 it's only written when every
 # file hashed successfully, so a manifest that exists can be trusted in full.
 _SHA256_MANIFEST_PATH = "archive/{workspace_id}/manifest-sha256.txt"
+
+# From app version 0.0.3 the same job also writes its whole-publication ZIP's own sha256 (one
+# `sha256sum` line) beside the ZIP (get_archive_zip_path) as `<ZIP name>.sha256`, only when every
+# step building the ZIP succeeded.
 
 # One `sha256sum` output line: hex digest, a space, a mode flag (" " text / "*" binary), then the
 # path. GNU coreutils prefixes the line with "\\" when it had to escape a backslash/newline/CR in
@@ -184,6 +192,30 @@ def _read_sha256_manifest(workspace_id):
     return _parse_sha256_manifest(content.decode("utf-8", errors="replace"), workspace_id)
 
 
+def _read_archive_checksum(workspace_id):
+    """Return a published workspace's ZIP's (sha256, size in bytes), from the `.sha256` file the
+    archive job writes beside it and a listing of the ZIP, or None if either is missing (archive
+    app older than 0.0.3, the ZIP failed, or the job didn't get that far) or the file isn't one
+    `sha256sum` line for that ZIP. The size is None when the listing doesn't report one.
+    """
+
+    system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
+    zip_path = get_archive_zip_path(workspace_id)
+    client = service_account()
+    try:
+        content = client.files.getContents(systemId=system, path=f"{zip_path}.sha256")
+        listing = client.files.listFiles(systemId=system, path=zip_path)
+    except Exception as e:
+        logger.info(f"No archive checksum for {system}/{zip_path}: {e}")
+        return None
+    match = _SHA256_MANIFEST_LINE.fullmatch(content.decode("utf-8", errors="replace").rstrip("\n"))
+    if not match or match.group(1) or match.group(3) != zip_path.rsplit("/", 1)[-1]:
+        logger.warning(f"Ignoring malformed archive checksum for {system}/{zip_path}.")
+        return None
+    size = getattr(listing[0], "size", None) if listing else None
+    return match.group(2).lower(), size
+
+
 @shared_task(bind=True, queue="default")
 def load_publication_file_checksums(self, project_id: str, version: int | None = None):
     """Store each published file's sha256 -- read from the manifest the archive job computed on the
@@ -191,17 +223,25 @@ def load_publication_file_checksums(self, project_id: str, version: int | None =
     page's Croissant `distribution` carries the per-file checksum Croissant requires (see
     public_data/views.py's CROISSANT_FILE_CHECKSUM_FIELDS). Files missing from the manifest are
     left unhashed; the page then just omits conformsTo.
+
+    Also stores the version's whole-publication ZIP's sha256 and size (Publication.archive_sha256
+    and archive_size), which add the ZIP to the landing page's `distribution`.
     """
 
     publication = Publication.objects.get(project_id=project_id)
     version = version or publication.version
-    hashes = _read_sha256_manifest(get_published_workspace_id(project_id, version))
+    workspace_id = get_published_workspace_id(project_id, version)
+    hashes = _read_sha256_manifest(workspace_id)
+    archive = _read_archive_checksum(workspace_id)
     if not hashes:
         logger.warning(
             f"No sha256 checksums available for publication {project_id} v{version}; its files stay "
             "unhashed (and its landing page without Croissant conformsTo) until the archive job's "
             "manifest exists -- see the compute_publication_checksums management command."
         )
+    if not archive:
+        logger.info(f"No archive checksum available for publication {project_id} v{version}.")
+    if not hashes and not archive:
         return
 
     with transaction.atomic():
@@ -213,7 +253,7 @@ def load_publication_file_checksums(self, project_id: str, version: int | None =
             )
             return
         stored, unhashed = 0, set()
-        for file_obj in get_publication_file_objs(publication):
+        for file_obj in get_publication_file_objs(publication) if hashes else []:
             path = (file_obj.get("path") or "").strip("/")
             if file_obj.get("type") != "file" or not path:
                 continue
@@ -223,8 +263,12 @@ def load_publication_file_checksums(self, project_id: str, version: int | None =
                     stored += 1
             else:
                 unhashed.add(path)
-        if stored:
-            publication.save(update_fields=["value", "tree", "last_updated"])
+        update_fields = ["value", "tree"] if stored else []
+        if archive and (publication.archive_sha256, publication.archive_size) != archive:
+            publication.archive_sha256, publication.archive_size = archive
+            update_fields += ["archive_sha256", "archive_size"]
+        if update_fields:
+            publication.save(update_fields=[*update_fields, "last_updated"])
 
     logger.info(f"Stored {stored} sha256 checksum(s) for publication {project_id} v{version}.")
     if unhashed:
@@ -236,9 +280,10 @@ def load_publication_file_checksums(self, project_id: str, version: int | None =
 
 @shared_task(bind=True, queue="default")
 def poll_publication_archive_job(self, job_uuid, project_id, version=None, attempt=1):
-    """Wait for a publication's archive job to end, then load the sha256 manifest it wrote. The
-    manifest is read whatever the job's final status: it's only written when every file hashed, so
-    if it exists it's complete even when a later step (the ZIP, the Ranch transfer) failed.
+    """Wait for a publication's archive job to end, then load the sha256 manifest and ZIP
+    checksum it wrote. Both are read whatever the job's final status: each is only written when
+    its step fully succeeded, so either one that exists is trustworthy even when another step (or
+    the Ranch transfer) failed.
     """
 
     try:
@@ -322,11 +367,13 @@ def upload_metadata_file(project_id: str, project_json: str):
     logger.debug("Created metadata file for %s at tapis://%s/%s", project_id, published_root, upload_full_path)
 
 
-def archive_publication_files(project_id: str, checksum_only: bool = False):
+def archive_publication_files(project_id: str, checksum_only: bool = False, hash_archive: bool = False):
     """
     Run a Tapis job to create a ZIP archive of published files that includes metadata, plus the
-    sha512/sha256 checksum manifests. With `checksum_only`, the job writes the manifests only (no
-    ZIP, no Ranch transfer) -- for backfilling checksums on an already-archived publication.
+    sha512/sha256 checksum manifests and the ZIP's own sha256. With `checksum_only`, the job writes
+    the sha256 manifest only (no ZIP, no Ranch transfer) -- for backfilling checksums on an
+    already-archived publication -- and, with `hash_archive` too, hashes the existing ZIP, which
+    reads it once more. `hash_archive` has no effect without `checksum_only`.
     """
 
     if checksum_only:
@@ -367,6 +414,7 @@ def archive_publication_files(project_id: str, checksum_only: bool = False):
                     "value": "/",
                 },
                 *([{"key": "checksumOnly", "value": "true"}] if checksum_only else []),
+                *([{"key": "hashArchive", "value": "true"}] if checksum_only and hash_archive else []),
             ],
         },
         "tags": [f"portalName:{settings.PORTAL_NAMESPACE.lower()}"],
@@ -447,6 +495,10 @@ def publish_project(self, project_id: str, version: int | None = 1):
                 "value": published_project.value,
                 "tree": nx.node_link_data(pub_tree),
                 "version": version,
+                # The ZIP checksum belongs to the version it was computed for; this version's is
+                # loaded once its archive job ends (load_publication_file_checksums).
+                "archive_sha256": "",
+                "archive_size": None,
             }
             pub_metadata, _ = Publication.objects.update_or_create(
                 project_id=project_id,
