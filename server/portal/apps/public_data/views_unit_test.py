@@ -18,34 +18,40 @@ from django.utils.html import escape
 
 from portal.apps.projects.schema_models.license_urls import LICENSE_URLS
 from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json
+from portal.apps.public_data.citations import (
+    _format_citation_author,
+    _format_citation_date,
+    _get_apa_citation,
+    _get_bibtex_citation,
+    _get_citation_pdf_url,
+    _get_citations,
+)
+from portal.apps.public_data.links import (
+    _get_configured_origin,
+    _get_cover_image_url,
+    _get_landing_page_url,
+    _get_publication_file_url,
+)
+from portal.apps.public_data.schema_org import (
+    SchemaOrgValidationError,
+    _format_content_size,
+    _get_archive_file_object,
+    _get_distribution,
+    _get_license,
+    _get_orcid_same_as,
+    _get_publication_file_objs,
+    _get_record_sets,
+    _has_type,
+    dumps_json_ld,
+    get_citation_context,
+    get_schema_org_json,
+)
 from portal.apps.public_data.views import (
     PublicationArchiveView,
     PublicationCoverImageView,
     PublicationCroissantView,
     PublicationFileDownloadView,
-    SchemaOrgValidationError,
-    _format_citation_author,
-    _format_citation_date,
-    _format_content_size,
-    _get_apa_citation,
-    _get_archive_file_object,
-    _get_bibtex_citation,
-    _get_citation_pdf_url,
-    _get_citations,
-    _get_configured_origin,
-    _get_cover_image_url,
-    _get_distribution,
-    _get_landing_page_url,
-    _get_license,
-    _get_orcid_same_as,
-    _get_publication_file_objs,
-    _get_publication_file_url,
-    _get_record_sets,
-    _has_type,
     _is_publication_file_path,
-    dumps_json_ld,
-    get_citation_context,
-    get_schema_org_json,
 )
 from portal.apps.publications.models import Publication
 from portal.apps.publications.utils import get_landing_page_path
@@ -437,7 +443,7 @@ def test_get_record_sets_skips_formats_without_column_extraction(rf, name):
     assert _get_record_sets(file_objs, "test.project-1", make_request(rf)) == []
 
 
-@patch("portal.apps.public_data.views.logger")
+@patch("portal.apps.public_data.schema_org.logger")
 def test_get_record_sets_skips_and_warns_on_duplicate_column_names(mock_logger, rf):
     file_objs = [
         {"name": "dupes.csv", "path": "/dupes.csv", "columns": [{"name": "x"}, {"name": "y"}, {"name": "x"}]},
@@ -456,7 +462,7 @@ def test_get_record_sets_skips_file_without_url(rf):
     """A file whose URL can't be built has no `distribution` entry to reference, so no recordSet."""
     file_objs = [{"name": "data.csv", "path": "/data.csv", "columns": [{"name": "x"}]}]
 
-    with patch("portal.apps.public_data.views.reverse", side_effect=NoReverseMatch("simulated")):
+    with patch("portal.apps.public_data.links.reverse", side_effect=NoReverseMatch("simulated")):
         assert _get_record_sets(file_objs, "test.project-1", make_request(rf)) == []
 
 
@@ -1605,6 +1611,29 @@ def test_get_schema_org_json_success(rf, settings, publication):
     assert len(schema["citation"]) == 1
 
 
+@pytest.mark.parametrize("stored_doi", ["10.1234/test-doi", "doi:10.1234/test-doi", "https://doi.org/10.1234/test-doi"])
+def test_get_schema_org_json_normalizes_doi(rf, publication, stored_doi):
+    """A DOI stored with a "doi:" label or as a resolver URL doesn't become
+    "https://doi.org/https://doi.org/..." in `identifier`, `sameAs` or `citeAs`."""
+    publication.value = valid_base_meta(doi=stored_doi)
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
+
+    assert schema["identifier"] == "https://doi.org/10.1234/test-doi"
+    assert schema["sameAs"] == "https://doi.org/10.1234/test-doi"
+    assert "doi = {10.1234/test-doi}" in schema["citeAs"]
+    assert "url = {https://doi.org/10.1234/test-doi}" in schema["citeAs"]
+
+
+def test_get_schema_org_json_falls_back_to_landing_page_for_unparseable_doi(rf, publication):
+    publication.value = valid_base_meta(doi="not-a-doi")
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
+
+    assert schema["identifier"] == schema["url"]
+    assert "sameAs" not in schema
+    assert "doi = " not in schema["citeAs"]
+    assert f"url = {{{schema['url']}}}" in schema["citeAs"]
+
+
 def test_get_schema_org_json_uses_full_croissant_1_0_context(rf, publication):
     context = get_schema_org_json(publication, publication.project_id, make_request(rf))["@context"]
 
@@ -1663,7 +1692,7 @@ def test_get_schema_org_json_directory_only_publication_conforms_with_archive(rf
     assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
 
 
-@patch("portal.apps.public_data.views.logger")
+@patch("portal.apps.public_data.schema_org.logger")
 def test_get_schema_org_json_directory_only_publication_without_archive_lists_nothing(
     mock_logger, rf, settings, publication
 ):
@@ -1727,7 +1756,7 @@ def test_get_schema_org_json_missing_required_dataset_field_names_it(rf, publica
         get_schema_org_json(publication, publication.project_id, request)
 
 
-@patch("portal.apps.public_data.views.logger")
+@patch("portal.apps.public_data.schema_org.logger")
 def test_get_schema_org_json_files_without_usable_distribution_drops_conforms_to(mock_logger, rf, publication):
     """Files present (has_files True) but none carry a usable name, so `distribution` ends up
     empty. That's no longer fatal: the plain Dataset is still emitted, just without the Croissant
@@ -1755,7 +1784,7 @@ def test_get_schema_org_json_files_without_usable_distribution_drops_conforms_to
         ({"publicationDate": None}, "datePublished"),
     ],
 )
-@patch("portal.apps.public_data.views.logger")
+@patch("portal.apps.public_data.schema_org.logger")
 def test_get_schema_org_json_missing_croissant_field_still_emits_plain_dataset(
     mock_logger, rf, publication, overrides, missing_field
 ):
@@ -1781,14 +1810,14 @@ def test_get_schema_org_json_fileless_publication_missing_croissant_fields_logs_
     publication.value = valid_base_meta(fileObjs=[], license=None, authors=[])
     publication.save()
 
-    with patch("portal.apps.public_data.views.logger") as mock_logger:
+    with patch("portal.apps.public_data.schema_org.logger") as mock_logger:
         schema = get_schema_org_json(publication, publication.project_id, request)
 
     assert "conformsTo" not in schema
     mock_logger.warning.assert_not_called()
 
 
-@patch("portal.apps.public_data.views.logger")
+@patch("portal.apps.public_data.schema_org.logger")
 def test_get_schema_org_json_unmapped_license_logs_and_omits_license(mock_logger, rf, publication):
     request = make_request(rf)
     publication.value = valid_base_meta(license="unmapped-license")
@@ -1803,7 +1832,7 @@ def test_get_schema_org_json_unmapped_license_logs_and_omits_license(mock_logger
     assert "unmapped-license" in mock_logger.error.call_args.args[0]
 
 
-@patch("portal.apps.public_data.views.logger")
+@patch("portal.apps.public_data.schema_org.logger")
 def test_get_schema_org_json_unhashed_file_omits_conforms_to(mock_logger, rf, settings, publication):
     """Croissant requires an md5/sha256 checksum on every cr:FileObject, so a single unhashed file
     withholds the conformsTo claim -- while the rest of the Dataset (including that file's
@@ -1930,7 +1959,7 @@ def test_get_schema_org_json_affiliation_comes_from_each_authors_own_institution
     "nameless_author",
     [{}, {"first_name": "", "last_name": ""}, {"first_name": None, "last_name": None}, {"first_name": "  "}],
 )
-@patch("portal.apps.public_data.views.logger")
+@patch("portal.apps.public_data.schema_org.logger")
 def test_get_schema_org_json_leaves_out_author_with_no_name(mock_logger, rf, publication, nameless_author):
     """A Person with an empty name is invalid schema.org, so a nameless author is left out (and
     logged) rather than emitted."""
@@ -1944,7 +1973,7 @@ def test_get_schema_org_json_leaves_out_author_with_no_name(mock_logger, rf, pub
     assert any("has an author with no name" in call.args[0] for call in mock_logger.warning.call_args_list)
 
 
-@patch("portal.apps.public_data.views.logger")
+@patch("portal.apps.public_data.schema_org.logger")
 def test_get_schema_org_json_only_nameless_authors_drops_creator(mock_logger, rf, publication):
     """With no named author left there's no `creator`, which Croissant requires, so `conformsTo` is
     withheld too."""
@@ -1969,7 +1998,7 @@ def test_get_schema_org_json_drops_empty_optional_fields(rf, publication):
 
 
 @pytest.mark.parametrize("length", [49, 5001])
-@patch("portal.apps.public_data.views.logger")
+@patch("portal.apps.public_data.schema_org.logger")
 def test_get_schema_org_json_warns_on_description_outside_google_length_range(mock_logger, rf, publication, length):
     """Google Dataset Search expects 50-5000 characters; outside that the Dataset is still emitted,
     with a warning."""
@@ -1984,7 +2013,7 @@ def test_get_schema_org_json_warns_on_description_outside_google_length_range(mo
 
 
 @pytest.mark.parametrize("length", [50, 5000])
-@patch("portal.apps.public_data.views.logger")
+@patch("portal.apps.public_data.schema_org.logger")
 def test_get_schema_org_json_no_warning_for_description_within_google_length_range(
     mock_logger, rf, publication, length
 ):
@@ -2021,6 +2050,16 @@ def test_get_citation_context(rf, settings, publication):
     assert citation_meta["cover_image_url"] is None  # PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME unset
 
 
+def test_get_citation_context_normalizes_doi(rf, publication):
+    publication.value = valid_base_meta(doi="https://doi.org/10.1234/test-doi")
+    citation_meta, _, _ = get_citation_context(publication, make_request(rf))
+
+    entity = citation_meta["entities"][0]
+    assert entity["doi"] == "10.1234/test-doi"
+    assert entity["doi_url"] == "https://doi.org/10.1234/test-doi"
+    assert entity["apa_citation"].endswith(" https://doi.org/10.1234/test-doi")
+
+
 def test_get_citation_context_collects_file_objects_once(rf, publication):
     """The JSON-LD distribution and citation_pdf_url share one walk of the publication's files."""
     publication.value = valid_base_meta(
@@ -2029,7 +2068,7 @@ def test_get_citation_context_collects_file_objects_once(rf, publication):
     publication.save()
 
     with patch(
-        "portal.apps.public_data.views._get_publication_file_objs", wraps=_get_publication_file_objs
+        "portal.apps.public_data.schema_org._get_publication_file_objs", wraps=_get_publication_file_objs
     ) as mock_file_objs:
         citation_meta, schema, _ = get_citation_context(publication, make_request(rf))
 
@@ -2568,6 +2607,45 @@ def test_index_view_landing_page_is_indexable_without_portal_opt_in(client, sett
     assert ROBOTS_META.findall(body) == ["index, follow, max-image-preview:large"]
 
 
+SHARE_CARD_META = re.compile(r'<meta (?:property="og:|name="twitter:)')
+
+
+def test_index_view_app_shell_keeps_default_head_unless_portal_opts_in(client, settings):
+    """Portals that don't set PORTAL_NOINDEX_APP_SHELL keep their own site description and get no
+    dataset-portal share-card tags on their app shell."""
+    settings.PORTAL_NOINDEX_APP_SHELL = False
+    body = client.get("/published-datasets/").content.decode()
+
+    assert SHARE_CARD_META.search(body) is None
+    assert "Explore published research datasets" not in body
+    assert '<meta name="description" content="">' in body
+
+
+def test_index_view_app_shell_has_share_cards_when_portal_opts_in(client):
+    body = client.get("/published-datasets/").content.decode()
+
+    assert '<meta property="og:url" content="http://testserver/published-datasets/">' in body
+    assert "Explore published research datasets and computational tools on test." in body
+
+
+def test_index_view_landing_page_has_share_cards_without_portal_opt_in(client, settings, publication):
+    settings.PORTAL_NOINDEX_APP_SHELL = False
+    url = get_landing_page_path(publication.project_id, publication.version)
+    body = client.get(url).content.decode()
+
+    assert f'<meta property="og:url" content="http://testserver{url}">' in body
+    assert re.search(r'<meta property="og:title" content="Test Dataset \| [^"]*">', body)
+
+
+@pytest.mark.parametrize("noindex_app_shell", [True, False])
+def test_index_view_app_shell_canonical_url_drops_query_string(client, settings, noindex_app_shell):
+    settings.PORTAL_NOINDEX_APP_SHELL = noindex_app_shell
+    body = client.get("/published-datasets/?utm_source=x&page=2").content.decode()
+
+    assert '<link rel="canonical" href="http://testserver/published-datasets/">' in body
+    assert "utm_source" not in body
+
+
 @pytest.mark.parametrize("state", ["withdrawn", "mid_publish"])
 @pytest.mark.parametrize("noindex_app_shell", [True, False])
 def test_index_view_unindexable_publication_is_noindex_either_way(
@@ -2780,7 +2858,7 @@ def test_sitemap_view_escapes_xml_special_characters_in_loc(client, settings):
     assert loc.startswith("https://a&b.example.org/")
 
 
-@patch("portal.apps.public_data.views.logger")
+@patch("portal.apps.public_data.sitemap.logger")
 def test_sitemap_view_omits_and_logs_publications_whose_metadata_fails(mock_logger, client, settings):
     """A publication IndexView would render noindex (its JSON-LD fails to build) mustn't be
     submitted to crawlers via the sitemap, and the omission must be logged so it gets fixed."""
@@ -2862,7 +2940,7 @@ def test_sitemap_view_serves_cached_body_without_rebuilding(client, settings):
     # Published after the first request: not listed until the cached body expires.
     Publication.objects.create(project_id="test.project-2", value=valid_base_meta(), tree={}, is_published=True)
 
-    with patch("portal.apps.public_data.views.get_citation_context") as mock_get_citation_context:
+    with patch("portal.apps.public_data.sitemap.get_citation_context") as mock_get_citation_context:
         second = client.get(reverse("sitemap"))
 
     mock_get_citation_context.assert_not_called()
@@ -2925,7 +3003,7 @@ def test_sitemap_view_at_the_limit_is_a_single_urlset(client, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     _create_publications(2)
 
-    with patch("portal.apps.public_data.views.SITEMAP_MAX_URLS", 2):
+    with patch("portal.apps.public_data.sitemap.SITEMAP_MAX_URLS", 2):
         response = client.get(reverse("sitemap"))
 
     assert ElementTree.fromstring(response.content).tag == f"{{{SITEMAP_NS['sm']}}}urlset"
@@ -2937,7 +3015,7 @@ def test_sitemap_view_past_the_limit_serves_an_index_of_numbered_sitemaps(client
     settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://data.example.org/published-datasets"
     pubs = _create_publications(5)
 
-    with patch("portal.apps.public_data.views.SITEMAP_MAX_URLS", 2):
+    with patch("portal.apps.public_data.sitemap.SITEMAP_MAX_URLS", 2):
         index = client.get(reverse("sitemap"))
         pages = [client.get(reverse("sitemap_page", kwargs={"page": page})) for page in (1, 2, 3)]
 
@@ -2958,7 +3036,7 @@ def test_sitemap_index_lastmod_is_each_files_newest_lastmod(client, settings):
     for pub, day in zip(pubs, ("2024-01-05", "2024-03-01", "2023-12-31"), strict=True):
         Publication.objects.filter(pk=pub.pk).update(last_updated=f"{day}T00:00:00Z")
 
-    with patch("portal.apps.public_data.views.SITEMAP_MAX_URLS", 2):
+    with patch("portal.apps.public_data.sitemap.SITEMAP_MAX_URLS", 2):
         root = ElementTree.fromstring(client.get(reverse("sitemap")).content)
 
     lastmods = [
@@ -2972,7 +3050,7 @@ def test_sitemap_index_escapes_xml_special_characters_in_loc(client, settings):
     settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://a&b.example.org/published-datasets"
     _create_publications(3)
 
-    with patch("portal.apps.public_data.views.SITEMAP_MAX_URLS", 2):
+    with patch("portal.apps.public_data.sitemap.SITEMAP_MAX_URLS", 2):
         response = client.get(reverse("sitemap"))
 
     assert b"a&amp;b.example.org" in response.content
@@ -2984,7 +3062,7 @@ def test_sitemap_page_out_of_range_404s(client, settings, page):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     _create_publications(3)
 
-    with patch("portal.apps.public_data.views.SITEMAP_MAX_URLS", 2):
+    with patch("portal.apps.public_data.sitemap.SITEMAP_MAX_URLS", 2):
         assert client.get(reverse("sitemap_page", kwargs={"page": page})).status_code == 404
 
 
@@ -2999,9 +3077,9 @@ def test_sitemap_index_and_pages_share_one_cached_build(client, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     _create_publications(3)
 
-    with patch("portal.apps.public_data.views.SITEMAP_MAX_URLS", 2):
+    with patch("portal.apps.public_data.sitemap.SITEMAP_MAX_URLS", 2):
         client.get(reverse("sitemap"))
-        with patch("portal.apps.public_data.views.get_citation_context") as mock_get_citation_context:
+        with patch("portal.apps.public_data.sitemap.get_citation_context") as mock_get_citation_context:
             page = client.get(reverse("sitemap_page", kwargs={"page": 2}))
 
     mock_get_citation_context.assert_not_called()
@@ -3117,7 +3195,7 @@ def test_undeclared_newline_path_is_still_404(client, settings, v1_publication):
     assert client.get(url).status_code == 404
 
 
-@patch("portal.apps.public_data.views.logger")
+@patch("portal.apps.public_data.links.logger")
 def test_unreversible_file_is_skipped_not_fatal(mock_logger, rf, settings, publication):
     """Guard for any future route change: a file whose URL can't be built is omitted -- from
     distribution and as citation_pdf_url -- and logged, instead of failing the page's JSON-LD."""
@@ -3134,7 +3212,7 @@ def test_unreversible_file_is_skipped_not_fatal(mock_logger, rf, settings, publi
         return real_reverse(viewname, kwargs=kwargs, **extra)
 
     request = make_request(rf)
-    with patch("portal.apps.public_data.views.reverse", side_effect=reverse_rejecting_bad):
+    with patch("portal.apps.public_data.links.reverse", side_effect=reverse_rejecting_bad):
         distribution = _get_distribution(file_objs, "test.project-1", request)
         pdf_url = _get_citation_pdf_url(file_objs, "test.project-1", request)
         assert _get_publication_file_url("test.project-1", "bad.pdf", request) is None

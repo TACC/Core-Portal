@@ -86,7 +86,7 @@ def _get_subjects(base_meta):
     """Build DataCite's `subjects` property -- a list of `{"subject": ...}`
     objects -- from the publication's `keywords`, normalized by
     projects/schema_models/keywords.py, the same function the landing page's
-    schema.org `keywords` and `keywords` meta tag use (public_data/views.py).
+    schema.org `keywords` and `keywords` meta tag use (public_data/schema_org.py).
     """
 
     return [{"subject": keyword} for keyword in normalize_keywords(base_meta.get("keywords"))]
@@ -96,8 +96,9 @@ def _get_rights_list(base_meta, project_id):
     """Build DataCite's `rightsList` property from the publication's stored
     license selection.
 
-    Reuses the same LICENSE_URLS mapping (projects/schema_models/
-    license_urls.py) that public_data/views.py's `_get_license` resolves the
+    Reuses the same license mapping (projects/schema_models/license_urls.py,
+    plus PORTAL_PUBLICATION_LICENSE_URLS) that public_data/schema_org.py's
+    `_get_license` resolves the
     schema.org/Croissant `license` field from, so DataCite's record and this
     publication's own landing page never disagree about what its license
     resolves to. The DPMP publish wizard requires `license`
@@ -105,11 +106,12 @@ def _get_rights_list(base_meta, project_id):
     made before it was required, or in other portals, may have none. So an
     unset license just means no `rightsList` entry here, not a fatal error
     (Croissant still requires one -- see REQUIRED_CROISSANT_FIELDS in
-    public_data/views.py -- so such a publication's landing page makes no
-    Croissant claim). An unmapped *label* (present, but with no LICENSE_URLS
-    entry) is still a misconfiguration worth failing the DOI mint over -- the
-    same reasoning `_get_license` uses -- rather than silently minting a DOI
-    with a missing/bare-text rights URI.
+    public_data/schema_org.py -- so such a publication's landing page makes no
+    Croissant claim). An unmapped *label* (present, but with no mapped URL)
+    is a misconfiguration, but not one worth failing the DOI mint over --
+    Core-Portal is shared, and another portal's form may offer labels this
+    one doesn't know. So it's logged and left out, the same way the landing
+    page's `license` is, rather than sent as a bare-text rights entry.
     """
 
     license_value = base_meta.get("license")
@@ -117,13 +119,14 @@ def _get_rights_list(base_meta, project_id):
         return []
     license_url = resolve_license_url(license_value)
     if license_url is None:
-        raise ValueError(
-            f"Publication {project_id} has license {license_value!r}, which "
-            "has no entry in LICENSE_URLS (projects/schema_models/ "
-            "license_urls.py) and isn't itself a URL. DataCite's rightsList "
-            "requires a resolvable rightsUri -- add a canonical "
-            f"license-deed URL for {license_value!r} to LICENSE_URLS."
+        logger.error(
+            f"Publication {project_id} has license {license_value!r}, which has no "
+            "license-deed URL (projects/schema_models/license_urls.py or "
+            "PORTAL_PUBLICATION_LICENSE_URLS) and isn't itself a URL, so it's left "
+            f"out of DataCite's rightsList. Add a URL for {license_value!r} to "
+            "PORTAL_PUBLICATION_LICENSE_URLS."
         )
+        return []
     rights = {"rights": license_value, "rightsUri": license_url}
     # DataCite's recommended machine-readable license id, when the license has
     # an SPDX one (LICENSE_SPDX_IDS).
@@ -143,8 +146,10 @@ def _get_issued_date(base_meta):
     publish_project writes the date into the tree before building this payload: the source project's
     stored first-publish date on a republish, or the published project's `created` on a first publish.
     update_datacite_metadata's rebuild from a stored Publication reads that same date. It's a
-    datetime in memory or an ISO string once saved (DjangoJSONEncoder). Today's date is only a
-    fallback for a tree with no usable date. `publicationYear` is taken from this date.
+    datetime in memory or an ISO string once saved (DjangoJSONEncoder). Returns None for a tree with
+    no usable date, rather than guessing today's: for a publication made before that date was
+    stored, today would overwrite the DOI's real Issued date. `publicationYear` is taken from this
+    date.
     """
 
     stored = base_meta.get("publicationDate") or base_meta.get("publication_date")
@@ -152,7 +157,7 @@ def _get_issued_date(base_meta):
         return stored.isoformat()[:10]
     if isinstance(stored, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", stored[:10]):
         return stored[:10]
-    return datetime.date.today().isoformat()
+    return None
 
 
 def get_datacite_url(project_id: str, version: int | None = None):
@@ -189,7 +194,7 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
 
     `version` is the same republish counter (project_publish_operations.py's
     publish_project argument, mirrored onto Publication.version) that
-    public_data/views.py's schema.org JSON-LD already emits as `version`
+    public_data/schema_org.py's schema.org JSON-LD already emits as `version`
     -- optional here (defaults to None, omitted from the payload) since some
     callers/tests mint a DOI with no version context at all.
     """
@@ -209,7 +214,7 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
         first_name = (author.get("first_name") or "").strip()
         last_name = (author.get("last_name") or "").strip()
         # DataCite rejects a creator with an empty `name` (a 422 at publish), so a nameless author is
-        # left out, matching the landing page's schema.org `creator` (public_data/views.py).
+        # left out, matching the landing page's schema.org `creator` (public_data/schema_org.py).
         if not (first_name or last_name):
             logger.warning(f"Publication {project_id} has an author with no name; leaving them out of `creators`.")
             continue
@@ -217,7 +222,7 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
             # DataCite's schema requires `name` on every creator (the other
             # name parts below are supplementary) -- "Family, Given" is
             # DataCite's own recommended form, the same convention
-            # _format_citation_author (public_data/views.py) already uses
+            # _format_citation_author (public_data/citations.py) already uses
             # for Scholar's citation_author tag.
             "name": ", ".join(part for part in (last_name, first_name) if part),
             "nameType": "Personal",
@@ -280,10 +285,14 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
     datacite_json["publisher"] = settings.PORTAL_PUBLICATION_PUBLISHER
 
     # The year comes from the Issued date, so the two (and the landing page's citeAs year) can't
-    # disagree. Only a first publish sends it: upsert_datacite_json drops it from an update.
+    # disagree. Only a first publish sends it: upsert_datacite_json drops it from an update. With no
+    # known date both are left out, so an update keeps the dates DataCite already has.
     issued_date = _get_issued_date(base_meta)
-    datacite_json["publicationYear"] = int(issued_date[:4])
-    datacite_json["dates"] = [{"date": issued_date, "dateType": "Issued"}]
+    if issued_date:
+        datacite_json["publicationYear"] = int(issued_date[:4])
+        datacite_json["dates"] = [{"date": issued_date, "dateType": "Issued"}]
+    else:
+        logger.warning(f"Publication {project_id} has no publication date; sending DataCite no Issued date.")
 
     datacite_json["subjects"] = _get_subjects(base_meta)
     datacite_json["rightsList"] = _get_rights_list(base_meta, project_id)
@@ -292,7 +301,7 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
 
     # DataCite requires `url` to be the DOI's actual resolvable landing page
     # -- once minted, this is what doi.org redirects to, so getting it wrong
-    # isn't a cosmetic SEO problem the way public_data/views.py's landing-page
+    # isn't a cosmetic SEO problem the way public_data/links.py's landing-page
     # URL used to be (see _get_landing_page_url's docstring): it silently
     # registers a supposedly-permanent DOI that 404s. Built the same way
     # _get_landing_page_url now is -- reversing public_data/urls.py's own
@@ -311,7 +320,7 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
     # DataCite's schema requires an IETF BCP-47 / ISO 639-1 code here
     # (e.g. "en"), not the language's English name -- matches the
     # DC.language/`@language` value already emitted elsewhere for this same
-    # publication (public_data/views.py, base.html).
+    # publication (public_data/schema_org.py, base.html).
     datacite_json["language"] = "en"
 
     datacite_json["identifiers"] = [

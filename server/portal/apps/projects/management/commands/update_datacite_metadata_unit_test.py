@@ -1,3 +1,4 @@
+import datetime
 from io import StringIO
 
 import networkx as nx
@@ -134,9 +135,39 @@ def test_request_exception_is_reported(publications, mocker):
 
 
 def test_unbuildable_metadata_is_reported_and_not_sent(publications, mock_upsert):
-    Publication.objects.filter(project_id="test.project-1").update(tree=make_tree(license="Unmapped License"))
+    Publication.objects.filter(project_id="test.project-1").update(tree=nx.node_link_data(nx.DiGraph()))
 
     with pytest.raises(CommandError, match="test.project-1"):
         run("--all")
 
     assert [call.kwargs["doi"] for call in mock_upsert.call_args_list] == ["10.12345/bbbb"]
+
+
+def test_unmapped_license_is_sent_without_rights_list(publications, mock_upsert):
+    Publication.objects.filter(project_id="test.project-1").update(tree=make_tree(license="Unmapped License"))
+
+    run("test.project-1")
+
+    assert mock_upsert.call_args.args[0]["rightsList"] == []
+
+
+def test_issued_date_falls_back_to_publication_created(publications, mock_upsert):
+    """A publication made before its date was stored in the tree keeps its first publish as its
+    Issued date, not today's."""
+    created = datetime.datetime(2019, 3, 4, 5, 6, tzinfo=datetime.UTC)
+    Publication.objects.filter(project_id="test.project-1").update(created=created)
+
+    run("test.project-1")
+
+    assert mock_upsert.call_args.args[0]["dates"] == [{"date": "2019-03-04", "dateType": "Issued"}]
+
+
+def test_issued_date_prefers_the_stored_publication_date(publications, mock_upsert):
+    Publication.objects.filter(project_id="test.project-1").update(
+        tree=make_tree(publicationDate="2020-01-02"),
+        created=datetime.datetime(2019, 3, 4, tzinfo=datetime.UTC),
+    )
+
+    run("test.project-1")
+
+    assert mock_upsert.call_args.args[0]["dates"] == [{"date": "2020-01-02", "dateType": "Issued"}]

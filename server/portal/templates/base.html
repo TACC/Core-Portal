@@ -12,7 +12,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{% block title %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="{% block meta_description %}Explore published research datasets and computational tools on {{ settings.PORTAL_NAMESPACE }}.{% endblock %}">
+    {% comment %}
+      The dataset-portal wording is only the default where PORTAL_NOINDEX_APP_SHELL marks this a portal whose
+      indexable pages are published-dataset landing pages (DPMP); other portals keep their site description.
+    {% endcomment %}
+    <meta name="description" content="{% block meta_description %}{% if settings.PORTAL_NOINDEX_APP_SHELL %}Explore published research datasets and computational tools on {{ settings.PORTAL_NAMESPACE }}.{% else %}{{ site.description }}{% endif %}{% endblock %}">
     {% comment %}
       public_data/urls.py's catch-all `index_fallback` route (r"^.*$") serves this same generic app shell -- same
       title/description, no unique content -- for literally any URL that isn't a publication landing page, since
@@ -35,7 +39,10 @@
       omits the tags. Twitter's own Card parser falls back to og:title/og:description/og:image when the
       twitter:* equivalents are absent, and no other unfurler reads twitter:* tags at all, so
       twitter:image/twitter:card are the only Twitter-specific tags needed here.
+      Emitted on publication landing pages (which set `canonical_url`), and on every page of a portal that sets
+      PORTAL_NOINDEX_APP_SHELL; other portals' app-shell pages get no share-card tags, as before.
     {% endcomment %}
+    {% if canonical_url or settings.PORTAL_NOINDEX_APP_SHELL %}
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="{% block og_site_name %}{{ settings.PORTAL_NAMESPACE }}{% endblock %}">
     {% comment %}
@@ -51,7 +58,7 @@
       structured data (a stale ?vN revision link, or a deployment where the DataCite URL prefix points at a
       different host than the one serving this request).
     {% endcomment %}
-    <meta property="og:url" content="{{ canonical_url|default:request.build_absolute_uri }}">
+    <meta property="og:url" content="{% if canonical_url %}{{ canonical_url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endif %}">
     <meta property="og:title" content="{% block og_title %}{{ settings.PORTAL_NAMESPACE }} Workbench{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Explore published research datasets and computational tools on {{ settings.PORTAL_NAMESPACE }}.{% endblock %}">
     {% block og_image %}{% endblock %}
@@ -61,12 +68,14 @@
       has nothing to fill.
     {% endcomment %}
     <meta name="twitter:card" content="{% block twitter_card %}summary{% endblock %}">
+    {% endif %}
     {% if settings.PORTAL_ICON_FILENAME %}
     <link rel="icon" href="{{ settings.PORTAL_ICON_FILENAME }}">
     {% else %}
     <link rel="icon" href="{% static 'img/favicon.ico' %}">
     {% endif %}
-    <link rel="canonical" href="{{ canonical_url|default:request.build_absolute_uri }}">
+    {% comment %}Without its query string, so tracking or filter parameters don't each claim a canonical URL.{% endcomment %}
+    <link rel="canonical" href="{% if canonical_url %}{{ canonical_url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endif %}">
     <base href="/">
     {% block head_extra %}{% endblock %}
     <style>

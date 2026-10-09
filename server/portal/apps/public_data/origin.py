@@ -1,6 +1,6 @@
 """Public origin ("scheme://host") for published-dataset URLs.
 
-Shared between public_data/views.py (landing-page canonical/JSON-LD/sitemap
+Shared between public_data/links.py (landing-page canonical/JSON-LD/sitemap
 URLs) and projects/workspace_operations/datacite_operations.py (the URL a DOI
 is registered against), so a DOI can never resolve to a different host than
 the one its landing page, canonical link and sitemap entry claim.

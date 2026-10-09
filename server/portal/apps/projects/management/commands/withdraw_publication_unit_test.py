@@ -35,6 +35,15 @@ def mock_publish(mocker):
     return mocker.patch(f"{DIR}.publish_datacite_doi", return_value={"data": {}})
 
 
+# What publish_publication_doi would send with the `publish` event: the live version's metadata.
+LIVE_METADATA = {"titles": [{"title": "Live version"}], "url": "https://example.org/live"}
+
+
+@pytest.fixture(autouse=True)
+def mock_doi_update(mocker):
+    return mocker.patch(f"{DIR}.get_publish_doi_update", return_value=(None, LIVE_METADATA))
+
+
 def run(*args):
     out, err = StringIO(), StringIO()
     call_command("withdraw_publication", *args, stdout=out, stderr=err)
@@ -116,7 +125,7 @@ def test_restore_republishes_and_makes_doi_findable(publications, mock_hide, moc
     out, _ = run("--restore", "test.project-9")
 
     assert is_published("test.project-9")
-    mock_publish.assert_called_once_with("10.12345/zzzz")
+    mock_publish.assert_called_once_with("10.12345/zzzz", url=None, metadata=LIVE_METADATA)
     mock_hide.assert_not_called()
     assert "Restored test.project-9 v1" in out
     assert "Made 10.12345/zzzz findable (test.project-9 v1)" in out
@@ -128,15 +137,38 @@ def test_restore_reverses_a_withdrawal(publications, mock_hide, mock_publish):
 
     assert is_published("test.project-1")
     mock_hide.assert_called_once_with("10.12345/aaaa")
-    mock_publish.assert_called_once_with("10.12345/aaaa")
+    mock_publish.assert_called_once_with("10.12345/aaaa", url=None, metadata=LIVE_METADATA)
 
 
 def test_restore_of_published_publication_retries_the_publish(publications, mock_publish):
     out, _ = run("--restore", "test.project-1")
 
     assert is_published("test.project-1")
-    mock_publish.assert_called_once_with("10.12345/aaaa")
+    mock_publish.assert_called_once_with("10.12345/aaaa", url=None, metadata=LIVE_METADATA)
     assert "test.project-1 v2 was already published" in out
+
+
+def test_restore_sends_the_live_versions_metadata(publications, mock_publish, mock_doi_update):
+    """A republish's DOI still has the previous version's URL and metadata when
+    publish_publication_doi runs out of retries, so --restore sends the live version's."""
+    run("--restore", "test.project-1")
+
+    (publication,) = mock_doi_update.call_args.args
+    assert (publication.project_id, publication.version) == ("test.project-1", 2)
+
+
+def test_restore_falls_back_to_the_url_when_metadata_cant_be_built(publications, mock_publish, mock_doi_update):
+    mock_doi_update.return_value = ("https://example.org/live", None)
+
+    run("--restore", "test.project-1")
+
+    mock_publish.assert_called_once_with("10.12345/aaaa", url="https://example.org/live", metadata=None)
+
+
+def test_withdraw_doesnt_rebuild_metadata(publications, mock_hide, mock_doi_update):
+    run("test.project-1")
+
+    mock_doi_update.assert_not_called()
 
 
 def test_restore_without_doi_or_in_debug_skips_datacite(publications, mock_publish, settings):

@@ -252,8 +252,14 @@ _PROJECT_ADMIN_GROUP = "Project Admin"
 
 _PORTAL_PUBLICATION_PUBLISHER = "CEP"
 # Mark the workbench app shell and every other page without its own robots tag noindex, so only
-# published-dataset landing pages get indexed. DPMP sets this to True.
+# published-dataset landing pages get indexed. Also gives every page the dataset-portal meta
+# description and share-card (Open Graph/Twitter) defaults. DPMP sets this to True.
 _PORTAL_NOINDEX_APP_SHELL = False
+# Map any publish-form license labels beyond the built-in "ODC-BY 1.0" to their license-deed URL
+# and SPDX id, e.g. {"CC BY 4.0": "https://creativecommons.org/licenses/by/4.0/"} and
+# {"CC BY 4.0": "CC-BY-4.0"}.
+_PORTAL_PUBLICATION_LICENSE_URLS = {}
+_PORTAL_PUBLICATION_LICENSE_SPDX_IDS = {}
 _PORTAL_PUBLICATION_ARCHIVE_APP_ID = ""
 _PORTAL_PUBLICATION_ARCHIVE_APP_VERSION = ""
 _PORTAL_PUBLICATION_RANCH_SYSTEM_ID = ""

@@ -579,8 +579,16 @@ PORTAL_APPS_DEFAULT_TAB = getattr(settings_custom, "_PORTAL_APPS_DEFAULT_TAB", "
 PORTAL_PUBLICATION_PUBLISHER = getattr(settings_custom, "_PORTAL_PUBLICATION_PUBLISHER", PORTAL_NAMESPACE)
 
 # Mark every page without its own robots tag (base.html) noindex. Only portals with published-dataset
-# landing pages want this (DPMP), so it's off by default.
+# landing pages want this (DPMP), so it's off by default. It also gives every page base.html's
+# dataset-portal description and share-card (Open Graph/Twitter) defaults.
 PORTAL_NOINDEX_APP_SHELL = getattr(settings_custom, "_PORTAL_NOINDEX_APP_SHELL", False)
+
+# License-deed URLs (and SPDX ids) for publish-form license labels beyond the built-in ones in
+# projects/schema_models/license_urls.py. A label with no URL is left out of DataCite's rightsList
+# and the landing page's `license`, and logged.
+PORTAL_PUBLICATION_LICENSE_URLS = getattr(settings_custom, "_PORTAL_PUBLICATION_LICENSE_URLS", {})
+
+PORTAL_PUBLICATION_LICENSE_SPDX_IDS = getattr(settings_custom, "_PORTAL_PUBLICATION_LICENSE_SPDX_IDS", {})
 
 PORTAL_PUBLICATION_ARCHIVE_APP_ID = getattr(settings_custom, "_PORTAL_PUBLICATION_ARCHIVE_APP_ID", None)
 

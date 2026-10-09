@@ -1,6 +1,6 @@
 """Normalization of DOIs entered for related publications.
 
-Shared between public_data/views.py (schema.org `citation.identifier`) and
+Shared between public_data/citations.py (schema.org `citation.identifier`) and
 projects/workspace_operations/datacite_operations.py (DataCite
 `relatedIdentifiers`), so both turn a stored `publicationDoi` into the same
 bare DOI, or both leave it out.

@@ -82,11 +82,11 @@ def test_get_datacite_json_minimal():
 @pytest.mark.django_db
 @pytest.mark.parametrize(
     "stored,expected_year",
-    [("2019-11-30", 2019), (datetime.datetime(2021, 1, 1, 0, 0), 2021), (None, datetime.date.today().year)],
+    [("2019-11-30", 2019), (datetime.datetime(2021, 1, 1, 0, 0), 2021)],
 )
 def test_get_datacite_json_publication_year_matches_issued_date(stored, expected_year):
-    """publicationYear comes from the Issued date (today's only when there's no stored date), so a
-    republish of an older dataset doesn't claim this year."""
+    """publicationYear comes from the Issued date, so a republish of an older dataset doesn't claim
+    this year."""
     result = get_datacite_json(make_pub_graph(minimal_base_meta(publicationDate=stored)), "test.project-1")
     assert result["publicationYear"] == expected_year
     assert result["dates"][0]["date"].startswith(str(expected_year))
@@ -120,11 +120,13 @@ def test_get_datacite_json_issued_date_reads_snake_case_key():
 @DATACITE_SETTINGS
 @pytest.mark.django_db
 @pytest.mark.parametrize("stored", [None, "", "not a date", 2024])
-def test_get_datacite_json_issued_date_defaults_to_today(stored):
-    """With no usable publicationDate in the tree (publish_project always writes one, so this is
-    only a fallback), the DOI is issued today, and publicationYear is this year."""
+def test_get_datacite_json_omits_dates_without_a_publication_date(caplog, stored):
+    """With no usable publicationDate in the tree, today's date would overwrite an older DOI's real
+    Issued date, so neither it nor publicationYear is sent."""
     result = get_datacite_json(make_pub_graph(minimal_base_meta(publicationDate=stored)), "test.project-1")
-    assert result["dates"] == [{"date": datetime.date.today().isoformat(), "dateType": "Issued"}]
+    assert "dates" not in result
+    assert "publicationYear" not in result
+    assert "Publication test.project-1 has no publication date" in caplog.text
 
 
 @DATACITE_SETTINGS
@@ -436,10 +438,35 @@ def test_get_datacite_json_rights_list_empty_when_no_license():
 
 @DATACITE_SETTINGS
 @pytest.mark.django_db
-def test_get_datacite_json_rights_list_raises_for_unmapped_label():
+def test_get_datacite_json_rights_list_logs_and_omits_unmapped_label(caplog):
+    """Another portal's form may offer a label this one doesn't map, which mustn't block its DOIs."""
     base_meta = minimal_base_meta(license="unmapped-license")
-    with pytest.raises(ValueError, match="unmapped-license"):
-        get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["rightsList"] == []
+    assert "'unmapped-license', which has no license-deed URL" in caplog.text
+
+
+@override_settings(
+    DATACITE_URL="https://api.test.datacite.org",
+    DATACITE_USER="datacite-user",
+    DATACITE_PASS="datacite-pass",
+    PORTAL_PUBLICATION_DATACITE_SHOULDER="10.1234",
+    PORTAL_PUBLICATION_LICENSE_URLS={"CC BY 4.0": "https://creativecommons.org/licenses/by/4.0/"},
+    PORTAL_PUBLICATION_LICENSE_SPDX_IDS={"CC BY 4.0": "CC-BY-4.0"},
+)
+@pytest.mark.django_db
+def test_get_datacite_json_rights_list_resolves_label_from_settings():
+    base_meta = minimal_base_meta(license="CC BY 4.0")
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["rightsList"] == [
+        {
+            "rights": "CC BY 4.0",
+            "rightsUri": "https://creativecommons.org/licenses/by/4.0/",
+            "rightsIdentifier": "CC-BY-4.0",
+            "rightsIdentifierScheme": "SPDX",
+            "schemeUri": "https://spdx.org/licenses/",
+        }
+    ]
 
 
 # ---------------------------------------------------------------------------

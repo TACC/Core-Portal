@@ -5,7 +5,7 @@ from portal.apps.projects.schema_models.base_metadata import FileColumn, FileObj
 
 
 def test_file_obj_dumps_croissant_fields_under_the_keys_the_landing_page_reads():
-    """public_data/views.py builds `distribution`/`recordSet` from the stored dicts, reading
+    """public_data/schema_org.py builds `distribution`/`recordSet` from the stored dicts, reading
     `sha256` and each column's camelCase `dataType` -- so the serialized keys must match."""
     file_obj = FileObj(
         system="test.project.published.test.project-1",

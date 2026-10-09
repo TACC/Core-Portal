@@ -63,7 +63,7 @@ class FileObj(BaseMetadataModel):
     # job's sha256 manifest (project_publish_operations.py's
     # load_publication_file_checksums; backfilled by the
     # compute_publication_checksums command), so the Croissant `distribution`
-    # built from stored metadata in public_data/views.py can include a
+    # built from stored metadata in public_data/schema_org.py can include a
     # cr:FileObject `sha256` without hashing file content on every page request.
     sha256: str | None = None
 

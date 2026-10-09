@@ -1,6 +1,6 @@
 """Normalization of stored publication keywords.
 
-Shared between public_data/views.py (schema.org `keywords` and the `keywords` meta tag) and
+Shared between public_data/schema_org.py (schema.org `keywords` and the `keywords` meta tag) and
 projects/workspace_operations/datacite_operations.py (DataCite `subjects`), so all three publish
 the same keyword list.
 

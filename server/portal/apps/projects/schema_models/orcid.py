@@ -1,6 +1,6 @@
 """Normalization of stored ORCID iDs.
 
-Shared between public_data/views.py (schema.org `creator.sameAs`) and
+Shared between public_data/schema_org.py (schema.org `creator.sameAs`) and
 projects/workspace_operations/datacite_operations.py (DataCite
 `creators.nameIdentifiers`), so both turn an author's `orcid_id` into the same
 canonical URL, or both leave it out.

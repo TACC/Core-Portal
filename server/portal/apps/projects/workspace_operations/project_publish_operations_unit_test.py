@@ -4,6 +4,7 @@
    :synopsis: project_publish_operations unit tests.
 """
 
+import datetime
 import json
 from types import SimpleNamespace
 from unittest.mock import MagicMock
@@ -726,6 +727,25 @@ def test_publish_project_republish_keeps_original_publication_date(mocker, setti
     assert v2_project.value["publicationDate"] == "2024-01-15T12:00:00Z"
     v2_graph = ProjectMetadata.objects.get(name=constants.PROJECT_GRAPH, base_project=v2_project)
     assert v2_graph.value["nodes"][0]["value"]["publicationDate"] == "2024-01-15T12:00:00Z"
+
+
+def test_publish_project_republish_of_legacy_publication_keeps_its_first_publish_date(mocker, settings):
+    """A publication made before publicationDate was stored has none on its source project; its
+    existing Publication row's `created` is its first publish, not v2's system's `created`."""
+    _setup_publish_project_fixtures(settings, existing_doi="10.5555/existing-doi")
+    v2_project = create_project(f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.test.project-1v2", value={})
+    first_published = datetime.datetime(2019, 3, 4, 5, 6, tzinfo=datetime.UTC)
+    Publication.objects.create(project_id="test.project-1", version=1, value={}, tree={}, created=first_published)
+
+    _mock_republish_steps(mocker)
+    mock_datacite_json = mocker.patch(f"{DIR}.get_datacite_json", return_value={"titles": []})
+
+    publish_project(project_id="test.project-1", version=2)
+
+    datacite_tree = mock_datacite_json.call_args.args[0]
+    assert datacite_tree.nodes["NODE_ROOT"]["value"]["publicationDate"] == first_published
+    v2_project.refresh_from_db()
+    assert v2_project.value["publicationDate"].startswith("2019-03-04")
 
 
 def test_publish_project_reuses_existing_doi(mocker, settings):
@@ -1676,14 +1696,14 @@ def test_poll_publication_archive_job_gives_up_after_max_polls(mocker, job_statu
 
 
 # ---------------------------------------------------------------------------
-# End to end with public_data/views.py
+# End to end with public_data/schema_org.py
 # ---------------------------------------------------------------------------
 
 
 def test_loaded_checksums_make_landing_page_croissant_conformant(mocker, rf, settings):
     """Once the archive job's manifest is loaded, the schema.org Dataset carries each file's sha256
     in `distribution` and claims Croissant conformance again."""
-    from portal.apps.public_data.views import get_schema_org_json
+    from portal.apps.public_data.schema_org import get_schema_org_json
 
     settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = ""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"

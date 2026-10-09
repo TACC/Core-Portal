@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from portal.apps.projects.workspace_operations.datacite_operations import hide_datacite_doi, publish_datacite_doi
+from portal.apps.projects.workspace_operations.project_publish_operations import get_publish_doi_update
 from portal.apps.publications.models import Publication
 
 
@@ -23,9 +24,11 @@ class Command(BaseCommand):
     To take the files down too, unshare those systems and remove the mirrored directories by hand.
 
     --restore sets is_published back to True and sends the `publish` event, which makes the DOI
-    findable again. Once the DOI is findable (or there's no DataCite call to make), it also marks the
-    landing page indexable -- which also recovers a publish whose publish_publication_doi task ran out
-    of retries, leaving the page noindex and out of the sitemap.
+    findable again, with the live version's URL and metadata (as publish_publication_doi sends them),
+    so a republish's DOI doesn't keep pointing at the previous version. Once the DOI is findable (or
+    there's no DataCite call to make), it also marks the landing page indexable -- which also recovers
+    a publish whose publish_publication_doi task ran out of retries, leaving the page noindex and out
+    of the sitemap.
 
     The publication is withdrawn (or restored) even if DataCite rejects the request, so a failed
     DataCite call can be retried by running the same command again for the same project id. When
@@ -55,10 +58,8 @@ class Command(BaseCommand):
         restore = options["restore"]
         if restore:
             published, done, doi_action, doi_done, datacite_event = True, "Restored", "make findable", "Made", "publish"
-            datacite_call = publish_datacite_doi
         else:
             published, done, doi_action, doi_done, datacite_event = False, "Withdrew", "hide", "Hid", "hide"
-            datacite_call = hide_datacite_doi
 
         # Publications already in the target state are included, so a failed DataCite call can be
         # retried.
@@ -89,7 +90,11 @@ class Command(BaseCommand):
                 # DataCite's own error details in its message; a network failure raises a requests
                 # exception.
                 try:
-                    datacite_call(doi)
+                    if restore:
+                        url, metadata = get_publish_doi_update(publication)
+                        publish_datacite_doi(doi, url=url, metadata=metadata)
+                    else:
+                        hide_datacite_doi(doi)
                 except Exception as e:
                     failed.append(publication.project_id)
                     self.stderr.write(f"Failed to {doi_action} {doi} ({label}): {e}")

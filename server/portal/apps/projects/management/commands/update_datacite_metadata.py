@@ -58,9 +58,13 @@ class Command(BaseCommand):
                 continue
 
             try:
-                datacite_json = get_datacite_json(
-                    nx.node_link_graph(publication.tree), publication.project_id, publication.version
-                )
+                pub_graph = nx.node_link_graph(publication.tree)
+                # A publication made before publish_project stored its publication date has none in
+                # its tree; its row's `created` is its first publish, so the DOI's Issued date stays that.
+                root_value = pub_graph.nodes["NODE_ROOT"]["value"]
+                if not (root_value.get("publicationDate") or root_value.get("publication_date")):
+                    root_value["publicationDate"] = publication.created
+                datacite_json = get_datacite_json(pub_graph, publication.project_id, publication.version)
             except Exception as e:
                 failed.append(publication.project_id)
                 self.stderr.write(f"Failed {label} ({doi}): couldn't build its DataCite metadata: {e}")

@@ -262,7 +262,7 @@ def load_publication_file_checksums(self, project_id: str, version: int | None =
     """Store each published file's sha256 -- read from the manifest the archive job computed on the
     storage system -- on its file object in Publication.value/tree (FileObj.sha256), so the landing
     page's Croissant `distribution` carries the per-file checksum Croissant requires (see
-    public_data/views.py's CROISSANT_FILE_CHECKSUM_FIELDS). Files missing from the manifest are
+    public_data/schema_org.py's CROISSANT_FILE_CHECKSUM_FIELDS). Files missing from the manifest are
     left unhashed; the page then just omits conformsTo.
 
     Also stores the version's whole-publication ZIP's sha256 and size (Publication.archive_sha256
@@ -493,8 +493,15 @@ def publish_project(self, project_id: str, version: int | None = 1):
             # The first publish's date, kept on every republish so `datePublished`, the citation
             # date and DataCite's `Issued` date all stay the original; what changed in a republish
             # is carried by `version` and `dateModified` instead. It's written into the tree here so
-            # get_datacite_json's Issued date reads it too.
-            publication_date = source_project.value.get("publicationDate") or published_project.created
+            # get_datacite_json's Issued date reads it too. A publication made before that date was
+            # stored has none, so its existing Publication row's `created` (its first publish) is
+            # used; only a first publish falls back to this version's own system's `created`.
+            existing_publication = Publication.objects.filter(project_id=project_id).first()
+            publication_date = (
+                source_project.value.get("publicationDate")
+                or (existing_publication and existing_publication.created)
+                or published_project.created
+            )
             publication_tree.nodes["NODE_ROOT"]["value"]["publicationDate"] = publication_date
 
             try:
@@ -586,6 +593,23 @@ def publish_project(self, project_id: str, version: int | None = 1):
         raise
 
 
+def get_publish_doi_update(publication: Publication) -> tuple[str | None, dict | None]:
+    """The `url` and `metadata` publish_datacite_doi should send with a publication's `publish`
+    event: its live version's metadata, rebuilt from its tree (the metadata carries that version's
+    URL), or that version's URL alone when the metadata can't be built.
+    """
+
+    project_id, version = publication.project_id, publication.version
+    try:
+        return None, get_datacite_json(nx.node_link_graph(publication.tree), project_id, version)
+    except Exception:
+        logger.exception(
+            f"Could not build DataCite metadata for {project_id} v{version}; publishing its DOI with its URL "
+            f"only. Run `update_datacite_metadata {project_id}` once the metadata is fixed."
+        )
+        return get_datacite_url(project_id, version), None
+
+
 @shared_task(bind=True, max_retries=5, queue="default")
 def publish_publication_doi(self, project_id: str, doi: str, version: int | None = None):
     """Make a publication's DOI findable at DataCite, then mark its landing page indexable. Queued by
@@ -593,7 +617,7 @@ def publish_publication_doi(self, project_id: str, doi: str, version: int | None
     _queue_publish_publication_doi). The same request moves the DOI's URL to `version`'s landing
     page and sends that version's metadata, unless a newer version is live by now. Retried with
     backoff; once retries run out, `withdraw_publication --restore <project_id>` sends the same
-    `publish` event and marks it indexable.
+    `publish` event, URL and metadata, and marks it indexable.
     """
 
     url = None
@@ -602,16 +626,9 @@ def publish_publication_doi(self, project_id: str, doi: str, version: int | None
         Publication.objects.filter(project_id=project_id, version=version).first() if version is not None else None
     )
     if publication:
-        try:
-            # Rebuilt from the version now live, so a republish's title, description and version
-            # reach DataCite with its URL rather than while the old version is still served.
-            metadata = get_datacite_json(nx.node_link_graph(publication.tree), project_id, version)
-        except Exception:
-            logger.exception(
-                f"Could not build DataCite metadata for {project_id} v{version}; publishing {doi} with its URL "
-                f"only. Run `update_datacite_metadata {project_id}` once the metadata is fixed."
-            )
-            url = get_datacite_url(project_id, version)
+        # Rebuilt from the version now live, so a republish's title, description and version
+        # reach DataCite with its URL rather than while the old version is still served.
+        url, metadata = get_publish_doi_update(publication)
     try:
         publish_datacite_doi(doi, url=url, metadata=metadata)
     except Exception as e:
