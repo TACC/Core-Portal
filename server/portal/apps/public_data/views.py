@@ -20,6 +20,7 @@ from django.views.generic.base import TemplateView, View
 
 from portal.apps.public_data.links import _get_configured_origin
 from portal.apps.public_data.schema_org import (
+    CROISSANT_1_1_MEDIA_TYPE,
     _get_publication_file_objs,
     dumps_json_ld,
     get_citation_context,
@@ -349,9 +350,9 @@ class PublicationArchiveView(PublishedDatasetsMountMixin, View):
 
 class PublicationCroissantView(PublishedDatasetsMountMixin, View):
     """Serve a publication's schema.org/Croissant JSON-LD -- the same document its landing page
-    embeds -- on its own, as application/ld+json. Croissant tooling (mlcroissant, dataset loaders)
-    loads a dataset from a URL that returns the JSON-LD itself, not an HTML page with it inside a
-    <script> tag.
+    embeds -- on its own, as application/ld+json with the Croissant 1.1 profile. Croissant tooling
+    (mlcroissant, dataset loaders) loads a dataset from a URL that returns the JSON-LD itself, not an
+    HTML page with it inside a <script> tag.
 
     Served only for publications whose landing page carries the JSON-LD (published and indexable,
     with metadata that builds -- as for IndexView and SitemapView) and whose JSON-LD claims
@@ -372,7 +373,7 @@ class PublicationCroissantView(PublishedDatasetsMountMixin, View):
             raise Http404(f"No Croissant metadata for project {project_id}") from e
         if "conformsTo" not in schema_org_json:
             raise Http404(f"Publication {project_id}'s metadata doesn't conform to Croissant")
-        response = HttpResponse(json.dumps(schema_org_json), content_type="application/ld+json")
+        response = HttpResponse(json.dumps(schema_org_json), content_type=CROISSANT_1_1_MEDIA_TYPE)
         response["Access-Control-Allow-Origin"] = "*"
         return response
 

@@ -1726,4 +1726,4 @@ def test_loaded_checksums_make_landing_page_croissant_conformant(mocker, rf, set
     publication.refresh_from_db()
     schema = get_schema_org_json(publication, publication.project_id, request)
     assert schema["distribution"][0]["sha256"] == H1
-    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.1"

@@ -1226,7 +1226,7 @@ def test_schema_org_and_citation_include_entity_node_files(rf, settings, publica
     assert distribution_ids == [
         f"{FILES_URL}{path}" for path in ("data.csv", "sample1/scan.tif", "sample1/paper.pdf", "sample1/table.csv")
     ]
-    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.1"
     assert {record_set["@id"] for record_set in schema["recordSet"]} == {
         f"{FILES_URL}data.csv#records",
         f"{FILES_URL}sample1/table.csv#records",
@@ -1250,7 +1250,7 @@ def test_entity_only_files_still_make_publication_a_croissant_candidate(rf, sett
     schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
 
     assert [file_object["@id"] for file_object in schema["distribution"]] == [f"{FILES_URL}sample1/scan.tif"]
-    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.1"
 
 
 def test_get_publication_file_objs_combines_root_and_entity_nodes_deduped_by_path(publication):
@@ -1466,7 +1466,7 @@ def test_schema_org_json_lists_archive_and_points_file_sets_into_it(rf, settings
     assert file_set["includes"] == "test.project-1v3/sample1/raw/**"
     assert file_set["@id"] == f"{FILES_URL}sample1/raw/"
     assert schema["distribution"][-1]["@id"] == ARCHIVE_URL
-    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.1"
 
 
 @pytest.mark.parametrize("missing", ["checksum", "web_mirror"])
@@ -1507,18 +1507,23 @@ def test_has_type(entry, expected):
 
 def test_schema_org_json_with_archive_passes_mlcroissant_validation(rf, settings, archived_publication, tmp_path):
     """The ZIP entry (dual-typed, with its sha256) and FileSets `containedIn` it validate with no
-    errors or warnings."""
+    errors or warnings, and mlcroissant keeps each FileSet's link to the ZIP -- which it silently
+    drops unless the 1.1 @context maps `containedIn` to cr:containedIn."""
     mlc = pytest.importorskip("mlcroissant")
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
 
     schema = get_schema_org_json(archived_publication, archived_publication.project_id, make_request(rf))
-    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.1"
     jsonld_path = tmp_path / "croissant.json"
     jsonld_path.write_text(json.dumps(schema))
 
-    issues = mlc.Dataset(jsonld=jsonld_path).metadata.ctx.issues
-    assert not issues.errors
-    assert not issues.warnings
+    metadata = mlc.Dataset(jsonld=jsonld_path).metadata
+    assert not metadata.ctx.issues.errors
+    assert not metadata.ctx.issues.warnings
+    archive_id = next(entry["@id"] for entry in schema["distribution"] if entry["encodingFormat"] == "application/zip")
+    file_sets = [entry for entry in metadata.distribution if isinstance(entry, mlc.FileSet)]
+    assert file_sets
+    assert all(file_set.contained_in == [archive_id] for file_set in file_sets)
 
 
 # ---------------------------------------------------------------------------
@@ -1532,7 +1537,7 @@ def test_croissant_route_serves_landing_pages_json_ld(client, publication):
     response = client.get(url)
 
     assert response.status_code == 200
-    assert response["Content-Type"] == "application/ld+json"
+    assert response["Content-Type"] == 'application/ld+json; profile="http://mlcommons.org/croissant/1.1"'
     assert response["Access-Control-Allow-Origin"] == "*"
     page = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
     embedded = re.search(r'<script type="application/ld\+json">(.*?)</script>', page, re.DOTALL).group(1)
@@ -1624,7 +1629,7 @@ def test_get_schema_org_json_success(rf, settings, publication):
     assert schema["name"] == "Test Dataset"
     assert schema["description"] == TEST_DESCRIPTION
     assert schema["license"] == LICENSE_URLS["ODC-BY 1.0"]
-    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.1"
     assert schema["isAccessibleForFree"] is True
     assert schema["identifier"] == "https://doi.org/10.1234/test-doi"
     assert schema["sameAs"] == "https://doi.org/10.1234/test-doi"
@@ -1669,24 +1674,25 @@ def test_get_schema_org_json_falls_back_to_landing_page_for_unparseable_doi(rf, 
     assert f"url = {{{schema['url']}}}" in schema["citeAs"]
 
 
-def test_get_schema_org_json_uses_full_croissant_1_0_context(rf, publication):
+def test_get_schema_org_json_uses_full_croissant_1_1_context(rf, publication):
     context = get_schema_org_json(publication, publication.project_id, make_request(rf))["@context"]
 
-    # Every key in the Croissant 1.0 spec's @context (Appendix 1), including terms this
-    # document never emits -- mlcroissant flags a @context missing any of them as non-standard.
+    # Every key in the Croissant 1.1 spec's @context (Appendix 1), including terms this
+    # document never emits.
     assert set(context) == {
-        "@language", "@vocab", "citeAs", "column", "conformsTo", "cr", "rai", "data", "dataType",
-        "dct", "equivalentProperty", "examples", "extract", "field", "fileProperty", "fileObject",
-        "fileSet", "format", "includes", "isLiveDataset", "jsonPath", "key", "md5", "parentField",
-        "path", "recordSet", "references", "regex", "repeated", "replace", "samplingRate", "sc",
-        "separator", "source", "subField", "transform",
+        "@language", "@vocab", "sc", "cr", "rai", "dct", "annotation", "arrayShape", "citeAs",
+        "column", "conformsTo", "containedIn", "data", "dataType", "equivalentProperty", "examples",
+        "excludes", "extract", "field", "fileProperty", "fileObject", "fileSet", "format", "includes",
+        "isArray", "isLiveDataset", "jsonPath", "key", "md5", "parentField", "recordSet", "references",
+        "regex", "readLines", "sdVersion", "separator", "source", "subField", "transform", "unArchive",
+        "value",
     }  # fmt: skip
     assert context["cr"] == "http://mlcommons.org/croissant/"
     assert context["conformsTo"] == "dct:conformsTo"
+    assert context["containedIn"] == "cr:containedIn"
     assert context["dataType"] == {"@id": "cr:dataType", "@type": "@vocab"}
-    # 1.0 values, not 0.8's sc:key/sc:md5.
-    assert context["key"] == "cr:key"
-    assert context["md5"] == "cr:md5"
+    # https, not the spec's http: mlcroissant rejects a Dataset that isn't https://schema.org/Dataset.
+    assert context["@vocab"] == context["sc"] == "https://schema.org/"
 
 
 def test_get_schema_org_json_context_is_not_shared_between_documents(rf, publication):
@@ -1724,7 +1730,7 @@ def test_get_schema_org_json_directory_only_publication_conforms_with_archive(rf
         ["cr:FileSet", "DataDownload"],
         ["cr:FileObject", "DataDownload"],
     ]
-    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.1"
 
 
 @patch("portal.apps.public_data.schema_org.logger")
@@ -1900,7 +1906,7 @@ def test_get_schema_org_json_every_file_hashed_keeps_conforms_to(rf, settings, p
 
     schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
 
-    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.1"
     assert [file_object["sha256"] for file_object in schema["distribution"]] == ["abc123", "aa11"]
 
 
@@ -3224,7 +3230,7 @@ def test_newline_filename_keeps_landing_page_indexable_with_json_ld(client, sett
     robots_match = re.search(r'<meta name="robots" content="([^"]*)">', body)
     assert robots_match.group(1).strip() == "index, follow, max-image-preview:large"
     schema = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', body, re.S).group(1))
-    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.1"
     newline_file = schema["distribution"][1]
     assert newline_file["@id"] == newline_file["contentUrl"]
     assert newline_file["contentUrl"].endswith("/files/docs/new%0Aline.pdf")
@@ -3307,7 +3313,7 @@ def test_unreversible_file_is_skipped_not_fatal(mock_logger, rf, settings, publi
 
 
 def test_get_schema_org_json_passes_mlcroissant_validation(rf, settings, publication, tmp_path):
-    """The document that claims Croissant 1.0 `conformsTo` validates with mlcroissant, MLCommons'
+    """The document that claims Croissant 1.1 `conformsTo` validates with mlcroissant, MLCommons'
     reference implementation, with no errors or warnings. mlcroissant is a dev dependency
     (pyproject.toml), so this runs in CI; it's only skipped in an environment synced without the
     dev group.
@@ -3332,7 +3338,7 @@ def test_get_schema_org_json_passes_mlcroissant_validation(rf, settings, publica
     publication.save()
 
     schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
-    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.1"
     assert schema["recordSet"]
     # No ZIP here, so the directory is left out; the archived test above covers FileSets.
     assert not any(_has_type(entry, "cr:FileSet") for entry in schema["distribution"])

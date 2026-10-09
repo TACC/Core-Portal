@@ -53,7 +53,7 @@ REQUIRED_DATASET_FIELDS = ("name", "description")
 # only logs a warning rather than raising.
 GOOGLE_DATASET_DESCRIPTION_LENGTH = (50, 5000)
 
-# Properties Croissant (http://mlcommons.org/croissant/1.0) additionally requires on a
+# Properties Croissant (http://mlcommons.org/croissant/1.1) additionally requires on a
 # conformant Dataset. When any of these is missing, get_schema_org_json still emits the plain
 # schema.org Dataset -- it's still valid, and still eligible for Dataset Search -- but drops
 # the `conformsTo` claim rather than asserting Croissant conformance it doesn't have.
@@ -67,27 +67,35 @@ REQUIRED_CROISSANT_FIELDS = ("license", "creator", "datePublished", "distributio
 # ['md5', 'sha256']"). A Dataset with any unhashed file is emitted without `conformsTo` too.
 CROISSANT_FILE_CHECKSUM_FIELDS = ("md5", "sha256")
 
-CROISSANT_1_0 = "http://mlcommons.org/croissant/1.0"
+CROISSANT_1_1 = "http://mlcommons.org/croissant/1.1"
 
-# The Croissant 1.0 spec's official @context, verbatim and in full (the same one mlcroissant's
-# make_context builds for a 1.0 document, and its example datasets use). Every Croissant term this
-# document emits -- in `distribution` (cr:FileObject) or `recordSet` (cr:RecordSet, field/source/
-# extract/fileObject/dataType/column) -- needs its mapping here, or it falls back to the bare @vocab
-# and resolves to a nonexistent "https://schema.org/<term>". The terms this document doesn't use
-# are kept too: mlcroissant warns that any @context missing one of them "is not standard".
-CROISSANT_1_0_CONTEXT = {
+# PublicationCroissantView's media type: JSON-LD with the Croissant version's profile, per the spec.
+CROISSANT_1_1_MEDIA_TYPE = f'application/ld+json; profile="{CROISSANT_1_1}"'
+
+# The Croissant 1.1 spec's JSON-LD @context (Appendix 1), in full, except that schema.org is
+# https://schema.org/ rather than the spec's http://schema.org/: mlcroissant rejects a Dataset whose
+# @vocab doesn't resolve to https://schema.org/Dataset. Every Croissant term this document emits --
+# in `distribution` (cr:FileObject, cr:FileSet and its `containedIn`) or `recordSet` (cr:RecordSet,
+# field/source/extract/fileObject/dataType/column) -- needs its mapping here, or it falls back to
+# the bare @vocab and resolves to a nonexistent "https://schema.org/<term>".
+CROISSANT_1_1_CONTEXT = {
     "@language": "en",
     "@vocab": "https://schema.org/",
+    "sc": "https://schema.org/",
+    "cr": "http://mlcommons.org/croissant/",
+    "rai": "http://mlcommons.org/croissant/RAI/",
+    "dct": "http://purl.org/dc/terms/",
+    "annotation": "cr:annotation",
+    "arrayShape": "cr:arrayShape",
     "citeAs": "cr:citeAs",
     "column": "cr:column",
     "conformsTo": "dct:conformsTo",
-    "cr": "http://mlcommons.org/croissant/",
-    "rai": "http://mlcommons.org/croissant/RAI/",
+    "containedIn": "cr:containedIn",
     "data": {"@id": "cr:data", "@type": "@json"},
     "dataType": {"@id": "cr:dataType", "@type": "@vocab"},
-    "dct": "http://purl.org/dc/terms/",
     "equivalentProperty": "cr:equivalentProperty",
     "examples": {"@id": "cr:examples", "@type": "@json"},
+    "excludes": "cr:excludes",
     "extract": "cr:extract",
     "field": "cr:field",
     "fileProperty": "cr:fileProperty",
@@ -95,23 +103,23 @@ CROISSANT_1_0_CONTEXT = {
     "fileSet": "cr:fileSet",
     "format": "cr:format",
     "includes": "cr:includes",
+    "isArray": "cr:isArray",
     "isLiveDataset": "cr:isLiveDataset",
     "jsonPath": "cr:jsonPath",
     "key": "cr:key",
     "md5": "cr:md5",
     "parentField": "cr:parentField",
-    "path": "cr:path",
     "recordSet": "cr:recordSet",
     "references": "cr:references",
     "regex": "cr:regex",
-    "repeated": "cr:repeated",
-    "replace": "cr:replace",
-    "samplingRate": "cr:samplingRate",
-    "sc": "https://schema.org/",
+    "readLines": "cr:readLines",
+    "sdVersion": "cr:sdVersion",
     "separator": "cr:separator",
     "source": "cr:source",
     "subField": "cr:subField",
     "transform": "cr:transform",
+    "unArchive": "cr:unArchive",
+    "value": "cr:value",
 }
 
 # The only formats Croissant defines `extract.column` for (as mimetypes.guess_type names them), so
@@ -306,10 +314,8 @@ def _get_file_set(name, dir_url, archive_url, archive_dir):
     DataDownload, and the ZIP is where the directory's bytes can be downloaded. mlcroissant's
     FileSet has no `contentUrl`, so Croissant loaders ignore it and use `containedIn`.
 
-    validator.schema.org warns that `containedIn` isn't a DataDownload property: Croissant 1.0
-    puts it in the schema.org namespace, which doesn't define it. That's expected. Don't remap it
-    to `cr:containedIn` in the 1.0 `@context` -- mlcroissant then silently drops the link to the
-    ZIP. Croissant 1.1 moves it to `cr:containedIn`, which clears the warning.
+    `containedIn` is `cr:containedIn` in the 1.1 `@context`. Without that mapping mlcroissant
+    1.1 silently drops the link to the ZIP.
 
     The trailing "/" keeps the `@id` distinct from a cr:FileObject `@id`, which never ends in
     one. Croissant requires `encodingFormat` on a FileSet too, but a directory's contents can be
@@ -479,7 +485,7 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
 
     landing_page_url = _get_landing_page_url(project_id, pub.version, request)
     schema_org_json = {
-        "@context": copy.deepcopy(CROISSANT_1_0_CONTEXT),
+        "@context": copy.deepcopy(CROISSANT_1_1_CONTEXT),
         "@type": "Dataset",
         # Names the Dataset node itself, so it isn't a blank node other documents can't refer to.
         # The landing page, not the DOI: `identifier`/`sameAs` already carry the DOI, and every
@@ -488,7 +494,7 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
         "name": base_meta.get("title"),
         # Provisional -- removed below unless every REQUIRED_CROISSANT_FIELDS entry made it into
         # the final document. Set here only to keep its position in the serialized output.
-        "conformsTo": CROISSANT_1_0,
+        "conformsTo": CROISSANT_1_1,
         "description": base_meta.get("description"),
         "citeAs": _get_bibtex_citation(base_meta, doi, project_id, pub.version, request),
         # Distinct from `citeAs` above -- see _get_citations' docstring. Optional/recommended
@@ -592,7 +598,7 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
             logger.warning(
                 f"Publication {project_id} has files but is missing Croissant-required field(s) "
                 f"{', '.join(croissant_missing)}, so its Dataset is emitted without conformsTo "
-                f"{CROISSANT_1_0}."
+                f"{CROISSANT_1_1}."
             )
     # Every cr:FileObject also needs a checksum, or Croissant validators reject the whole Dataset.
     # The warning below is commented out until checksums exist: publications archived before the
@@ -609,7 +615,7 @@ def get_schema_org_json(pub, project_id, request, file_objs=None):
         del schema_org_json["conformsTo"]
         # logger.warning(
         #     f"Publication {project_id} has {len(unhashed)} file(s) with no md5/sha256 checksum (e.g. "
-        #     f"{unhashed[0]}), so its Dataset is emitted without conformsTo {CROISSANT_1_0}."
+        #     f"{unhashed[0]}), so its Dataset is emitted without conformsTo {CROISSANT_1_1}."
         # )
 
     return schema_org_json
