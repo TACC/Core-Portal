@@ -1215,7 +1215,23 @@ def _stream_published_file(system, path):
     return response
 
 
-class PublicationFileDownloadView(View):
+class PublishedDatasetsMountMixin:
+    """301 a publication's file, cover image, ZIP or Croissant route under the /public-data/ mount
+    (portal/urls.py's `public` namespace) to the same route under /published-datasets/, the one
+    the landing page links to, so crawlers don't see 200 duplicates -- as IndexView.get does for
+    the landing page itself. Keeps the query string.
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        match = request.resolver_match
+        if match and match.namespace != "publications":
+            path = reverse(f"publications:{match.url_name}", kwargs=kwargs)
+            query = request.META.get("QUERY_STRING")
+            return HttpResponsePermanentRedirect(f"{path}?{query}" if query else path)
+        return super().dispatch(request, *args, **kwargs)
+
+
+class PublicationFileDownloadView(PublishedDatasetsMountMixin, View):
     """Serve one published file's bytes at a URL in the same directory as its publication's
     landing page (public_data/urls.py's `file_download` pattern, under the bare project id --
     see _get_publication_file_url), rather than the datafiles app's generic
@@ -1256,7 +1272,7 @@ class PublicationFileDownloadView(View):
         return _stream_published_file(_get_published_system_id(project_id, pub.version), path)
 
 
-class PublicationCoverImageView(View):
+class PublicationCoverImageView(PublishedDatasetsMountMixin, View):
     """Serve a publication's cover image bytes, for og:image/twitter:image. The image lives on
     the shared PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME system (project_publish_operations.py's
     _transfer_cover_image copies it there), not the per-project published system
@@ -1279,7 +1295,7 @@ class PublicationCoverImageView(View):
         return _stream_published_file(root_system, cover_image_path)
 
 
-class PublicationArchiveView(View):
+class PublicationArchiveView(PublishedDatasetsMountMixin, View):
     """Redirect to the current version's whole-publication ZIP on the web mirror, for the landing
     page's `distribution` entry for it (_get_archive_file_object). The ZIPs can run to tens of GB,
     so they're never relayed through the portal: without a web mirror there's no ZIP here. Also
@@ -1299,7 +1315,7 @@ class PublicationArchiveView(View):
         return HttpResponseRedirect(web_url)
 
 
-class PublicationCroissantView(View):
+class PublicationCroissantView(PublishedDatasetsMountMixin, View):
     """Serve a publication's schema.org/Croissant JSON-LD -- the same document its landing page
     embeds -- on its own, as application/ld+json. Croissant tooling (mlcroissant, dataset loaders)
     loads a dataset from a URL that returns the JSON-LD itself, not an HTML page with it inside a
@@ -1382,6 +1398,10 @@ class SitemapView(View):
 
     def get(self, request, *args, page=None, **kwargs):
         entries = self._get_entries(request)
+        if not entries:
+            # The protocol's schema requires at least one <url>, so an empty <urlset/> is invalid;
+            # with nothing to list, there's no sitemap.
+            raise Http404("No published datasets to list.")
         page_count = max(1, -(-len(entries) // SITEMAP_MAX_URLS))
         if page is None:
             if page_count == 1:

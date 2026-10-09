@@ -2277,6 +2277,19 @@ def test_index_view_metadata_failure_is_not_redirected(mock_logger, client, publ
     mock_logger.exception.assert_called_once()
 
 
+@pytest.mark.parametrize(
+    "suffix",
+    ["files/data/a%20b.csv", "cover-image", "archive.zip", "croissant.json", "croissant.json?x=1&y=2"],
+)
+def test_publication_routes_under_public_data_mount_redirect_to_published_datasets(client, suffix):
+    """The landing page links to these under /published-datasets/; the /public-data/ mount would
+    otherwise serve 200 duplicates of them."""
+    response = client.get(f"/public-data/test.project.published.test.project-1/{suffix}")
+
+    assert response.status_code == 301
+    assert response["Location"] == f"/published-datasets/test.project.published.test.project-1/{suffix}"
+
+
 ENTITY_ID = "0b6a2a8e-6f1d-4c7e-9a3b-2f5d8c1e4a90"
 
 
@@ -2603,7 +2616,9 @@ def test_index_view_omits_og_image_without_cover_image_configured(client, public
 # ---------------------------------------------------------------------------
 
 
-def test_sitemap_view_served_ahead_of_published_datasets_catch_all(client):
+def test_sitemap_view_served_ahead_of_published_datasets_catch_all(client, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    Publication.objects.create(project_id="test.project-1", value=valid_base_meta(), tree={})
     assert reverse("sitemap") == "/published-datasets/sitemap.xml"
     response = client.get("/published-datasets/sitemap.xml")
     assert response.status_code == 200
@@ -2692,13 +2707,6 @@ def test_sitemap_view_escapes_xml_special_characters_in_loc(client, settings):
     assert loc.startswith("https://a&b.example.org/")
 
 
-def test_sitemap_view_empty_urlset_is_well_formed(client):
-    root = ElementTree.fromstring(client.get(reverse("sitemap")).content)
-
-    assert root.tag == "{http://www.sitemaps.org/schemas/sitemap/0.9}urlset"
-    assert list(root) == []
-
-
 @patch("portal.apps.public_data.views.logger")
 def test_sitemap_view_omits_and_logs_publications_whose_metadata_fails(mock_logger, client, settings):
     """A publication IndexView would render noindex (its JSON-LD fails to build) mustn't be
@@ -2766,12 +2774,12 @@ def test_publication_without_license_is_indexable_and_in_sitemap(client, setting
     assert "test.project-2" in client.get(reverse("sitemap")).content.decode()
 
 
-def test_sitemap_view_empty_when_no_publications(client):
-    response = client.get(reverse("sitemap"))
-    body = response.content.decode()
-    assert response.status_code == 200
-    assert "<url>" not in body
-    assert "<urlset" in body
+@pytest.mark.parametrize("url_name,kwargs", [("sitemap", {}), ("sitemap_page", {"page": 1})])
+def test_sitemap_view_404s_when_nothing_is_listed(client, url_name, kwargs):
+    """The protocol's schema requires at least one <url>, so there's no valid empty sitemap."""
+    Publication.objects.create(project_id="test.project-1", value=valid_base_meta(), tree={}, is_indexable=False)
+
+    assert client.get(reverse(url_name, kwargs=kwargs)).status_code == 404
 
 
 def test_sitemap_view_serves_cached_body_without_rebuilding(client, settings):
