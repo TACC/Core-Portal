@@ -24,21 +24,31 @@ def get_datacite_json(pub_graph: nx.DiGraph):
     institution = base_meta.get("institution")
 
     for author in base_meta.get("authors", []):
-        author_attr.append(
-            {
-                "nameType": "Personal",
-                "givenName": author.get("first_name", ""),
-                "familyName": author.get("last_name", ""),
-                "affiliation": [
-                    {
-                        "name": institution,
-                        "schemeUri": None,
-                        "affiliationIdentifier": None,
-                        "affiliationIdentifierScheme": None,
-                    }
-                ],
-            }
-        )
+        creator = {
+            "nameType": "Personal",
+            "givenName": author.get("first_name", ""),
+            "familyName": author.get("last_name", ""),
+            "affiliation": [
+                {
+                    "name": institution,
+                    "schemeUri": None,
+                    "affiliationIdentifier": None,
+                    "affiliationIdentifierScheme": None,
+                }
+            ],
+        }
+
+        orcid_id = (author.get("orcid_id") or "").strip()
+        if orcid_id:
+            creator["nameIdentifiers"] = [
+                {
+                    "nameIdentifier": f"https://orcid.org/{orcid_id}",
+                    "nameIdentifierScheme": "ORCID",
+                    "schemeUri": "https://orcid.org",
+                }
+            ]
+
+        author_attr.append(creator)
         institutions.append(author.get("inst", ""))
 
     if institution:
