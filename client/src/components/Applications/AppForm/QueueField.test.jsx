@@ -2,91 +2,119 @@ import React from 'react';
 import { act, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Formik } from 'formik';
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-import systemMonitor from '../../../redux/reducers/systemMonitor.reducers';
+import { vi } from 'vitest';
+import { useSystemQueue } from 'hooks/system-monitor/useSystemMonitor';
 import QueueField from './QueueField';
+
+vi.mock('hooks/system-monitor/useSystemMonitor', () => ({
+  useSystemQueue: vi.fn(),
+}));
+beforeEach(() => vi.resetAllMocks());
 
 const warning = /This queue is at least 90% full/;
 const hostname = 'vista.tacc.utexas.edu';
-const systems = (load) => [
-  {
-    hostname,
-    queues: [
-      { name: 'gh', load },
-      { name: 'gg', load: 0.5 },
-    ],
-  },
-  { hostname: 'frontera.tacc.utexas.edu', queues: [{ name: 'gh', load: 0.1 }] },
-];
-const makeStore = (list = []) =>
-  createStore(
-    (state, action) => ({
-      systemMonitor: systemMonitor(state?.systemMonitor, action),
-    }),
-    { systemMonitor: { list } }
-  );
-const field = (store, host = hostname, queueName = 'gh') => (
-  <Provider store={store}>
-    <Formik
-      initialValues={{ execSystemLogicalQueue: queueName }}
-      onSubmit={() => {}}
-    >
-      <QueueField hostname={host} queueName={queueName}>
-        <option value="gh">gh</option>
-        <option value="gg">gg</option>
-      </QueueField>
-    </Formik>
-  </Provider>
+const field = (host = hostname, queueName = 'gh') => (
+  <Formik
+    initialValues={{ execSystemLogicalQueue: queueName }}
+    onSubmit={() => {}}
+  >
+    <QueueField hostname={host} queueName={queueName}>
+      <option value="gh">gh</option>
+      <option value="gg">gg</option>
+    </QueueField>
+  </Formik>
 );
 
 it.each([0.9, 0.99, 1])(
   'warns at load %s without disabling selection',
-  (load) => {
-    render(field(makeStore(systems(load))));
-    expect(screen.getByText(warning)).toBeVisible();
-    expect(screen.getByText(warning)).toHaveClass('alert-warning');
+  async (load) => {
+    useSystemQueue.mockResolvedValue([{ name: 'gh', load }]);
+    render(field());
+    expect(await screen.findByText(warning)).toHaveClass('alert-warning');
     expect(screen.getByRole('combobox')).toBeEnabled();
+    expect(useSystemQueue).toHaveBeenCalledExactlyOnceWith(hostname);
   }
 );
 
-it.each([0.8999, 0, null, undefined])('does not warn for load %s', (load) => {
-  render(field(makeStore(systems(load))));
-  expect(screen.queryByText(warning)).not.toBeInTheDocument();
-});
-
-it('uses the selected system and queue', () => {
-  const store = makeStore(systems(0.95));
-  const { rerender } = render(field(store));
-  expect(screen.getByText(warning)).toBeVisible();
-  for (const [host, queue] of [
-    [hostname, 'gg'],
-    [hostname, 'unknown'],
-    ['frontera.tacc.utexas.edu', 'gh'],
-    ['cluster.example.com', 'gh'],
-    [null, 'gh'],
-  ]) {
-    rerender(field(store, host, queue));
+it.each([0.8999, 0, null, undefined])(
+  'does not warn for load %s',
+  async (load) => {
+    useSystemQueue.mockResolvedValue([{ name: 'gh', load }]);
+    await act(async () => render(field()));
     expect(screen.queryByText(warning)).not.toBeInTheDocument();
   }
+);
+
+it('changes queues without fetching the same system again', async () => {
+  useSystemQueue.mockResolvedValue([
+    { name: 'gh', load: 1 },
+    { name: 'gg', load: 0.5 },
+  ]);
+  const { rerender } = render(field());
+  await screen.findByText(warning);
+  rerender(field(hostname, 'gg'));
+  expect(screen.queryByText(warning)).not.toBeInTheDocument();
+  rerender(field(hostname, 'unknown'));
+  expect(screen.queryByText(warning)).not.toBeInTheDocument();
+  expect(useSystemQueue).toHaveBeenCalledTimes(1);
 });
 
-it('updates when shared monitor data arrives and is refreshed', () => {
-  const store = makeStore();
-  render(field(store));
+it('clears a warning while another system is loading', async () => {
+  let resolveNext;
+  useSystemQueue
+    .mockResolvedValueOnce([{ name: 'gh', load: 1 }])
+    .mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveNext = resolve;
+        })
+    );
+  const { rerender } = render(field());
+  await screen.findByText(warning);
+  rerender(field('frontera.tacc.utexas.edu'));
   expect(screen.queryByText(warning)).not.toBeInTheDocument();
-  act(() =>
-    store.dispatch({ type: 'SYSTEM_MONITOR_SUCCESS', payload: systems(0.95) })
-  );
+  expect(useSystemQueue).toHaveBeenLastCalledWith('frontera.tacc.utexas.edu');
+  await act(async () => resolveNext([{ name: 'gh', load: 0.95 }]));
   expect(screen.getByText(warning)).toBeVisible();
-  act(() =>
-    store.dispatch({ type: 'SYSTEM_MONITOR_SUCCESS', payload: systems(0.5) })
-  );
+});
+
+it('ignores a delayed response from a previously selected system', async () => {
+  let resolveOld;
+  useSystemQueue
+    .mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveOld = resolve;
+        })
+    )
+    .mockResolvedValueOnce([{ name: 'gh', load: 0.1 }]);
+  const { rerender } = render(field());
+  await act(async () => rerender(field('frontera.tacc.utexas.edu')));
+  await act(async () => resolveOld([{ name: 'gh', load: 1 }]));
   expect(screen.queryByText(warning)).not.toBeInTheDocument();
 });
 
-it('leaves selection usable when monitor data is unavailable', () => {
-  render(field(makeStore([{ hostname }])));
+it('leaves selection usable when the request fails', async () => {
+  useSystemQueue.mockRejectedValue(new Error('Unavailable'));
+  await act(async () => render(field()));
   expect(screen.queryByText(warning)).not.toBeInTheDocument();
   expect(screen.getByRole('combobox')).toBeEnabled();
 });
+
+it.each([null, {}, []])('ignores unavailable queue data: %s', async (data) => {
+  useSystemQueue.mockResolvedValue(data);
+  await act(async () => render(field()));
+  expect(screen.queryByText(warning)).not.toBeInTheDocument();
+});
+
+it.each([null, '', 'cluster.example.com'])(
+  'skips unsupported host %s and clears previous warnings',
+  async (host) => {
+    useSystemQueue.mockResolvedValue([{ name: 'gh', load: 1 }]);
+    const { rerender } = render(field());
+    await screen.findByText(warning);
+    rerender(field(host));
+    expect(screen.queryByText(warning)).not.toBeInTheDocument();
+    expect(useSystemQueue).toHaveBeenCalledTimes(1);
+  }
+);

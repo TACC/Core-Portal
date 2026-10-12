@@ -1,13 +1,36 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSystemQueue } from 'hooks/system-monitor/useSystemMonitor';
+import { isTACCHost } from 'utils/systems';
 import { Alert } from 'reactstrap';
 import FormField from '_common/Form/FormField';
 
 export default function QueueField({ hostname, queueName, children }) {
-  const system = useSelector((state) =>
-    state.systemMonitor?.list.find((item) => item.hostname === hostname)
-  );
-  const queue = system?.queues?.find((item) => item.name === queueName);
+  const [status, setStatus] = useState(null);
+
+  useEffect(() => {
+    setStatus(null);
+    if (!hostname || !isTACCHost(hostname)) return;
+
+    let active = true;
+    useSystemQueue(hostname)
+      .then((queues) => {
+        if (active) {
+          setStatus({ hostname, queues: Array.isArray(queues) ? queues : [] });
+        }
+      })
+      .catch(() => {
+        // Queue status is advisory; a failed request must not block submission.
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [hostname]);
+
+  const queue =
+    status?.hostname === hostname
+      ? status?.queues.find((item) => item.name === queueName)
+      : undefined;
   const isAlmostFull = queue?.load >= 0.9;
 
   return (

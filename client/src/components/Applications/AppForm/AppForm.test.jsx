@@ -29,6 +29,11 @@ import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { userFixture } from '../../../redux/sagas/fixtures/users.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 import timekeeper from 'timekeeper';
+import { vi } from 'vitest';
+
+vi.mock('hooks/system-monitor/useSystemMonitor', () => ({
+  useSystemQueue: vi.fn().mockResolvedValue([]),
+}));
 
 const frozenDate = '2023-10-01';
 const mockStore = configureStore();

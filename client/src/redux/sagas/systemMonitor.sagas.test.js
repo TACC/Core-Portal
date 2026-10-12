@@ -4,45 +4,33 @@ import { fetchUtil } from 'utils/fetchUtil';
 import { getSystemMonitor } from './systemMonitor.sagas';
 
 vi.mock('utils/fetchUtil', () => ({ fetchUtil: vi.fn() }));
-
 beforeEach(() => vi.resetAllMocks());
 
-it('stores queues with their system summaries', async () => {
-  const system = { display_name: 'Vista', hostname: 'vista.tacc.utexas.edu' };
-  const queues = [{ name: 'gh', load: 0.95 }];
-  fetchUtil.mockResolvedValueOnce([system]).mockResolvedValueOnce(queues);
+it('fetches only system summaries and sorts them by name', async () => {
+  const vista = { display_name: 'Vista', hostname: 'vista.tacc.utexas.edu' };
+  const frontera = {
+    display_name: 'Frontera',
+    hostname: 'frontera.tacc.utexas.edu',
+  };
+  fetchUtil.mockResolvedValue([vista, frontera]);
   const dispatch = vi.fn();
   await runSaga({ dispatch }, getSystemMonitor).toPromise();
-  expect(dispatch).toHaveBeenNthCalledWith(2, {
-    type: 'SYSTEM_MONITOR_SUCCESS',
-    payload: [system],
+  expect(fetchUtil).toHaveBeenCalledExactlyOnceWith({
+    url: '/api/system-monitor/',
   });
-  expect(fetchUtil).toHaveBeenNthCalledWith(2, {
-    url: '/api/system-monitor/vista.tacc.utexas.edu',
-  });
-  expect(dispatch).toHaveBeenLastCalledWith({
-    type: 'SYSTEM_MONITOR_SUCCESS',
-    payload: [{ ...system, queues }],
-  });
+  expect(dispatch.mock.calls).toEqual([
+    [{ type: 'SYSTEM_MONITOR_LOAD' }],
+    [{ type: 'SYSTEM_MONITOR_SUCCESS', payload: [frontera, vista] }],
+  ]);
 });
 
-it('preserves summaries and other queues if a queue request fails', async () => {
-  const systems = [
-    { display_name: 'Frontera', hostname: 'frontera.tacc.utexas.edu' },
-    { display_name: 'Vista', hostname: 'vista.tacc.utexas.edu' },
-  ];
-  const queues = [{ name: 'gh', load: 0.95 }];
-  fetchUtil
-    .mockResolvedValueOnce(systems)
-    .mockRejectedValueOnce(new Error('Unavailable'))
-    .mockResolvedValueOnce(queues);
+it('reports a failed summary request', async () => {
+  const error = new Error('Unavailable');
+  fetchUtil.mockRejectedValue(error);
   const dispatch = vi.fn();
   await runSaga({ dispatch }, getSystemMonitor).toPromise();
   expect(dispatch).toHaveBeenLastCalledWith({
-    type: 'SYSTEM_MONITOR_SUCCESS',
-    payload: [
-      { ...systems[0], queues: [] },
-      { ...systems[1], queues },
-    ],
+    type: 'SYSTEM_MONITOR_ERROR',
+    payload: error,
   });
 });
