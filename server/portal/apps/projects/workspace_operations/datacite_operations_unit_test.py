@@ -328,6 +328,38 @@ def test_get_datacite_json_invalid_orcid_omits_name_identifiers(orcid_id):
     assert "nameIdentifiers" not in result["creators"][0]
 
 
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "orcid_id,expected",
+    [
+        ("0000-0002-1825-0097", "https://orcid.org/0000-0002-1825-0097"),
+        # The modal's pattern is case-insensitive, so it saves a lowercase check character as typed.
+        ("0000-0002-9079-593x", "https://orcid.org/0000-0002-9079-593X"),
+        # Matches the modal's pattern but fails the checksum, so it's left out.
+        ("0000-0002-1825-0098", None),
+    ],
+)
+def test_get_datacite_json_orcid_from_add_orcid_modal(orcid_id, expected):
+    """An author as ReorderUserList saves it after AddOrcidModal: get_project_user's fields plus a
+    bare, hyphenated `orcid_id` matching the modal's ORCID_PATTERN (^\\d{4}-\\d{4}-\\d{4}-\\d{3}[0-9X]$/i)."""
+    author = {
+        "username": "alovelace",
+        "first_name": "Ada",
+        "last_name": "Lovelace",
+        "email": "ada@example.com",
+        "orcid_id": orcid_id,
+    }
+    result = get_datacite_json(make_pub_graph(minimal_base_meta(authors=[author])), "test.project-1")
+    creator = result["creators"][0]
+    if expected is None:
+        assert "nameIdentifiers" not in creator
+    else:
+        assert creator["nameIdentifiers"] == [
+            {"nameIdentifier": expected, "nameIdentifierScheme": "ORCID", "schemeUri": "https://orcid.org"}
+        ]
+
+
 @pytest.mark.django_db
 @override_settings(VANITY_BASE_URL="", PORTAL_PUBLICATION_DATACITE_URL_PREFIX="")
 def test_get_datacite_json_raises_without_any_configured_origin():
