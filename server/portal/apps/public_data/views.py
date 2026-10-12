@@ -70,6 +70,12 @@ class IndexView(TemplateView):
         if project_id:
             try:
                 pub = Publication.objects.get(project_id=project_id)
+                revision = kwargs.get("revision")
+                # A version newer than the current one was never published (a republish only
+                # becomes current once its files have transferred), so there's nothing to
+                # redirect it to.
+                if revision is not None and int(revision) > pub.version:
+                    raise Http404(f"Publication {project_id} has no version {revision}")
                 if not pub.is_published:
                     # A withdrawn publication's DOI still resolves here (DataCite expects a
                     # tombstone page, not a 404), so the page still renders -- but with no
@@ -91,7 +97,6 @@ class IndexView(TemplateView):
                     # A mismatch means this link was minted against an older version that's since
                     # been superseded; get() 301s it to the current version's URL -- worth knowing
                     # about even though there's no old content left to serve.
-                    revision = kwargs.get("revision")
                     if revision is not None and int(revision) != pub.version:
                         logger.warning(
                             f"Publication {project_id} was requested at revision {revision}, but "
@@ -120,6 +125,8 @@ class IndexView(TemplateView):
                 # to) is exactly the soft-404 pattern Google's own guidance asks sites to avoid
                 # in favor of a genuine 404 status.
                 raise Http404(f"No publication found for project {project_id}")
+            except Http404:
+                raise
             except Exception as e:
                 logger.exception(f"Failed to build meta tags for project {project_id}: {e}")
         context["setup_complete"] = (
@@ -350,7 +357,8 @@ class PublicationArchiveView(PublishedDatasetsMountMixin, View):
 
 class PublicationCroissantView(PublishedDatasetsMountMixin, View):
     """Serve a publication's schema.org/Croissant JSON-LD -- the document its landing page embeds,
-    plus a cr:FileSet for each published directory (see _get_distribution) -- on its own, as
+    plus a cr:FileSet for each published directory (see _get_distribution) and every file past the
+    landing page's LANDING_PAGE_MAX_FILE_OBJECTS (see schema_org.py) -- on its own, as
     application/ld+json with the Croissant 1.1 profile. Croissant tooling (mlcroissant, dataset
     loaders) loads a dataset from a URL that returns the JSON-LD itself, not an HTML page with it
     inside a <script> tag.

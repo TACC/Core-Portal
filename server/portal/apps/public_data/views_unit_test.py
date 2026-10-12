@@ -1512,6 +1512,66 @@ def test_schema_org_json_fileless_publication_lists_no_archive(rf, settings, arc
     assert "distribution" not in schema
 
 
+def _many_files(count, columns=None):
+    return [
+        {
+            "type": "file",
+            "name": f"f{i}.csv",
+            "path": f"/f{i}.csv",
+            "sha256": "a" * 64,
+            **({"columns": columns} if columns else {}),
+        }
+        for i in range(count)
+    ]
+
+
+def test_schema_org_json_caps_file_objects_but_keeps_archive_and_conforms_to(rf, settings, archived_publication):
+    """The landing page lists only the first files plus the ZIP; croissant.json lists them all."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    archived_publication.value = valid_base_meta(fileObjs=_many_files(5))
+    request = make_request(rf)
+
+    capped = get_schema_org_json(archived_publication, archived_publication.project_id, request, max_file_objects=2)
+    full = get_schema_org_json(archived_publication, archived_publication.project_id, request)
+
+    assert [entry["@id"] for entry in capped["distribution"]] == [
+        f"{FILES_URL}f0.csv",
+        f"{FILES_URL}f1.csv",
+        ARCHIVE_URL,
+    ]
+    assert len(full["distribution"]) == 6
+    assert capped["conformsTo"] == full["conformsTo"] == "http://mlcommons.org/croissant/1.1"
+
+
+def test_schema_org_json_cap_drops_record_sets_for_cut_files(rf, settings, publication):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    publication.value = valid_base_meta(fileObjs=_many_files(3, columns=[{"name": "x"}]))
+
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf), max_file_objects=1)
+
+    assert [entry["@id"] for entry in schema["distribution"]] == [f"{FILES_URL}f0.csv"]
+    assert [record_set["@id"] for record_set in schema["recordSet"]] == [f"{FILES_URL}f0.csv#records"]
+
+
+def test_schema_org_json_cap_leaves_short_lists_alone(rf, settings, archived_publication):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    request = make_request(rf)
+
+    capped = get_schema_org_json(archived_publication, archived_publication.project_id, request, max_file_objects=1)
+
+    assert capped == get_schema_org_json(archived_publication, archived_publication.project_id, request)
+
+
+def test_get_citation_context_caps_landing_page_file_objects(rf, settings, publication):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    publication.value = valid_base_meta(fileObjs=_many_files(3))
+
+    with patch("portal.apps.public_data.schema_org.LANDING_PAGE_MAX_FILE_OBJECTS", 2):
+        _, schema, _ = get_citation_context(publication, make_request(rf))
+
+    assert len(schema["distribution"]) == 2
+
+
 @pytest.mark.parametrize(
     "entry,expected",
     [
@@ -2256,11 +2316,21 @@ def test_get_citation_context_cover_image_url_when_configured(rf, settings, publ
     settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "root.system"
     request = make_request(rf)
 
-    citation_meta, _, _ = get_citation_context(publication, request)
-    assert (
-        citation_meta["cover_image_url"]
-        == "http://testserver/published-datasets/test.project.published.test.project-1/cover-image"
-    )
+    citation_meta, schema_org_json, _ = get_citation_context(publication, request)
+    cover_image_url = "http://testserver/published-datasets/test.project.published.test.project-1/cover-image"
+    assert citation_meta["cover_image_url"] == cover_image_url
+    assert schema_org_json["image"] == cover_image_url
+
+
+def test_get_citation_context_no_image_without_cover_image(rf, settings, publication):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "root.system"
+    publication.value = {**publication.value, "coverImage": None}
+    request = make_request(rf)
+
+    citation_meta, schema_org_json, _ = get_citation_context(publication, request)
+    assert citation_meta["cover_image_url"] is None
+    assert "image" not in schema_org_json
 
 
 # ---------------------------------------------------------------------------
@@ -2374,11 +2444,25 @@ def test_index_view_unpublished_publication_renders_noindex_without_metadata(
 @patch("portal.apps.public_data.views.logger")
 def test_index_view_revision_mismatch_logs_warning(mock_logger, client, settings, publication):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
-    response = client.get(f"/published-datasets/test.project.published.{publication.project_id}v99/")
+    response = client.get(f"/published-datasets/test.project.published.{publication.project_id}v2/")
 
     assert response.status_code == 301
     mock_logger.warning.assert_called_once()
     assert str(publication.project_id) in mock_logger.warning.call_args[0][0]
+
+
+@pytest.mark.parametrize("is_published", [True, False])
+@patch("portal.apps.public_data.views.logger")
+def test_index_view_future_revision_404s(mock_logger, client, publication, is_published):
+    """A version newer than the current one was never published, so there's nothing to redirect it
+    to -- whether or not the publication is withdrawn."""
+    publication.is_published = is_published
+    publication.save()
+
+    response = client.get(f"/published-datasets/test.project.published.{publication.project_id}v99/")
+
+    assert response.status_code == 404
+    mock_logger.exception.assert_not_called()
 
 
 @patch("portal.apps.public_data.views.logger")

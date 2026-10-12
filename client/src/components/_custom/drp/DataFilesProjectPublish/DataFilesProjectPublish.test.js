@@ -12,7 +12,7 @@ describe('drpMetadataValidate', () => {
     expect(drpMetadataValidate(complete)).toEqual({});
   });
 
-  it.each([undefined, ''])('requires a license (%s)', (license) => {
+  it.each([undefined, '', '   '])('requires a license (%s)', (license) => {
     expect(drpMetadataValidate({ ...complete, license })).toEqual({
       license: 'License is required',
     });

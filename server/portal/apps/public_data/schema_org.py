@@ -67,6 +67,11 @@ REQUIRED_CROISSANT_FIELDS = ("license", "creator", "datePublished", "distributio
 # ['md5', 'sha256']"). A Dataset with any unhashed file is emitted without `conformsTo` too.
 CROISSANT_FILE_CHECKSUM_FIELDS = ("md5", "sha256")
 
+# The most per-file `distribution` entries the landing page's JSON-LD lists, so a publication with
+# thousands of files doesn't bloat every page render. The whole-publication ZIP is listed as well,
+# and croissant.json (PublicationCroissantView) always lists every file.
+LANDING_PAGE_MAX_FILE_OBJECTS = 100
+
 CROISSANT_1_1 = "http://mlcommons.org/croissant/1.1"
 
 # PublicationCroissantView's media type: JSON-LD with the Croissant version's profile, per the spec.
@@ -435,7 +440,30 @@ def get_unique_publication_file_objs(pub):
     return list(by_path.values())
 
 
-def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=False):
+def _cap_file_objects(schema_org_json, archive, max_file_objects):
+    """Keep the first `max_file_objects` per-file `distribution` entries, plus the ZIP (`archive`),
+    and drop any `recordSet` whose source file was cut, so no `fileObject` reference dangles.
+    """
+
+    archive_id = archive["@id"] if archive else None
+    files = [entry for entry in schema_org_json.get("distribution", []) if entry.get("@id") != archive_id]
+    if len(files) <= max_file_objects:
+        return
+    kept = files[:max_file_objects] + ([archive] if archive else [])
+    schema_org_json["distribution"] = kept
+    kept_ids = {entry["@id"] for entry in kept}
+    record_sets = [
+        record_set
+        for record_set in schema_org_json.get("recordSet", [])
+        if all(field["source"]["fileObject"]["@id"] in kept_ids for field in record_set["field"])
+    ]
+    if record_sets:
+        schema_org_json["recordSet"] = record_sets
+    else:
+        schema_org_json.pop("recordSet", None)
+
+
+def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=False, max_file_objects=None):
     """Build a schema.org/Dataset JSON-LD object for a published project to embed directly in
     the page's <script type="application/ld+json"> tag for Google Dataset Search.
 
@@ -443,6 +471,8 @@ def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=Fals
     `file_sets` also lists published directories as cr:FileSets, for the standalone Croissant
     document (see _get_distribution). It never changes whether `conformsTo` is claimed: FileSets
     are only listed alongside the ZIP, which is listed either way.
+    `max_file_objects` caps the per-file `distribution` entries (see _cap_file_objects). It's
+    applied after `conformsTo` is decided, so the claim reflects every file, as croissant.json does.
     """
 
     base_meta = pub.value
@@ -520,6 +550,8 @@ def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=Fals
         # base_meta. Revisit if/when a restricted-access publication type is introduced.
         "isAccessibleForFree": True,
         "url": landing_page_url,
+        # Recommended by Google's Dataset guidance; the same cover image as og:image.
+        "image": get_cover_image_url(base_meta, project_id, request),
         "identifier": doi_url(doi) or landing_page_url,
         # Recommended by both schema.org/Croissant -- a canonical URL for this exact dataset's
         # identity, distinct from `url` (the landing *page*, which could theoretically move).
@@ -615,6 +647,9 @@ def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=Fals
     ):
         del schema_org_json["conformsTo"]
 
+    if max_file_objects is not None:
+        _cap_file_objects(schema_org_json, archive, max_file_objects)
+
     return schema_org_json
 
 
@@ -628,7 +663,9 @@ def get_citation_context(pub, request):
     file_objs = get_unique_publication_file_objs(pub)
     # Built first so its already-resolved `url` and `distribution` (with real, absolute
     # download URLs) can be reused below instead of recomputed.
-    schema_org_json = get_schema_org_json(pub, pub.project_id, request, file_objs)
+    schema_org_json = get_schema_org_json(
+        pub, pub.project_id, request, file_objs, max_file_objects=LANDING_PAGE_MAX_FILE_OBJECTS
+    )
 
     base_meta = pub.value
     authors = base_meta.get("authors", [])
@@ -639,8 +676,9 @@ def get_citation_context(pub, request):
     # the JSON-LD `keywords` and DataCite's `subjects` (projects/schema_models/keywords.py).
     citation_meta["keywords"] = ", ".join(normalize_keywords(base_meta.get("keywords")))
     # Page-level (not per-entity, like `keywords` above) since og:image/twitter:image are
-    # single tags in <head>, not part of the citation_* block.
-    citation_meta["cover_image_url"] = get_cover_image_url(base_meta, pub.project_id, request)
+    # single tags in <head>, not part of the citation_* block. The JSON-LD `image` already
+    # resolved it, so the tags and the structured data can't disagree.
+    citation_meta["cover_image_url"] = schema_org_json.get("image")
     # Linked only when the document claims Croissant conformance -- PublicationCroissantView
     # 404s otherwise, so the page never links a Croissant loader to something it would reject.
     if "conformsTo" in schema_org_json:

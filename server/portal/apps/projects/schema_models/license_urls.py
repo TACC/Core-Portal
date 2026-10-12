@@ -16,8 +16,8 @@ from django.conf import settings
 # value should always be one of these known labels. schema.org/Croissant and
 # DataCite's `rightsList` both expect a license URL (or, for schema.org, a
 # CreativeWork), not a bare label, so map known labels to their canonical
-# license-deed URL. These are the labels Core-Portal's own settings_forms.py
-# offers; a portal whose form offers others adds them with
+# license-deed URL. These are the labels DPMP's settings_forms.py offers; a
+# portal whose form offers others adds them with
 # PORTAL_PUBLICATION_LICENSE_URLS (and PORTAL_PUBLICATION_LICENSE_SPDX_IDS),
 # which extend/override these. A label with no entry in either is logged and
 # left out by callers (see public_data/schema_org.py's `_get_license` and

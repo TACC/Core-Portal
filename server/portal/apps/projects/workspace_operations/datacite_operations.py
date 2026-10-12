@@ -101,9 +101,10 @@ def _get_rights_list(base_meta, project_id):
     `_get_license` resolves the
     schema.org/Croissant `license` field from, so DataCite's record and this
     publication's own landing page never disagree about what its license
-    resolves to. The DPMP publish wizard requires `license`
-    (drpMetadataValidate), but the server doesn't enforce it, and publications
-    made before it was required, or in other portals, may have none. So an
+    resolves to. Portals whose form marks `license` required (DPMP) enforce it
+    in the publish wizard (drpMetadataValidate) and on the server
+    (publications/views.py), but publications made before it was required, or
+    in other portals, may have none. So an
     unset license just means no `rightsList` entry here, not a fatal error
     (Croissant still requires one -- see REQUIRED_CROISSANT_FIELDS in
     public_data/schema_org.py -- so such a publication's landing page makes no

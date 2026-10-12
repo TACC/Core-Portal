@@ -40,7 +40,7 @@ def get_publication_origin(request):
 
 def get_cover_image_url(base_meta, project_id, request):
     """Build an absolute URL for the publication's cover image, for og:image/twitter:image
-    (link-unfurl preview cards in Slack/Discord/LinkedIn/X/iMessage).
+    (link-unfurl preview cards in Slack/Discord/LinkedIn/X/iMessage) and the JSON-LD `image`.
 
     Points at PublicationCoverImageView (public_data/urls.py's `cover_image` pattern) rather
     than the datafiles app's generic download route: unfurlers fetch og:image expecting image

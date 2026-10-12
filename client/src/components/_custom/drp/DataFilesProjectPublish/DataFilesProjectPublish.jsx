@@ -57,7 +57,8 @@ export const drpMetadataValidate = (values) => {
     errors.cover_image = 'Cover image is required';
   }
   // Without a license the published dataset can't claim Croissant conformance.
-  if (!values.license) {
+  // Trimmed like the server's check, so whitespace alone doesn't pass here.
+  if (!values.license?.trim()) {
     errors.license = 'License is required';
   }
   return errors;
