@@ -91,7 +91,6 @@ Styleguide Components.Button
 .c-button--is-active {
   padding: 6px 18px;
   min-width: var(--min-width);
-  max-width: var(--max-width);
 }
 
 /* Modifiers: Types: Primary */
