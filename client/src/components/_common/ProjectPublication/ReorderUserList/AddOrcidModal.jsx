@@ -8,9 +8,31 @@ import FormField from '_common/Form/FormField';
 
 const ORCID_PATTERN = /^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/i;
 
-const validationSchema = Yup.object().shape({
+// ISO 7064 MOD 11-2 check character, as the server's normalize_orcid_id
+// checks it (projects/schema_models/orcid.py). An iD that fails it is
+// left out of DataCite and the landing page, so catch typos here.
+export const hasValidOrcidChecksum = (value) => {
+  const digits = (value || '').replace(/-/g, '').toUpperCase();
+  if (digits.length !== 16) {
+    return false;
+  }
+  const total = [...digits.slice(0, 15)].reduce(
+    (sum, digit) => (sum + Number(digit)) * 2,
+    0
+  );
+  const result = (12 - (total % 11)) % 11;
+  return digits[15] === (result === 10 ? 'X' : String(result));
+};
+
+export const validationSchema = Yup.object().shape({
   orcid_id: Yup.string()
     .matches(ORCID_PATTERN, 'Enter a valid ORCID ID (e.g. 0000-0000-0000-0000)')
+    .test(
+      'orcid-checksum',
+      'This ORCID ID has a typo: its last character does not match the rest',
+      (value) =>
+        !value || !ORCID_PATTERN.test(value) || hasValidOrcidChecksum(value)
+    )
     .required('ORCID ID is required'),
 });
 
