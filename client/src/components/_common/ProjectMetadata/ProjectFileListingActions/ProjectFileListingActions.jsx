@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { useModal, useSystems } from 'hooks/datafiles';
 import * as ROUTES from '../../../../constants/routes';
 import styles from './ProjectFileListingActions.module.scss';
+import { useAuthenticatedUser } from '@tacc/core-hooks';
 
 /**
  * Generic project file-listing toolbar: the publication actions any
@@ -49,10 +50,10 @@ const ProjectFileListingActions = ({ rootSystem, system, datasetActions }) => {
       props: { projectId: metadata?.projectId, rootSystem },
     });
 
+  const username = useAuthenticatedUser().data ?? {};
   const { canEdit, canRequestPublication, canReviewPublication } = useSelector(
     (state) => {
       const { members } = state.projects.metadata;
-      const { username } = state.authenticatedUser?.user ?? {};
       const currentUser = members.find(
         (member) => member.user?.username === username
       );

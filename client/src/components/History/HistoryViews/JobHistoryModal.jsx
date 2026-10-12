@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  useHistory,
+  useNavigate,
   useLocation,
   NavLink as RRNavLink,
 } from 'react-router-dom';
@@ -26,6 +26,7 @@ import { getStatusText } from '../../Jobs/JobsStatus';
 import * as ROUTES from '../../../constants/routes';
 import styles from './JobHistoryModal.module.scss';
 import './JobHistoryModal.css';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const placeHolder = '...';
 
@@ -65,9 +66,11 @@ function JobHistoryContent({
 }) {
   const dispatch = useDispatch();
 
-  const hideDataFiles = useSelector(
-    (state) => state.workbench.config.hideDataFiles
-  );
+  const {
+    data: {
+      config: { hideDataFiles },
+    },
+  } = useWorkbenchConfig();
 
   // TODOv3: dropV2Jobs
   const outputLocation =
@@ -300,25 +303,29 @@ function JobHistoryModal({ uuid, version = 'v3' }) {
 
   const query = queryStringParser.parse(useLocation().search);
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const close = () => {
     // TODOv3: dropV2Jobs
     if (version === 'v3') {
-      history.push(
+      navigate(
         `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}${
           query.query_string ? `?query_string=${query.query_string}` : ''
         }`,
         {
-          fromJobHistoryModal: true,
+          state: {
+            fromJobHistoryModal: true,
+          },
         }
       );
     } else {
-      history.push(
+      navigate(
         `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBSV2}${
           query.query_string ? `?query_string=${query.query_string}` : ''
         }`,
         {
-          fromJobHistoryModal: true,
+          state: {
+            fromJobHistoryModal: true,
+          },
         }
       );
     }

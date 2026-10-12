@@ -1,11 +1,13 @@
 .clamped {
   --lines: 4;
-
-  composes: x-truncate--many-lines from '@tacc/core-styles/dist/tools/x-truncate.css';
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--lines);
+  max-height: calc(var(--lines) * 1lh);
 }
 
 .expanded {
-  composes: x-untruncate--many-lines from '@tacc/core-styles/dist/tools/x-truncate.css';
   max-height: 200px;
   overflow-y: auto;
 }

@@ -1,10 +1,15 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import coreMetadataAddons from '../../components/DataFiles/addons';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const useAddonComponents = ({ portalName }) => {
   const [addonComponents, setAddonComponents] = useState({});
-  const addons = useSelector((state) => state.workbench.config.addons);
+  const {
+    data: {
+      config: { addons },
+    },
+  } = useWorkbenchConfig();
   const { metadata } = useSelector((state) => state.projects);
 
   const shouldLoadComponents = useMemo(

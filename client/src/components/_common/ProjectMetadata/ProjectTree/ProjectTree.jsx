@@ -4,7 +4,7 @@ import { Button, ShowMore, Section, Icon } from '_common';
 import { TreeItem2 as TreeItem, SimpleTreeView } from '@mui/x-tree-view';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useFileListing, useProjectTree } from 'hooks/datafiles';
 import { formatLabel } from 'utils/formatLabel';
 import MetadataDisplay from '../MetadataDisplay/MetadataDisplay';
@@ -30,7 +30,7 @@ const theme = createTheme({
  * node's metadata.
  */
 export const ProjectTree = ({ projectId, excludeKeys = [], nodeActions }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const [expandedNodes, setExpandedNodes] = useState([]);
 
@@ -147,9 +147,9 @@ export const ProjectTree = ({ projectId, excludeKeys = [], nodeActions }) => {
     const baseUrl = location.pathname.match(regex)[0];
 
     if (node.metadata.data_type === 'file') {
-      history.push(`${baseUrl}/${node.path.split('/').slice(0, -1).join('/')}`);
+      navigate(`${baseUrl}/${node.path.split('/').slice(0, -1).join('/')}`);
     } else {
-      history.push(`${baseUrl}/${node.path}`);
+      navigate(`${baseUrl}/${node.path}`);
     }
 
     if (projectTreeModal) {

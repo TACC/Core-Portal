@@ -5,6 +5,7 @@ import { apiClient } from 'utils/apiClient';
 import { TTapisFile, TPortalSystem } from 'utils/types';
 import { TJobBody, TJobPostResponse } from './useSubmitJob';
 import { getAppUtil, getAllocationForToolbarAction } from './toolbarAppUtils';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 async function submitJobUtil(body: TJobBody) {
   const res = await apiClient.post<TJobPostResponse>(
@@ -38,9 +39,11 @@ function useCompress() {
     };
   };
 
-  const compressApp = useSelector(
-    (state: any) => state.workbench.config.compressApp
-  );
+  const {
+    data: {
+      config: { compressApp },
+    },
+  } = useWorkbenchConfig();
   const { data: fullCompressApp } = useQuery({
     queryKey: ['compress-app', compressApp.id, compressApp.version],
     queryFn: () => getAppUtil(compressApp.id, compressApp.version),

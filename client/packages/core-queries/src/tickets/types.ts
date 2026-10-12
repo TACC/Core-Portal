@@ -1,0 +1,42 @@
+export type TTicketListItem = {
+  id: string;
+  Queue: string;
+  Owner: string;
+  Creator: string;
+  Subject: string;
+  Status: string;
+  Priority: string;
+  InitialPriority: string;
+  FinalPriority: string;
+  Requestors: string[];
+  Cc: string[];
+  AdminCc: string[];
+  Created: string;
+  Starts: string;
+  Started: string;
+  Due: string;
+  Resolved: string;
+  Told: string;
+  LastUpdated: string;
+  TimeEstimated: string;
+  TimeWorked: string;
+  TimeLeft: string;
+  numerical_id: string;
+};
+
+export type TTicketHistoryItem = {
+  id: string;
+  Ticket: string;
+  TimeTaken: string;
+  Type: string;
+  Field: string;
+  OldValue: string;
+  NewValue: string;
+  Data: string;
+  Description: string;
+  Content: string;
+  Creator: string;
+  Created: string;
+  Attachments: [number, string][];
+  IsCreator: boolean;
+};

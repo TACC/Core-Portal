@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, useRouteMatch, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { LoadingSpinner, Section, SectionMessage } from '_common';
 import './AppLayout.global.css';
@@ -7,7 +7,7 @@ import AppBrowser from '../AppBrowser/AppBrowser';
 import { AppDetail, AppPlaceholder } from '../AppForm/AppForm';
 
 export const AppsLayout = () => {
-  const { params } = useRouteMatch();
+  const params = useParams();
   const { loading, categoryDict, error } = useSelector(
     (state) => ({
       loading: state.apps.loading,
@@ -40,7 +40,7 @@ export const AppsLayout = () => {
 };
 
 const AppsHeader = (categoryDict) => {
-  const { params } = useRouteMatch();
+  const params = useParams();
   const query = useQuery();
   const appVersion = query.get('appVersion');
   const appMeta = Object.values(categoryDict.categoryDict)
@@ -62,7 +62,6 @@ function useQuery() {
 
 const AppsRoutes = () => {
   const query = useQuery();
-  const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const htmlDict = useSelector((state) => state.apps.htmlDict, shallowEqual);
   const categoryDict = useSelector(
@@ -71,49 +70,57 @@ const AppsRoutes = () => {
   );
 
   return (
-    <Section
-      bodyClassName="has-loaded-applications"
-      messageComponentName="APPLICATIONS"
-      header={
-        <Route path={`${path}/:appId?`}>
-          <AppsHeader categoryDict={categoryDict} />
-        </Route>
-      }
-      content={
-        <>
-          <Route path={`${path}/:appId?`}>
-            <AppsLayout />
-          </Route>
-          {Object.keys(categoryDict).length ? (
-            <Route
-              exact
-              path={`${path}/:appId`}
-              render={({ match: { params } }) => {
-                const appDef = htmlDict[params.appId];
-                if (appDef && 'html' in appDef) {
-                  dispatch({
-                    type: 'LOAD_APP',
-                    payload: { definition: htmlDict[params.appId] },
-                  });
-                } else {
-                  dispatch({
-                    type: 'GET_APP',
-                    payload: {
-                      appId: params.appId,
-                      appVersion: query.get('appVersion'),
-                    },
-                  });
-                }
-                return <AppDetail />;
-              }}
-            />
-          ) : null}
-        </>
-      }
-      contentLayoutName="oneColumn"
-      contentShouldScroll
-    />
+    <Routes>
+      <Route
+        path=":appId?"
+        element={
+          <Section
+            bodyClassName="has-loaded-applications"
+            messageComponentName="APPLICATIONS"
+            header={<AppsHeader categoryDict={categoryDict} />}
+            content={
+              <>
+                <AppsLayout />
+                {Object.keys(categoryDict).length ? (
+                  <AppDetailRoute
+                    htmlDict={htmlDict}
+                    query={query}
+                    dispatch={dispatch}
+                  />
+                ) : null}
+              </>
+            }
+            contentLayoutName="oneColumn"
+            contentShouldScroll
+          />
+        }
+      />
+    </Routes>
   );
+};
+
+const AppDetailRoute = ({ htmlDict, query, dispatch }) => {
+  const { appId } = useParams();
+  if (!appId) return null;
+
+  const appDef = htmlDict[appId];
+
+  if (appDef && 'html' in appDef) {
+    dispatch({
+      type: 'LOAD_APP',
+      payload: { definition: appDef },
+    });
+  } else {
+    dispatch({
+      type: 'GET_APP',
+      payload: {
+        appId,
+        appVersion: query.get('appVersion'),
+      },
+    });
+  }
+
+  return <AppDetail />;
 };
 
 export default AppsRoutes;

@@ -6,7 +6,7 @@ import { SectionTableWrapper, Section, Button } from '_common';
 import * as Yup from 'yup';
 import styles from '../PublicationWizard.module.scss';
 import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const DEFAULT_AGREEMENTS = [
   {
@@ -32,7 +32,7 @@ const buildSchema = (agreements) =>
 const SubmitPublicationRequest = ({ callbackUrl, agreements, contact }) => {
   const { handleChange, handleBlur, values, submitForm, resetForm, setValues } =
     useFormikContext();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [submitDisabled, setSubmitDisabled] = useState(true);
 
@@ -50,7 +50,7 @@ const SubmitPublicationRequest = ({ callbackUrl, agreements, contact }) => {
     if (result && !error && !loading) {
       setSubmitDisabled(false);
       resetForm();
-      history.replace(callbackUrl);
+      navigate(callbackUrl, { replace: true });
     }
   }, [result, error, loading]);
 

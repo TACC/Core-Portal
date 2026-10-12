@@ -12,6 +12,7 @@ import {
   LoadingSpinner,
   Section,
 } from '_common';
+import { useAuthenticatedUserOrThrow } from '@tacc/core-hooks';
 
 const DataFilesManageProjectModalAddon = ({ projectId }) => {
   const dispatch = useDispatch();
@@ -31,9 +32,7 @@ const DataFilesManageProjectModalAddon = ({ projectId }) => {
     };
   });
 
-  const authenticatedUser = useSelector(
-    (state) => state.authenticatedUser.user.username
-  );
+  const authenticatedUser = useAuthenticatedUserOrThrow().username;
 
   const { query: authenticatedUserQuery } = useSystemRole(
     projectId ?? null,

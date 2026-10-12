@@ -3,5 +3,5 @@ i[data-bs-toggle='tooltip'] {
 }
 
 .tooltip-inner {
-    font-size: var(--global-font-size--medium);
+  font-size: var(--global-font-size--medium);
 }

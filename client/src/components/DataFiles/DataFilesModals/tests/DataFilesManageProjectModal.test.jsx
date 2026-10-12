@@ -1,5 +1,4 @@
 import React from 'react';
-import { vi } from 'vitest';
 import DataFilesManageProjectModal from '../DataFilesManageProjectModal';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
@@ -9,7 +8,6 @@ import {
 } from '../../../../redux/sagas/fixtures/projects.fixture';
 import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
 
-vi.mock('cross-fetch');
 const mockStore = configureStore();
 
 const initialMockState = {
@@ -51,12 +49,22 @@ const initialMockState = {
   },
 };
 
+const projectUser = {
+  username: 'username',
+  first_name: 'User',
+  last_name: 'Name',
+  email: 'user@name.com',
+};
+
 describe('DataFilesManageProjectModal', () => {
   it('renders the manage project modal', () => {
     const store = mockStore(initialMockState);
-    const { getAllByText, debug } = renderComponent(
+    const { getAllByText } = renderComponent(
       <DataFilesManageProjectModal />,
-      store
+      store,
+      undefined,
+      undefined,
+      projectUser
     );
 
     // Check that the authenticated user sees the Change Ownership option
