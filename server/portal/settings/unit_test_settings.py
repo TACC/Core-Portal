@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 
+from portal.settings.settings_export import SETTINGS_EXPORT  # noqa: F401
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -126,22 +128,11 @@ TEMPLATES = [
     },
 ]
 
-# Mirrors settings.py's own SETTINGS_EXPORT -- without this (and the context
-# processor above), every `{{ settings.* }}` reference in a template
-# (base.html's PORTAL_NAMESPACE/PORTAL_ICON_FILENAME/PORTAL_CSS_FILENAMES,
-# etc.) silently renders as an empty string under test settings, since Django
-# templates don't error on an undefined context variable.
-SETTINGS_EXPORT = [
-    "PORTAL_ICON_FILENAME",
-    "PORTAL_CSS_FILENAMES",
-    "DEBUG",
-    "GOOGLE_ANALYTICS_PROPERTY_ID",
-    "PORTAL_NAMESPACE",
-    "WORKBENCH_SETTINGS",
-    "DOCS_CHATBOT_URL",
-    "PORTAL_USER_ACCOUNT_SETUP_STEPS",
-    "PORTAL_NOINDEX_APP_SHELL",
-]
+# SETTINGS_EXPORT, imported from settings_export.py at the top of this file, is the
+# same list settings.py exports. Without it (and the context processor above), every
+# `{{ settings.* }}` reference in a template (base.html's PORTAL_NAMESPACE,
+# PORTAL_ICON_FILENAME, PORTAL_CSS_FILENAMES, etc.) silently renders as an empty string
+# under test settings, since Django templates don't error on an undefined variable.
 
 WSGI_APPLICATION = "portal.wsgi.application"
 
@@ -198,7 +189,9 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
-DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": "test"}}
+# In memory, so running manage.py with these settings doesn't leave an empty SQLite file
+# named "test" in the working directory. pytest-django's test database is in memory either way.
+DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}}
 
 # DATABASES = {
 #     'default': {

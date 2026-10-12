@@ -18,6 +18,7 @@ from hashlib import sha256
 from kombu import Exchange, Queue
 
 from portal.settings import settings_secret
+from portal.settings.settings_export import SETTINGS_EXPORT  # noqa: F401
 
 logger = logging.getLogger(__file__)
 
@@ -667,17 +668,8 @@ DOCS_CHATBOT_URL = getattr(settings_custom, "_DOCS_CHATBOT_URL", None)
 SETTINGS: EXPORTS
 """
 
-SETTINGS_EXPORT = [
-    "PORTAL_ICON_FILENAME",
-    "PORTAL_CSS_FILENAMES",
-    "DEBUG",
-    "GOOGLE_ANALYTICS_PROPERTY_ID",
-    "PORTAL_NAMESPACE",
-    "WORKBENCH_SETTINGS",
-    "DOCS_CHATBOT_URL",
-    "PORTAL_USER_ACCOUNT_SETUP_STEPS",
-    "PORTAL_NOINDEX_APP_SHELL",
-]
+# SETTINGS_EXPORT is imported from settings_export.py at the top of this file, so
+# unit_test_settings.py exports the same list.
 
 """
 SETTINGS: SUPPORTED FILE PREVIEW TYPES
