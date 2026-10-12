@@ -57,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * DataCite errors raise instead of being returned as if the request had succeeded. The publish event retries with backoff.
   * A DOI minted by a publish that then fails is saved on the source project, so a retry reuses it instead of minting another.
   * Publish follow-up tasks are queued only once the publish transaction commits, and a retried transfer callback still finishes publishing.
+  * The archive job is submitted by its own task, `submit_publication_archive_job`, which retries with backoff (up to 5 times) and logs how to recover when it gives up. A failed submission no longer retries the whole transfer callback, which re-indexed search, queued the DOI publish again, and could submit a second archive job.
   * The DOI's URL is always the same as the landing page's canonical URL and its sitemap entry.
 * task/WC-494: Landing pages and templates (#1375)
   * Withdrawn and mid-publish landing pages return 200 with `noindex, follow` and no metadata, rather than 404, as DataCite expects a page to resolve.

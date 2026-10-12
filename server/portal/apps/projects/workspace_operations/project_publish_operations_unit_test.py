@@ -43,6 +43,7 @@ from portal.apps.projects.workspace_operations.project_publish_operations import
     send_publication_rejected_email_to_authors,
     send_publication_reviewed_email_to_reviewers,
     send_publication_submitted_for_review_email_to_reviewers,
+    submit_publication_archive_job,
     update_and_cleanup_review_project,
     upload_metadata_file,
 )
@@ -189,46 +190,44 @@ def test_add_values_to_tree_embeds_entity_values_and_clears_uuid(mocker):
 # ---------------------------------------------------------------------------
 
 
-def test_publish_project_callback_orchestrates_cleanup_share_archive_and_checksum_poll(mocker, settings):
+def test_publish_project_callback_orchestrates_cleanup_share_and_queues_archive_job(mocker, settings):
     settings.DEBUG = True
     mock_service_account = mocker.patch(f"{DIR}.service_account")
     mock_cleanup = mocker.patch(f"{DIR}.update_and_cleanup_review_project")
     mock_switch = mocker.patch(f"{DIR}._switch_publication_to_version", return_value=True)
-    mock_archive = mocker.patch(f"{DIR}.archive_publication_files", return_value=SimpleNamespace(uuid="job-1"))
-    mock_poll = mocker.patch.object(poll_publication_archive_job, "apply_async")
+    mock_archive = mocker.patch(f"{DIR}.archive_publication_files")
+    mock_submit = mocker.patch.object(submit_publication_archive_job, "apply_async")
 
     publish_project_callback("review-1", "published-1", "archive-1", project_id="test.project-1", version=2)
 
     mock_cleanup.assert_called_once_with("review-1", PublicationRequest.Status.APPROVED)
     mock_service_account.return_value.systems.shareSystemPublic.assert_called_once_with(systemId="published-1")
     mock_switch.assert_called_once_with("test.project-1", 2, "published-1")
-    mock_archive.assert_called_once_with("archive-1")
-    mock_poll.assert_called_once_with(args=["job-1", "test.project-1", 2], countdown=60)
+    # Queued, not submitted here, so a submission error is retried by its own task.
+    mock_archive.assert_not_called()
+    mock_submit.assert_called_once_with(args=["archive-1"], kwargs={"project_id": "test.project-1", "version": 2})
 
 
-def test_publish_project_callback_without_project_id_skips_checksum_poll(mocker):
+def test_publish_project_callback_without_project_id_still_queues_archive_job(mocker):
     """A transfer poll queued before the checksum step existed calls back without project_id/version
-    -- it must still finish publishing, just without waiting on the archive job for checksums."""
+    -- it must still finish publishing; submit_publication_archive_job then skips the checksum poll."""
     mocker.patch(f"{DIR}.service_account")
     mocker.patch(f"{DIR}.update_and_cleanup_review_project")
     mock_switch = mocker.patch(f"{DIR}._switch_publication_to_version")
-    mock_archive = mocker.patch(f"{DIR}.archive_publication_files")
-    mock_poll = mocker.patch.object(poll_publication_archive_job, "apply_async")
+    mock_submit = mocker.patch.object(submit_publication_archive_job, "apply_async")
 
     publish_project_callback("review-1", "published-1", "archive-1")
 
     # Its publish_project already wrote the Publication row itself.
     mock_switch.assert_not_called()
-    mock_archive.assert_called_once_with("archive-1")
-    mock_poll.assert_not_called()
+    mock_submit.assert_called_once_with(args=["archive-1"], kwargs={"project_id": None, "version": None})
 
 
 def _mock_publish_project_callback_steps(mocker):
     mocker.patch(f"{DIR}.service_account")
     mocker.patch(f"{DIR}.update_and_cleanup_review_project")
     mocker.patch(f"{DIR}._switch_publication_to_version", return_value=True)
-    mocker.patch(f"{DIR}.archive_publication_files", return_value=SimpleNamespace(uuid="job-1"))
-    mocker.patch.object(poll_publication_archive_job, "apply_async")
+    mocker.patch.object(submit_publication_archive_job, "apply_async")
     return mocker.patch.object(publish_publication_doi, "apply_async")
 
 
@@ -306,24 +305,23 @@ def test_publish_project_callback_for_a_superseded_version_leaves_doi_alone_but_
     settings.DEBUG = False
     mock_publish_doi = _mock_publish_project_callback_steps(mocker)
     mocker.patch(f"{DIR}._switch_publication_to_version", return_value=False)
-    mock_archive = mocker.patch(f"{DIR}.archive_publication_files", return_value=SimpleNamespace(uuid="job-1"))
+    mock_submit = mocker.patch.object(submit_publication_archive_job, "apply_async")
     Publication.objects.create(project_id="test.project-1", version=3, value={"doi": "10.5555/minted-doi"}, tree={})
 
     publish_project_callback("review-1", "published-1", "archive-1", project_id="test.project-1", version=2)
 
     mock_publish_doi.assert_not_called()
-    mock_archive.assert_called_once_with("archive-1")
+    mock_submit.assert_called_once_with(args=["archive-1"], kwargs={"project_id": "test.project-1", "version": 2})
 
 
 def test_publish_project_callback_retry_after_cleanup_still_switches_publishes_and_archives(mocker, settings, caplog):
     """A first attempt approved the request and deleted the review project, then failed (here,
-    submitting the archive job). poll_tapis_file_transfer's retry must still finish publishing."""
+    making the system public). poll_tapis_file_transfer's retry must still finish publishing."""
     settings.DEBUG = False
     mock_publish_doi = _mock_publish_project_callback_steps(mocker)
     mock_cleanup = mocker.patch(f"{DIR}.update_and_cleanup_review_project", wraps=update_and_cleanup_review_project)
     mock_switch = mocker.patch(f"{DIR}._switch_publication_to_version", return_value=True)
-    mock_archive = mocker.patch(f"{DIR}.archive_publication_files", return_value=SimpleNamespace(uuid="job-1"))
-    mock_poll = mocker.patch.object(poll_publication_archive_job, "apply_async")
+    mock_submit = mocker.patch.object(submit_publication_archive_job, "apply_async")
     Publication.objects.create(project_id="test.project-1", value={"doi": "10.5555/minted-doi"}, tree={})
 
     # No review project remains, as after a completed cleanup.
@@ -335,8 +333,7 @@ def test_publish_project_callback_retry_after_cleanup_still_switches_publishes_a
     assert "already approved and cleaned up" in caplog.text
     mock_switch.assert_called_once_with("test.project-1", 1, "published-1")
     mock_publish_doi.assert_called_once_with(args=["test.project-1", "10.5555/minted-doi"], kwargs={"version": 1})
-    mock_archive.assert_called_once_with("archive-1")
-    mock_poll.assert_called_once_with(args=["job-1", "test.project-1", 1], countdown=60)
+    mock_submit.assert_called_once_with(args=["archive-1"], kwargs={"project_id": "test.project-1", "version": 1})
 
 
 def test_publish_project_callback_retry_with_no_pending_request_continues(mocker, settings, caplog):
@@ -344,24 +341,94 @@ def test_publish_project_callback_retry_with_no_pending_request_continues(mocker
     settings.DEBUG = True
     _mock_publish_project_callback_steps(mocker)
     mocker.patch(f"{DIR}.update_and_cleanup_review_project", side_effect=PublicationRequest.DoesNotExist)
-    mock_archive = mocker.patch(f"{DIR}.archive_publication_files", return_value=SimpleNamespace(uuid="job-1"))
+    mock_submit = mocker.patch.object(submit_publication_archive_job, "apply_async")
 
     publish_project_callback("review-1", "published-1", "archive-1", project_id="test.project-1", version=1)
 
     assert "already approved and cleaned up" in caplog.text
-    mock_archive.assert_called_once_with("archive-1")
+    mock_submit.assert_called_once()
 
 
 def test_publish_project_callback_other_cleanup_errors_still_fail(mocker):
     """Only an already-finished cleanup is skipped; anything else fails the attempt so it's retried."""
     _mock_publish_project_callback_steps(mocker)
     mocker.patch(f"{DIR}.update_and_cleanup_review_project", side_effect=RuntimeError("tapis down"))
-    mock_archive = mocker.patch(f"{DIR}.archive_publication_files")
+    mock_submit = mocker.patch.object(submit_publication_archive_job, "apply_async")
 
     with pytest.raises(RuntimeError, match="tapis down"):
         publish_project_callback("review-1", "published-1", "archive-1", project_id="test.project-1", version=1)
 
-    mock_archive.assert_not_called()
+    mock_submit.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# submit_publication_archive_job
+# ---------------------------------------------------------------------------
+
+
+def test_submit_publication_archive_job_submits_and_queues_checksum_poll(mocker):
+    mock_archive = mocker.patch(f"{DIR}.archive_publication_files", return_value=SimpleNamespace(uuid="job-1"))
+    mock_poll = mocker.patch.object(poll_publication_archive_job, "apply_async")
+
+    submit_publication_archive_job("archive-1", project_id="test.project-1", version=2)
+
+    mock_archive.assert_called_once_with("archive-1")
+    mock_poll.assert_called_once_with(args=["job-1", "test.project-1", 2], countdown=60)
+
+
+def test_submit_publication_archive_job_without_project_id_skips_checksum_poll(mocker):
+    mock_archive = mocker.patch(f"{DIR}.archive_publication_files", return_value=SimpleNamespace(uuid="job-1"))
+    mock_poll = mocker.patch.object(poll_publication_archive_job, "apply_async")
+
+    submit_publication_archive_job("archive-1")
+
+    mock_archive.assert_called_once_with("archive-1")
+    mock_poll.assert_not_called()
+
+
+def test_submit_publication_archive_job_retries_submission_with_backoff(mocker):
+    """Only the submission is retried -- not publish_project_callback, whose retry would queue the DOI
+    publish again."""
+    error = RuntimeError("tapis down")
+    mocker.patch(f"{DIR}.archive_publication_files", side_effect=error)
+    mock_poll = mocker.patch.object(poll_publication_archive_job, "apply_async")
+    mock_retry = mocker.patch.object(submit_publication_archive_job, "retry", side_effect=Retry())
+
+    with pytest.raises(Retry):
+        submit_publication_archive_job("archive-1", project_id="test.project-1", version=1)
+
+    mock_retry.assert_called_once_with(exc=error, countdown=60)
+    mock_poll.assert_not_called()
+
+
+def test_submit_publication_archive_job_gives_up_after_max_retries_and_logs_remedy(mocker, caplog):
+    mocker.patch(f"{DIR}.archive_publication_files", side_effect=RuntimeError("tapis down"))
+    mock_retry = mocker.patch.object(submit_publication_archive_job, "retry")
+
+    with pytest.raises(RuntimeError, match="tapis down"):
+        submit_publication_archive_job.apply(
+            args=["archive-1"],
+            kwargs={"project_id": "test.project-1", "version": 1},
+            retries=submit_publication_archive_job.max_retries,
+            throw=True,
+        )
+
+    mock_retry.assert_not_called()
+    assert "Gave up submitting the archive job for archive-1" in caplog.text
+    assert "compute_publication_checksums --load-only test.project-1" in caplog.text
+
+
+def test_submit_publication_archive_job_never_resubmits_when_checksum_poll_cant_be_queued(mocker, caplog):
+    """The job is already running: retrying would submit a second one for the same version."""
+    mock_archive = mocker.patch(f"{DIR}.archive_publication_files", return_value=SimpleNamespace(uuid="job-1"))
+    mocker.patch.object(poll_publication_archive_job, "apply_async", side_effect=RuntimeError("broker down"))
+    mock_retry = mocker.patch.object(submit_publication_archive_job, "retry")
+
+    submit_publication_archive_job("archive-1", project_id="test.project-1", version=1)
+
+    mock_archive.assert_called_once_with("archive-1")
+    mock_retry.assert_not_called()
+    assert "compute_publication_checksums --load-only test.project-1" in caplog.text
 
 
 # ---------------------------------------------------------------------------

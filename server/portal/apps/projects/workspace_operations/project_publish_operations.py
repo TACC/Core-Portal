@@ -144,15 +144,12 @@ def publish_project_callback(
         else:
             _queue_publish_publication_doi(project_id, version)
 
-    # Create ZIP archive of published files (the same job writes the sha256 manifest)
-    archive_job = archive_publication_files(archive_project_id)
-
-    # `project_id`/`version` are absent for a transfer poll queued before this step existed -- that
-    # publication can be backfilled with the compute_publication_checksums management command.
-    if project_id:
-        poll_publication_archive_job.apply_async(
-            args=[archive_job.uuid, project_id, version], countdown=ARCHIVE_JOB_POLL_SECONDS
-        )
+    # Create ZIP archive of published files (the same job writes the sha256 manifest). Submitted by its
+    # own task, which retries on its own: an error submitting the job must not fail this callback, whose
+    # retry would run every step above again and queue the DOI publish a second time.
+    submit_publication_archive_job.apply_async(
+        args=[archive_project_id], kwargs={"project_id": project_id, "version": version}
+    )
 
 
 def _switch_publication_to_version(project_id, version, published_system_id):
@@ -349,6 +346,50 @@ def poll_publication_archive_job(self, job_uuid, project_id, version=None, attem
     self.apply_async(
         args=[job_uuid, project_id, version], kwargs={"attempt": attempt + 1}, countdown=ARCHIVE_JOB_POLL_SECONDS
     )
+
+
+@shared_task(bind=True, max_retries=5, queue="default")
+def submit_publication_archive_job(self, archive_project_id, project_id=None, version=None):
+    """Submit a published version's archive job (archive_publication_files), then queue
+    poll_publication_archive_job to load the checksums it writes. Queued by publish_project_callback,
+    and retried with backoff here rather than there, so a Tapis error submitting the job doesn't re-run
+    the callback's earlier steps.
+
+    `project_id`/`version` are absent for a transfer poll queued before the checksum step existed:
+    the job is still submitted, but not polled. That publication can be backfilled with the
+    compute_publication_checksums management command.
+    """
+
+    try:
+        archive_job = archive_publication_files(archive_project_id)
+    except Exception as e:
+        if self.request.retries >= self.max_retries:
+            logger.error(
+                f"Gave up submitting the archive job for {archive_project_id}: {e}. Its ZIP, checksum "
+                f"manifests and Ranch copy weren't made; submit it again with "
+                f"archive_publication_files({archive_project_id!r}) in a Django shell, then load its "
+                f"checksums with `compute_publication_checksums --load-only {project_id}` once it ends."
+            )
+            raise
+        logger.warning(
+            f"Could not submit the archive job for {archive_project_id} (attempt {self.request.retries + 1} "
+            f"of {self.max_retries + 1}): {e}"
+        )
+        raise self.retry(exc=e, countdown=60 * 2**self.request.retries)
+
+    if not project_id:
+        return
+    # Outside the retry above: retrying would submit a second archive job for the same version.
+    try:
+        poll_publication_archive_job.apply_async(
+            args=[archive_job.uuid, project_id, version], countdown=ARCHIVE_JOB_POLL_SECONDS
+        )
+    except Exception:
+        logger.exception(
+            f"Submitted archive job {archive_job.uuid} for publication {project_id}, but couldn't queue "
+            f"its checksum poll; load its checksums with `compute_publication_checksums --load-only "
+            f"{project_id}` once it ends."
+        )
 
 
 def publication_request_callback(
