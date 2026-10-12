@@ -74,7 +74,9 @@
     {% else %}
     <link rel="icon" href="{% static 'img/favicon.ico' %}">
     {% endif %}
-    {% comment %}Without its query string, so tracking or filter parameters don't each claim a canonical URL.{% endcomment %}
+    {% comment %}
+      Without its query string, so tracking or filter parameters don't each claim a canonical URL.
+    {% endcomment %}
     <link rel="canonical" href="{% if canonical_url %}{{ canonical_url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endif %}">
     <base href="/">
     {% block head_extra %}{% endblock %}

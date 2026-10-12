@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+* task/WC-494: SEO and discoverability for published datasets (#1375)
+  * Server-rendered landing pages at `/published-datasets/<published system id>` with schema.org Dataset and Croissant 1.1 JSON-LD, Dublin Core, Google Scholar (`citation_*`), Open Graph and Twitter Card tags, and a visible summary with APA and BibTeX citations.
+  * Routes under each landing page: `files/<path>` (published file bytes), `cover-image`, `archive.zip` (whole-dataset ZIP) and `croissant.json` (standalone Croissant document). Unknown paths under a project id return 404.
+  * XML sitemap at `/published-datasets/sitemap.xml`, which becomes a sitemap index of `sitemap-N.xml` files past 50,000 publications.
+  * Publication fields `is_indexable` (migration `0004`), and `archive_sha256` and `archive_size` (migration `0005`).
+  * Per-file sha256 checksums and the ZIP's sha256, loaded from the archive app's manifests (archive app 0.0.3+).
+  * Management commands `compute_publication_checksums`, `update_datacite_metadata` and `withdraw_publication`.
+  * Settings `_PORTAL_NOINDEX_APP_SHELL`, `_PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL`, `_PORTAL_PUBLICATION_LICENSE_URLS` and `_PORTAL_PUBLICATION_LICENSE_SPDX_IDS`.
+  * DRP publish wizard requires a license.
+
+### Changed
+* task/WC-494: DataCite publishing (#1375)
+  * A DOI is made findable, and its landing page indexable, only after the published files have transferred. A republish moves the DOI's URL and metadata to the new version at that point.
+  * DataCite metadata declares `schemaVersion` kernel-4 and sends `rightsList` with license URLs and SPDX ids, ORCID `nameIdentifiers`, and the Issued date and `publicationYear` from the first publish (previously the current year).
+  * Updates to an existing DOI keep metadata DataCite already holds that the portal doesn't collect.
+  * A republish keeps the original publication date.
+
 ## [3.11.3] 02-25-25
 
 ### Added
