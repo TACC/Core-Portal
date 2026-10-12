@@ -1,5 +1,6 @@
 import json
 import logging
+import math
 
 import requests
 from django.conf import settings
@@ -32,11 +33,7 @@ class SysmonDataView(BaseApiView):
             requested_systems = settings.SYSTEM_MONITOR_DISPLAY_LIST
 
             if system_json["display_name"] in requested_systems:
-                system_queues = []
-                for queue in system_json["queues"].items():
-                    system_queues.append({"name": queue[0], **queue[1]})
-
-                return JsonResponse(system_queues, safe=False)
+                return JsonResponse(_get_queues(system_json), safe=False)
         else:
             systems = []
             requested_systems = settings.SYSTEM_MONITOR_DISPLAY_LIST
@@ -53,6 +50,22 @@ class SysmonDataView(BaseApiView):
                     logger.exception(f"Problem gather system information for {sys}: Assuming not operational status")
                     systems.append(_get_unoperational_system(sys))
             return JsonResponse(systems, safe=False)
+
+
+def _get_queues(system_dict):
+    """Expose queue loads as finite numbers or null for unavailable values."""
+    queues = system_dict.get("queues")
+    if not isinstance(queues, dict):
+        return []
+    result = []
+    for name, data in queues.items():
+        if not isinstance(data, dict):
+            continue
+        load = data.get("load")
+        if isinstance(load, bool) or not isinstance(load, (int, float)) or not math.isfinite(load):
+            load = None
+        result.append({**data, "name": name, "load": load})
+    return result
 
 
 class System:
