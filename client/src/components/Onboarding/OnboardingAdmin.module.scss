@@ -1,4 +1,4 @@
-@import '../../styles/tools/mixins.scss';
+@use '../../styles/tools/mixins.scss' as mixins;
 
 /* Required to constrain table within flex box */
 .root {
@@ -96,7 +96,7 @@
     th {
       padding: var(--cell-vertical-padding) var(--cell-horizontal-padding);
 
-      @include truncate-with-ellipsis;
+      @include mixins.truncate-with-ellipsis;
     }
   }
   td {
@@ -116,7 +116,7 @@
   vertical-align: top;
 }
 .user > td:not(.has-wrappable-content):not(.status) {
-  @include truncate-with-ellipsis;
+  @include mixins.truncate-with-ellipsis;
 }
 .user-row-white {
   background-color: #ffffff;

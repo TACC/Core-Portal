@@ -11,6 +11,7 @@ import {
   SectionMessage,
 } from '_common';
 import * as Yup from 'yup';
+import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
 import './AppForm.scss';
 import SystemsPushKeysModal from '_common/SystemsPushKeysModal';
@@ -48,6 +49,7 @@ import {
 
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const appShape = PropTypes.shape({
   loading: PropTypes.bool,
@@ -133,7 +135,7 @@ export const AppDetail = () => {
       {!app.definition && <AppPlaceholder apps={hasApps} />}
       {app.definition.appType === 'html' ? (
         <div id="appDetail-wrapper" className="has-external-app">
-          {parse(app.definition.html)}
+          {parse(DOMPurify.sanitize(app.definition.html))}
         </div>
       ) : (
         <div id="appDetail-wrapper" className="has-internal-app">
@@ -231,7 +233,7 @@ const AppInfo = ({ app }) => {
     <div className="appInfo-wrapper">
       <h5 className="appInfo-title">{app.definition.label}</h5>
       <div className="appInfo-description">
-        {parse(app.definition.description || '')}
+        {parse(DOMPurify.sanitize(app.definition.description || ''))}
       </div>
       {app.definition.notes.helpUrl ? (
         <a
@@ -263,10 +265,13 @@ export const AppSchemaForm = ({ app }) => {
   const storageState = useSelector((state) => state.systems.storage);
   const jobSubmission = useSelector((state) => state.jobs.submit);
   const systemMonitor = useSelector((state) => state.systemMonitor);
-  const hideManageAccount = useSelector(
-    (state) => state.workbench.config.hideManageAccount
-  );
-  const isTACCPortal = useSelector((state) => state.workbench.isTACCPortal);
+
+  const {
+    data: {
+      isTACCPortal,
+      config: { hideManageAccount },
+    },
+  } = useWorkbenchConfig();
 
   const {
     allocations,

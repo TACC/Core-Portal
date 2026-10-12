@@ -86,19 +86,18 @@ jobs:
       - name: Setup Node.js for use with actions
         uses: pnpm/setup@v2
         with:
-          version: 12
           runtime: node@24
           cache-dependency-path: "client/pnpm-lock.yaml"
           package-json-file: "client/package.json"
 
-      - name: npm ci
+      - name: pnpm ci
         run: |
           cd client
           pnpm ci
       - name: Client Side Unit Tests
         run: |
           cd client
-          pnpm run test
+          pnpm run test --maxWorkers='100%'
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -115,12 +114,11 @@ jobs:
       - name: Setup Node.js for use with actions
         uses: pnpm/setup@v2
         with:
-          version: 12
           runtime: node@24
           cache-dependency-path: "client/pnpm-lock.yaml"
           package-json-file: "client/package.json"
 
-      - name: npm ci
+      - name: pnpm ci
         run: |
           cd client
           pnpm ci

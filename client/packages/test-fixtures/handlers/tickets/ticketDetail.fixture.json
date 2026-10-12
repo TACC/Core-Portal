@@ -1,0 +1,29 @@
+{
+  "tickets": [
+    {
+      "id": "120055",
+      "Queue": "Web & Mobile Apps",
+      "Owner": "Nobody",
+      "Creator": "rtdev",
+      "Subject": "Test Ticket Subject",
+      "Status": "resolved",
+      "Priority": "0",
+      "InitialPriority": "0",
+      "FinalPriority": "0",
+      "Requestors": ["jrosenberg@tacc.utexas.edu"],
+      "Cc": [],
+      "AdminCc": [],
+      "Created": "Tue Sep 29 15:28:33 2026",
+      "Starts": "Not set",
+      "Started": "Tue Sep 29 15:29:19 2026",
+      "Due": "Not set",
+      "Resolved": "Tue Sep 29 15:29:19 2026",
+      "Told": "Not set",
+      "LastUpdated": "Tue Sep 29 15:29:19 2026",
+      "TimeEstimated": "0",
+      "TimeWorked": "0",
+      "TimeLeft": "0",
+      "numerical_id": "120055"
+    }
+  ]
+}

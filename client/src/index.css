@@ -4,68 +4,67 @@
 @import url('./styles/components/mui.tabs.css');
 
 @layer portal {
-
-/*
+  /*
   Sectioning Root
   ===
   https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Sectioning_root
 */
 
-body {
-  margin: 0;
-  font-family: Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  body {
+    margin: 0;
+    font-family: Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 
-  color: var(--global-color-primary--xx-dark); /* overwrite Bootstrap */
+    color: var(--global-color-primary--xx-dark); /* overwrite Bootstrap */
 
-  /* Allow components to overwrite minimum width and height of body */
-  /* FAQ: Use variable to isolate value from application of value */
-  /* WARNING: Must use a unit, NOT a keyword (which would break any `calc()`) */
-  /* stylelint-disable length-zero-no-unit */
-  min-height: var(--min-height, 0);
-  min-width: var(--min-width, 0);
-  /* stylelint-enable length-zero-no-unit */
-}
+    /* Allow components to overwrite minimum width and height of body */
+    /* FAQ: Use variable to isolate value from application of value */
+    /* WARNING: Must use a unit, NOT a keyword (which would break any `calc()`) */
+    /* stylelint-disable length-zero-no-unit */
+    min-height: var(--min-height, 0);
+    min-width: var(--min-width, 0);
+    /* stylelint-enable length-zero-no-unit */
+  }
 
-/*
+  /*
   Inline Text Semantics
   ===
   https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Inline_text_semantics
 */
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
+  code {
+    font-family:
+      source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  }
 
-/*
+  /*
   External Layout
   ===
   Expand, to fill desired space, any wrapper elements
   that are outside scope of the application codebase
 */
 
-/* Allow expansion (with no respect to ancestors and siblings)
+  /* Allow expansion (with no respect to ancestors and siblings)
 
     <html>
       <body>…</body>
     </html>
 */
-/* FAQ: The CMS applies a `margin-top` on the `<html>` */
-/* FAQ: The `html` and `body` boxes are only as tall as their content
+  /* FAQ: The CMS applies a `margin-top` on the `<html>` */
+  /* FAQ: The `html` and `body` boxes are only as tall as their content
         (which may be shorter than window height), cannot have siblings elements
         (would be influenced by force stretch), so force stretch outward. */
-body:not(.has-cms-ui) {
-  /* As a stretched item */
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-}
+  body:not(.has-cms-ui) {
+    /* As a stretched item */
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
 
-/* Allow expansion (with respect to ancestors and siblings)
+  /* Allow expansion (with respect to ancestors and siblings)
 
     <body>
       <div class="content">
@@ -75,43 +74,43 @@ body:not(.has-cms-ui) {
       </div>
     </body>
 */
-/* FAQ: Shared hosting with CMS renders header and footer siblings */
-/* FAQ: The `.content` and `#react-root` boxes are only as tall as their content
+  /* FAQ: Shared hosting with CMS renders header and footer siblings */
+  /* FAQ: The `.content` and `#react-root` boxes are only as tall as their content
         (which may be shorter than window height), can have siblings elements
         (would be influenced by force stretch), so gently stretch outward. */
-body:not(.has-cms-ui) {
-  /* As a flex container */
-  display: flex;
-  flex-direction: column;
-}
-body:not(.has-cms-ui) .content {
-  /* As a flex item */
-  flex-grow: 1;
+  body:not(.has-cms-ui) {
+    /* As a flex container */
+    display: flex;
+    flex-direction: column;
+  }
+  body:not(.has-cms-ui) .content {
+    /* As a flex item */
+    flex-grow: 1;
 
-  /* As a flex container */
-  display: flex;
-  flex-direction: column;
-}
-body:not(.has-cms-ui) #react-root {
-  /* As a flex item */
-  flex-grow: 1;
+    /* As a flex container */
+    display: flex;
+    flex-direction: column;
+  }
+  body:not(.has-cms-ui) #react-root {
+    /* As a flex item */
+    flex-grow: 1;
 
-  /* As a stretched item container */
-  position: relative;
-}
-body:not(.has-cms-ui) #react-root > :only-child {
-  /* As a stretched item */
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-}
+    /* As a stretched item container */
+    position: relative;
+  }
+  body:not(.has-cms-ui) #react-root > :only-child {
+    /* As a stretched item */
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
 
-body > footer {
+  body > footer {
     position: sticky;
     top: 100vh;
-}
+  }
 
-/* end @layer portal */
+  /* end @layer portal */
 }

@@ -6,17 +6,20 @@
     'input input'
     'count clear';
 }
-.searchbar > :where(
-  [type='search'],
-  *:has([type='search'])
-)                                   { grid-area: input; }
-.searchbar > [class*='results']     { grid-area: count; }
-.searchbar > [type='reset']         { grid-area: clear; }
+.searchbar > :where([type='search'], *:has([type='search'])) {
+  grid-area: input;
+}
+.searchbar > [class*='results'] {
+  grid-area: count;
+}
+.searchbar > [type='reset'] {
+  grid-area: clear;
+}
 
 /* To tweak existing styles */
 .searchbar [type='reset'] {
-    text-align: right; /* overwrites browser */
+  text-align: right; /* overwrites browser */
 }
 .searchbar > *:not(:last-child) {
-    margin-right: unset; /* overwrite Searchbar.module.css */
+  margin-right: unset; /* overwrite Searchbar.module.css */
 }

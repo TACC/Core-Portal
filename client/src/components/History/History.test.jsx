@@ -6,7 +6,6 @@ import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import Routes from './History';
-import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
 // TODOv3: dropV2Jobs
@@ -38,7 +37,6 @@ describe('History Routes', () => {
             loadingError: false,
             loadingErrorMessage: '',
           },
-          workbench: { ...workbench, config: { hideDataFiles: false } },
           apps: {
             appIcons: {},
           },
@@ -75,7 +73,6 @@ describe('History Routes', () => {
       apps: {
         appIcons: {},
       },
-      workbench: { ...workbench, config: { hideDataFiles: false } },
     });
 
     renderComponent(

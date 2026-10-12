@@ -43,8 +43,6 @@
   font-size: inherit;
 }
 
-
-
 .icon--before {
   composes: c-button__icon--before from '../../../styles/components/c-button--new.css';
 }

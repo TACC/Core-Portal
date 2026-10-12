@@ -1,16 +1,13 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import { Provider } from 'react-redux';
 import { default as jobsList } from '../../../Jobs/Jobs.fixture';
 // TODOv3: dropV2Jobs
 import { default as jobsV2List } from '../../../Jobs/JobsV2.fixture';
-import { BrowserRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 import JobHistoryModal from '../JobHistoryModal';
 import jobDetailFixture from '../../../../redux/sagas/fixtures/jobdetail.fixture';
 import jobDetailDisplayFixture from '../../../../redux/sagas/fixtures/jobdetaildisplay.fixture';
 import appDetailFixture from '../../../../redux/sagas/fixtures/appdetail.fixture';
-import { initialState as workbench } from '../../../../redux/reducers/workbench.reducers';
+import renderComponent from 'utils/testing';
 
 const mockInitialState = {
   uuid: '793e9e90-53c3-4168-a26b-17230e2e4156-007',
@@ -24,30 +21,22 @@ const mockInitialState = {
 
 describe('Job History Modal', () => {
   const mockStore = configureStore();
+  const testStore = mockStore({
+    jobDetail: {
+      ...mockInitialState,
+    },
+    jobs: {
+      list: jobsList,
+    },
+    // TODOv3: dropV2Jobs
+    jobsv2: {
+      list: jobsV2List,
+    },
+  });
   it('renders job history information given the job UUID', () => {
-    const { getByText } = render(
-      <BrowserRouter>
-        <Provider
-          store={mockStore({
-            jobDetail: {
-              ...mockInitialState,
-            },
-            jobs: {
-              list: jobsList,
-            },
-            // TODOv3: dropV2Jobs
-            jobsv2: {
-              list: jobsV2List,
-            },
-            workbench: {
-              ...workbench,
-              config: { hideDataFiles: false },
-            },
-          })}
-        >
-          <JobHistoryModal uuid="793e9e90-53c3-4168-a26b-17230e2e4156-007" />
-        </Provider>
-      </BrowserRouter>
+    const { getByText } = renderComponent(
+      <JobHistoryModal uuid="793e9e90-53c3-4168-a26b-17230e2e4156-007" />,
+      testStore
     );
     expect(getByText(/Greeting/)).toBeDefined();
     expect(getByText(/Target/)).toBeDefined();
@@ -58,33 +47,26 @@ describe('Job History Modal', () => {
 
   // TODOv3: dropV2Jobs
   it('renders v2 job history information given the job UUID', () => {
-    const { getByText, queryByText } = render(
-      <BrowserRouter>
-        <Provider
-          store={mockStore({
-            jobDetail: {
-              ...mockInitialState,
-            },
-            jobs: {
-              list: jobsList,
-            },
-            // TODOv3: dropV2Jobs
-            jobsv2: {
-              list: jobsV2List,
-            },
-            workbench: {
-              ...workbench,
-              config: { hideDataFiles: false },
-            },
-          })}
-        >
-          <JobHistoryModal
-            uuid="3b03cb52-3951-4b05-8833-27af89b937e9-007"
-            // TODOv3: dropV2Jobs
-            version="v2"
-          />
-        </Provider>
-      </BrowserRouter>
+    const mockStore = configureStore();
+    const testStore = mockStore({
+      jobDetail: {
+        ...mockInitialState,
+      },
+      jobs: {
+        list: jobsList,
+      },
+      // TODOv3: dropV2Jobs
+      jobsv2: {
+        list: jobsV2List,
+      },
+    });
+    const { getByText, queryByText } = renderComponent(
+      <JobHistoryModal
+        uuid="3b03cb52-3951-4b05-8833-27af89b937e9-007"
+        // TODOv3: dropV2Jobs
+        version="v2"
+      />,
+      testStore
     );
     expect(getByText(/filenames/)).toBeDefined();
     expect(getByText(/zipFileName/)).toBeDefined();

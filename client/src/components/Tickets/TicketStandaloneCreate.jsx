@@ -5,11 +5,10 @@ import { useSelector } from 'react-redux';
 import BrowserChecker from '../_common/BrowserChecker';
 import TicketCreateForm from './TicketCreateForm';
 import './TicketStandaloneCreate.scss';
+import { useAuthenticatedUser } from '@tacc/core-hooks';
 
 function TicketStandaloneCreate() {
-  const authenticatedUser = useSelector(
-    (state) => state.authenticatedUser.user
-  );
+  const authenticatedUser = useAuthenticatedUser();
   const introMessageComponents = useSelector(
     (state) => state.introMessageComponents
   );

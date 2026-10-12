@@ -9,6 +9,7 @@ import '../../Onboarding/OnboardingStep.module.scss';
 import { useSelectedFiles } from 'hooks/datafiles';
 import formatSize from 'utils/sizeFormat';
 import { formatDateTimeFromValue } from 'utils/timeFormat';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 export const CheckboxHeaderCell = () => {
   const { allSelected, selectAll } = useSelectedFiles();
@@ -138,9 +139,13 @@ LastModifiedCell.propTypes = {
 };
 
 export const FileIcon = ({ format, path = '' }) => {
+  const {
+    data: {
+      config: { trashPath = '.Trash' },
+    },
+  } = useWorkbenchConfig();
   const isFolder = format === 'folder';
-  const isTrash =
-    path === '/' + useSelector((state) => state.workbench.config.trashPath);
+  const isTrash = path === '/' + trashPath;
   let iconName = 'file';
   let iconLabel = 'File';
   if (isFolder) {
