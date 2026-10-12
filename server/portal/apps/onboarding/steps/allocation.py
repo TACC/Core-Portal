@@ -1,5 +1,5 @@
-from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
+from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.users.utils import get_allocations
 
 
@@ -8,13 +8,16 @@ class AllocationStep(AbstractStep):
         """
         Call super class constructor
         """
-        super(AllocationStep, self).__init__(user)
+        super().__init__(user)
 
     def display_name(self):
         return "Allocations"
 
     def description(self):
-        return """Accessing your allocations. If unsuccessful, verify the PI has added you to the allocations for this project."""
+        return (
+            "Accessing your allocations. If unsuccessful, verify the PI "
+            "has added you to the allocations for this project."
+        )
 
     def prepare(self):
         self.state = SetupState.PENDING
@@ -32,24 +35,31 @@ class AllocationStep(AbstractStep):
         if not allocations.get("active"):
             self.state = SetupState.FAILED
             self.log(
-                """User {0} does not have any allocations""".format(self.user.username),
+                f"""User {self.user.username} does not have any allocations""",
             )
         else:
             if "expected_hosts" in self.settings:
-                # checking if expected hosts are included in allocation hosts
                 expected_hosts = self.settings["expected_hosts"]
+                mode = self.settings.get("expected_hosts_mode", "all")
                 allocation_hosts = {h.lower() for h in allocations["hosts"].keys()}
                 matched_hosts = [h for h in expected_hosts if h in allocation_hosts]
                 missing_hosts = [h for h in expected_hosts if h not in allocation_hosts]
 
-                if missing_hosts:
+                if mode == "any":
+                    if not matched_hosts:
+                        self.state = SetupState.FAILED
+                        self.log(f"User {self.user.username} has no allocations on any of: {expected_hosts}")
+                        return
+                elif mode == "all":
+                    if missing_hosts:
+                        self.state = SetupState.FAILED
+                        self.log(f"User {self.user.username} is missing allocations on: {missing_hosts}")
+                        return
+                else:
                     self.state = SetupState.FAILED
-                    self.log(
-                        "User {0} is missing allocations on: {1}".format(
-                            self.user.username, missing_hosts
-                        )
-                    )
+                    self.log(f"Invalid expected_hosts_mode: {mode!r}")
                     return
-                self.log("Expected host allocations found: {0}".format(matched_hosts))
+
+                self.log(f"Expected host allocations found: {matched_hosts}")
 
             self.complete("Allocations retrieved", data=allocations)

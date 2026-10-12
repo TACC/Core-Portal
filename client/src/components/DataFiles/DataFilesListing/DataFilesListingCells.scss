@@ -8,7 +8,6 @@
 }
 
 .data-files-name {
-  font-size: 10px/11px;
   display: block;
   white-space: nowrap;
   overflow: hidden;
@@ -36,4 +35,15 @@
   font-size: 1.1em;
   color: #707070;
   display: flex;
+}
+
+.dataTypeBox {
+  display: inline-block;
+  background-color: #808080; /* Light grey background */
+  color: #ffffff; /* Dark text color */
+  padding: 2px 8px; /* Small top/bottom padding, larger left/right padding */
+  border-radius: 12px; /* Rounded corners */
+  font-size: 0.875rem; /* Smaller font size */
+  margin: 8px 0;
+  font-weight: bold;
 }

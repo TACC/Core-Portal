@@ -35,6 +35,7 @@ const initialMockState = {
       loading: false,
       error: null,
     },
+    metadata: {},
   },
   systems: systemsFixture,
   workbench: {

@@ -1,4 +1,4 @@
-import { all } from 'redux-saga/effects';
+import { all, select, takeEvery, fork } from 'redux-saga/effects';
 import { watchJobs, watchJobDetails } from './jobs.sagas';
 import watchApps from './apps.sagas';
 import watchSystems from './systems.sagas';
@@ -25,19 +25,8 @@ import {
 import watchAllocations from './allocations.sagas';
 import watchSystemMonitor from './systemMonitor.sagas';
 import watchProfile from './profile.sagas';
-import {
-  watchTicketListFetch,
-  watchTicketDetailedView,
-  watchTicketDetailedViewFetchHistory,
-  watchTicketDetailedViewFetchSubject,
-  watchPostTicketReply,
-  watchPostTicketCreate,
-  watchTicketCreateOpenModal,
-  watchTicketCreateCloseModal,
-} from './tickets.sagas';
+
 import { watchPostRequestAccess } from './requestAccess.sagas';
-import { watchAuthenticatedUser } from './authenticated_user.sagas';
-import { watchWorkbench } from './workbench.sagas';
 import {
   watchFetchIntroMessageComponents,
   watchSaveIntroMessageComponents,
@@ -52,6 +41,23 @@ import {
 import { watchProjects } from './projects.sagas';
 import { watchUsers } from './users.sagas';
 import { watchSiteSearch } from './siteSearch.sagas';
+import { watchPublications } from './publications.sagas';
+
+function* watchStartCustomSaga() {
+  yield takeEvery('START_CUSTOM_SAGA', startCustomSaga);
+}
+
+function* startCustomSaga(action) {
+  const portalName = action.payload.portalName;
+
+  const { default: customSaga } = yield import(
+    `./_custom/${portalName.toLowerCase()}.sagas.js`
+  );
+
+  if (customSaga) {
+    yield fork(customSaga);
+  }
+}
 
 export default function* rootSaga() {
   yield all([
@@ -79,19 +85,9 @@ export default function* rootSaga() {
     watchSystems(),
     watchSystemMonitor(),
     ...watchProfile,
-    watchTicketListFetch(),
-    watchTicketDetailedView(),
-    watchTicketDetailedViewFetchHistory(),
-    watchTicketDetailedViewFetchSubject(),
-    watchPostTicketReply(),
-    watchPostTicketCreate(),
     watchPostRequestAccess(),
-    watchTicketCreateOpenModal(),
-    watchTicketCreateCloseModal(),
-    watchAuthenticatedUser(),
     watchSocket(),
     watchFetchNotifications(),
-    watchWorkbench(),
     watchFetchIntroMessageComponents(),
     watchFetchCustomMessages(),
     watchSaveIntroMessageComponents(),
@@ -102,5 +98,7 @@ export default function* rootSaga() {
     watchProjects(),
     watchUsers(),
     watchSiteSearch(),
+    watchStartCustomSaga(),
+    watchPublications(),
   ]);
 }

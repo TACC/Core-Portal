@@ -5,8 +5,18 @@ import DataFilesDownloadMessageModalFixture from './DataFilesDownloadMessageModa
 import DataFilesDownloadMessageModal from '../DataFilesDownloadMessageModal';
 import * as mutations from 'hooks/datafiles/mutations';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { useDispatch } from 'react-redux';
 import { vi } from 'vitest';
 import '@testing-library/jest-dom';
+
+vi.mock('react-redux', async (importOriginal) => {
+  const actual = await importOriginal();
+
+  return {
+    ...actual,
+    useDispatch: vi.fn(actual.useDispatch),
+  };
+});
 
 vi.mock('hooks/datafiles/mutations/toolbarAppUtils', async (importOriginal) => {
   const actual = await importOriginal();
@@ -117,9 +127,7 @@ describe('DataFilesDownloadMessageModal', () => {
     // Mock the dispatch action
     const mockDispatch = vi.fn();
     // Create a spy that watches for the dispatch call
-    vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
-      mockDispatch
-    );
+    useDispatch.mockReturnValue(mockDispatch);
     renderComponent(
       <DataFilesDownloadMessageModal />,
       mockStore({

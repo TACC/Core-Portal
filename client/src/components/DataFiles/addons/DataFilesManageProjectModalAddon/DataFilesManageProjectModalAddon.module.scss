@@ -1,0 +1,45 @@
+.form-div {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  /* align-items: center; */
+}
+
+.form-div > *:not(:nth-last-child(-n + 2)) {
+  width: 25%;
+  margin-bottom: 50px;
+}
+
+.remove-button {
+  align-self: center;
+  margin-bottom: 15px;
+}
+
+.button-full {
+  min-width: 100% !important;
+  margin-bottom: 30px;
+}
+
+.printed-name {
+  font-weight: bold;
+}
+
+.guest-user-listing {
+  /* title */
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 80%;
+  }
+  /* date */
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 20%;
+  }
+
+  padding-bottom: 10px;
+}
+
+.guest-members__loading {
+  font-size: 1em;
+  justify-content: flex-end;
+}

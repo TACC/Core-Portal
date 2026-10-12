@@ -4,34 +4,33 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounts', '0005_auto_20210316_1950'),
+        ("accounts", "0005_auto_20210316_1950"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='portalprofile',
-            name='bio',
+            model_name="portalprofile",
+            name="bio",
         ),
         migrations.RemoveField(
-            model_name='portalprofile',
-            name='ethnicity',
+            model_name="portalprofile",
+            name="ethnicity",
         ),
         migrations.RemoveField(
-            model_name='portalprofile',
-            name='gender',
+            model_name="portalprofile",
+            name="gender",
         ),
         migrations.RemoveField(
-            model_name='portalprofile',
-            name='orcid_id',
+            model_name="portalprofile",
+            name="orcid_id",
         ),
         migrations.RemoveField(
-            model_name='portalprofile',
-            name='professional_level',
+            model_name="portalprofile",
+            name="professional_level",
         ),
         migrations.RemoveField(
-            model_name='portalprofile',
-            name='website',
+            model_name="portalprofile",
+            name="website",
         ),
     ]

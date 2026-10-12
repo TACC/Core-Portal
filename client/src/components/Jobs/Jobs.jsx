@@ -19,28 +19,32 @@ import JobsSearchInfoModal from './JobsSearchInfoModal';
 import * as ROUTES from '../../constants/routes';
 import Searchbar from '_common/Searchbar';
 import queryStringParser from 'query-string';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 function JobsView({
-  showDetails,
-  showFancyStatus,
-  rowProps,
-  includeSearchbar,
+  showDetails = false,
+  showFancyStatus = false,
+  rowProps = (row) => {},
+  includeSearchbar = true,
 }) {
   // TODOv3: dropV2Jobs
   const location = useLocation();
   const version = location.pathname.includes('jobsv2') ? 'v2' : 'v3';
   const dispatch = useDispatch();
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
-  const { error, jobs } = useSelector((state) => {
-    return version === 'v3'
-      ? { ...state.jobs, jobs: state.jobs.list }
-      : // TODOv3: dropV2Jobs
-        { ...state.jobsv2, jobs: state.jobsv2.list };
-  });
-
-  const hideDataFiles = useSelector(
-    (state) => state.workbench.config.hideDataFiles
+  const error = useSelector((state) =>
+    // TODOv3: dropV2Jobs
+    version === 'v3' ? state.jobs.error : state.jobsv2.error
   );
+  const jobs = useSelector((state) =>
+    // TODOv3: dropV2Jobs
+    version === 'v3' ? state.jobs.list : state.jobsv2.list
+  );
+  const {
+    data: {
+      config: { hideDataFiles },
+    },
+  } = useWorkbenchConfig();
 
   const { isJobLoading, isNotificationLoading } = useSelector(
     (state) => ({
@@ -283,11 +287,4 @@ JobsView.propTypes = {
   rowProps: PropTypes.func,
   includeSearchbar: PropTypes.bool,
 };
-JobsView.defaultProps = {
-  showDetails: false,
-  showFancyStatus: false,
-  rowProps: (row) => {},
-  includeSearchbar: true,
-};
-
 export default JobsView;

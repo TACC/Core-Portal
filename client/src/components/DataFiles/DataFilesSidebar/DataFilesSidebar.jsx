@@ -10,8 +10,10 @@ import {
 import styles from './DataFilesSidebar.module.scss';
 import { Sidebar } from '_common';
 import { useTapisToken } from 'hooks/datafiles';
-import { useRouteMatch } from 'react-router-dom';
+import { useMatch } from 'react-router-dom';
+import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
 import './DataFilesSidebar.scss';
+import { useAuthenticatedUser, useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DataFilesAddButton = ({ readOnly }) => {
   const { data: tapisToken } = useTapisToken();
@@ -32,9 +34,12 @@ const DataFilesAddButton = ({ readOnly }) => {
     (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
     shallowEqual
   );
-  const maxSizeLabel = useSelector(
-    (state) => state.workbench.config.uploadModalMaxSizeLabel
-  );
+
+  const {
+    data: {
+      config: { uploadModalMaxSizeLabel: maxSizeLabel = '2GB' },
+    },
+  } = useWorkbenchConfig();
 
   const sharedWorkspaces = systems.find((e) => e.scheme === 'projects');
 
@@ -82,7 +87,8 @@ const DataFilesAddButton = ({ readOnly }) => {
           </DropdownItem>
           {sharedWorkspaces && !sharedWorkspaces.readOnly && (
             <DropdownItem onClick={toggleAddProjectModal}>
-              <i className="icon-folder" /> Shared Workspace
+              <i className="icon-folder" />{' '}
+              {getSharedWorkspaceDisplayName(sharedWorkspaces.name)}
             </DropdownItem>
           )}
           <DropdownItem divider />
@@ -103,27 +109,42 @@ const DataFilesAddButton = ({ readOnly }) => {
   );
 };
 
-const DataFilesSidebar = ({ readOnly }) => {
+const DataFilesSidebar = ({ readOnly = false }) => {
   const systems = useSelector(
     (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
     shallowEqual
   );
 
-  const match = useRouteMatch();
+  const user = useAuthenticatedUser();
+
+  const match = useMatch('/workbench/data/*');
 
   var sidebarItems = [];
 
   systems.forEach((sys) => {
-    sidebarItems.push({
-      to: `${match.path}/${sys.api}/${sys.scheme}/${
-        sys.system ? `${sys.system}${sys.homeDir || ''}/` : ''
-      }`,
-      label: sys.name,
-      iconName: sys.icon || 'my-data',
-      disabled: false,
-      hidden: false,
-      category: sys.resourceProvider,
-    });
+    if (sys.scheme === 'projects') {
+      if (!sys.reviewProject || user?.groups?.includes('PROJECT_REVIEWER')) {
+        sidebarItems.push({
+          to: `${match.pathnameBase}/${sys.api}/${sys.scheme}/${sys.system}`,
+          label: sys.name,
+          iconName: sys.icon || 'my-data',
+          disabled: false,
+          hidden: false,
+          category: sys.resourceProvider,
+        });
+      }
+    } else {
+      sidebarItems.push({
+        to: `${match.pathnameBase}/${sys.api}/${sys.scheme}/${
+          sys.system ? `${sys.system}${sys.homeDir || ''}/` : ''
+        }`,
+        label: sys.name,
+        iconName: sys.icon || 'my-data',
+        disabled: false,
+        hidden: false,
+        category: sys.resourceProvider,
+      });
+    }
   });
 
   const addItems = [
@@ -142,10 +163,6 @@ const DataFilesSidebar = ({ readOnly }) => {
 
 DataFilesSidebar.propTypes = {
   readOnly: PropTypes.bool,
-};
-
-DataFilesSidebar.defaultProps = {
-  readOnly: false,
 };
 
 export default DataFilesSidebar;

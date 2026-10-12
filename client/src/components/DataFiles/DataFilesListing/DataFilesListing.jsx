@@ -16,10 +16,12 @@ import {
   LastModifiedCell,
   FileIconCell,
   ViewPathCell,
+  DataTypeCell,
 } from './DataFilesListingCells';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
 import Searchbar from '_common/Searchbar';
 import { getCurrentDirectory } from '../DataFilesModals/DataFilesModalTables/DataFilesModalListingTable';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const fileTypes = [
   'Audio',
@@ -37,7 +39,15 @@ const fileTypes = [
   '3D Visualization',
 ];
 
-const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
+const DataFilesListing = ({
+  api,
+  scheme,
+  system,
+  path,
+  isPublic = false,
+  rootSystem,
+  basePath,
+}) => {
   // Redux hooks
   const location = useLocation();
   const systems = useSelector(
@@ -46,12 +56,15 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   );
   const sharedWorkspaces = systems.find((e) => e.scheme === 'projects');
   const isPortalProject = scheme === 'projects';
-  const hideSearchBar = isPortalProject && sharedWorkspaces.hideSearchBar;
+  const hideSearchBar = isPortalProject && sharedWorkspaces?.hideSearchBar;
 
-  const showViewPath = useSelector(
-    (state) =>
-      api === 'tapis' && state.workbench && state.workbench.config.viewPath
-  );
+  const {
+    data: {
+      config: { showDataFileType, viewPath },
+    },
+  } = useWorkbenchConfig();
+
+  const showViewPath = useSelector((state) => api === 'tapis' && !!viewPath);
 
   const {
     data: files,
@@ -82,6 +95,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
     ({ row }) => {
       return (
         <FileNavCell
+          rootSystem={rootSystem}
           system={row.original.system}
           path={row.original.path}
           name={row.original.name}
@@ -90,29 +104,31 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
           scheme={scheme}
           href={row.original._links.self.href}
           isPublic={isPublic}
+          basePath={basePath}
           length={row.original.length}
+          metadata={row.original.metadata}
         />
       );
     },
     [api, scheme]
   );
 
+  const fileLengthCellCallback = useCallback(
+    ({ row, cell }) =>
+      row.original.type === 'dir' ? null : <FileLengthCell cell={cell} />,
+    []
+  );
+
   const columns = useMemo(() => {
     const cells = [
       {
         id: 'checkbox',
-        width: 0.05,
-        minWidth: 20,
-        maxWidth: 40,
         Header: CheckboxHeaderCell,
         Cell: checkboxCellCallback,
       },
       {
         id: 'icon',
         accessor: (row) => row,
-        width: 0.05,
-        minWidth: 20,
-        maxWidth: 25,
         Cell: FileIconCell,
       },
       {
@@ -124,7 +140,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
       {
         Header: 'Size',
         accessor: 'length',
-        Cell: FileLengthCell,
+        Cell: fileLengthCellCallback,
         width: 0.2,
       },
       {
@@ -145,8 +161,35 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         Cell: (el) => <ViewPathCell file={el.row.original} api={api} />,
       });
     }
+
+    if (showDataFileType) {
+      cells.splice(3, 0, {
+        // Inserting at index 3 after 'Name'
+        Header: 'Data Type',
+        Cell: (el) => <DataTypeCell file={el.row.original} />,
+        width: 0.2,
+      });
+    }
+
+    if (scheme === 'projects' && rootSystem) {
+      const projectSystem = systems.find(
+        (s) => s.scheme === 'projects' && s.system === rootSystem
+      );
+
+      if (projectSystem && projectSystem.publicationProject) {
+        const index = cells.findIndex(
+          (cell) => cell.Header === 'Last Modified'
+        );
+        cells.splice(index, 1);
+        ['Name', 'Size'].forEach((header) => {
+          const column = cells.find((col) => col.Header === header);
+          column.width += 0.1;
+        });
+      }
+    }
+
     return cells;
-  }, [api, showViewPath, fileNavCellCallback]);
+  }, [api, showViewPath, fileNavCellCallback, fileLengthCellCallback]);
 
   const { fetchSelectedSystem } = useSystems();
   const selectedSystem = fetchSelectedSystem({ scheme, system, path });
@@ -215,8 +258,4 @@ DataFilesListing.propTypes = {
   path: PropTypes.string.isRequired,
   isPublic: PropTypes.bool,
 };
-DataFilesListing.defaultProps = {
-  isPublic: false,
-};
-
 export default DataFilesListing;

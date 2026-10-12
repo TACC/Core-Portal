@@ -1,28 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
-import { Formik, Form } from 'formik';
+import { Formik, Form, FieldArray } from 'formik';
 import FormField from '_common/Form/FormField';
 import { Button, InlineMessage } from '_common';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useNavigate, useMatch } from 'react-router-dom';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
+import { useAddonComponents, useFileListing } from 'hooks/datafiles';
+import getDefaultProjectSystem from 'utils/getDefaultProjectSystem';
+import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
+import {
+  useAuthenticatedUserOrThrow,
+  useWorkbenchConfig,
+} from '@tacc/core-hooks';
 
 const DataFilesAddProjectModal = () => {
-  const history = useHistory();
-  const match = useRouteMatch();
+  const navigate = useNavigate();
+  const match = useMatch('/workbench/data/*');
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.authenticatedUser);
+  const user = useAuthenticatedUserOrThrow();
   const [members, setMembers] = useState(
     user ? [{ user, access: 'owner' }] : []
   );
-  const minDescriptionLength =
-    useSelector((state) => state.workbench.config.minDescriptionLength) ?? 50;
-  const maxTitleLength =
-    useSelector((state) => state.workbench.config.maxTitleLength) ?? 150;
-  const enableWorkspaceKeywords =
-    useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
-    true;
+
+  const {
+    data: {
+      portalName,
+      config: {
+        minDescriptionLength = 50,
+        maxTitleLength = 150,
+        enableWorkspaceKeywords = true,
+      },
+    },
+  } = useWorkbenchConfig();
+
+  const { DataFilesAddProjectModalAddon } = useAddonComponents({ portalName });
 
   useEffect(() => {
     setMembers([
@@ -48,6 +61,15 @@ const DataFilesAddProjectModal = () => {
     );
   });
 
+  const system = useSelector((state) =>
+    getDefaultProjectSystem(state.systems.storage.configuration)
+  );
+
+  const sharedWorkspacesDisplayName = getSharedWorkspaceDisplayName(
+    system?.name
+  );
+  const rootSystem = system?.system;
+
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -57,10 +79,10 @@ const DataFilesAddProjectModal = () => {
 
   const onCreate = (system) => {
     toggle();
-    history.push(`${match.path}/tapis/projects/${system}`);
+    navigate(`${match.pathnameBase}/tapis/projects/${rootSystem}/${system}`);
   };
 
-  const addproject = ({ title, description, keywords }) => {
+  const addproject = ({ title, description, keywords, ...values }) => {
     dispatch({
       type: 'PROJECTS_CREATE',
       payload: {
@@ -71,6 +93,9 @@ const DataFilesAddProjectModal = () => {
           username: member.user.username,
           access: member.access,
         })),
+        metadata: DataFilesAddProjectModalAddon
+          ? { title, description, ...values }
+          : null,
         onCreate,
       },
     });
@@ -120,7 +145,7 @@ const DataFilesAddProjectModal = () => {
         >
           <Form>
             <ModalHeader toggle={toggle} charCode="&#xe912;">
-              Add Shared Workspace
+              Add {sharedWorkspacesDisplayName}
             </ModalHeader>
             <ModalBody>
               <FormField
@@ -132,7 +157,11 @@ const DataFilesAddProjectModal = () => {
                     <small>
                       <em>(Maximum {maxTitleLength} characters)</em>
                     </small>
+                    <br />
                   </div>
+                }
+                description={
+                  'The title should be descriptive and distinctive from related publications.'
                 }
               />
               {!!minDescriptionLength && (
@@ -159,6 +188,9 @@ const DataFilesAddProjectModal = () => {
                   type="textarea"
                 />
               )}
+              {DataFilesAddProjectModalAddon && (
+                <DataFilesAddProjectModalAddon />
+              )}
               <DataFilesProjectMembers
                 members={members}
                 onAdd={onAdd}
@@ -168,16 +200,16 @@ const DataFilesAddProjectModal = () => {
             <ModalFooter>
               {error ? (
                 <InlineMessage type="error">
-                  Your shared workspace could not be created
+                  Your {sharedWorkspacesDisplayName} could not be created
                 </InlineMessage>
               ) : null}
               <Button
                 type="primary"
-                size="long"
+                size="auto"
                 attr="submit"
                 isLoading={isCreating}
               >
-                Add Workspace
+                Add {sharedWorkspacesDisplayName}
               </Button>
             </ModalFooter>
           </Form>

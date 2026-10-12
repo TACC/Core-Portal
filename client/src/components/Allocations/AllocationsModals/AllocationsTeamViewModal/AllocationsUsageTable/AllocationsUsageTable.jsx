@@ -6,7 +6,7 @@ import { arrayOf, shape, string } from 'prop-types';
 import { getSystemName } from 'utils/systems';
 import styles from './AllocationsUsageTable.module.scss';
 
-const AllocationsUsageTable = ({ rawData }) => {
+const AllocationsUsageTable = ({ rawData = [] }) => {
   const location = useLocation();
   const data = React.useMemo(() => {
     if (location.pathname.includes('approved')) {
@@ -51,26 +51,40 @@ const AllocationsUsageTable = ({ rawData }) => {
     <div className={styles.container}>
       <table {...getTableProps()} className={styles.root}>
         <thead className={styles.header}>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-              ))}
-            </tr>
-          ))}
+          {headerGroups.map((headerGroup) => {
+            const { key: headerGroupKey, ...headerGroupProps } =
+              headerGroup.getHeaderGroupProps();
+            return (
+              <tr key={headerGroupKey} {...headerGroupProps}>
+                {headerGroup.headers.map((column) => {
+                  const { key: columnKey, ...columnProps } =
+                    column.getHeaderProps();
+                  return (
+                    <th key={columnKey} {...columnProps}>
+                      {column.render('Header')}
+                    </th>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </thead>
         <tbody {...getTableBodyProps()} className={styles.body}>
           {rows.map((row) => {
             prepareRow(row);
+            const { key: rowKey, ...rowProps } = row.getRowProps();
             return (
-              <tr {...row.getRowProps()} className={styles.row}>
-                {row.cells.map((cell) => (
-                  <td {...cell.getCellProps()} className={styles.cell}>
-                    <span className={styles.content}>
-                      {cell.render('Cell')}
-                    </span>
-                  </td>
-                ))}
+              <tr key={rowKey} {...rowProps} className={styles.row}>
+                {row.cells.map((cell) => {
+                  const { key: cellKey, ...cellProps } = cell.getCellProps();
+                  return (
+                    <td key={cellKey} {...cellProps} className={styles.cell}>
+                      <span className={styles.content}>
+                        {cell.render('Cell')}
+                      </span>
+                    </td>
+                  );
+                })}
               </tr>
             );
           })}
@@ -87,6 +101,5 @@ AllocationsUsageTable.propTypes = {
     })
   ),
 };
-AllocationsUsageTable.defaultProps = { rawData: [] };
 
 export default AllocationsUsageTable;

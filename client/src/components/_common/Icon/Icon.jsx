@@ -2,7 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Icon.module.css';
 
-const Icon = ({ children, className, dataTestid, name }) => {
+const Icon = ({
+  children = '',
+  className = '',
+  dataTestid = undefined,
+  name,
+}) => {
   const iconClassName = `icon icon-${name}`;
   // FAQ: The conditional avoids an extra space in class attribute value
   const fullClassName = className
@@ -28,11 +33,6 @@ Icon.propTypes = {
   dataTestid: PropTypes.string,
   /** Name of icon from icon font (without the (`icon-` prefix) */
   name: PropTypes.string.isRequired,
-};
-Icon.defaultProps = {
-  children: '',
-  className: '',
-  dataTestid: undefined,
 };
 
 export default Icon;

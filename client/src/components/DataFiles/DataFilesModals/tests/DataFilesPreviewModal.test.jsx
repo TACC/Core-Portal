@@ -22,9 +22,14 @@ const files = {
 
 const mockStore = configureStore();
 
+const workbench = { config: {} };
+const projects = { metadata: {} };
+
 describe('Data Files Preview Modal', () => {
   it('should show the appropriate preview body for text files', () => {
     const store = mockStore({
+      workbench,
+      projects,
       files: {
         ...files,
         preview: {
@@ -43,6 +48,8 @@ describe('Data Files Preview Modal', () => {
   });
   it('should show a loading spinner while fetching data', () => {
     const store = mockStore({
+      workbench,
+      projects,
       files,
     });
     const { getByTestId, getByText } = renderComponent(
@@ -55,6 +62,8 @@ describe('Data Files Preview Modal', () => {
   });
   it('should show errors', () => {
     const store = mockStore({
+      workbench,
+      projects,
       files: {
         ...files,
         preview: {

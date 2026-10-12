@@ -10,6 +10,7 @@ export { FileInputDropZone } from './Form';
 export { default as InfiniteScrollTable } from './InfiniteScrollTable';
 export { default as AppIcon } from './AppIcon';
 export { default as Button } from './Button';
+export { default as Link } from './Link';
 export { default as Checkbox } from './Checkbox';
 export { default as Expand } from './Expand';
 export { default as Icon } from './Icon';
@@ -25,6 +26,8 @@ export {
   default as IntroMessage,
   isKnownMessage as isKnownIntroMessage,
 } from './IntroMessage';
+export { default as CMSBreadcrumbs } from './CMSBreadcrumbs';
+export { default as CMSWrapper } from './CMSWrapper';
 export { default as CustomMessage } from './CustomMessage';
 export { default as Pill } from './Pill';
 export { default as TextCopyField } from './TextCopyField';

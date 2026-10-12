@@ -2,7 +2,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useSelectedFiles } from 'hooks/datafiles';
 import { useMutation } from '@tanstack/react-query';
 import { apiClient } from 'utils/apiClient';
-import truncateMiddle from 'utils/truncateMiddle';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function moveFileUtil({
   api,
@@ -11,6 +11,7 @@ export async function moveFileUtil({
   path,
   destSystem,
   destPath,
+  metadata,
 }: {
   api: string;
   scheme: string;
@@ -18,10 +19,12 @@ export async function moveFileUtil({
   path: string;
   destSystem: string;
   destPath: string;
+  metadata?: Record<string, any>;
 }): Promise<{ name: string; path: string }> {
   const body = {
     dest_system: destSystem,
     dest_path: destPath,
+    metadata: metadata ?? null,
   };
   const url = `/api/datafiles/${api}/move/${scheme}/${system}/${path}/`;
   const request = await apiClient.put(url, body);
@@ -79,6 +82,7 @@ function useMove() {
           path: file.path,
           destSystem: destSystem,
           destPath: destPath,
+          metadata: file.metadata,
         },
         {
           onSuccess: () => {
@@ -97,11 +101,12 @@ function useMove() {
             dispatch({
               type: 'ADD_TOAST',
               payload: {
-                message: `${
+                pk: uuidv4(),
+                message: `Moving ${
                   filteredSelected.length > 1
                     ? `${filteredSelected.length} files`
                     : 'File'
-                } moved to ${truncateMiddle(destPath, 20) || '/'}`,
+                }`,
               },
             });
             callback();

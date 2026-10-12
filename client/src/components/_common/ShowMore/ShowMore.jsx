@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Button } from '_common';
 import styles from './ShowMore.module.scss';
 
-const ShowMore = ({ className, children }) => {
+const ShowMore = ({ className = '', children }) => {
   const [expanded, setExpanded] = useState(false);
 
   const toggleCallback = useCallback(() => {
@@ -13,8 +13,12 @@ const ShowMore = ({ className, children }) => {
 
   const { height, ref } = useResizeDetector();
 
+  // overflowThreshold to account for minor differences in height for example 84.5 and 85
+  const overflowThreshold = 1;
   const hasOverflow =
-    ref && ref.current ? ref.current.scrollHeight > height : false;
+    ref && ref.current
+      ? ref.current.scrollHeight - height > overflowThreshold
+      : false;
 
   return (
     <>
@@ -40,10 +44,6 @@ const ShowMore = ({ className, children }) => {
 ShowMore.propTypes = {
   className: PropTypes.string,
   children: PropTypes.node.isRequired,
-};
-
-ShowMore.defaultProps = {
-  className: '',
 };
 
 export default ShowMore;

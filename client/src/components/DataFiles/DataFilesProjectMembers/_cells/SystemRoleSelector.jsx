@@ -2,11 +2,11 @@ import React, { useState, useEffect, createContext, useContext } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
-import fetch from 'cross-fetch';
 import DropdownSelector from '_common/DropdownSelector';
 import { Button } from '_common';
 import styles from '../DataFilesProjectMembers.module.scss';
 import LoadingSpinner from '_common/LoadingSpinner';
+import { useAuthenticatedUser } from '@tacc/core-hooks';
 
 const getSystemRole = async (projectId, username) => {
   if (!projectId || !username) return {};
@@ -60,10 +60,7 @@ const SystemRoleSelector = ({ projectId, username }) => {
     USER: 'User (read/write)',
     GUEST: 'Guest (read only)',
   };
-  const authenticatedUser = useSelector(
-    (state) => state.authenticatedUser.user.username
-  );
-
+  const authenticatedUser = useAuthenticatedUser()?.username;
   const readOnlyTeam = useSelector((state) => {
     const projectSystem = state.systems.storage.configuration.find(
       (s) => s.scheme === 'projects'

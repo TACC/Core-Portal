@@ -98,22 +98,22 @@ function getLayoutClass(contentLayoutName) {
  * />
  */
 function Section({
-  bodyClassName,
-  children,
-  className,
-  content,
-  contentClassName,
-  contentLayoutName,
-  contentShouldScroll,
-  header,
-  headerActions,
-  headerClassName,
-  manualContent,
-  manualHeader,
-  messages,
-  messagesClassName,
-  messageComponentName,
-  introMessageText,
+  bodyClassName = '',
+  children = /** @type {React.ReactNode} */ (''),
+  className = '',
+  content = /** @type {React.ReactNode} */ (''),
+  contentClassName = '',
+  contentLayoutName = DEFAULT_LAYOUT,
+  contentShouldScroll = false,
+  header = /** @type {React.ReactNode} */ (''),
+  headerActions = /** @type {React.ReactNode} */ (''),
+  headerClassName = '',
+  manualContent = undefined,
+  manualHeader = undefined,
+  messages = /** @type {React.ReactNode} */ (''),
+  messagesClassName = '',
+  messageComponentName = '',
+  introMessageText = '',
 }) {
   const shouldBuildHeader = header || headerClassName || headerActions;
   const layoutClass = getLayoutClass(contentLayoutName);
@@ -218,23 +218,4 @@ Section.propTypes = {
   /** Custom intro text (can overwrite message from `messageComponentName`) */
   introMessageText: PropTypes.string,
 };
-Section.defaultProps = {
-  bodyClassName: '',
-  children: '',
-  className: '',
-  content: '',
-  contentClassName: '',
-  contentLayoutName: DEFAULT_LAYOUT,
-  contentShouldScroll: false,
-  header: '',
-  headerActions: '',
-  headerClassName: '',
-  manualContent: undefined,
-  manualHeader: undefined,
-  messages: '',
-  messagesClassName: '',
-  messageComponentName: '',
-  introMessageText: '',
-};
-
 export default Section;

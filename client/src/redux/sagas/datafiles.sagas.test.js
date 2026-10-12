@@ -1,6 +1,4 @@
-import fetch from 'cross-fetch';
 import fetchMock from 'fetch-mock';
-import { vi } from 'vitest';
 import {
   removeDuplicateSlashes,
   fetchFiles,
@@ -31,14 +29,13 @@ import extractApp from './fixtures/extract.fixture';
 import systemsFixture from '../../components/DataFiles/fixtures/DataFiles.systems.fixture';
 import { useCompress } from 'hooks/datafiles/mutations';
 
-vi.mock('cross-fetch');
-
 describe('fetchSystems', () => {
   beforeEach(() => {
     const fm = fetchMock.sandbox().mock(`/api/datafiles/systems/list/`, {
       body: { private: 'test.private' },
       status: 200,
     });
+    global.fetch = vi.fn();
     fetch.mockImplementation(fm);
   });
 
@@ -72,9 +69,9 @@ describe('fetchSystems', () => {
       .run();
   });
 
-  it('runs fetch', () => {
+  it('runs fetch', async () => {
     const apiResult = fetchSystemsUtil();
-    expect(apiResult).resolves.toEqual({ private: 'test.private' });
+    expect(await apiResult).toEqual({ private: 'test.private' });
     expect(fetch).toBeCalledWith('/api/datafiles/systems/list/');
   });
 });
@@ -90,6 +87,7 @@ describe('fetchFiles', () => {
           status: 200,
         }
       );
+    global.fetch = vi.fn();
     fetch.mockImplementation(fm);
   });
 
@@ -145,6 +143,7 @@ describe('fetchFiles', () => {
         type: 'FETCH_FILES_SUCCESS',
         payload: {
           files: [{ name: 'testfile', system: 'test.system' }],
+          folderMetadata: undefined,
           reachedEnd: true,
           section: 'FilesListing',
           nextPageToken: undefined,
@@ -204,7 +203,7 @@ describe('fetchFiles', () => {
       .run();
   });
 
-  it('test fetchFilesUtil makes correct call', () => {
+  it('test fetchFilesUtil makes correct call', async () => {
     const apiResult = fetchFilesUtil(
       'tapis',
       'private',
@@ -214,7 +213,7 @@ describe('fetchFiles', () => {
       100,
       undefined
     );
-    expect(apiResult).resolves.toEqual('200 response');
+    expect(await apiResult).toEqual('200 response');
     expect(fetch).toBeCalledWith(
       '/api/datafiles/tapis/listing/private/test.system/path/to/file/?limit=100&nextPageToken&offset=0&query_string='
     );
@@ -583,6 +582,7 @@ describe('copyFiles', () => {
         body: { data: '200 response' },
         status: 200,
       });
+    global.fetch = vi.fn();
     fetch.mockImplementation(fm);
   });
 
@@ -606,7 +606,7 @@ describe('copyFiles', () => {
     expect(fetch).toBeCalledWith(
       '/api/datafiles/tapis/copy/private/test.system/testpath/',
       {
-        body: '{"dest_system":"test.system","dest_path":"testpath2","file_name":"testfilename","filetype":"dir","dest_path_name":"destname"}',
+        body: '{"dest_system":"test.system","dest_path":"testpath2","file_name":"testfilename","filetype":"dir","dest_path_name":"destname","metadata":null}',
         credentials: 'same-origin',
         headers: { 'X-CSRFToken': undefined },
         method: 'PUT',
@@ -720,6 +720,7 @@ describe('makePublic', () => {
           status: 200,
         }
       );
+    global.fetch = vi.fn();
     fetch.mockImplementation(fm);
   });
 

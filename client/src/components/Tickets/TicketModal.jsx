@@ -1,7 +1,13 @@
-import React, { useEffect, useMemo, useRef, useCallback } from 'react';
-import { withRouter } from 'react-router-dom';
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+  useState,
+} from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   CardHeader,
   CardBody,
@@ -30,6 +36,9 @@ import {
 import { Formik, Form } from 'formik';
 import * as ROUTES from '../../constants/routes';
 import './TicketModal.scss';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { ticketsMutations, ticketsQueries } from '@tacc/core-queries';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const formSchema = Yup.object().shape({
   reply: Yup.string().required('Required'),
@@ -107,30 +116,30 @@ function TicketHistoryReply({ ticketId }) {
     []
   );
 
-  const dispatch = useDispatch();
+  const {
+    mutateAsync: postTicketReply,
+    isPending: isReplyPending,
+    isError: isReplyError,
+  } = useMutation(ticketsMutations.postTicketReply({ ticketId }));
 
-  const gettingTicketHistory = useSelector(
-    (state) => state.ticketDetailedView.loading
+  const { isLoading, isError } = useQuery(
+    ticketsQueries.getTicketHistory(ticketId)
   );
-  const loadingError = useSelector(
-    (state) => state.ticketDetailedView.loadingError
-  );
-  const isReplying = useSelector((state) => state.ticketDetailedView.replying);
-  const replyingError = useSelector(
-    (state) => state.ticketDetailedView.replyingError
-  );
-  const maxSizeMessage = useSelector(
-    (state) => state.workbench.config.ticketAttachmentMaxSizeMessage
-  );
-  const maxSize = useSelector(
-    (state) => state.workbench.config.ticketAttachmentMaxSize
-  );
+  const {
+    data: {
+      config: {
+        ticketAttachmentMaxSizeMessage: maxSizeMessage = '3MB',
+        ticketAttachmentMaxSize: maxSize = 3145728,
+      },
+    },
+  } = useWorkbenchConfig();
+
   return (
     <Formik
       enableReinitialize
       initialValues={defaultValues}
       validationSchema={formSchema}
-      onSubmit={(values, { resetForm }) => {
+      onSubmit={async (values, { resetForm }) => {
         const formData = new FormData();
         Object.keys(values).forEach((key) => formData.append(key, values[key]));
         if (values.attachments) {
@@ -138,15 +147,8 @@ function TicketHistoryReply({ ticketId }) {
             formData.append('attachments', attach)
           );
         }
-
-        dispatch({
-          type: 'TICKET_DETAILED_VIEW_REPLY',
-          payload: {
-            ticketId,
-            formData,
-            resetSubmittedForm: resetForm,
-          },
-        });
+        await postTicketReply(formData);
+        resetForm();
       }}
     >
       {({ isSubmitting, isValid }) => {
@@ -167,7 +169,7 @@ function TicketHistoryReply({ ticketId }) {
               maxSize={maxSize || 3145728}
             />
             <FormGroup className="ticket-reply-submission">
-              {replyingError && (
+              {isReplyError && (
                 <Message type="error">Something went wrong.</Message>
               )}
               <Button
@@ -176,11 +178,11 @@ function TicketHistoryReply({ ticketId }) {
                 disabled={
                   !isValid ||
                   isSubmitting ||
-                  isReplying ||
-                  gettingTicketHistory ||
-                  loadingError
+                  isReplyPending ||
+                  isLoading ||
+                  isError
                 }
-                isLoading={isReplying}
+                isLoading={isReplyPending}
               >
                 Reply
               </Button>
@@ -197,7 +199,7 @@ TicketHistoryReply.propTypes = {
 };
 
 const TicketHistoryCard = ({
-  historyId,
+  initialIsOpen = false,
   created,
   creator,
   ticketCreator,
@@ -205,10 +207,7 @@ const TicketHistoryCard = ({
   attachments,
   ticketId,
 }) => {
-  const dispatch = useDispatch();
-  const isOpen = useSelector((state) =>
-    state.ticketDetailedView.showItems.includes(historyId)
-  );
+  const [isOpen, setIsOpen] = useState(initialIsOpen);
 
   let toggleIcon;
   if (isOpen) {
@@ -224,26 +223,20 @@ const TicketHistoryCard = ({
     (a) => !a[1].toString().startsWith('untitled (')
   );
 
-  const onClick = () => {
-    dispatch({
-      type: 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM',
-      payload: { index: historyId },
-    });
-  };
-
   const onKeyDown = useCallback((e) => {
     if (e.key === ' ') {
       e.preventDefault();
-      dispatch({
-        type: 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM',
-        payload: { index: historyId },
-      });
+      setIsOpen(!isOpen);
     }
   });
 
   return (
     <Card className="mt-1">
-      <CardHeader tabIndex="0" onClick={onClick} onKeyDown={onKeyDown}>
+      <CardHeader
+        tabIndex="0"
+        onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={onKeyDown}
+      >
         <span className="ticket-history-header d-inline-block text-truncate">
           <strong>
             <span
@@ -290,12 +283,13 @@ TicketHistoryCard.propTypes = {
   ticketId: PropTypes.string.isRequired,
 };
 
-export const TicketHistory = () => {
-  const loading = useSelector((state) => state.ticketDetailedView.loading);
-  const history = useSelector((state) => state.ticketDetailedView.content);
-  const loadingError = useSelector(
-    (state) => state.ticketDetailedView.loadingError
-  );
+export const TicketHistory = ({ ticketId }) => {
+  const {
+    data: history,
+    isLoading,
+    isError,
+  } = useQuery(ticketsQueries.getTicketHistory(ticketId));
+
   const ticketHistoryEndRef = useRef();
 
   const scrollToBottom = () => {
@@ -305,16 +299,16 @@ export const TicketHistory = () => {
 
   return (
     <>
-      {loading && <LoadingSpinner />}
-      {loadingError && (
+      {isLoading && <LoadingSpinner />}
+      {isError && (
         <Message type="error" className="ticket-history-error">
           Something went wrong.
         </Message>
       )}
-      {history.map((d) => (
+      {(history ?? []).map((d, idx) => (
         <TicketHistoryCard
           key={d.id}
-          historyId={Number(d.id)}
+          initialIsOpen={idx === history.length - 1}
           created={new Date(d.Created)}
           creator={d.Creator}
           ticketCreator={d.IsCreator}
@@ -328,15 +322,14 @@ export const TicketHistory = () => {
   );
 };
 
-function TicketModal({ history }) {
+function TicketModal({ ticketId }) {
+  const navigate = useNavigate();
   const modalAlwaysOpen = true;
-  const ticketId = useSelector((state) => state.ticketDetailedView.ticketId);
-  const ticketSubject = useSelector(
-    (state) => state.ticketDetailedView.ticketSubject
-  );
+  const { data: ticketData } = useQuery(ticketsQueries.getTicket(ticketId));
+  const ticketSubject = ticketData?.Subject;
 
   const close = () => {
-    history.push(`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`);
+    navigate(`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`);
   };
 
   return (
@@ -354,7 +347,7 @@ function TicketModal({ history }) {
         <Container className="ticket-detailed-view-container">
           <Row className="ticket-detailed-view-row">
             <Col lg="7" className="ticket-history">
-              <TicketHistory />
+              <TicketHistory ticketId={ticketId} />
             </Col>
             <Col lg="5">
               <TicketHistoryReply ticketId={ticketId} />
@@ -366,8 +359,4 @@ function TicketModal({ history }) {
   );
 }
 
-TicketModal.propTypes = {
-  history: PropTypes.object.isRequired,
-};
-
-export default withRouter(TicketModal);
+export default TicketModal;

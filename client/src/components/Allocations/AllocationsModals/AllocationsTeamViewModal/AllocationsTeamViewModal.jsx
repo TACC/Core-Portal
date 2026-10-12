@@ -12,6 +12,7 @@ import AllocationsContactCard from './AllocationsContactCard';
 import { UserSearchbar } from '_common';
 import styles from './AllocationsTeamViewModal.module.scss';
 import manageStyles from '../AllocationsManageTeamTable/AllocationsManageTeamTable.module.scss';
+import { useAuthenticatedUserOrThrow } from '@tacc/core-hooks';
 
 const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
   const { projectId: projectIdString } = useParams();
@@ -25,7 +26,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
     removingUserOperation,
   } = useSelector((state) => state.allocations);
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.authenticatedUser.user.username);
+  const user = useAuthenticatedUserOrThrow().username;
   const error = has(errors.teams, projectId);
   const [card, setCard] = useState(null);
   const [isManager, setManager] = useState(false);
@@ -94,11 +95,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" onClosed={resetCard}>
-      <ModalHeader
-        className="pe-3 has-MuiTabs"
-        toggle={toggle}
-        charCode="&#xe912;"
-      >
+      <ModalHeader className="pe-3" toggle={toggle} charCode="&#xe912;">
         <Tabs
           style={{ marginBottom: '-8px' }}
           value={selectedTab}

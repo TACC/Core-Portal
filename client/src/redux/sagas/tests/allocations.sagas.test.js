@@ -29,7 +29,7 @@ import {
   teamFixture,
   usageDataFixture,
 } from '../fixtures/allocations.fixtures';
-import { select } from '@redux-saga/core/effects';
+import { select } from 'redux-saga/effects';
 
 vi.mock('utils/fetchUtil');
 

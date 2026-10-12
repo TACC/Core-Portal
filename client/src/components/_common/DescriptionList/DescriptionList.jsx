@@ -18,7 +18,12 @@ export const DENSITY_CLASS_MAP = {
 export const DEFAULT_DENSITY = 'default';
 export const DENSITIES = ['', ...Object.keys(DENSITY_CLASS_MAP)];
 
-const DescriptionList = ({ className, data, density, direction }) => {
+const DescriptionList = ({
+  className = '',
+  data,
+  density = DEFAULT_DENSITY,
+  direction = DEFAULT_DIRECTION,
+}) => {
   const modifierClasses = [];
   modifierClasses.push(DENSITY_CLASS_MAP[density || DEFAULT_DENSITY]);
   modifierClasses.push(DIRECTION_CLASS_MAP[direction || DEFAULT_DIRECTION]);
@@ -35,24 +40,30 @@ const DescriptionList = ({ className, data, density, direction }) => {
 
   return (
     <dl className={`${className} ${containerStyleNames}`} data-testid="list">
-      {Object.entries(data).map(([key, value]) => (
-        <React.Fragment key={key}>
-          <dt className={styles.key} data-testid="key">
-            {key}
-          </dt>
-          {Array.isArray(value) ? (
-            value.map((val) => (
-              <dd className={valueClassName} data-testid="value" key={uuidv4()}>
-                {val}
+      {Object.entries(data)
+        .filter(([key, _]) => !key.startsWith('_'))
+        .map(([key, value]) => (
+          <React.Fragment key={key}>
+            <dt className={styles.key} data-testid="key">
+              {key}
+            </dt>
+            {Array.isArray(value) ? (
+              value.map((val) => (
+                <dd
+                  className={valueClassName}
+                  data-testid="value"
+                  key={uuidv4()}
+                >
+                  {val}
+                </dd>
+              ))
+            ) : (
+              <dd className={valueClassName} data-testid="value">
+                {value}
               </dd>
-            ))
-          ) : (
-            <dd className={valueClassName} data-testid="value">
-              {value}
-            </dd>
-          )}
-        </React.Fragment>
-      ))}
+            )}
+          </React.Fragment>
+        ))}
     </dl>
   );
 };
@@ -68,10 +79,4 @@ DescriptionList.propTypes = {
   /** Layout direction */
   direction: PropTypes.oneOf(DIRECTIONS),
 };
-DescriptionList.defaultProps = {
-  className: '',
-  density: DEFAULT_DENSITY,
-  direction: DEFAULT_DIRECTION,
-};
-
 export default DescriptionList;

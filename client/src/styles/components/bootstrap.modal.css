@@ -10,7 +10,6 @@ Override Bootstrap styles. See:
 
 Styleguide Components.Bootstrap.Modal
 */
-@import url('@tacc/core-styles/src/lib/_imports/tools/x-truncate.css');
 
 .modal-content,
 .modal-header,
@@ -37,8 +36,6 @@ Styleguide Components.Bootstrap.Modal
   color: var(--global-color-primary--xx-dark);
   font-weight: normal;
   font-size: 1.2rem; /* 16px design * 1.2 design-to-app ratio */
-
-  @extend .x-truncate--one-line;
 }
 
 /* To darken close button */
@@ -56,29 +53,33 @@ Styleguide Components.Bootstrap.Modal
 /* To render modal close button icon as a Cortal icon */
 /* CAVEAT: Pass `charCode="&#xe912;"` to `<ModalHeader>` */
 .modal-header .close span {
-  /* To mimic `.icon` styles without `@extend` or `composes` (unavailable) */
+  /* To mimic `.icon` styles without `composes` (unavailable) */
   /* HACK: Copied (and reduced and edited) from `src/styles/trumps/icon...` */
   font-size: 1.5rem; /* bigger to match header text font height (like design) */
   font-family: Cortal-Icons !important;
 }
 
-.modal-header.has-MuiTabs {
+.modal-header:has(.MuiTabs-root) {
   flex-direction: row;
   position: relative;
   height: 63.5px;
   border-bottom: 1px solid #afafaf;
   padding: 5px;
 }
-.modal-header.has-MuiTabs .close {
+.modal-header:has(.MuiTabs-root) .close {
   transform: translate(-25%, 25%);
 }
 
-.MuiTab-root {
-  font-size: 19px;
-  text-align: center;
-  opacity: 1;
-  display: inline-block;
-  position: absolute;
-  width: 25%;
-  height: 60.5px;
+.modal-content .badge-danger {
+  background-color: #eb6e6e;
+  color: white;
+}
+
+.modal-content .badge-success {
+  background-color: #43d130;
+}
+
+.modal-content .badge-warning {
+  background-color: #c7ce1d;
+  color: white;
 }

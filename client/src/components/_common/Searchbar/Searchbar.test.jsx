@@ -1,6 +1,5 @@
 import React from 'react';
 import { fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
@@ -133,12 +132,10 @@ describe('Searchbar', () => {
     fireEvent.change(input, { target: { value: 'testquery' } });
     expect(input.value).toBe('testquery');
 
-    await waitFor(() =>
-      history.push('/workbench/data/api/scheme/system2/path/')
-    );
+    history.push('/workbench/data/api/scheme/system2/path/');
 
     input = getByRole('searchbox');
-    expect(input.value).toBe('');
+    await waitFor(() => expect(input.value).toBe(''));
   });
 
   it('shows correct label when dataType is Files', async () => {

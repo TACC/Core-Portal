@@ -62,7 +62,7 @@ export function getBadgeColor(status) {
   }
 }
 
-function JobsStatus({ status, fancy, jobUuid }) {
+function JobsStatus({ status, fancy = false, jobUuid }) {
   const [modal, setModal] = React.useState(false);
   const toggleModal = () => {
     setModal(!modal);
@@ -126,8 +126,4 @@ JobsStatus.propTypes = {
   fancy: PropTypes.bool,
   jobUuid: PropTypes.string.isRequired,
 };
-JobsStatus.defaultProps = {
-  fancy: false,
-};
-
 export default JobsStatus;

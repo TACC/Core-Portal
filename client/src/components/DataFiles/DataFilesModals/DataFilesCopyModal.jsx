@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { SectionMessage } from '_common';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   useSelectedFiles,
   useFileListing,
@@ -17,7 +17,7 @@ import DataFilesSystemSelector from '../DataFilesSystemSelector/DataFilesSystemS
 import DataFilesProjectsList from '../DataFilesProjectsList/DataFilesProjectsList';
 
 const DataFilesCopyModal = React.memo(() => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const { copy, setStatus } = useCopy();
   const { getStatus, getProps, setProps, toggle: toggleModal } = useModal();
@@ -35,7 +35,7 @@ const DataFilesCopyModal = React.memo(() => {
 
   const reloadPage = () => {
     fetchListing(modalParams);
-    history.push(location.pathname);
+    navigate(location.pathname);
   };
 
   const isOpen = getStatus('copy');
@@ -50,7 +50,10 @@ const DataFilesCopyModal = React.memo(() => {
 
   const excludedSystems = systems
     .filter(
-      (s) => s.hidden || (s.scheme !== 'private' && s.scheme !== 'projects')
+      (s) =>
+        s.hidden ||
+        (s.scheme !== 'private' && s.scheme !== 'projects') ||
+        (s.scheme === 'projects' && s.readOnly)
     )
     .filter((s) => !(s.scheme === 'public' && canMakePublic))
     .map((s) => `${s.system}${s.homeDir || ''}`);

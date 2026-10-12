@@ -1,0 +1,12 @@
+.author-listing {
+  /* title */
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 50%;
+  }
+  /* date */
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 50%;
+  }
+}

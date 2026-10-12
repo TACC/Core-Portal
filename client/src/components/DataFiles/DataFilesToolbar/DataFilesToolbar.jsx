@@ -1,16 +1,30 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Button } from '_common';
 import getFilePermissions from 'utils/filePermissions';
-import { useModal, useSelectedFiles, useFileListing } from 'hooks/datafiles';
+import {
+  useModal,
+  useSelectedFiles,
+  useFileListing,
+  useAddonComponents,
+} from 'hooks/datafiles';
 import { useSystemRole } from '../DataFilesProjectMembers/_cells/SystemRoleSelector';
 import './DataFilesToolbar.scss';
 import { useTrash } from 'hooks/datafiles/mutations';
 import canCompressForDownload from 'utils/canCompressForDownload';
+import { useAuthenticatedUser, useWorkbenchConfig } from '@tacc/core-hooks';
 
-export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
+const EMPTY_FILE_LIST = [];
+
+export const ToolbarButton = ({
+  text,
+  iconName,
+  onClick = () => {},
+  disabled = true,
+  className = '',
+}) => {
   const iconClassName = `action icon-${iconName}`;
   return (
     <Button
@@ -18,15 +32,11 @@ export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
       type={text === 'Empty' ? 'primary' : 'secondary'}
       disabled={disabled}
       onClick={onClick}
+      className={className}
     >
       {text}
     </Button>
   );
-};
-ToolbarButton.defaultProps = {
-  onClick: () => {},
-  disabled: true,
-  className: '',
 };
 ToolbarButton.propTypes = {
   onClick: PropTypes.func,
@@ -43,10 +53,10 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const { params } = useFileListing('FilesListing');
   const { trash } = useTrash();
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const reloadPage = () => {
-    history.push(location.pathname);
+    navigate(location.pathname);
   };
 
   const systemList = useSelector(
@@ -54,15 +64,61 @@ const DataFilesToolbar = ({ scheme, api }) => {
     shallowEqual
   );
 
-  const selectedSystem = systemList.find(
-    (sys) => sys.system === params.system && sys.scheme === params.scheme
-  );
+  // A project system has different fields than a regular system
+  const selectedSystem = systemList.find((sys) => {
+    if (params.scheme === 'projects') {
+      return params.api === sys.api && sys.scheme === params.scheme;
+    } else {
+      return sys.system === params.system && sys.scheme === params.scheme;
+    }
+  });
 
-  const { projectId } = useSelector((state) => state.projects.metadata);
+  const {
+    projectId,
+    is_published_project: isPublishedProject,
+    is_review_project: isReviewProject,
+  } = useSelector((state) => state.projects.metadata);
 
-  const authenticatedUser = useSelector(
-    (state) => state.authenticatedUser.user.username
+  // defaults to return true if no custom permission check is provided
+  const [customPermissionCheck, setCustomPermissionCheck] = useState(
+    () => () => true
   );
+  const {
+    data: {
+      portalName,
+      config: {
+        hasCustomDataFilesToolbarChecks,
+        trashPath,
+        makeLink,
+        extractApp,
+        compressApp,
+        makePublic,
+      },
+    },
+  } = useWorkbenchConfig();
+
+  useEffect(() => {
+    // dynamically import custom permission check function if it exists
+
+    const loadCustomPermissions = async () => {
+      try {
+        const module = await import(
+          `../../_custom/${portalName.toLowerCase()}/utils/DataFilesToolbar/customFilePermissions.js`
+        );
+        setCustomPermissionCheck(() => module.default);
+      } catch (error) {
+        console.error('Error loading custom permission check:', error);
+      }
+    };
+
+    if (hasCustomDataFilesToolbarChecks && portalName) {
+      loadCustomPermissions();
+    }
+  }, [hasCustomDataFilesToolbarChecks, portalName]);
+
+  const { DataFilesToolbarAddon } = useAddonComponents({ portalName });
+
+  const authenticatedUser = useAuthenticatedUser()?.username;
 
   const { query: authenticatedUserQuery } = useSystemRole(
     projectId,
@@ -72,17 +128,21 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const isGuest = authenticatedUserQuery?.data?.role === 'GUEST';
 
   const inTrash = useSelector((state) => {
-    // remove leading slash from homeDir value
-    const homeDir = selectedSystem?.homeDir?.slice(1);
-    if (!homeDir) return false;
+    if (selectedSystem?.scheme === 'projects') {
+      return state.files.params.FilesListing.path.startsWith(trashPath);
+    } else {
+      // remove leading slash from homeDir value
+      const homeDir = selectedSystem?.homeDir?.slice(1);
+      if (!homeDir) return false;
 
-    return state.files.params.FilesListing.path.startsWith(
-      `${homeDir}/${state.workbench.config.trashPath}`
-    );
+      return state.files.params.FilesListing.path.startsWith(
+        `${homeDir}/${trashPath}`
+      );
+    }
   });
 
   const trashedFiles = useSelector((state) =>
-    inTrash ? state.files.listing.FilesListing : []
+    inTrash ? state.files.listing.FilesListing : EMPTY_FILE_LIST
   );
 
   const status = useSelector((state) => state.files.operationStatus.trash);
@@ -98,43 +158,32 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   const showDownload = api === 'tapis';
 
-  const showMakeLink = useSelector(
-    (state) =>
-      state.workbench &&
-      state.workbench.config.makeLink &&
-      api === 'tapis' &&
-      (scheme === 'private' || scheme === 'projects')
-  );
+  const showMakeLink =
+    makeLink &&
+    api === 'tapis' &&
+    (scheme === 'private' || scheme === 'projects');
 
-  const hasActiveAllocation = (state) => {
+  const hasActiveAllocation = useSelector((state) => {
     return (
-      state.allocations.portal_alloc ||
-      (Array.isArray(state.allocations.active) &&
+      state.allocations?.portal_alloc ||
+      (Array.isArray(state.allocations?.active) &&
         state.allocations.active.length > 0)
     );
-  };
+  });
 
-  const showCompress = !!useSelector(
-    (state) =>
-      state.workbench.config.extractApp &&
-      modifiableUserData &&
-      hasActiveAllocation(state)
+  const showCompress = !!(
+    !!compressApp &&
+    modifiableUserData &&
+    hasActiveAllocation
   );
 
-  const showExtract = !!useSelector(
-    (state) =>
-      state.workbench.config.compressApp &&
-      modifiableUserData &&
-      hasActiveAllocation(state)
+  const showExtract = !!(
+    !!extractApp &&
+    modifiableUserData &&
+    hasActiveAllocation
   );
 
-  const showMakePublic = useSelector(
-    (state) =>
-      state.workbench &&
-      state.workbench.config.makePublic &&
-      api === 'tapis' &&
-      modifiableUserData
-  );
+  const showMakePublic = makePublic && api === 'tapis' && modifiableUserData;
 
   const toggleRenameModal = () =>
     toggle({ operation: 'rename', props: { selectedFile: selectedFiles[0] } });
@@ -189,7 +238,11 @@ const DataFilesToolbar = ({ scheme, api }) => {
     const { exceedsSizeLimit, containsFolder } =
       canCompressForDownload(selectedFiles);
     const isCommunityOrPublicData =
-      params.scheme === 'community' || params.scheme === 'public';
+      params.scheme === 'community' ||
+      params.scheme === 'public' ||
+      (params.scheme === 'projects' &&
+        (params.system.includes('review') ||
+          params.system.includes('published')));
     // no folders modal is not necessary to show in community + public data areas as downloading multiple files at once isn't possible
     // there anyways
     if (containsFolder && !isCommunityOrPublicData) {
@@ -219,6 +272,19 @@ const DataFilesToolbar = ({ scheme, api }) => {
     }
   };
 
+  const trashCallback = useCallback(() => {
+    // Specific handling for shared workspaces.
+    const homeDir = selectedSystem?.homeDir || '';
+    const destSystem = selectedFiles[0]?.system || selectedSystem?.system;
+    if (!destSystem) return;
+
+    trash({
+      destSystem,
+      homeDir,
+      callback: reloadPage,
+    });
+  }, [selectedFiles, selectedSystem, reloadPage, status]);
+
   const empty = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -226,18 +292,42 @@ const DataFilesToolbar = ({ scheme, api }) => {
     });
   };
 
-  const permissionParams = { files: selectedFiles, scheme, api };
+  const permissionParams = {
+    files: selectedFiles,
+    scheme,
+    api,
+    customPermissionCheck,
+  };
   const canDownload = getFilePermissions('download', permissionParams);
   const areMultipleFilesOrFolderSelected = getFilePermissions(
     'areMultipleFilesOrFolderSelected',
     permissionParams
   );
-  const canRename = getFilePermissions('rename', permissionParams) && !isGuest;
-  const canMove = getFilePermissions('move', permissionParams) && !isGuest;
-  const canCopy = getFilePermissions('copy', permissionParams);
-  const canTrash = getFilePermissions('trash', permissionParams) && !isGuest;
-  const canCompress = getFilePermissions('compress', permissionParams);
-  const canExtract = getFilePermissions('extract', permissionParams);
+  const canRename =
+    getFilePermissions('rename', permissionParams) &&
+    !isGuest &&
+    !isPublishedProject &&
+    !isReviewProject;
+  const canMove =
+    getFilePermissions('move', permissionParams) &&
+    !isGuest &&
+    !isPublishedProject &&
+    !isReviewProject;
+  const canCopy =
+    getFilePermissions('copy', permissionParams) && !!authenticatedUser;
+  const canTrash =
+    getFilePermissions('trash', permissionParams) &&
+    !isGuest &&
+    !isPublishedProject &&
+    !isReviewProject;
+  const canCompress =
+    getFilePermissions('compress', permissionParams) &&
+    !isPublishedProject &&
+    !isReviewProject;
+  const canExtract =
+    getFilePermissions('extract', permissionParams) &&
+    !isPublishedProject &&
+    !isReviewProject;
   const canMakePublic =
     showMakePublic && getFilePermissions('public', permissionParams);
   const canEmpty = trashedFiles.length > 0;
@@ -245,6 +335,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   return (
     <>
       <div id="data-files-toolbar-button-row">
+        {DataFilesToolbarAddon && <DataFilesToolbarAddon />}
         {showExtract && (
           <ToolbarButton
             text="Extract"

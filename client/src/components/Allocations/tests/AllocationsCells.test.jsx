@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import { toBeInTheDocument } from '@testing-library/jest-dom/dist/matchers';
 import {
   Title,
   Team,
@@ -71,10 +71,11 @@ const mockInitialState = {
   },
 };
 const Wrapper = ({ store, children }) => (
-  <Provider store={store}>{children}</Provider>
+  <BrowserRouter>
+    <Provider store={store}>{children}</Provider>
+  </BrowserRouter>
 );
 
-expect.extend({ toBeInTheDocument });
 describe('Allocations Table Cells', () => {
   const { systems } = fixture;
   it('should have a title and projectName in a cell', () => {

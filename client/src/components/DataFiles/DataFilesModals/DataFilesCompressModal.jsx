@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { Button, FormField, InlineMessage } from '_common';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import { useCompress } from 'hooks/datafiles/mutations';
@@ -10,7 +10,7 @@ import { useSelectedFiles, useModal } from 'hooks/datafiles';
 import styles from './DataFilesCompressModal.module.scss';
 
 const DataFilesCompressModal = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
 
@@ -26,7 +26,7 @@ const DataFilesCompressModal = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     if (status) {
       setStatus({});
-      history.push(location.pathname);
+      navigate(location.pathname);
     }
   };
 

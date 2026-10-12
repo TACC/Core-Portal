@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, LoadingSpinner, Message } from '_common';
 import { Button as ReactstrapButton } from 'reactstrap';
 import { stepPropType } from './OnboardingPropTypes';
 import styles from './OnboardingActions.module.scss';
 import './OnboardingActions.scss';
+import { useAuthenticatedUser } from '@tacc/core-hooks';
 
 const OnboardingActions = ({ step }) => {
   const dispatch = useDispatch();
@@ -19,9 +20,9 @@ const OnboardingActions = ({ step }) => {
       },
     });
   });
-  const isStaff = useSelector((state) =>
-    state.authenticatedUser.user ? state.authenticatedUser.user.isStaff : false
-  );
+  const authenticatedUser = useAuthenticatedUser();
+  const isStaff = authenticatedUser?.isStaff ?? false;
+  const authUsername = authenticatedUser?.username ?? '';
   const isSending = useSelector(
     (state) =>
       state.onboarding.action.loading &&
@@ -29,10 +30,7 @@ const OnboardingActions = ({ step }) => {
   );
   const error = useSelector((state) => state.onboarding.action.error);
   const actionStep = useSelector((state) => state.onboarding.action.step);
-  const { params } = useRouteMatch();
-  const authUsername = useSelector((state) =>
-    state.authenticatedUser.user ? state.authenticatedUser.user.username : ''
-  );
+  const params = useParams();
 
   const hasSendingError = actionStep === step.step && error;
 
@@ -126,7 +124,5 @@ const OnboardingActions = ({ step }) => {
 OnboardingActions.propTypes = {
   step: stepPropType.isRequired,
 };
-
-OnboardingActions.defaultProps = {};
 
 export default OnboardingActions;

@@ -13,6 +13,7 @@ class ESException(Exception):
     Some times we need to be a bit more specific to know how to handle
     the exception.
     """
+
     pass
 
 
@@ -25,4 +26,5 @@ class DocumentNotFound(ESException):
     if we create it or fail.
 
     """
+
     pass

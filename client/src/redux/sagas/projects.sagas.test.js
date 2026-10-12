@@ -1,6 +1,5 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
-import { vi } from 'vitest';
 import {
   getProjectsListing,
   fetchProjectsListing,
@@ -19,8 +18,6 @@ import {
   projectsListingFixture,
 } from './fixtures/projects.fixture';
 
-vi.mock('cross-fetch');
-
 describe('Projects Sagas', () => {
   it('should get a listing of projects', () => {
     return expectSaga(getProjectsListing, { payload: { queryString: null } })
@@ -29,7 +26,7 @@ describe('Projects Sagas', () => {
         [matchers.call.fn(fetchProjectsListing), projectsListingFixture],
       ])
       .put({ type: 'PROJECTS_GET_LISTING_STARTED' })
-      .call(fetchProjectsListing, null)
+      .call(fetchProjectsListing, null, undefined)
       .put({
         type: 'PROJECTS_GET_LISTING_SUCCESS',
         payload: projectsListingFixture,
@@ -81,7 +78,10 @@ describe('Projects Sagas', () => {
       })
       .hasFinalState({
         ...initialState,
-        metadata: projectMetadataFixture,
+        metadata: {
+          ...initialState.metadata,
+          members: projectMetadataResponse.members,
+        },
         operation: {
           name: 'member',
           loading: false,

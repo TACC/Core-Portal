@@ -4,7 +4,11 @@ import PropTypes from 'prop-types';
 import { Button } from '_common';
 import styles from './TextCopyField.module.scss';
 
-const TextCopyField = ({ value, placeholder, displayField }) => {
+const TextCopyField = ({
+  value = '',
+  placeholder = '',
+  displayField = 'input',
+}) => {
   const transitionDuration = 0.15; // second(s)
   const stateDuration = 1; // second(s)
   const stateTimeout = transitionDuration + stateDuration; // second(s)
@@ -83,12 +87,6 @@ TextCopyField.propTypes = {
   value: PropTypes.string,
   placeholder: PropTypes.string,
   displayField: PropTypes.oneOf(['input', 'textarea']),
-};
-
-TextCopyField.defaultProps = {
-  value: '',
-  placeholder: '',
-  displayField: 'input', //Default to input (original)
 };
 
 export default TextCopyField;

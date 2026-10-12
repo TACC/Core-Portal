@@ -32,7 +32,7 @@ export function isKnownMessage(messageComponentName) {
  *   Introductory text (defined externally).
  * </IntroMessage>
  */
-function IntroMessage({ children, className, messageComponentName }) {
+function IntroMessage({ children, className = '', messageComponentName }) {
   const dispatch = useDispatch();
   const introMessageComponents = useSelector(
     (state) => state.introMessageComponents
@@ -72,8 +72,4 @@ IntroMessage.propTypes = {
   /** A unique identifier for the message */
   messageName: PropTypes.string.isRequired,
 };
-IntroMessage.defaultProps = {
-  className: '',
-};
-
 export default IntroMessage;

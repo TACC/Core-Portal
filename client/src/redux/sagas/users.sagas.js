@@ -1,5 +1,4 @@
 import { put, call, debounce } from 'redux-saga/effects';
-import fetch from 'cross-fetch';
 import Cookies from 'js-cookie';
 
 export async function fetchUserSearch(q) {

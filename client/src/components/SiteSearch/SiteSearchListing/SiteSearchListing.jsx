@@ -105,7 +105,7 @@ SiteSearchFileListing.propTypes = {
   filter: PropTypes.string.isRequired,
 };
 
-const SiteSearchListing = ({ results, loading, error, filter }) => {
+const SiteSearchListing = ({ results, loading, error = null, filter }) => {
   const { listing, count, type } = results;
 
   const FILTER_MAPPING = {
@@ -192,9 +192,6 @@ SiteSearchListing.propTypes = {
   }),
   loading: PropTypes.bool.isRequired,
   filter: PropTypes.string.isRequired,
-};
-SiteSearchListing.defaultProps = {
-  error: null,
 };
 
 export default SiteSearchListing;

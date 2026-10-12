@@ -5,20 +5,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('projects', '0001_initial'),
+        ("projects", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='abstractprojectmetadata',
-            name='co_pis',
-            field=models.ManyToManyField(blank=True, related_name='rel_co_pi_abstractprojectmetadata', related_query_name='co_pi_abstractprojectmetadata', to=settings.AUTH_USER_MODEL),
+            model_name="abstractprojectmetadata",
+            name="co_pis",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="rel_co_pi_abstractprojectmetadata",
+                related_query_name="co_pi_abstractprojectmetadata",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='abstractprojectmetadata',
-            name='team_members',
-            field=models.ManyToManyField(blank=True, related_name='rel_member_abstractprojectmetadata', related_query_name='member_abstractprojectmetadata', to=settings.AUTH_USER_MODEL),
+            model_name="abstractprojectmetadata",
+            name="team_members",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="rel_member_abstractprojectmetadata",
+                related_query_name="member_abstractprojectmetadata",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

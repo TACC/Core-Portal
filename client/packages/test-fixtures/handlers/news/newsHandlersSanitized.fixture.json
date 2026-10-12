@@ -1,0 +1,78 @@
+{
+  "response": [
+    {
+      "id": 107637,
+      "author": "TACC User Services",
+      "title": "TACC Resource Login and Job Submissions",
+      "subtitle": "TACC Resource Login and Job Submissions\r\n",
+      "webtitle": "TACC Resource Login and Job Submissions",
+      "content": "Several TACC resources, including Stampede3, Vista, Lonestar6 and the Analysis Portal are experiencing abnormal behavior when attempting to login or submit jobs to the queues. TACC administrators are working to resolve the issues. Please refer to this announcement for updates. ",
+      "posted": "2026-09-04T08:55:16",
+      "postedUTC": "2026-09-04T13:55:16Z",
+      "downtime": false,
+      "categoryId": null,
+      "categories": [
+        {
+          "id": 100054,
+          "name": "Lonestar6",
+          "description": "Lonestar6 User Updates",
+          "type": "User News"
+        },
+        {
+          "id": 100022,
+          "name": "Site/Services",
+          "description": "Consulting, Training, Networking and Operations",
+          "type": "User News"
+        },
+        {
+          "id": 100055,
+          "name": "Stampede3",
+          "description": "Stampede3 User Updates",
+          "type": "User News"
+        },
+        {
+          "id": 100056,
+          "name": "Vista",
+          "description": "Vista User Updates",
+          "type": "User News"
+        },
+        {
+          "id": 100024,
+          "name": "Visualization",
+          "description": "Visualization Services and News",
+          "type": "User News"
+        }
+      ],
+      "updates": [
+        {
+          "id": 103026,
+          "content": "Login and job submission functions have been restored for Stampede3, Vista, Lonestar6 and the Analysis Portal. If you are still experiencing issues with those functionalities, please submit a ticket: https://tacc.utexas.edu/portal/tickets",
+          "posted": "2026-09-04T10:20:49",
+          "postedUTC": "2026-09-04T15:20:49Z"
+        }
+      ]
+    },
+    {
+      "id": 107636,
+      "author": "David Cooper",
+      "title": "Ranch Data Migration Reminder, EOS Nov 1st, 2026",
+      "subtitle": "",
+      "webtitle": "Ranch Data Migration Reminder",
+      "content": "As initially announced in September 2025, the Ranch hardware upgrade requires all users to manually curate, then move, all data from the old hardware (old ranch) to the new hardware (new ranch).  See the instructions here https://docs.tacc.utexas.edu/hpc/ranch-migration-2025/TACC Staff will be removing the symbolic links to old Ranch effective November 1st, 2026.Ensure your data has been migrated prior to this date.",
+      "posted": "2026-09-01T11:26:44",
+      "postedUTC": "2026-09-01T16:26:44Z",
+      "downtime": false,
+      "categoryId": null,
+      "categories": [
+        {
+          "id": 100027,
+          "name": "Ranch",
+          "description": "Ranch User Updates",
+          "type": "User News"
+        }
+      ],
+      "updates": []
+    }
+  ],
+  "status": 200
+}

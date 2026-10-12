@@ -1,26 +1,12 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, lazy, Suspense } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 import { LoadingSpinner, SectionMessage } from '_common';
 import styles from './DataFilesPreviewModal.module.scss';
-import { Niivue } from '@niivue/niivue';
+import { useModal, useAddonComponents } from 'hooks/datafiles';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
-const NiiVue = ({ imageUrl, fileName }) => {
-  const canvas = useRef();
-  useEffect(() => {
-    const volumeList = [
-      {
-        url: imageUrl,
-        name: fileName,
-      },
-    ];
-    const nv = new Niivue();
-    nv.attachToCanvas(canvas.current);
-    nv.loadVolumes(volumeList);
-  }, [imageUrl]);
-
-  return <canvas ref={canvas} height={480} width={640} />;
-};
+const NvPreview = lazy(() => import('./DataFilesPreviewNiiview'));
 
 const DataFilesPreviewModal = () => {
   const dispatch = useDispatch();
@@ -31,20 +17,40 @@ const DataFilesPreviewModal = () => {
   );
   const hasError = error !== null;
   const previewUsingTextContent = !isLoading && !hasError && content !== null;
-  const previewUsingHref = !isLoading && !hasError && !previewUsingTextContent;
+  const previewUsingHref =
+    isOpen && !isLoading && !hasError && !previewUsingTextContent;
   const previewUsingBrainmap =
-    !isLoading && !hasError && params.path && fileType == 'brainmap';
+    isOpen &&
+    !isLoading &&
+    !hasError &&
+    !!params.path &&
+    fileType == 'brainmap';
   const [isFrameLoading, setIsFrameLoading] = useState(true);
 
-  useEffect(() => {
-    if (previewUsingBrainmap) setIsFrameLoading(false);
-  }, [previewUsingBrainmap]);
+  const {
+    data: { portalName },
+  } = useWorkbenchConfig();
+  const { DataFilesPreviewModalAddon } = useAddonComponents({ portalName });
 
-  const toggle = () =>
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'preview', props: {} },
-    });
+  const { toggle } = useModal();
+
+  const togglePreview = () => toggle({ operation: 'preview', props: {} });
+
+  const toggleUnavailDownloadModal = () =>
+    toggle({ operation: 'unavailDownload', props: {} });
+
+  const download = () => {
+    // Checks to see if the file is less than 2 GB; executes the dispatch if true and displays the Globus alert if false
+    const maxFileSize = 2 * 1024 * 1024 * 1024;
+    if (params.length < maxFileSize) {
+      dispatch({
+        type: 'DATA_FILES_DOWNLOAD',
+        payload: { file: params },
+      });
+    } else {
+      toggleUnavailDownloadModal();
+    }
+  };
 
   const onOpen = () => {
     setIsFrameLoading(true);
@@ -78,13 +84,16 @@ const DataFilesPreviewModal = () => {
       isOpen={isOpen}
       onOpened={onOpen}
       onClosed={onClosed}
-      toggle={toggle}
+      toggle={togglePreview}
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle} charCode="&#xe912;">
+      <ModalHeader toggle={togglePreview} charCode="&#xe912;">
         File Preview: {params.name}
       </ModalHeader>
-      <ModalBody className={styles.root}>
+      <ModalBody className={`${styles.root} ${styles['modal-body']}`}>
+        {DataFilesPreviewModalAddon && params.scheme === 'projects' && (
+          <DataFilesPreviewModalAddon metadata={params.metadata} />
+        )}
         {(isLoading || (previewUsingHref && isFrameLoading)) && (
           <div className={styles['loading-style']}>
             <LoadingSpinner />
@@ -98,7 +107,15 @@ const DataFilesPreviewModal = () => {
           </div>
         )}
         {previewUsingBrainmap && (
-          <NiiVue imageUrl={href} fileName={params.path}></NiiVue>
+          <Suspense
+            fallback={
+              <div className={styles['loading-style']}>
+                <LoadingSpinner />
+              </div>
+            }
+          >
+            <NvPreview url={href} name={params.path} />
+          </Suspense>
         )}
         {previewUsingHref && !previewUsingBrainmap && (
           <div className="ratio ratio-4x3">
@@ -115,11 +132,7 @@ const DataFilesPreviewModal = () => {
             <SectionMessage type="warning" className={styles['error-message']}>
               {error}
             </SectionMessage>
-            <Button
-              className={styles.button}
-              href={href}
-              target={fileType === 'other' ? '' : '_blank'}
-            >
+            <Button className={styles.button} onClick={download}>
               <i className="icon-exit" />
               <span className="toolbar-button-text">Download File</span>
             </Button>

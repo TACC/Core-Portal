@@ -7,7 +7,7 @@ import iconStyles from '../../../styles/trumps/icon.css?inline';
 import iconFontsStyles from '../../../styles/trumps/icon.fonts.css?inline';
 import doesClassExist from 'utils/doesClassExist';
 
-const AppIcon = ({ appId, category }) => {
+const AppIcon = ({ appId, category = 'applications' }) => {
   const appIcons = useSelector((state) => state.apps.appIcons);
   const findAppIcon = (id) => {
     let appIcon = category
@@ -37,10 +37,6 @@ const AppIcon = ({ appId, category }) => {
 AppIcon.propTypes = {
   appId: PropTypes.string.isRequired,
   category: PropTypes.string,
-};
-
-AppIcon.defaultProps = {
-  category: 'applications',
 };
 
 export default AppIcon;

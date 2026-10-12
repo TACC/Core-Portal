@@ -20,6 +20,14 @@ import DataFilesDownloadMessageModal from './DataFilesDownloadMessageModal';
 import DataFilesUnavailDownloadModal from './DataFilesUnavailDownloadModal';
 import DataFilesNoFoldersModal from './DataFilesNoFoldersModal';
 import './DataFilesModals.scss';
+import DataFilesFormModal from './DataFilesFormModal';
+import DataFilesPublicationRequestModal from './DataFilesPublicationRequestModal';
+import DataFilesPublicationDownloadModal from './DataFilesPublicationDownloadModal';
+import DataFilesProjectTreeModal from './DataFilesProjectTreeModal';
+import DataFilesProjectDescriptionModal from './DataFilesProjectDescriptionModal';
+import DataFilesViewDataModal from './DataFilesViewDataModal';
+import DataFilesProjectCitationModal from './DataFilesProjectCitationModal';
+import DataFilesPublicationAuthorsModal from './DataFilesPublicationAuthorsModal';
 
 export default function DataFilesModals() {
   return (
@@ -42,6 +50,14 @@ export default function DataFilesModals() {
       <DataFilesProjectEditDescriptionModal />
       <DataFilesMakePublicModal />
       <DataFilesDownloadMessageModal />
+      <DataFilesFormModal />
+      <DataFilesProjectTreeModal />
+      <DataFilesPublicationRequestModal />
+      <DataFilesPublicationDownloadModal />
+      <DataFilesProjectDescriptionModal />
+      <DataFilesViewDataModal />
+      <DataFilesProjectCitationModal />
+      <DataFilesPublicationAuthorsModal />
       <DataFilesUnavailDownloadModal />
       <DataFilesNoFoldersModal />
     </>

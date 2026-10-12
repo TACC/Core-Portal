@@ -9,9 +9,9 @@ const UserSearchbar = ({
   members,
   onAdd,
   onChange,
-  isLoading,
+  isLoading = false,
   searchResults,
-  placeholder,
+  placeholder = 'Search by name',
 }) => {
   const [selectedUser, setSelectedUser] = useState('');
   const [inputUser, setInputUser] = useState('');
@@ -117,10 +117,6 @@ UserSearchbar.propTypes = {
     })
   ).isRequired,
   placeholder: PropTypes.string,
-};
-UserSearchbar.defaultProps = {
-  isLoading: false,
-  placeholder: 'Search by name',
 };
 
 export default UserSearchbar;

@@ -17,7 +17,11 @@ import OnboardingAdminSearchbar from './OnboardingAdminSearchbar';
 import styles from './OnboardingAdmin.module.scss';
 import './OnboardingAdmin.scss';
 
-const OnboardingApproveActions = ({ callback, disabled, action }) => {
+const OnboardingApproveActions = ({
+  callback,
+  disabled = false,
+  action = null,
+}) => {
   return (
     <div className={styles['approve-container']}>
       <Button
@@ -52,12 +56,12 @@ OnboardingApproveActions.propTypes = {
   action: PropTypes.string,
 };
 
-OnboardingApproveActions.defaultProps = {
-  disabled: false,
-  action: null,
-};
-
-const OnboardingResetLinks = ({ callback, disabled, disableSkip, action }) => {
+const OnboardingResetLinks = ({
+  callback,
+  disabled = false,
+  disableSkip = false,
+  action = null,
+}) => {
   return (
     <div className={styles.reset}>
       <Button
@@ -88,12 +92,6 @@ OnboardingResetLinks.propTypes = {
   disabled: PropTypes.bool,
   disableSkip: PropTypes.bool,
   action: PropTypes.string,
-};
-
-OnboardingResetLinks.defaultProps = {
-  disabled: false,
-  disableSkip: false,
-  action: null,
 };
 
 const OnboardingAdminListUser = ({ user, index, viewLogCallback }) => {
