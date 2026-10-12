@@ -13,6 +13,7 @@ from portal.apps.publications.utils import (
     get_landing_page_path,
     get_publication_file_objs,
     get_published_workspace_id,
+    is_publication_license_required,
 )
 
 
@@ -74,3 +75,31 @@ def test_get_publication_file_objs_combines_root_and_entity_nodes_in_place():
 @pytest.mark.parametrize("value,tree", [({}, None), ({"fileObjs": None}, {}), ({}, {"nodes": [{"value": None}]})])
 def test_get_publication_file_objs_tolerates_missing_parts(value, tree):
     assert get_publication_file_objs(SimpleNamespace(value=value, tree=tree)) == []
+
+
+def _license_field(**validation):
+    return {"name": "license", "type": "select", **({"validation": validation} if validation else {})}
+
+
+@pytest.mark.parametrize(
+    "forms,expected",
+    [
+        # No settings_forms.py, so no FORMS at all.
+        (None, False),
+        ({}, False),
+        ({"EDIT_PROJECT_ADDON": {"form_fields": [{"name": "keywords"}]}}, False),
+        ({"EDIT_PROJECT_ADDON": {"form_fields": [_license_field()]}}, False),
+        ({"EDIT_PROJECT_ADDON": {"form_fields": [_license_field(required=False)]}}, False),
+        # Required on some other form, not the project form where the license is edited.
+        ({"ADD_PROJECT_ADDON": {"form_fields": [_license_field(required=True)]}}, False),
+        # DPMP's form.
+        ({"EDIT_PROJECT_ADDON": {"form_fields": [{"name": "keywords"}, _license_field(required=True)]}}, True),
+    ],
+)
+def test_is_publication_license_required(settings, forms, expected):
+    """Follows the project form's own `required` flag on `license`."""
+    if forms is None:
+        del settings.FORMS
+    else:
+        settings.FORMS = forms
+    assert is_publication_license_required() is expected

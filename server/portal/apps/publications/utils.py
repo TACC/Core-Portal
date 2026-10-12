@@ -17,6 +17,20 @@ def get_landing_namespace():
     return "publications" if prefix_path == reverse("publications:index_fallback").rstrip("/") else "public"
 
 
+def is_publication_license_required():
+    """Whether the portal's project form (settings_forms.py's EDIT_PROJECT_ADDON, kept per deployment
+    in Core-Portal-Deployments) marks `license` as required, as DPMP's does. The publication views
+    then refuse to submit, publish or republish a project without one, matching the client's check.
+    Portals whose form doesn't require it publish without a license as before.
+    """
+
+    form = (getattr(settings, "FORMS", None) or {}).get("EDIT_PROJECT_ADDON") or {}
+    return any(
+        field.get("name") == "license" and (field.get("validation") or {}).get("required")
+        for field in form.get("form_fields") or []
+    )
+
+
 def get_published_workspace_id(project_id, version):
     """Return the `{project_id}` / `{project_id}v{version}` id publish_project
     (project_publish_operations.py) gives a version's published workspace: the suffix of its Tapis
