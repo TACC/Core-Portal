@@ -50,7 +50,7 @@ const ProjectFileListingActions = ({ rootSystem, system, datasetActions }) => {
       props: { projectId: metadata?.projectId, rootSystem },
     });
 
-  const username = useAuthenticatedUser().data ?? {};
+  const username = useAuthenticatedUser()?.username;
   const { canEdit, canRequestPublication, canReviewPublication } = useSelector(
     (state) => {
       const { members } = state.projects.metadata;
