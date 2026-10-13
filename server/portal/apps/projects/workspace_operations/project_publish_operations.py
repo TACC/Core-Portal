@@ -358,7 +358,17 @@ def submit_publication_archive_job(self, archive_project_id, project_id=None, ve
     `project_id`/`version` are absent for a transfer poll queued before the checksum step existed:
     the job is still submitted, but not polled. That publication can be backfilled with the
     compute_publication_checksums management command.
+
+    Skipped when PORTAL_PUBLICATION_ARCHIVE_APP_ID is unset (local development): there's no app to
+    submit, so every attempt would fail and be retried. The publication then has no ZIP or checksums.
     """
+
+    if not settings.PORTAL_PUBLICATION_ARCHIVE_APP_ID:
+        logger.info(
+            f"Not archiving {archive_project_id}: PORTAL_PUBLICATION_ARCHIVE_APP_ID isn't set, so its ZIP, "
+            "checksum manifests and Ranch copy won't be made."
+        )
+        return
 
     try:
         archive_job = archive_publication_files(archive_project_id)

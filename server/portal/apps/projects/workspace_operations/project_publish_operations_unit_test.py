@@ -366,6 +366,29 @@ def test_publish_project_callback_other_cleanup_errors_still_fail(mocker):
 # ---------------------------------------------------------------------------
 
 
+@pytest.fixture
+def archive_app(settings):
+    settings.PORTAL_PUBLICATION_ARCHIVE_APP_ID = "test-archive-app"
+
+
+def test_submit_publication_archive_job_skips_without_archive_app(mocker, settings, caplog):
+    """With no archive app configured (local development) there's nothing to submit, so it neither
+    submits nor retries."""
+    settings.PORTAL_PUBLICATION_ARCHIVE_APP_ID = ""
+    mock_archive = mocker.patch(f"{DIR}.archive_publication_files")
+    mock_poll = mocker.patch.object(poll_publication_archive_job, "apply_async")
+    mock_retry = mocker.patch.object(submit_publication_archive_job, "retry")
+
+    with caplog.at_level("INFO"):
+        submit_publication_archive_job("archive-1", project_id="test.project-1", version=1)
+
+    mock_archive.assert_not_called()
+    mock_poll.assert_not_called()
+    mock_retry.assert_not_called()
+    assert "PORTAL_PUBLICATION_ARCHIVE_APP_ID isn't set" in caplog.text
+
+
+@pytest.mark.usefixtures("archive_app")
 def test_submit_publication_archive_job_submits_and_queues_checksum_poll(mocker):
     mock_archive = mocker.patch(f"{DIR}.archive_publication_files", return_value=SimpleNamespace(uuid="job-1"))
     mock_poll = mocker.patch.object(poll_publication_archive_job, "apply_async")
@@ -376,6 +399,7 @@ def test_submit_publication_archive_job_submits_and_queues_checksum_poll(mocker)
     mock_poll.assert_called_once_with(args=["job-1", "test.project-1", 2], countdown=60)
 
 
+@pytest.mark.usefixtures("archive_app")
 def test_submit_publication_archive_job_without_project_id_skips_checksum_poll(mocker):
     mock_archive = mocker.patch(f"{DIR}.archive_publication_files", return_value=SimpleNamespace(uuid="job-1"))
     mock_poll = mocker.patch.object(poll_publication_archive_job, "apply_async")
@@ -386,6 +410,7 @@ def test_submit_publication_archive_job_without_project_id_skips_checksum_poll(m
     mock_poll.assert_not_called()
 
 
+@pytest.mark.usefixtures("archive_app")
 def test_submit_publication_archive_job_retries_submission_with_backoff(mocker):
     """Only the submission is retried -- not publish_project_callback, whose retry would queue the DOI
     publish again."""
@@ -401,6 +426,7 @@ def test_submit_publication_archive_job_retries_submission_with_backoff(mocker):
     mock_poll.assert_not_called()
 
 
+@pytest.mark.usefixtures("archive_app")
 def test_submit_publication_archive_job_gives_up_after_max_retries_and_logs_remedy(mocker, caplog):
     mocker.patch(f"{DIR}.archive_publication_files", side_effect=RuntimeError("tapis down"))
     mock_retry = mocker.patch.object(submit_publication_archive_job, "retry")
@@ -418,6 +444,7 @@ def test_submit_publication_archive_job_gives_up_after_max_retries_and_logs_reme
     assert "compute_publication_checksums --load-only test.project-1" in caplog.text
 
 
+@pytest.mark.usefixtures("archive_app")
 def test_submit_publication_archive_job_never_resubmits_when_checksum_poll_cant_be_queued(mocker, caplog):
     """The job is already running: retrying would submit a second one for the same version."""
     mock_archive = mocker.patch(f"{DIR}.archive_publication_files", return_value=SimpleNamespace(uuid="job-1"))
