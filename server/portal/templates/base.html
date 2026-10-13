@@ -13,10 +13,16 @@
     <title>{% block title %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% comment %}
-      The dataset-portal wording is only the default where PORTAL_NOINDEX_APP_SHELL marks this a portal whose
-      indexable pages are published-dataset landing pages (DPMP); other portals keep their site description.
+      Overridable (meta_description) under the same gate as the share-card tags below: on publication landing
+      pages (which set `canonical_url`), so it matches og:description, and on every page of a portal that sets
+      PORTAL_NOINDEX_APP_SHELL (DPMP), where the dataset-portal wording is the default. Other portals' pages
+      keep their site description, as before.
     {% endcomment %}
+    {% if canonical_url or settings.PORTAL_NOINDEX_APP_SHELL %}
     <meta name="description" content="{% block meta_description %}{% if settings.PORTAL_NOINDEX_APP_SHELL %}Explore published research datasets and computational tools on {{ settings.PORTAL_NAMESPACE }}.{% else %}{{ site.description }}{% endif %}{% endblock %}">
+    {% else %}
+    <meta name="description" content="{{ site.description }}">
+    {% endif %}
     {% comment %}
       public_data/urls.py's catch-all `index_fallback` route (r"^.*$") serves this same generic app shell -- same
       title/description, no unique content -- for literally any URL that isn't a publication landing page, since
@@ -75,9 +81,11 @@
     <link rel="icon" href="{% static 'img/favicon.ico' %}">
     {% endif %}
     {% comment %}
-      Without its query string, so tracking or filter parameters don't each claim a canonical URL.
+      A landing page's own `canonical_url`. Otherwise, on a portal that sets PORTAL_NOINDEX_APP_SHELL, the
+      absolute URL without its query string, so tracking or filter parameters don't each claim a canonical
+      URL; other portals keep the request's full path, as before.
     {% endcomment %}
-    <link rel="canonical" href="{% if canonical_url %}{{ canonical_url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endif %}">
+    <link rel="canonical" href="{% if canonical_url %}{{ canonical_url }}{% elif settings.PORTAL_NOINDEX_APP_SHELL %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% else %}{{request.get_full_path}}{% endif %}">
     <base href="/">
     {% block head_extra %}{% endblock %}
     <style>

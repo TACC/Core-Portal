@@ -2900,13 +2900,29 @@ def test_index_view_landing_page_has_share_cards_without_portal_opt_in(client, s
     assert re.search(r'<meta property="og:title" content="Test Dataset \| [^"]*">', body)
 
 
-@pytest.mark.parametrize("noindex_app_shell", [True, False])
-def test_index_view_app_shell_canonical_url_drops_query_string(client, settings, noindex_app_shell):
-    settings.PORTAL_NOINDEX_APP_SHELL = noindex_app_shell
+def test_index_view_app_shell_canonical_url_drops_query_string(client):
     body = client.get("/published-datasets/?utm_source=x&page=2").content.decode()
 
     assert '<link rel="canonical" href="http://testserver/published-datasets/">' in body
     assert "utm_source" not in body
+
+
+def test_index_view_app_shell_keeps_default_canonical_unless_portal_opts_in(client, settings):
+    """Portals that don't set PORTAL_NOINDEX_APP_SHELL keep the request's full path as the canonical URL."""
+    settings.PORTAL_NOINDEX_APP_SHELL = False
+    body = client.get("/published-datasets/?utm_source=x&page=2").content.decode()
+
+    assert '<link rel="canonical" href="/published-datasets/?utm_source=x&amp;page=2">' in body
+
+
+def test_index_view_landing_page_keeps_description_and_canonical_without_portal_opt_in(client, settings, publication):
+    """A landing page's description and canonical URL don't depend on PORTAL_NOINDEX_APP_SHELL."""
+    settings.PORTAL_NOINDEX_APP_SHELL = False
+    url = get_landing_page_path(publication.project_id, publication.version)
+    body = client.get(url).content.decode()
+
+    assert f'<link rel="canonical" href="http://testserver{url}">' in body
+    assert f'<meta name="description" content="{TEST_DESCRIPTION[:20]}' in body
 
 
 @pytest.mark.parametrize("state", ["withdrawn", "mid_publish"])
