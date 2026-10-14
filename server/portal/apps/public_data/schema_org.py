@@ -210,12 +210,18 @@ def _format_content_size(num_bytes):
     A bare "<n> B" value is technically valid Text but unreadable at real file sizes, so this
     scales to the largest unit that keeps the mantissa under 1000. Units are decimal (SI: 1 KB
     = 1000 bytes), so the KB/MB labels mean what they say rather than KiB/MiB.
+
+    The check uses the mantissa as rounded for display, so a value just under a unit boundary
+    (999,999 bytes) shows as "1.0 MB" rather than rounding up to "1000.0 KB".
     """
 
     size = float(num_bytes)
     for unit in ("B", "KB", "MB", "GB", "TB"):
-        if size < 1000 or unit == "TB":
-            return f"{int(size)} {unit}" if unit == "B" else f"{size:.1f} {unit}"
+        if unit == "B":
+            if size < 1000:
+                return f"{int(size)} B"
+        elif round(size, 1) < 1000 or unit == "TB":
+            return f"{size:.1f} {unit}"
         size /= 1000
 
 

@@ -235,6 +235,12 @@ def test_get_configured_origin_falls_back_when_prefix_not_absolute(rf, settings)
         (1000**3, "1.0 GB"),
         (1000**4, "1.0 TB"),
         (1000**5, "1000.0 TB"),
+        # Just under a unit boundary: rounds into the next unit, not to "1000.0" of this one.
+        (999_949, "999.9 KB"),
+        (999_950, "1.0 MB"),
+        (999_999, "1.0 MB"),
+        (999_999_999, "1.0 GB"),
+        (999_999_999_999, "1.0 TB"),
     ],
 )
 def test_format_content_size(num_bytes, expected):
