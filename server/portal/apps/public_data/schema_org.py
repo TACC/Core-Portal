@@ -188,6 +188,21 @@ def _get_orcid_same_as(author):
     return orcid_url(author.get("orcid_id"))
 
 
+def get_publisher_name():
+    """PORTAL_PUBLICATION_PUBLISHER, trimmed, or None when it's unset or blank. settings.py
+    defaults it to PORTAL_NAMESPACE, but a portal can still set it to None or "", and a nameless
+    publisher would otherwise render as a JSON-LD `"name": null` or a `content="None"` meta tag.
+    """
+
+    return (settings.PORTAL_PUBLICATION_PUBLISHER or "").strip() or None
+
+
+def _named_node(node_type, name, url):
+    """A schema.org Organization/DataCatalog node, with `name` left out when there is none."""
+
+    return {"@type": node_type, **({"name": name} if name else {}), "url": url}
+
+
 def _format_content_size(num_bytes):
     """Format a byte count as Croissant/schema.org's `contentSize` expects -- schema.org's own
     docs describe the property as "File size in (mega/kilo)bytes", and both its and Croissant's
@@ -526,6 +541,7 @@ def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=Fals
         creators.append(creator)
 
     landing_page_url = get_landing_page_url(project_id, pub.version, request)
+    publisher_name = get_publisher_name()
     schema_org_json = {
         "@context": copy.deepcopy(CROISSANT_1_1_CONTEXT),
         "@type": "Dataset",
@@ -563,11 +579,7 @@ def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=Fals
         "creator": creators,
         # Google's Dataset guidance recommends a `url` on Organizations. The publisher is this
         # portal, so it's the site root on the same origin as the landing page.
-        "publisher": {
-            "@type": "Organization",
-            "name": settings.PORTAL_PUBLICATION_PUBLISHER,
-            "url": f"{get_publication_origin(request)}/",
-        },
+        "publisher": _named_node("Organization", publisher_name, f"{get_publication_origin(request)}/"),
         # Trimmed list, the same one DataCite's `subjects` gets (projects/schema_models/keywords.py).
         "keywords": normalize_keywords(base_meta.get("keywords")),
         "datePublished": base_meta.get("publicationDate") or base_meta.get("publication_date"),
@@ -587,11 +599,7 @@ def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=Fals
         # DataCite's `version` (datacite_operations.py) -- schema.org allows Text there, and a bare
         # "2" satisfies Croissant's MAJOR[.MINOR[.PATCH]] pattern as-is.
         "version": str(pub.version),
-        "includedInDataCatalog": {
-            "@type": "DataCatalog",
-            "name": settings.PORTAL_PUBLICATION_PUBLISHER,
-            "url": get_catalog_url(request),
-        },
+        "includedInDataCatalog": _named_node("DataCatalog", publisher_name, get_catalog_url(request)),
         "distribution": _get_distribution(
             file_objs,
             project_id,

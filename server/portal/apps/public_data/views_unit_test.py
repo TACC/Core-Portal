@@ -1778,6 +1778,26 @@ def test_get_schema_org_json_success(rf, settings, publication):
     assert len(schema["citation"]) == 1
 
 
+@pytest.mark.parametrize("publisher", [None, "", "  "])
+def test_get_schema_org_json_omits_publisher_name_when_unset(rf, settings, publication, publisher):
+    settings.PORTAL_PUBLICATION_PUBLISHER = publisher
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
+
+    assert schema["publisher"] == {"@type": "Organization", "url": "http://testserver/"}
+    assert schema["includedInDataCatalog"] == {
+        "@type": "DataCatalog",
+        "url": "http://testserver/published-datasets/",
+    }
+
+
+def test_get_schema_org_json_trims_publisher_name(rf, settings, publication):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "  Test Publisher "
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
+
+    assert schema["publisher"]["name"] == "Test Publisher"
+    assert schema["includedInDataCatalog"]["name"] == "Test Publisher"
+
+
 @pytest.mark.parametrize("stored_doi", ["10.1234/test-doi", "doi:10.1234/test-doi", "https://doi.org/10.1234/test-doi"])
 def test_get_schema_org_json_normalizes_doi(rf, publication, stored_doi):
     """A DOI stored with a "doi:" label or as a resolver URL doesn't become
@@ -2776,6 +2796,18 @@ def test_index_view_renders_citation_and_dc_meta_tags(client, settings, publicat
     assert '<meta name="DC.creator" content="Ada Lovelace">' in body
     assert '<meta name="DC.rights" content="https://opendatacommons.org/licenses/by/1-0/">' in body
     assert '<meta name="DC.identifier" content="https://doi.org/10.1234/test-doi">' in body
+
+
+@pytest.mark.parametrize("publisher", [None, "", "  "])
+def test_index_view_omits_publisher_tags_without_a_publisher(client, settings, publication, publisher):
+    settings.PORTAL_PUBLICATION_PUBLISHER = publisher
+    body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+
+    assert '<meta name="citation_title" content="Test Dataset">' in body
+    assert "DC.publisher" not in body
+    assert "citation_publisher" not in body
+    assert 'content="None"' not in body
+    assert "<title>Test Dataset | " in body
 
 
 @pytest.mark.parametrize("overrides", [{"authors": []}, {"publicationDate": None}], ids=["no_authors", "no_date"])

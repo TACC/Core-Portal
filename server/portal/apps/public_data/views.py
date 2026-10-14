@@ -23,6 +23,7 @@ from portal.apps.public_data.schema_org import (
     CROISSANT_1_1_MEDIA_TYPE,
     dumps_json_ld,
     get_citation_context,
+    get_publisher_name,
     get_schema_org_json,
     get_unique_publication_file_objs,
 )
@@ -105,7 +106,7 @@ class IndexView(TemplateView):
                     citation_context, schema_org_json, _ = get_citation_context(pub, self.request)
                     context["schema_org_json"] = dumps_json_ld(schema_org_json)
                     context["citation_context"] = citation_context
-                    context["publisher"] = settings.PORTAL_PUBLICATION_PUBLISHER
+                    context["publisher"] = get_publisher_name()
                     # Reuse the same get_landing_page_url-derived value already resolved for the
                     # JSON-LD's own `url` (rather than falling back to base.html's default
                     # request.build_absolute_uri) so <link rel="canonical">/og:url can't disagree
