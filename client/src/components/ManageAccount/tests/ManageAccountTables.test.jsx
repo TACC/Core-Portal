@@ -1,6 +1,4 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import { Provider } from 'react-redux';
+import { screen } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import {
   ProfileInformation,
@@ -8,62 +6,26 @@ import {
   Integrations,
   Licenses,
 } from '../ManageAccountTables';
-
-const dummyState = {
-  isLoading: false,
-  checkingPassword: false,
-  editing: false,
-  success: {
-    optional: false,
-    required: false,
-    password: false,
-  },
-  data: {
-    demographics: {
-      username: 'ojamil',
-      email: 'ojamil@tacc.utexas.edu',
-      firstName: 'Owais',
-      lastName: 'Jamil',
-      institution: 'University of Texas at Austin',
-      institutionId: 1,
-      citizenship: 'United States',
-      citizenshipId: 230,
-      phone: '512-919-9153',
-      title: 'Center Non-Researcher Staff',
-    },
-    licenses: [],
-    integrations: [
-      {
-        label: 'Google Drive',
-        description: 'test description',
-        activated: false,
-        disconnect: 'https://disconnect.com',
-        connect: 'https://google.com',
-      },
-    ],
-    passwordLastChanged: '6/1/2020',
-  },
-  errors: {},
-};
+import renderComponent from 'utils/testing';
+import { server } from '@tacc/test-fixtures';
+import userEvent from '@testing-library/user-event';
+import {
+  profileHandlerWithGoogleDrive,
+  profileHandlerWithIntegration,
+  profileHandlerWithLicense,
+} from '@tacc/test-fixtures/handlers/profile/profileHandlers';
 
 const mockStore = configureStore({});
 
 describe('Profile Information Component', () => {
-  let getByText;
-  const testStore = mockStore({
-    profile: dummyState,
-  });
-  beforeEach(() => {
-    const utils = render(
-      <Provider store={testStore}>
-        <ProfileInformation />
-      </Provider>
-    );
-    getByText = utils.getByText;
+  const testStore = mockStore({});
+  beforeEach(async () => {
+    renderComponent(<ProfileInformation />, testStore);
+    await screen.findByText(/^Profile Information/);
   });
 
   test('Show column headings and content', () => {
-    expect(getByText(/^Profile Information/)).toBeInTheDocument();
+    expect(screen.getByText(/^Profile Information/)).toBeInTheDocument();
     const headings = [
       'Full Name',
       'Email',
@@ -71,12 +33,13 @@ describe('Profile Information Component', () => {
       'Country of Citizenship',
     ];
     headings.forEach((heading) => {
-      expect(getByText(heading)).toBeInTheDocument();
+      expect(screen.getByText(heading)).toBeInTheDocument();
     });
   });
   test('should have a button to go to an external site for profile editing', async () => {
     expect(
-      getByText(/Edit Profile Information/)
+      screen
+        .getByText(/Edit Profile Information/)
         .closest('a')
         .getAttribute('href')
     ).toBe('https://accounts.tacc.utexas.edu/profile');
@@ -84,28 +47,21 @@ describe('Profile Information Component', () => {
 });
 
 describe('Change Password Component', () => {
-  let getByText, getAllByText;
-  const testStore = mockStore({
-    profile: dummyState,
-  });
-  beforeEach(() => {
-    const utils = render(
-      <Provider store={testStore}>
-        <PasswordInformation />
-      </Provider>
-    );
-    getByText = utils.getByText;
-    getAllByText = utils.getAllByText;
+  const testStore = mockStore({});
+  beforeEach(async () => {
+    renderComponent(<PasswordInformation />, testStore);
+    await screen.findByText(/Password Information/);
   });
 
   it('should show the user the last time they changed their password', () => {
-    expect(getByText(/Last Changed/)).toBeInTheDocument();
-    expect(getByText(/6\/1\/2020/)).toBeInTheDocument();
+    expect(screen.getByText(/Last Changed/)).toBeInTheDocument();
+    expect(screen.getByText(/6\/21\/2026/)).toBeInTheDocument();
   });
 
   it('should have a button for users to go to external site for password change', async () => {
     expect(
-      getByText(/Change Password/)
+      screen
+        .getByText(/Change Password/)
         .closest('a')
         .getAttribute('href')
     ).toBe('https://accounts.tacc.utexas.edu/change_password');
@@ -113,94 +69,94 @@ describe('Change Password Component', () => {
 });
 
 describe('Third Party Apps', () => {
-  let getByText;
+  it('Shows connect link when not connected', async () => {
+    const testStore = mockStore({});
+    renderComponent(<Integrations />, testStore);
+    await screen.findByText(/3rd Party Apps/);
+    expect(screen.getByText(/3rd Party Apps/)).toBeInTheDocument();
+    expect(screen.getByText('Google Drive')).toBeInTheDocument();
+    expect(screen.getByText('Setup Google Drive')).toBeInTheDocument();
+  });
+  it('Shows disconnect link when  connected', async () => {
+    server.use(profileHandlerWithGoogleDrive);
+    const testStore = mockStore({});
+    renderComponent(<Integrations />, testStore);
+    await screen.findByText(/3rd Party Apps/);
+    expect(screen.getByText(/3rd Party Apps/)).toBeInTheDocument();
+    expect(screen.getByText('Google Drive')).toBeInTheDocument();
+    expect(screen.getByText('Disconnect')).toBeInTheDocument();
+  });
 
-  it('Shows connect link when not connected', () => {
-    const testStore = mockStore({
-      profile: dummyState,
-    });
-    const { getByText } = render(
-      <Provider store={testStore}>
-        <Integrations />
-      </Provider>
-    );
-    expect(getByText(/3rd Party Apps/)).toBeDefined();
-    expect(getByText('Google Drive')).toBeDefined();
-    expect(getByText('Setup Google Drive')).toBeDefined();
-  });
-  it('Shows disconnect link when  connected', () => {
-    const testStore = mockStore({
-      profile: {
-        ...dummyState,
-        data: {
-          ...dummyState.data,
-          integrations: [
-            {
-              label: 'Google Drive',
-              description: 'test description',
-              activated: true,
-              disconnect: 'https://disconnect.com',
-              connect: 'https://google.com',
-            },
-          ],
-        },
-      },
-    });
-    const { getByText } = render(
-      <Provider store={testStore}>
-        <Integrations />
-      </Provider>
-    );
-    expect(getByText(/3rd Party Apps/)).toBeDefined();
-    expect(getByText('Google Drive')).toBeDefined();
-    expect(getByText('Disconnect')).toBeDefined();
-  });
-  it('Shows potential 3rd party connections other than Google Drive', () => {
-    const testStore = mockStore({
-      profile: {
-        ...dummyState,
-        data: {
-          ...dummyState.data,
-          integrations: [
-            {
-              label: '3rd Party Service',
-              description: '3rd Party Service description',
-              activated: true,
-            },
-          ],
-        },
-      },
-    });
-    const { getByText, queryByText } = render(
-      <Provider store={testStore}>
-        <Integrations />
-      </Provider>
-    );
-    expect(getByText(/3rd Party Apps/)).toBeInTheDocument();
+  it('Shows potential 3rd party connections other than Google Drive', async () => {
+    const testStore = mockStore({});
+    server.use(profileHandlerWithIntegration);
+    renderComponent(<Integrations />, testStore);
+    await screen.findByText(/3rd Party Apps/);
+    expect(screen.getByText(/3rd Party Apps/)).toBeInTheDocument();
     // Check that Google Drive is not rendered
-    expect(queryByText('Google Drive')).toBeNull();
+    expect(screen.queryByText('Google Drive')).not.toBeInTheDocument();
     // Check that other integrations are rendered
-    expect(getByText('3rd Party Service')).toBeInTheDocument();
+    expect(screen.getByText('3rd Party Service')).toBeInTheDocument();
   });
 });
 
 describe('License Cell', () => {
-  let getByText, getByRole;
-  const testStore = mockStore({
-    profile: dummyState,
-  });
-  beforeEach(() => {
-    const utils = render(
-      <Provider store={testStore}>
-        <Licenses />
-      </Provider>
-    );
-    getByText = utils.getByText;
-    getByRole = utils.getByRole;
+  const testStore = mockStore({});
+
+  it('should show the table header', async () => {
+    renderComponent(<Licenses />, testStore);
+    await screen.findByText(/Licenses/);
+    expect(screen.getByText(/Licenses/)).toBeInTheDocument();
+    expect(screen.getByRole('table')).toBeInTheDocument();
   });
 
-  it('should show the table header', () => {
-    expect(getByText(/Licenses/)).toBeInTheDocument();
-    expect(getByRole('table')).toBeDefined();
+  it('show Request Activation button when license is not set', async () => {
+    renderComponent(<Licenses />, testStore);
+    await screen.findByText(/Licenses/);
+    expect(
+      screen.getByRole('button', { name: 'Request Activation' })
+    ).toBeInTheDocument();
+  });
+
+  it('show Request Activation button when license is not set', async () => {
+    renderComponent(<Licenses />, testStore);
+    await screen.findByText(/Licenses/);
+    expect(
+      screen.getByRole('button', { name: 'Request Activation' })
+    ).toBeInTheDocument();
+  });
+
+  it('opens ticket when Request Activation is clicked', async () => {
+    renderComponent(<Licenses />, testStore);
+    await screen.findByText(/Licenses/);
+    const ticketButton = screen.getByRole('button', {
+      name: 'Request Activation',
+    });
+
+    await userEvent.click(ticketButton);
+
+    const newTicketButton = await screen.findByRole('button', {
+      name: /New Ticket/i,
+    });
+
+    expect(screen.getByRole('link', { name: /MATLAB/ })).toHaveAttribute(
+      'href',
+      'http://www.mathworks.com/'
+    );
+
+    // open ticket modal and assert that it opens
+    await userEvent.click(newTicketButton);
+    expect(
+      await screen.findByRole('button', { name: 'Add Ticket' })
+    ).toBeInTheDocument();
+  });
+
+  it('show View Details button when license is activated', async () => {
+    server.use(profileHandlerWithLicense);
+    renderComponent(<Licenses />, testStore);
+    await screen.findByText(/Licenses/);
+    expect(
+      screen.getByRole('button', { name: 'View Details' })
+    ).toBeInTheDocument();
   });
 });
