@@ -7,7 +7,6 @@ import {
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import AppRouter from './components/Workbench';
-import { initialState as profile } from './redux/reducers/profile.reducers';
 import { initialState as notifications } from './redux/reducers/notifications.reducers';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -22,7 +21,6 @@ it('Renders index', async () => {
       <QueryClientProvider client={queryClient}>
         <Provider
           store={mockStore({
-            profile,
             notifications,
           })}
         >

@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { Suspense } from 'react';
 import { Link } from 'react-router-dom';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { isEmpty } from 'lodash';
+
 import { LoadingSpinner, Section, SectionMessage } from '_common';
 import {
   ProfileInformation,
@@ -15,6 +14,8 @@ import './ManageAccount.global.css';
 import styles from './ManageAccount.module.css';
 import { INTEGRATION_SETUP_ERROR } from '../../constants/messages';
 import { useWorkbenchConfig } from '@tacc/core-hooks';
+import { useQuery } from '@tanstack/react-query';
+import { profileQueries } from '@tacc/core-queries';
 
 const ManageAccountView = () => {
   const {
@@ -22,31 +23,28 @@ const ManageAccountView = () => {
       config: { hideApps, hideDataFiles },
     },
   } = useWorkbenchConfig();
-  const {
-    isLoading,
-    errors,
-    data: { licenses, integrations },
-  } = useSelector((state) => state.profile, shallowEqual);
 
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch({ type: 'GET_PROFILE_DATA' });
-  }, [dispatch]);
+  const {
+    data: profileData,
+    isLoading,
+    isError,
+  } = useQuery(profileQueries.getProfile());
+
   return (
     <Section
       bodyClassName="has-loaded-account"
       messageComponentName="ACCOUNT"
       header="Manage Account"
       messages={[
-        !isLoading && errors.data && (
+        !isLoading && isError && (
           <div>
             <SectionMessage type="error">
               An error occurred loading your account information.
             </SectionMessage>
           </div>
         ),
-        !isLoading &&
-          integrations.map(
+        !!profileData &&
+          profileData.integrations.map(
             (integration) =>
               integration &&
               integration.error === 'SETUP_ERROR' && (
@@ -69,12 +67,19 @@ const ManageAccountView = () => {
         isLoading ? (
           <LoadingSpinner />
         ) : (
-          <>
-            <ProfileInformation />
-            {!hideApps && !isEmpty(licenses) && <Licenses />}
-            {!hideDataFiles && !isEmpty(integrations) && <Integrations />}
-            <PasswordInformation />
-          </>
+          !!profileData && (
+            <Suspense>
+              <ProfileInformation />
+              {!hideApps && (profileData?.licenses ?? []).length > 0 && (
+                <Licenses />
+              )}
+              {!hideDataFiles &&
+                (profileData?.integrations ?? []).length > 0 && (
+                  <Integrations />
+                )}
+              <PasswordInformation />
+            </Suspense>
+          )
         )
       }
       contentClassName={styles.panels}
