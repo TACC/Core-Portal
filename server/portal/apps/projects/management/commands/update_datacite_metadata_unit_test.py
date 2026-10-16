@@ -52,6 +52,15 @@ def mock_upsert(mocker):
     return mocker.patch(f"{DIR}.upsert_datacite_json", side_effect=lambda payload, doi: {"data": {"id": doi}})
 
 
+@pytest.fixture(autouse=True)
+def mock_croissant_write(mocker):
+    """Patch the static croissant.json rewrite, which calls Tapis."""
+    return mocker.patch(
+        f"{DIR}.write_publication_croissant_file",
+        side_effect=lambda publication: f"archive/{publication.project_id}/croissant.json",
+    )
+
+
 def run(*args):
     out, err = StringIO(), StringIO()
     call_command("update_datacite_metadata", *args, stdout=out, stderr=err)
@@ -190,3 +199,45 @@ def test_issued_date_prefers_the_stored_publication_date(publications, mock_upse
     run("test.project-1")
 
     assert mock_upsert.call_args.args[0]["dates"] == [{"date": "2020-01-02", "dateType": "Issued"}]
+
+
+# ---------------------------------------------------------------------------
+# Static croissant.json
+# ---------------------------------------------------------------------------
+
+
+def test_rewrites_croissant_for_every_published_publication_with_or_without_doi(
+    publications, mock_upsert, mock_croissant_write
+):
+    out, _ = run("--all")
+
+    written = [call.args[0].project_id for call in mock_croissant_write.call_args_list]
+    assert written == ["test.project-1", "test.project-2", "test.project-3"]
+    assert "Wrote archive/test.project-3/croissant.json (test.project-3 v1)" in out
+
+
+def test_reports_skipped_croissant(publications, mock_upsert, mock_croissant_write):
+    mock_croissant_write.side_effect = None
+    mock_croissant_write.return_value = None
+
+    out, _ = run("test.project-1")
+
+    assert "Skipped croissant.json for test.project-1 v2" in out
+
+
+def test_dry_run_writes_no_croissant(publications, mock_upsert, mock_croissant_write, mocker):
+    mocker.patch(f"{DIR}.get_registered_doi_attributes", return_value={})
+
+    out, _ = run("--dry-run", "test.project-1")
+
+    mock_croissant_write.assert_not_called()
+    assert "Would rewrite croissant.json for test.project-1 v2" in out
+
+
+def test_failed_croissant_write_still_updates_doi_and_is_reported(publications, mock_upsert, mock_croissant_write):
+    mock_croissant_write.side_effect = RuntimeError("tapis down")
+
+    with pytest.raises(CommandError, match="1 croissant.json file\\(s\\) not written: test.project-1"):
+        run("test.project-1")
+
+    mock_upsert.assert_called_once()

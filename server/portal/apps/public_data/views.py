@@ -18,7 +18,7 @@ from django.urls import reverse
 from django.utils.http import content_disposition_header
 from django.views.generic.base import TemplateView, View
 
-from portal.apps.public_data.links import get_publication_origin
+from portal.apps.public_data.links import get_publication_origin, get_published_web_url
 from portal.apps.public_data.schema_org import (
     CROISSANT_1_1_MEDIA_TYPE,
     dumps_json_ld,
@@ -187,19 +187,6 @@ def _get_published_system_id(project_id, version):
     return f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{get_published_workspace_id(project_id, version)}"
 
 
-def _get_published_web_url(path):
-    """Return the public HTTP URL for `path` (relative to PORTAL_PROJECTS_PUBLISHED_ROOT_DIR) on
-    the deployment's web mirror of that directory -- PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL, e.g.
-    web.corral -- or None when no mirror is configured. Every segment is percent-encoded, so a
-    stored path can't change the redirect's host or add a query string/fragment.
-    """
-
-    base_url = settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL
-    if not base_url:
-        return None
-    return f"{base_url.rstrip('/')}/{quote(path.lstrip('/'))}"
-
-
 def _stream_published_file(system, path):
     """Relay one published file's bytes from the Tapis Files content endpoint as a streaming
     response, so a crawler (Scholar, Croissant/Dataset Search consumers, link unfurlers) that
@@ -307,7 +294,7 @@ class PublicationFileDownloadView(PublishedDatasetsMountMixin, View):
             raise Http404(f"Publication {project_id} has no file at {path}")
         content_type, _ = mimetypes.guess_type(posixpath.basename(path))
         if content_type != "application/pdf":
-            web_url = _get_published_web_url(f"{get_published_workspace_id(project_id, pub.version)}/{path}")
+            web_url = get_published_web_url(f"{get_published_workspace_id(project_id, pub.version)}/{path}")
             if web_url:
                 return HttpResponseRedirect(web_url)
         return _stream_published_file(_get_published_system_id(project_id, pub.version), path)
@@ -330,7 +317,7 @@ class PublicationCoverImageView(PublishedDatasetsMountMixin, View):
         cover_image_path = ((pub.value.get("coverImage") if pub else None) or "").lstrip("/")
         if not root_system or not cover_image_path:
             raise Http404(f"No cover image for publication {project_id}")
-        web_url = _get_published_web_url(cover_image_path)
+        web_url = get_published_web_url(cover_image_path)
         if web_url:
             return HttpResponseRedirect(web_url)
         return _stream_published_file(root_system, cover_image_path)
@@ -347,7 +334,7 @@ class PublicationArchiveView(PublishedDatasetsMountMixin, View):
     def get(self, request, project_id):
         pub = Publication.objects.filter(project_id=project_id, is_published=True).first()
         web_url = (
-            _get_published_web_url(get_archive_zip_path(get_published_workspace_id(project_id, pub.version)))
+            get_published_web_url(get_archive_zip_path(get_published_workspace_id(project_id, pub.version)))
             if pub and pub.archive_sha256
             else None
         )

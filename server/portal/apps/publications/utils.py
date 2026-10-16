@@ -52,6 +52,15 @@ def get_archive_zip_path(workspace_id):
     return f"archive/{workspace_id}/{workspace_id}_archive.zip"
 
 
+def get_archive_croissant_path(workspace_id):
+    """Return the path, relative to PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME (and so to its web
+    mirror), of the static Croissant JSON-LD written beside the archive job's ZIP
+    (write_publication_croissant_file).
+    """
+
+    return f"archive/{workspace_id}/croissant.json"
+
+
 def get_landing_page_path(project_id, version):
     """Return the landing-page path for a publication's current version: public_data/urls.py's
     `index` route, under get_landing_namespace()'s mount, at

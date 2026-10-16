@@ -11,6 +11,7 @@ from portal.apps.projects.workspace_operations.datacite_operations import (
     merge_registered_metadata,
     upsert_datacite_json,
 )
+from portal.apps.projects.workspace_operations.project_publish_operations import write_publication_croissant_file
 from portal.apps.publications.models import Publication
 
 
@@ -24,6 +25,10 @@ class Command(BaseCommand):
     (draft/findable) isn't changed, and its publicationYear is left as originally registered. The
     payload is merged with what DataCite already holds (merge_registered_metadata), so metadata the
     publication doesn't carry -- e.g. a pre-portal DOI's subjects and ORCIDs -- is kept.
+
+    Also rewrites each publication's static croissant.json on the web mirror
+    (write_publication_croissant_file), whether or not it has a DOI, so it carries the same metadata
+    as the landing page. With --dry-run nothing is written.
 
     Examples:
 
@@ -57,8 +62,25 @@ class Command(BaseCommand):
                 raise CommandError(f"No published publication found for: {', '.join(missing)}")
 
         failed = []
+        croissant_failed = []
         for publication in publications:
             label = f"{publication.project_id} v{publication.version}"
+            if options["dry_run"]:
+                self.stdout.write(f"Would rewrite croissant.json for {label}")
+            else:
+                try:
+                    path = write_publication_croissant_file(publication)
+                except Exception as e:
+                    croissant_failed.append(publication.project_id)
+                    self.stderr.write(f"Failed to write croissant.json for {label}: {e}")
+                else:
+                    self.stdout.write(
+                        f"Wrote {path} ({label})"
+                        if path
+                        else f"Skipped croissant.json for {label}: not indexable, not Croissant-conformant, "
+                        "or no web mirror"
+                    )
+
             doi = publication.value.get("doi")
             if not doi:
                 self.stdout.write(f"Skipped {label}: no DOI")
@@ -101,5 +123,10 @@ class Command(BaseCommand):
                 continue
             self.stdout.write(f"Updated {doi} ({label})")
 
+        errors = []
         if failed:
-            raise CommandError(f"{len(failed)} DOI(s) not updated: {', '.join(failed)}")
+            errors.append(f"{len(failed)} DOI(s) not updated: {', '.join(failed)}")
+        if croissant_failed:
+            errors.append(f"{len(croissant_failed)} croissant.json file(s) not written: {', '.join(croissant_failed)}")
+        if errors:
+            raise CommandError("; ".join(errors))

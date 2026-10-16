@@ -23,6 +23,7 @@ from portal.apps.projects.workspace_operations.graph_operations import remove_tr
 from portal.apps.projects.workspace_operations.shared_workspace_operations import remove_user
 from portal.apps.publications.models import Publication, PublicationRequest
 from portal.apps.publications.utils import (
+    get_archive_croissant_path,
     get_archive_zip_path,
     get_publication_file_objs,
     get_published_workspace_id,
@@ -181,6 +182,11 @@ def _switch_publication_to_version(project_id, version, published_system_id):
         # its DOI already resolves.
         create_defaults={**publication_values, "is_indexable": False},
     )
+    # The previous version's static croissant.json lists the file routes, which now serve this
+    # version's files, so its checksums no longer match. This version's is written once its own
+    # checksums are loaded.
+    if current and version is not None and current.version != version:
+        delete_publication_croissant.apply_async(args=[project_id, current.version])
     index_publication(project_id)
     logger.info(f"Publication {project_id} now serves v{version}.")
     return True
@@ -314,6 +320,98 @@ def load_publication_file_checksums(self, project_id: str, version: int | None =
             f"{len(unhashed)} file(s) of publication {project_id} v{version} aren't in its sha256 "
             f"manifest (e.g. {sorted(unhashed)[0]}) and stay unhashed."
         )
+    write_publication_croissant.apply_async(args=[project_id, version])
+
+
+def write_publication_croissant_file(publication):
+    """Write a publication's Croissant JSON-LD -- the same document PublicationCroissantView serves,
+    whose `@id`/`url` are the landing page -- to get_archive_croissant_path beside its ZIP, where the
+    web mirror (PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL, e.g. web.corral) serves it. Returns the path
+    written, or None when skipped: the publication isn't published and indexable, its metadata
+    doesn't claim Croissant conformance (e.g. a file without a checksum), or there's no web mirror.
+    These are the same conditions get_schema_org_json links it (`subjectOf`) under. Raises on a
+    Tapis error, and SchemaOrgValidationError when the metadata can't build a Dataset at all.
+    """
+
+    from portal.apps.public_data.schema_org import get_schema_org_json
+
+    label = f"{publication.project_id} v{publication.version}"
+    if not (publication.is_published and publication.is_indexable):
+        logger.info(f"Not writing croissant.json for {label}: it isn't published and indexable.")
+        return None
+    if not settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL:
+        logger.info(f"Not writing croissant.json for {label}: there's no web mirror to serve it.")
+        return None
+    schema_org_json = get_schema_org_json(publication, publication.project_id, None, file_sets=True)
+    if "conformsTo" not in schema_org_json:
+        logger.info(f"Not writing croissant.json for {label}: its metadata doesn't conform to Croissant yet.")
+        return None
+
+    system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
+    path = get_archive_croissant_path(get_published_workspace_id(publication.project_id, publication.version))
+    with StringIO() as f:
+        json.dump(schema_org_json, f, ensure_ascii=False, indent=2)
+        f.seek(0)
+        f.name = "croissant.json"
+        service_account().files.insert(systemId=system, path=f"/{path}", file=f)
+    logger.info(f"Wrote Croissant metadata for {label} to {system}/{path}.")
+    return path
+
+
+def delete_publication_croissant_file(project_id, version):
+    """Remove a version's static croissant.json, if there is one. Returns whether one was removed.
+    Raises on a Tapis error deleting it.
+    """
+
+    system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
+    path = get_archive_croissant_path(get_published_workspace_id(project_id, version))
+    client = service_account()
+    try:
+        client.files.listFiles(systemId=system, path=f"/{path}")
+    except Exception:
+        return False
+    client.files.delete(systemId=system, path=f"/{path}")
+    logger.info(f"Removed {system}/{path}.")
+    return True
+
+
+@shared_task(bind=True, max_retries=3, queue="default")
+def write_publication_croissant(self, project_id: str, version: int | None = None):
+    """Queue-able write_publication_croissant_file for `version` (the live one when None), retried on
+    a Tapis error. Queued both once a version's checksums are loaded and once it's marked indexable:
+    it's skipped until both have happened, so whichever comes second writes the file.
+    """
+
+    from portal.apps.public_data.schema_org import SchemaOrgValidationError
+
+    publication = Publication.objects.filter(project_id=project_id).first()
+    if publication is None or (version is not None and publication.version != version):
+        logger.info(f"Not writing croissant.json for {project_id} v{version}: it isn't the live version.")
+        return
+    try:
+        write_publication_croissant_file(publication)
+    except SchemaOrgValidationError as e:
+        logger.error(f"Not writing croissant.json for {project_id}: {e}")
+    except Exception as e:
+        if self.request.retries >= self.max_retries:
+            logger.error(
+                f"Gave up writing croissant.json for {project_id}: {e}. Rewrite it with "
+                f"`update_datacite_metadata {project_id}`."
+            )
+            raise
+        logger.warning(f"Could not write croissant.json for {project_id} (attempt {self.request.retries + 1}): {e}")
+        raise self.retry(exc=e, countdown=60 * 2**self.request.retries)
+
+
+@shared_task(bind=True, max_retries=3, queue="default")
+def delete_publication_croissant(self, project_id: str, version: int):
+    """Queue-able delete_publication_croissant_file, retried on a Tapis error."""
+
+    try:
+        delete_publication_croissant_file(project_id, version)
+    except Exception as e:
+        logger.warning(f"Could not remove {project_id} v{version}'s croissant.json: {e}")
+        raise self.retry(exc=e, countdown=60 * 2**self.request.retries)
 
 
 @shared_task(bind=True, queue="default")
@@ -703,6 +801,7 @@ def _mark_publication_indexable(project_id: str, version: int | None):
         publications = publications.filter(version=version)
     if publications.update(is_indexable=True):
         logger.info(f"Publication {project_id} v{version} is now indexable.")
+        write_publication_croissant.apply_async(args=[project_id, version])
     else:
         logger.warning(
             f"Not marking publication {project_id} v{version} indexable: it's withdrawn, missing, or now a "

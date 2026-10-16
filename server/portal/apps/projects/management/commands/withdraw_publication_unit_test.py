@@ -1,4 +1,5 @@
 from io import StringIO
+from types import SimpleNamespace
 
 import pytest
 from django.core.management import CommandError, call_command
@@ -42,6 +43,15 @@ LIVE_METADATA = {"titles": [{"title": "Live version"}], "url": "https://example.
 @pytest.fixture(autouse=True)
 def mock_doi_update(mocker):
     return mocker.patch(f"{DIR}.get_publish_doi_update", return_value=(None, LIVE_METADATA))
+
+
+@pytest.fixture(autouse=True)
+def mock_croissant(mocker):
+    """Patch the static croissant.json removal (on withdraw) and rewrite (on --restore), which call Tapis."""
+    return SimpleNamespace(
+        delete=mocker.patch(f"{DIR}.delete_publication_croissant_file", return_value=True),
+        write=mocker.patch(f"{DIR}.write_publication_croissant_file", return_value="archive/x/croissant.json"),
+    )
 
 
 def run(*args):
@@ -236,3 +246,62 @@ def test_withdraw_leaves_is_indexable_alone(publications, mock_hide):
     run("test.project-1")
 
     assert is_indexable("test.project-1")
+
+
+# ---------------------------------------------------------------------------
+# Static croissant.json
+# ---------------------------------------------------------------------------
+
+
+def test_withdraw_removes_croissant(publications, mock_hide, mock_croissant):
+    out, _ = run("test.project-1")
+
+    mock_croissant.delete.assert_called_once_with("test.project-1", 2)
+    mock_croissant.write.assert_not_called()
+    assert "Removed croissant.json for test.project-1 v2" in out
+
+
+def test_rejected_hide_still_removes_croissant(publications, mocker, mock_croissant):
+    mocker.patch(f"{DIR}.hide_datacite_doi", side_effect=DataCiteError("draft"))
+
+    with pytest.raises(CommandError):
+        run("test.project-1")
+
+    mock_croissant.delete.assert_called_once_with("test.project-1", 2)
+
+
+def test_failed_croissant_removal_is_reported(publications, mock_hide, mock_croissant):
+    mock_croissant.delete.side_effect = RuntimeError("tapis down")
+
+    with pytest.raises(CommandError, match="croissant.json not removed for: test.project-1"):
+        run("test.project-1")
+
+    assert not is_published("test.project-1")
+    mock_hide.assert_called_once_with("10.12345/aaaa")
+
+
+def test_restore_writes_croissant_after_marking_indexable(publications, mock_publish, mock_croissant):
+    out, _ = run("--restore", "test.project-9")
+
+    (publication,) = mock_croissant.write.call_args.args
+    assert publication.is_published and publication.is_indexable
+    mock_croissant.delete.assert_not_called()
+    assert "Wrote archive/x/croissant.json (test.project-9 v1)" in out
+
+
+def test_restore_with_rejected_publish_writes_no_croissant(publications, mocker, mock_croissant):
+    mocker.patch(f"{DIR}.publish_datacite_doi", side_effect=DataCiteError("rejected"))
+
+    with pytest.raises(CommandError, match="1 DOI"):
+        run("--restore", "test.project-9")
+
+    mock_croissant.write.assert_not_called()
+
+
+def test_failed_croissant_write_on_restore_is_reported(publications, mock_publish, mock_croissant):
+    mock_croissant.write.side_effect = RuntimeError("tapis down")
+
+    with pytest.raises(CommandError, match="croissant.json not written for: test.project-9"):
+        run("--restore", "test.project-9")
+
+    assert is_published("test.project-9")

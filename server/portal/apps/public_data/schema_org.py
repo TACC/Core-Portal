@@ -31,6 +31,7 @@ from portal.apps.public_data.links import (
     get_landing_page_url,
     get_publication_file_url,
     get_publication_origin,
+    get_static_croissant_url,
 )
 from portal.apps.publications.utils import (
     get_archive_zip_path,
@@ -661,6 +662,22 @@ def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=Fals
     ):
         del schema_org_json["conformsTo"]
 
+    # The static copy of croissant.json on the web mirror (write_publication_croissant_file) is only
+    # written for a published, indexable, Croissant-conformant publication, so it's only linked then.
+    # `subjectOf`, not `distribution`: it's metadata about the Dataset, not one of its files, and as a
+    # FileObject it would need a checksum of a document that contains this very link.
+    if "conformsTo" in schema_org_json and pub.is_published and pub.is_indexable:
+        static_croissant_url = get_static_croissant_url(project_id, pub.version)
+        if static_croissant_url:
+            schema_org_json["subjectOf"] = {
+                "@type": "CreativeWork",
+                "@id": static_croissant_url,
+                "name": "croissant.json",
+                "description": "A static copy of this Dataset's Croissant metadata, stored with its archive.",
+                "url": static_croissant_url,
+                "encodingFormat": "application/ld+json",
+            }
+
     if max_file_objects is not None:
         _cap_file_objects(schema_org_json, archive, max_file_objects)
 
@@ -697,6 +714,9 @@ def get_citation_context(pub, request):
     # 404s otherwise, so the page never links a Croissant loader to something it would reject.
     if "conformsTo" in schema_org_json:
         citation_meta["croissant_url"] = get_croissant_url(pub.project_id, request)
+    # The web mirror's static copy (see `subjectOf` in get_schema_org_json), linked under the same
+    # conditions it's written.
+    citation_meta["static_croissant_url"] = (schema_org_json.get("subjectOf") or {}).get("url")
     citation_meta["entities"] = [
         {
             "title": base_meta.get("title"),

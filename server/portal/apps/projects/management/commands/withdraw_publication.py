@@ -4,7 +4,11 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from portal.apps.projects.workspace_operations.datacite_operations import hide_datacite_doi, publish_datacite_doi
-from portal.apps.projects.workspace_operations.project_publish_operations import get_publish_doi_update
+from portal.apps.projects.workspace_operations.project_publish_operations import (
+    delete_publication_croissant_file,
+    get_publish_doi_update,
+    write_publication_croissant_file,
+)
 from portal.apps.publications.models import Publication
 
 
@@ -21,6 +25,8 @@ class Command(BaseCommand):
     version's published Tapis system stays publicly shared (publish_project_callback's
     shareSystemPublic), and any copy on the PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL web mirror stays
     in place, so Tapis users can still list and download them, and so can anyone with a mirror URL.
+    The exception is the static croissant.json beside the ZIP, which is removed: it advertises the
+    dataset to Croissant loaders and lists file URLs that now 404. --restore writes it again.
     To take the files down too, unshare those systems and remove the mirrored directories by hand.
 
     --restore sets is_published back to True and sends the `publish` event, which makes the DOI
@@ -69,6 +75,7 @@ class Command(BaseCommand):
             raise CommandError(f"No publication found for: {', '.join(missing)}")
 
         failed = []
+        croissant_failed = []
         for publication in publications:
             label = f"{publication.project_id} v{publication.version}"
             if publication.is_published != published:
@@ -77,6 +84,15 @@ class Command(BaseCommand):
                 self.stdout.write(f"{done} {label}")
             else:
                 self.stdout.write(f"{label} was already {'published' if published else 'withdrawn'}")
+
+            # Before the DataCite call, so a rejected `hide` still takes the static copy down.
+            if not restore:
+                try:
+                    if delete_publication_croissant_file(publication.project_id, publication.version):
+                        self.stdout.write(f"Removed croissant.json for {label}")
+                except Exception as e:
+                    croissant_failed.append(publication.project_id)
+                    self.stderr.write(f"Failed to remove croissant.json for {label}: {e}")
 
             doi = publication.value.get("doi")
             if not doi:
@@ -106,8 +122,25 @@ class Command(BaseCommand):
                 publication.save(update_fields=["is_indexable"])
                 self.stdout.write(f"Marked {label} indexable")
 
+            if restore:
+                try:
+                    path = write_publication_croissant_file(publication)
+                except Exception as e:
+                    croissant_failed.append(publication.project_id)
+                    self.stderr.write(f"Failed to write croissant.json for {label}: {e}")
+                else:
+                    if path:
+                        self.stdout.write(f"Wrote {path} ({label})")
+
+        errors = []
         if failed:
-            raise CommandError(
+            errors.append(
                 f"{len(failed)} DOI(s) not updated at DataCite: {', '.join(failed)}. Their publications are "
-                f"{'restored' if restore else 'withdrawn'}; rerun this command for them to retry."
+                f"{'restored' if restore else 'withdrawn'}"
             )
+        if croissant_failed:
+            errors.append(
+                f"croissant.json not {'written' if restore else 'removed'} for: {', '.join(croissant_failed)}"
+            )
+        if errors:
+            raise CommandError("; ".join(errors) + "; rerun this command for them to retry.")

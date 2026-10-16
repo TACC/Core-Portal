@@ -24,13 +24,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     * `cover-image`: the cover image, for `og:image` and `twitter:image`.
     * `archive.zip`: redirects to the whole-dataset ZIP on the web mirror, once its sha256 is stored.
     * `croissant.json`: the JSON-LD as a standalone document, served as `application/ld+json` with the Croissant 1.1 profile and open CORS. It returns 404 unless the document claims Croissant conformance, and the landing page links to it with `<link rel="alternate">` only then.
+  * A static `croissant.json` on the web mirror, at `archive/<published workspace id>/croissant.json` beside the ZIP. It's the same document as the `croissant.json` route, and is written only once the publication is indexable and every file has a checksum. The JSON-LD links to it as `subjectOf`, and the landing page with a second `<link rel="alternate">`. A republish deletes the previous version's copy.
   * XML sitemap of indexable landing pages at `/published-datasets/sitemap.xml`, cached for 5 minutes per host. Past 50,000 publications it becomes a sitemap index of `sitemap-N.xml` files. The local `robots.txt` advertises it, with nginx filling in the host.
   * Publication fields `is_indexable` (migration `0004`), and `archive_sha256` and `archive_size` (migration `0005`).
   * Checksums: after each archive job, per-file sha256s from its `manifest-sha256.txt` and the ZIP's own sha256 are stored on the publication (archive app 0.0.3+). File metadata gains optional `sha256` and `columns` fields.
   * Management commands:
     * `compute_publication_checksums`: backfills checksums with a checksum-only archive job (`--hash-archive` also hashes the existing ZIP; `--load-only`, `--dry-run`, `--all`).
-    * `update_datacite_metadata`: re-sends DataCite metadata for existing DOIs without changing their state (`--dry-run` prints the merged payload; `--all`).
-    * `withdraw_publication`: withdraws publications and hides their DOIs; `--restore` reverses it.
+    * `update_datacite_metadata`: re-sends DataCite metadata for existing DOIs without changing their state, and rewrites each publication's static `croissant.json` (`--dry-run` prints the merged payload; `--all`).
+    * `withdraw_publication`: withdraws publications, hides their DOIs and deletes their static `croissant.json`; `--restore` reverses it.
   * Settings:
     * `_PORTAL_NOINDEX_APP_SHELL` (default off): marks every page without its own robots tag `noindex, follow`.
     * `_PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL`: the published files' public web mirror.

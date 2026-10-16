@@ -45,6 +45,9 @@
       {% if citation_context.croissant_url %}
       <link rel="alternate" type="application/ld+json" href="{{ citation_context.croissant_url }}">
       {% endif %}
+      {% if citation_context.static_croissant_url %}
+      <link rel="alternate" type="application/ld+json" title="Croissant metadata (archive copy)" href="{{ citation_context.static_croissant_url }}">
+      {% endif %}
       <script type="application/ld+json">
           {{ schema_org_json|safe }}
       </script>

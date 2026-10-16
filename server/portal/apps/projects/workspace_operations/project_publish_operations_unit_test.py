@@ -29,6 +29,8 @@ from portal.apps.projects.workspace_operations.project_publish_operations import
     _transfer_files,
     archive_publication_files,
     copy_graph_and_files_for_review_system,
+    delete_publication_croissant,
+    delete_publication_croissant_file,
     get_project_user_emails,
     get_reviewer_emails,
     load_publication_file_checksums,
@@ -46,6 +48,8 @@ from portal.apps.projects.workspace_operations.project_publish_operations import
     submit_publication_archive_job,
     update_and_cleanup_review_project,
     upload_metadata_file,
+    write_publication_croissant,
+    write_publication_croissant_file,
 )
 from portal.apps.publications.models import Publication, PublicationRequest
 
@@ -67,6 +71,16 @@ def _required_settings(settings):
     settings.PORTAL_PUBLICATION_ARCHIVE_APP_VERSION = "1.0"
     settings.PORTAL_PUBLICATION_RANCH_SYSTEM_ID = "ranch-system"
     settings.DEFAULT_FROM_EMAIL = "noreply@test.example"
+
+
+@pytest.fixture(autouse=True)
+def croissant_tasks(mocker):
+    """Patch queuing the static croissant.json tasks: Celery isn't eager in the unit test settings, so
+    the switch, checksum-load and mark-indexable steps would otherwise try to reach the broker."""
+    return SimpleNamespace(
+        write=mocker.patch.object(write_publication_croissant, "apply_async"),
+        delete=mocker.patch.object(delete_publication_croissant, "apply_async"),
+    )
 
 
 def make_graph(node_root_value, extra_nodes=None):
@@ -1821,3 +1835,206 @@ def test_loaded_checksums_make_landing_page_croissant_conformant(mocker, rf, set
     schema = get_schema_org_json(publication, publication.project_id, request)
     assert schema["distribution"][0]["sha256"] == H1
     assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.1"
+
+
+# ---------------------------------------------------------------------------
+# Static croissant.json on the web mirror
+# ---------------------------------------------------------------------------
+
+WEB_BASE_URL = "https://web.corral.example.org/published"
+
+
+@pytest.fixture
+def croissant_settings(settings):
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = ""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = WEB_BASE_URL
+    return settings
+
+
+def _create_conformant_publication(version=1, **kwargs):
+    """A published, indexable publication whose every file is hashed, so its JSON-LD claims Croissant."""
+    meta = {
+        "title": "T",
+        "description": "D",
+        "license": "ODC-BY 1.0",
+        "authors": [{"first_name": "Ada", "last_name": "Lovelace"}],
+        "publicationDate": "2024-05-01",
+        "fileObjs": [{"type": "file", "name": "a.bin", "path": "/a.bin", "length": 3, "sha256": H1}],
+    }
+    return Publication.objects.create(
+        project_id="test.project-1",
+        version=version,
+        value=meta,
+        tree={},
+        **{"is_indexable": True, **kwargs},
+    )
+
+
+@pytest.fixture
+def mock_insert(mocker):
+    """Patch the Tapis client; `.written` collects each inserted file's (path, parsed JSON)."""
+    client = mocker.patch(f"{DIR}.service_account").return_value
+    client.written = []
+    client.files.insert.side_effect = lambda systemId, path, file: client.written.append(
+        (path, json.loads(file.getvalue()))
+    )
+    return client
+
+
+@pytest.mark.usefixtures("croissant_settings")
+def test_write_publication_croissant_file_writes_landing_page_jsonld_beside_zip(mock_insert, settings):
+    from portal.apps.public_data.links import get_landing_page_url
+
+    publication = _create_conformant_publication()
+
+    path = write_publication_croissant_file(publication)
+
+    assert path == "archive/test.project-1/croissant.json"
+    mock_insert.files.insert.assert_called_once()
+    assert mock_insert.files.insert.call_args.kwargs["systemId"] == settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
+    [(written_path, document)] = mock_insert.written
+    assert written_path == "/archive/test.project-1/croissant.json"
+    # Request-less, so the origin comes from VANITY_BASE_URL.
+    landing_page_url = get_landing_page_url("test.project-1", 1, None)
+    assert landing_page_url.startswith(settings.VANITY_BASE_URL)
+    assert document["@id"] == document["url"] == landing_page_url
+    assert document["conformsTo"] == "http://mlcommons.org/croissant/1.1"
+    assert document["subjectOf"]["url"] == f"{WEB_BASE_URL}/archive/test.project-1/croissant.json"
+
+
+@pytest.mark.usefixtures("croissant_settings")
+def test_write_publication_croissant_file_uses_republished_versions_workspace(mock_insert):
+    publication = _create_conformant_publication(version=3)
+
+    assert write_publication_croissant_file(publication) == "archive/test.project-1v3/croissant.json"
+    assert mock_insert.written[0][0] == "/archive/test.project-1v3/croissant.json"
+
+
+@pytest.mark.usefixtures("croissant_settings")
+@pytest.mark.parametrize(
+    "case",
+    ["not_indexable", "withdrawn", "no_web_mirror", "unhashed_file"],
+)
+def test_write_publication_croissant_file_skips(mock_insert, settings, case):
+    publication = _create_conformant_publication(is_indexable=case != "not_indexable", is_published=case != "withdrawn")
+    if case == "no_web_mirror":
+        settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = None
+    if case == "unhashed_file":
+        del publication.value["fileObjs"][0]["sha256"]
+
+    assert write_publication_croissant_file(publication) is None
+    mock_insert.files.insert.assert_not_called()
+
+
+def test_write_publication_croissant_task_skips_superseded_version(mocker):
+    Publication.objects.create(project_id="test.project-1", version=3, value={}, tree={})
+    mock_write = mocker.patch(f"{DIR}.write_publication_croissant_file")
+
+    write_publication_croissant("test.project-1", 2)
+
+    mock_write.assert_not_called()
+
+
+def test_write_publication_croissant_task_writes_live_version_when_none_given(mocker):
+    publication = Publication.objects.create(project_id="test.project-1", version=3, value={}, tree={})
+    mock_write = mocker.patch(f"{DIR}.write_publication_croissant_file")
+
+    write_publication_croissant("test.project-1")
+
+    mock_write.assert_called_once_with(publication)
+
+
+def test_write_publication_croissant_task_retries_tapis_error(mocker):
+    Publication.objects.create(project_id="test.project-1", version=1, value={}, tree={})
+    mocker.patch(f"{DIR}.write_publication_croissant_file", side_effect=RuntimeError("tapis down"))
+    mock_retry = mocker.patch.object(write_publication_croissant, "retry", side_effect=Retry())
+
+    with pytest.raises(Retry):
+        write_publication_croissant("test.project-1", 1)
+
+    mock_retry.assert_called_once()
+
+
+def test_write_publication_croissant_task_doesnt_retry_invalid_metadata(mocker, caplog):
+    from portal.apps.public_data.schema_org import SchemaOrgValidationError
+
+    Publication.objects.create(project_id="test.project-1", version=1, value={}, tree={})
+    mocker.patch(f"{DIR}.write_publication_croissant_file", side_effect=SchemaOrgValidationError("no title"))
+    mock_retry = mocker.patch.object(write_publication_croissant, "retry")
+
+    write_publication_croissant("test.project-1", 1)
+
+    mock_retry.assert_not_called()
+    assert "no title" in caplog.text
+
+
+def test_delete_publication_croissant_file_removes_listed_file(mocker, settings):
+    client = mocker.patch(f"{DIR}.service_account").return_value
+
+    assert delete_publication_croissant_file("test.project-1", 2)
+
+    client.files.delete.assert_called_once_with(
+        systemId=settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME, path="/archive/test.project-1v2/croissant.json"
+    )
+
+
+def test_delete_publication_croissant_file_without_file_deletes_nothing(mocker):
+    client = mocker.patch(f"{DIR}.service_account").return_value
+    client.files.listFiles.side_effect = RuntimeError("404")
+
+    assert not delete_publication_croissant_file("test.project-1", 1)
+    client.files.delete.assert_not_called()
+
+
+def test_mark_publication_indexable_queues_croissant_write(croissant_tasks):
+    from portal.apps.projects.workspace_operations.project_publish_operations import _mark_publication_indexable
+
+    Publication.objects.create(project_id="test.project-1", version=2, value={}, tree={}, is_indexable=False)
+
+    _mark_publication_indexable("test.project-1", 2)
+
+    croissant_tasks.write.assert_called_once_with(args=["test.project-1", 2])
+
+
+def test_mark_publication_indexable_for_superseded_version_queues_nothing(croissant_tasks):
+    from portal.apps.projects.workspace_operations.project_publish_operations import _mark_publication_indexable
+
+    Publication.objects.create(project_id="test.project-1", version=3, value={}, tree={}, is_indexable=False)
+
+    _mark_publication_indexable("test.project-1", 2)
+
+    croissant_tasks.write.assert_not_called()
+
+
+def test_load_publication_file_checksums_queues_croissant_write(mock_manifest, croissant_tasks):
+    Publication.objects.create(
+        project_id="test.project-1",
+        version=1,
+        value={"title": "T", "fileObjs": [{"type": "file", "name": "a.bin", "path": "/a.bin"}]},
+        tree={},
+    )
+    mock_manifest.return_value = {"a.bin": H1}
+
+    load_publication_file_checksums("test.project-1", 1)
+
+    croissant_tasks.write.assert_called_once_with(args=["test.project-1", 1])
+
+
+def test_switch_publication_to_version_republish_removes_previous_croissant(mocker, settings, croissant_tasks):
+    mocker.patch(f"{DIR}.index_publication")
+    Publication.objects.create(project_id="test.project-1", version=1, value={"title": "v1"}, tree={})
+    system_id = _create_published_version(settings, "test.project-1v2", version=2)
+
+    assert _switch_publication_to_version("test.project-1", 2, system_id)
+
+    croissant_tasks.delete.assert_called_once_with(args=["test.project-1", 1])
+
+
+def test_switch_publication_to_version_first_publish_removes_nothing(mocker, settings, croissant_tasks):
+    mocker.patch(f"{DIR}.index_publication")
+    system_id = _create_published_version(settings, "test.project-1")
+
+    assert _switch_publication_to_version("test.project-1", 1, system_id)
+
+    croissant_tasks.delete.assert_not_called()

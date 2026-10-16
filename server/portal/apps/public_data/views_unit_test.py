@@ -217,6 +217,25 @@ def test_get_configured_origin_falls_back_when_prefix_not_absolute(rf, settings)
     assert get_publication_origin(request) == "http://testserver"
 
 
+def test_get_publication_origin_without_request_uses_configured_origin(settings):
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://cep.test/data/tapis/projects/x"
+    settings.VANITY_BASE_URL = "https://vanity.test"
+    assert get_publication_origin(None) == "https://cep.test"
+
+
+def test_get_publication_origin_without_request_falls_back_to_vanity_base_url(settings):
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = ""
+    settings.VANITY_BASE_URL = "https://vanity.test/"
+    assert get_publication_origin(None) == "https://vanity.test"
+
+
+def test_get_publication_origin_without_request_or_any_origin_raises(settings):
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = ""
+    settings.VANITY_BASE_URL = ""
+    with pytest.raises(ValueError, match="VANITY_BASE_URL"):
+        get_publication_origin(None)
+
+
 # ---------------------------------------------------------------------------
 # _format_content_size
 # ---------------------------------------------------------------------------
@@ -1746,6 +1765,58 @@ def test_index_view_omits_croissant_link_off_landing_pages(client):
     body = client.get("/published-datasets/not-a-real-project/").content.decode()
 
     assert 'rel="alternate" type="application/ld+json"' not in body
+
+
+# The static croissant.json on the web mirror (write_publication_croissant_file): v3's workspace.
+STATIC_CROISSANT_URL = "https://web.example.org/published/archive/test.project-1v3/croissant.json"
+
+
+def test_get_schema_org_json_links_static_croissant_on_web_mirror(rf, settings, publication):
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = "https://web.example.org/published"
+
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf), file_sets=True)
+
+    assert schema["subjectOf"] == {
+        "@type": "CreativeWork",
+        "@id": STATIC_CROISSANT_URL,
+        "name": "croissant.json",
+        "description": "A static copy of this Dataset's Croissant metadata, stored with its archive.",
+        "url": STATIC_CROISSANT_URL,
+        "encodingFormat": "application/ld+json",
+    }
+
+
+@pytest.mark.parametrize("case", ["no_web_mirror", "not_indexable", "withdrawn", "not_conformant"])
+def test_get_schema_org_json_omits_static_croissant_link(rf, settings, publication, case):
+    """Linked only under the conditions write_publication_croissant_file writes it."""
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = (
+        None if case == "no_web_mirror" else "https://web.example.org/published"
+    )
+    publication.is_indexable = case != "not_indexable"
+    publication.is_published = case != "withdrawn"
+    if case == "not_conformant":
+        publication.tree = entity_tree({"type": "file", "name": "scan.tif", "path": "/sample1/scan.tif"})
+
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
+
+    assert "subjectOf" not in schema
+
+
+def test_index_view_links_static_croissant_on_web_mirror(client, settings, publication):
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = "https://web.example.org/published"
+    body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+
+    assert (
+        '<link rel="alternate" type="application/ld+json" title="Croissant metadata (archive copy)" '
+        f'href="{STATIC_CROISSANT_URL}">'
+    ) in body
+
+
+def test_index_view_omits_static_croissant_link_without_web_mirror(client, settings, publication):
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = None
+    body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+
+    assert "archive copy" not in body
 
 
 # ---------------------------------------------------------------------------

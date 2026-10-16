@@ -7,12 +7,18 @@ can point at a different host than the others.
 """
 
 import logging
+from urllib.parse import quote
 
 from django.conf import settings
 from django.urls import NoReverseMatch, reverse
 
 from portal.apps.public_data.origin import get_configured_origin
-from portal.apps.publications.utils import get_landing_namespace, get_landing_page_path
+from portal.apps.publications.utils import (
+    get_archive_croissant_path,
+    get_landing_namespace,
+    get_landing_page_path,
+    get_published_workspace_id,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +39,44 @@ def get_publication_origin(request):
     Scholar's stricter requirement that citation_pdf_url live in the same subdirectory as the
     citing landing page is handled separately, by building every published-file URL through
     `get_publication_file_url` -- see its docstring.
+
+    `request` is None from Celery tasks and management commands (write_publication_croissant_file),
+    which fall back to VANITY_BASE_URL instead, as get_datacite_url does.
     """
 
-    return get_configured_origin() or request.build_absolute_uri("/").rstrip("/")
+    origin = get_configured_origin()
+    if origin:
+        return origin
+    if request is None:
+        if not settings.VANITY_BASE_URL:
+            raise ValueError(
+                "Neither PORTAL_PUBLICATION_DATACITE_URL_PREFIX (as an absolute URL) nor VANITY_BASE_URL "
+                "is configured, so there's no origin to build publication URLs on outside a request."
+            )
+        return settings.VANITY_BASE_URL.rstrip("/")
+    return request.build_absolute_uri("/").rstrip("/")
+
+
+def get_published_web_url(path):
+    """Return the public HTTP URL for `path` (relative to PORTAL_PROJECTS_PUBLISHED_ROOT_DIR) on
+    the deployment's web mirror of that directory -- PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL, e.g.
+    web.corral -- or None when no mirror is configured. Every segment is percent-encoded, so a
+    stored path can't change the redirect's host or add a query string/fragment.
+    """
+
+    base_url = settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL
+    if not base_url:
+        return None
+    return f"{base_url.rstrip('/')}/{quote(path.lstrip('/'))}"
+
+
+def get_static_croissant_url(project_id, version):
+    """URL of a version's static croissant.json (get_archive_croissant_path) on the web mirror, or
+    None when there's no mirror. Linked from the JSON-LD's `subjectOf` and the landing page's
+    <link rel="alternate">.
+    """
+
+    return get_published_web_url(get_archive_croissant_path(get_published_workspace_id(project_id, version)))
 
 
 def get_cover_image_url(base_meta, project_id, request):
