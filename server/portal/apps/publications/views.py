@@ -28,11 +28,29 @@ from portal.apps.projects.workspace_operations.project_publish_operations import
 )
 from portal.apps.projects.workspace_operations.shared_workspace_operations import create_publication_workspace
 from portal.apps.publications.models import Publication, PublicationRequest
+from portal.apps.publications.utils import get_published_workspace_id, is_publication_license_required
 from portal.exceptions.api import ApiException
 from portal.libs.elasticsearch.docs.base import IndexedPublication
 from portal.views.base import BaseApiView
 
 logger = logging.getLogger(__name__)
+
+
+def _require_license(system_id):
+    """Refuse (400) to submit or publish the project on `system_id` without a license, when the
+    portal's form requires one (is_publication_license_required). A missing project is left to the
+    view's own handling.
+    """
+
+    if not is_publication_license_required():
+        return
+    try:
+        project = ProjectMetadata.get_project_by_id(system_id)
+    except ProjectMetadata.DoesNotExist:
+        return
+    if not (project.value.get("license") or "").strip():
+        logger.warning(f"Refused to publish {system_id}: it has no license, which this portal requires.")
+        raise ApiException("License is required", status=400)
 
 
 class PublicationRequestView(BaseApiView):
@@ -97,6 +115,7 @@ class PublicationRequestView(BaseApiView):
                 source_project = get_project_for_user(source_system_id, request.user)
             except ProjectMetadata.DoesNotExist as exc:
                 raise ApiException("User does not have access to the requested project", status=403) from exc
+            _require_license(source_system_id)
             source_project.value["authors"] = request_body.get("authors")
             source_project.save()
 
@@ -229,6 +248,10 @@ class PublicationListingView(BaseApiView):
                 "keywords": publication.value.get("keywords"),
                 "authors": publication.value.get("authors"),
                 "publication_date": publication.created,
+                # False while a first publish is still in progress (files transferring, DOI not
+                # findable): DPMP's public Browse page leaves it out, as the sitemap and the
+                # server-rendered catalog do. The workbench listing still shows it.
+                "is_indexable": publication.is_indexable,
             }
 
             try:
@@ -272,6 +295,8 @@ class PublicationPublishView(BaseApiView):
             raise ApiException("User does not have access to the requested project", status=403) from exc
 
         source_system_id = f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.{project_id}"
+        # What gets published is the review project's metadata, so that's the license checked.
+        _require_license(source_system_id)
         published_workspace_id = f"{project_id}"
         published_system_id = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{published_workspace_id}"
 
@@ -347,7 +372,8 @@ class PublicationVersionView(BaseApiView):
         print(f"Version: {version}")
 
         source_system_id = f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.{project_id}"
-        published_workspace_id = f"{project_id}{f'v{version}' if version and version > 1 else ''}"
+        _require_license(source_system_id)
+        published_workspace_id = get_published_workspace_id(project_id, version)
         published_system_id = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{published_workspace_id}"
 
         print(f"Published Workspace ID: {published_workspace_id}")

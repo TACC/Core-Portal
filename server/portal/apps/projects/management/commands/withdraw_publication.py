@@ -1,0 +1,157 @@
+"""Management command."""
+
+from django.conf import settings
+from django.core.management.base import BaseCommand, CommandError
+
+from portal.apps.projects.workspace_operations.datacite_operations import (
+    hide_datacite_doi,
+    is_doi_under_shoulder,
+    publish_datacite_doi,
+)
+from portal.apps.projects.workspace_operations.project_publish_operations import (
+    delete_publication_croissant_file,
+    get_publish_doi_update,
+    write_publication_croissant_file,
+)
+from portal.apps.publications.models import Publication
+
+
+class Command(BaseCommand):
+    """Withdraw publications and hide their DataCite DOIs, or reverse that with --restore
+
+    Withdrawing sets Publication.is_published to False, which drops the publication from the
+    publications listing, search and the published-datasets sitemap, makes its files and cover image
+    404, and leaves its landing page as a noindex tombstone (public_data/views.py). Then it sends
+    DataCite the `hide` event, which moves the DOI from findable to registered: it still resolves to
+    the tombstone page, but is no longer listed in DataCite's search or metadata feeds.
+
+    Withdrawing only changes what the portal and DataCite serve; it doesn't touch the files. Every
+    version's published Tapis system stays publicly shared (publish_project_callback's
+    shareSystemPublic), and any copy on the PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL web mirror stays
+    in place, so Tapis users can still list and download them, and so can anyone with a mirror URL.
+    The exception is the static croissant.json beside the ZIP, which is removed: it advertises the
+    dataset to Croissant loaders and lists file URLs that now 404. --restore writes it again.
+    To take the files down too, unshare those systems and remove the mirrored directories by hand.
+
+    --restore sets is_published back to True and sends the `publish` event, which makes the DOI
+    findable again, with the live version's URL and metadata (as publish_publication_doi sends them),
+    so a republish's DOI doesn't keep pointing at the previous version. Once the DOI is findable (or
+    there's no DataCite call to make), it also marks the landing page indexable -- which also recovers
+    a publish whose publish_publication_doi task ran out of retries, leaving the page noindex and out
+    of the sitemap.
+
+    The publication is withdrawn (or restored) even if DataCite rejects the request, so a failed
+    DataCite call can be retried by running the same command again for the same project id. When
+    DEBUG is set, publish_project never makes DOIs findable, so the DataCite call is skipped. It's
+    also skipped for a DOI that isn't under this portal's DataCite prefix (e.g. a prod DOI in pprd's
+    copied data), which this portal's DataCite account can't update.
+
+    Examples:
+
+        Withdraw publications:
+        >>> ./manage.py withdraw_publication DRP-1149 DRP-1152
+
+        Reverse a withdrawal:
+        >>> ./manage.py withdraw_publication --restore DRP-1149
+    """
+
+    help = "Withdraw publications and hide their DataCite DOIs, or reverse that with --restore."
+
+    def add_arguments(self, parser):
+        parser.add_argument("project_ids", nargs="+", help="Publication project ids, e.g. DRP-1149.")
+        parser.add_argument(
+            "--restore",
+            action="store_true",
+            help="Reverse a withdrawal: republish the publications and make their DOIs findable again.",
+        )
+
+    def handle(self, *args, **options):
+        project_ids = options["project_ids"]
+        restore = options["restore"]
+        if restore:
+            published, done, doi_action, doi_done, datacite_event = True, "Restored", "make findable", "Made", "publish"
+        else:
+            published, done, doi_action, doi_done, datacite_event = False, "Withdrew", "hide", "Hid", "hide"
+
+        # Publications already in the target state are included, so a failed DataCite call can be
+        # retried.
+        publications = Publication.objects.filter(project_id__in=project_ids).order_by("project_id")
+        missing = sorted(set(project_ids) - set(publications.values_list("project_id", flat=True)))
+        if missing:
+            raise CommandError(f"No publication found for: {', '.join(missing)}")
+
+        failed = []
+        croissant_failed = []
+        for publication in publications:
+            label = f"{publication.project_id} v{publication.version}"
+            if publication.is_published != published:
+                publication.is_published = published
+                publication.save(update_fields=["is_published", "last_updated"])
+                self.stdout.write(f"{done} {label}")
+            else:
+                self.stdout.write(f"{label} was already {'published' if published else 'withdrawn'}")
+
+            # Before the DataCite call, so a rejected `hide` still takes the static copy down.
+            if not restore:
+                try:
+                    if delete_publication_croissant_file(publication.project_id, publication.version):
+                        self.stdout.write(f"Removed croissant.json for {label}")
+                except Exception as e:
+                    croissant_failed.append(publication.project_id)
+                    self.stderr.write(f"Failed to remove croissant.json for {label}: {e}")
+
+            doi = publication.value.get("doi")
+            if not doi:
+                self.stdout.write(f"Skipped DataCite {datacite_event} for {label}: no DOI")
+            elif settings.DEBUG:
+                self.stdout.write(
+                    f"Skipped DataCite {datacite_event} for {doi} ({label}): DEBUG is set, so DOIs aren't made findable"
+                )
+            elif not is_doi_under_shoulder(doi):
+                self.stdout.write(
+                    f"Skipped DataCite {datacite_event} for {doi} ({label}): it isn't under this portal's DataCite "
+                    f"prefix {settings.PORTAL_PUBLICATION_DATACITE_SHOULDER}"
+                )
+            else:
+                # A rejected event (e.g. a DOI that's still a draft) raises DataCiteError, with
+                # DataCite's own error details in its message; a network failure raises a requests
+                # exception.
+                try:
+                    if restore:
+                        url, metadata = get_publish_doi_update(publication)
+                        publish_datacite_doi(doi, url=url, metadata=metadata)
+                    else:
+                        hide_datacite_doi(doi)
+                except Exception as e:
+                    failed.append(publication.project_id)
+                    self.stderr.write(f"Failed to {doi_action} {doi} ({label}): {e}")
+                    continue
+                self.stdout.write(f"{doi_done} {doi} {'findable ' if restore else ''}({label})")
+
+            if restore and not publication.is_indexable:
+                publication.is_indexable = True
+                publication.save(update_fields=["is_indexable"])
+                self.stdout.write(f"Marked {label} indexable")
+
+            if restore:
+                try:
+                    path = write_publication_croissant_file(publication)
+                except Exception as e:
+                    croissant_failed.append(publication.project_id)
+                    self.stderr.write(f"Failed to write croissant.json for {label}: {e}")
+                else:
+                    if path:
+                        self.stdout.write(f"Wrote {path} ({label})")
+
+        errors = []
+        if failed:
+            errors.append(
+                f"{len(failed)} DOI(s) not updated at DataCite: {', '.join(failed)}. Their publications are "
+                f"{'restored' if restore else 'withdrawn'}"
+            )
+        if croissant_failed:
+            errors.append(
+                f"croissant.json not {'written' if restore else 'removed'} for: {', '.join(croissant_failed)}"
+            )
+        if errors:
+            raise CommandError("; ".join(errors) + "; rerun this command for them to retry.")

@@ -7,6 +7,85 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+* task/WC-494: SEO and discoverability for published datasets (#1375)
+  * Landing pages
+    * Server-rendered landing pages at `<mount>/<published system id>`, with `vN` appended from version 2 on. A `vN` newer than the current version returns 404. The mount is `/published-datasets/` when `_PORTAL_PUBLICATION_DATACITE_URL_PREFIX`'s path is `/published-datasets` (DPMP), and `/public-data/` otherwise.
+    * schema.org `Dataset` JSON-LD for Google Dataset Search: `name`, `description`, `creator` (with `givenName`, `familyName`, affiliation and ORCID `sameAs`), `license` as a URL, `identifier` and `sameAs` (the DOI), `keywords`, `datePublished`, `dateModified`, `version`, `isAccessibleForFree`, `publisher`, `includedInDataCatalog`, `citation` (related publications), `image` (the cover image) and `distribution`.
+    * Croissant 1.1 in the same JSON-LD: the full 1.1 `@context`, `citeAs` as a BibTeX entry, and a `recordSet` for CSV/TSV files with stored columns. `conformsTo` is only claimed when every Croissant-required field is present and every file has a checksum.
+    * Every `distribution` entry is typed `cr:FileObject` and `DataDownload`, with an absolute `contentUrl`, `encodingFormat`, a readable `contentSize` and its `sha256` when known. The landing page lists the first 100 files plus the ZIP; `croissant.json` lists every file.
+    * Dublin Core tags (`DC.identifier`, `DC.title`, `DC.creator` per author, `DC.date`, `DC.rights`, `DC.publisher`, `DC.language`, `DC.type`).
+    * Google Scholar tags (`citation_title`, `citation_author` as "Last, First", `citation_publication_date`, `citation_publisher`, `citation_doi`, `citation_abstract_html_url`, and `citation_pdf_url` when the dataset has exactly one PDF). They're only emitted when the dataset has an author and a publication date.
+    * Open Graph and Twitter Card tags, with the cover image as `og:image`.
+    * An absolute canonical URL without the query string, a page title naming the publisher, a meta description truncated to 160 characters, and `index, follow, max-image-preview:large`.
+    * A server-rendered summary in `#react-root` (title, authors, description, DOI link, APA citation and BibTeX) for crawlers that don't run JavaScript. The client app replaces it on load.
+  * Routes under each landing page, always on the bare project id:
+    * `files/<path>`: a published file's bytes. Non-PDF files redirect to the web mirror when one is configured; otherwise, and for PDFs always, the portal relays them from Tapis.
+    * `cover-image`: the cover image, for `og:image` and `twitter:image`.
+    * `archive.zip`: redirects to the whole-dataset ZIP on the web mirror, once its sha256 is stored.
+    * `croissant.json`: the JSON-LD as a standalone document, served as `application/ld+json` with the Croissant 1.1 profile and open CORS. It returns 404 unless the document claims Croissant conformance, and the landing page links to it with `<link rel="alternate">` only then.
+  * A static `croissant.json` on the web mirror, at `archive/<published workspace id>/croissant.json` beside the ZIP. It's the same document as the `croissant.json` route, and is written only once the publication is indexable and every file has a checksum. The JSON-LD links to it as `subjectOf`, and the landing page with a second `<link rel="alternate">`. A republish deletes the previous version's copy.
+  * XML sitemap of indexable landing pages at `/published-datasets/sitemap.xml`, cached for 5 minutes per host. Past 50,000 publications it becomes a sitemap index of `sitemap-N.xml` files. The local `robots.txt` advertises it, with nginx filling in the host.
+  * Publication fields `is_indexable` (migration `0004`), and `archive_sha256` and `archive_size` (migration `0005`).
+  * Checksums: after each archive job, per-file sha256s from its `manifest-sha256.txt` and the ZIP's own sha256 are stored on the publication (archive app 0.0.3+). File metadata gains optional `sha256` and `columns` fields.
+  * Management commands:
+    * `compute_publication_checksums`: backfills checksums with a checksum-only archive job (`--hash-archive` also hashes the existing ZIP; `--load-only`, `--dry-run`, `--all`).
+    * `update_datacite_metadata`: re-sends DataCite metadata for existing DOIs without changing their state, and rewrites each publication's static `croissant.json` (`--dry-run` prints the merged payload; `--all`).
+    * `withdraw_publication`: withdraws publications, hides their DOIs and deletes their static `croissant.json`; `--restore` reverses it.
+  * Settings:
+    * `_PORTAL_NOINDEX_APP_SHELL` (default off): marks every page without its own robots tag `noindex, follow`.
+    * `_PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL`: the published files' public web mirror.
+    * `_PORTAL_PUBLICATION_LICENSE_URLS` and `_PORTAL_PUBLICATION_LICENSE_SPDX_IDS`: map license labels beyond the built-in `ODC-BY 1.0`.
+  * Shared normalizers for ORCID iDs (with check-digit validation), DOIs and keywords, used by both the landing page and DataCite.
+  * The DRP publish wizard requires a license.
+  * README section on published-dataset landing pages, the sitemap and their deployment requirements.
+  * `mlcroissant` dev dependency, so tests validate the Croissant output.
+
+### Changed
+* task/WC-494: Publishing and DataCite (#1375)
+  * A first publish keeps its landing page noindex and out of the sitemap until the files have transferred and DataCite accepts the publish event (right after the transfer under `DEBUG`).
+  * A republish leaves the landing page, its file links, search, the sitemap and the DOI on the live version until the new version's files have transferred. Then one DataCite request moves the DOI's URL and metadata to the new version.
+  * The publication date of the first publish is kept on every republish, for DataCite's Issued date, `datePublished` and the citations.
+  * `publicationYear` comes from the Issued date instead of the current year, and is only sent when a DOI is created.
+  * DataCite metadata declares `schemaVersion` kernel-4, and sends:
+    * `rightsList` with the license URL and SPDX id;
+    * ORCID `nameIdentifiers`;
+    * creators' `name` in "Family, Given" form;
+    * `language` as `en`;
+    * `resourceType`;
+    * keywords as `subjects`.
+  * Updates to an existing DOI are merged with what DataCite already holds, so metadata the portal doesn't collect isn't erased. The registered Issued date is kept, and registered entries DataCite's schema would reject are dropped.
+  * DataCite errors raise instead of being returned as if the request had succeeded. The publish event retries with backoff.
+  * A DOI minted by a publish that then fails is saved on the source project, so a retry reuses it instead of minting another.
+  * Publish follow-up tasks are queued only once the publish transaction commits, and a retried transfer callback still finishes publishing.
+  * The archive job is submitted by its own task, `submit_publication_archive_job`, which retries with backoff (up to 5 times) and logs how to recover when it gives up. A failed submission no longer retries the whole transfer callback, which re-indexed search, queued the DOI publish again, and could submit a second archive job.
+  * The DOI's URL is always the same as the landing page's canonical URL and its sitemap entry.
+* task/WC-494: Landing pages and templates (#1375)
+  * Withdrawn and mid-publish landing pages return 200 with `noindex, follow` and no metadata, rather than 404, as DataCite expects a page to resolve.
+  * Other URL forms of a landing page (bare id, another version's `vN`, trailing slash, the other mount) and the other mount's file, cover image, ZIP and Croissant routes 301 to the canonical URL.
+  * An unknown project id, and any unknown path under one, return 404 instead of the app page. The DPMP client's entity pages still load.
+  * The workbench `index.html` and `index.j2` now share one parent template, `index_base.html`. The unused second `<base>` tag and leftover webpack placeholders are removed.
+  * `base.html` emits share-card tags and the dataset-portal description only on landing pages, or when `_PORTAL_NOINDEX_APP_SHELL` is set. Its comments are `{% comment %}` blocks, so they aren't sent to the browser, and analytics loads right after the charset.
+  * `public_data/views.py` is split into `links.py`, `citations.py`, `schema_org.py`, `sitemap.py` and `origin.py`.
+* task/WC-494: Tests and CI (#1375)
+  * Test settings render the workbench template the tests need on their own, so CI no longer copies `index.j2` over `index.html`.
+  * Test settings export template settings, as `settings.py` does.
+
+### Fixed
+* task/WC-494: (#1375)
+  * Authors with no name are left out of the JSON-LD and DataCite instead of being sent empty, and a missing name part no longer renders as "None".
+  * Empty related identifiers and empty affiliations are no longer sent to DataCite, where they failed validation.
+  * Keywords stored as a string are split and trimmed, and stored DOIs and ORCID URLs are normalized instead of being prefixed twice.
+  * Published files are served from the current version's Tapis system instead of always version 1's.
+  * File names containing a newline no longer break the file route.
+  * `settings_custom.example.py` sets `_VANITY_BASE_URL`, the name `settings.py` reads, instead of `VANITY_BASE_URL`.
+
+### Security
+* task/WC-494: (#1375)
+  * The published-file route only serves paths the publication declares, so it can't be used to read other files on the published system.
+  * Relayed files are shown inline only for PDF, image, CSV, TSV and plain-text types; anything else is sent as a download. Every relayed file except PDFs gets `Content-Security-Policy: sandbox`.
+  * Publication text embedded in the JSON-LD is escaped so it can't close the `<script>` tag.
+
 ## [3.11.3] 02-25-25
 
 ### Added

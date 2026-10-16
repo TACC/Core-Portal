@@ -1,2 +1,18 @@
 User-agent: *
 Disallow: /admin/
+
+# Local development only. Deployed portals don't serve this file: Camino's nginx answers
+# /robots.txt from /var/www/robots.txt, which is Camino's robots.txt.default unless the
+# deployment mounts its own (DPMP's are in Core-Portal-Deployments). Edit those for a
+# deployed site.
+#
+# Two sitemaps: /sitemap.xml is Core-CMS's (CMS pages), and /published-datasets/sitemap.xml
+# is this portal's SitemapView (published-dataset landing pages, public_data/views.py).
+# Crawlers only find the second one through this file, since it isn't at the root path.
+#
+# The host in the Sitemap: lines is a placeholder, not a hostname: the `/robots.txt` location
+# in this directory's nginx.conf replaces it with that server block's $server_name
+# (sub_filter, which rewrites every occurrence in this file -- so it's only spelled out on
+# those lines), so they always name the host nginx is configured for.
+Sitemap: https://__SERVER_NAME__/sitemap.xml
+Sitemap: https://__SERVER_NAME__/published-datasets/sitemap.xml
