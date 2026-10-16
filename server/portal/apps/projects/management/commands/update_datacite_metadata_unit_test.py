@@ -87,6 +87,16 @@ def test_all_updates_every_published_doi_and_skips_ones_without_a_doi(publicatio
     assert "zzzz" not in out
 
 
+def test_skips_doi_under_another_prefix(publications, mock_upsert, settings):
+    """pprd's copied data carries prod DOIs, which its test-API DataCite account can't update."""
+    settings.PORTAL_PUBLICATION_DATACITE_SHOULDER = "10.99999"
+
+    out, _ = run("test.project-1")
+
+    mock_upsert.assert_not_called()
+    assert "Skipped test.project-1 v2: 10.12345/aaaa isn't under this portal's DataCite prefix 10.99999" in out
+
+
 def test_payload_matches_publish(publications, mock_upsert):
     run("test.project-1")
 

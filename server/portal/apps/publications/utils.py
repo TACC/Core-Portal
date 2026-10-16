@@ -1,9 +1,37 @@
 """Helpers shared by the publish workflow and the public landing pages."""
 
+import datetime
+import re
 from urllib.parse import urlsplit
 
 from django.conf import settings
 from django.urls import reverse
+
+
+def get_publisher_name():
+    """PORTAL_PUBLICATION_PUBLISHER, trimmed, or None when it's unset or blank. settings.py
+    defaults it to PORTAL_NAMESPACE, but a portal can still set it to None or "", and a nameless
+    publisher would otherwise render as a JSON-LD `"name": null` or a `content="None"` meta tag, and
+    be rejected by DataCite.
+    """
+
+    return (settings.PORTAL_PUBLICATION_PUBLISHER or "").strip() or None
+
+
+def get_publication_date(base_meta):
+    """Return a publication's "YYYY-MM-DD" publication date, or None when it has no usable one.
+
+    publish_project stores it as `publicationDate`: a datetime in memory, or an ISO string (possibly
+    with a time) once saved (DjangoJSONEncoder). Older publications may use `publication_date`.
+    DataCite's Issued date and the landing page's `datePublished` both use this, so they always agree.
+    """
+
+    stored = base_meta.get("publicationDate") or base_meta.get("publication_date")
+    if isinstance(stored, (datetime.date, datetime.datetime)):
+        return stored.isoformat()[:10]
+    if isinstance(stored, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", stored[:10]):
+        return stored[:10]
+    return None
 
 
 def get_landing_namespace():

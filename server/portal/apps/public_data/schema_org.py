@@ -36,8 +36,10 @@ from portal.apps.public_data.links import (
 from portal.apps.publications.utils import (
     get_archive_zip_path,
     get_landing_namespace,
+    get_publication_date,
     get_publication_file_objs,
     get_published_workspace_id,
+    get_publisher_name,
 )
 
 logger = logging.getLogger(__name__)
@@ -189,13 +191,19 @@ def _get_orcid_same_as(author):
     return orcid_url(author.get("orcid_id"))
 
 
-def get_publisher_name():
-    """PORTAL_PUBLICATION_PUBLISHER, trimmed, or None when it's unset or blank. settings.py
-    defaults it to PORTAL_NAMESPACE, but a portal can still set it to None or "", and a nameless
-    publisher would otherwise render as a JSON-LD `"name": null` or a `content="None"` meta tag.
+def _get_date_published(base_meta, project_id):
+    """The publication's date as "YYYY-MM-DD" (get_publication_date, the same date DataCite's Issued
+    date is sent from), for `datePublished`. A stored value that isn't an ISO date is passed through
+    as-is and logged rather than dropped, since dropping it would also withhold `conformsTo`.
     """
 
-    return (settings.PORTAL_PUBLICATION_PUBLISHER or "").strip() or None
+    date_published = get_publication_date(base_meta)
+    if date_published:
+        return date_published
+    stored = base_meta.get("publicationDate") or base_meta.get("publication_date")
+    if stored:
+        logger.warning(f"Publication {project_id} has a publication date that isn't an ISO date: {stored!r}.")
+    return stored
 
 
 def _named_node(node_type, name, url):
@@ -589,7 +597,9 @@ def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=Fals
         "publisher": _named_node("Organization", publisher_name, f"{get_publication_origin(request)}/"),
         # Trimmed list, the same one DataCite's `subjects` gets (projects/schema_models/keywords.py).
         "keywords": normalize_keywords(base_meta.get("keywords")),
-        "datePublished": base_meta.get("publicationDate") or base_meta.get("publication_date"),
+        # Date only: publish_project stores a full timestamp with no timezone, and DataCite's Issued
+        # date and citation_publication_date are both the date alone.
+        "datePublished": _get_date_published(base_meta, project_id),
         # Publication.last_updated (auto_now=True) already backs the sitemap's <lastmod> for
         # this same publication -- reusing it here rather than sourcing from base_meta means
         # `dateModified` tracks every republish (project_publish_operations.py's update_or_create)

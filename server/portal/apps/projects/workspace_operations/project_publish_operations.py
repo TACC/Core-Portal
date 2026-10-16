@@ -16,6 +16,7 @@ from portal.apps.projects.schema_models import constants
 from portal.apps.projects.workspace_operations.datacite_operations import (
     get_datacite_json,
     get_datacite_url,
+    is_doi_under_shoulder,
     publish_datacite_doi,
     upsert_datacite_json,
 )
@@ -665,6 +666,14 @@ def publish_project(self, project_id: str, version: int | None = 1):
                     # findable, so the draft is updated here instead.
                     doi = existing_doi
                     logger.info(f"Reusing DataCite DOI {doi} for project {project_id}; it's updated after transfer.")
+                elif existing_doi and not is_doi_under_shoulder(existing_doi):
+                    # Another DataCite account's DOI (e.g. a prod DOI in pprd's copied data): updating
+                    # its draft here would fail, so it's reused as it is.
+                    doi = existing_doi
+                    logger.warning(
+                        f"Reusing DOI {doi} for project {project_id} without updating it: it isn't under this "
+                        f"portal's DataCite prefix {settings.PORTAL_PUBLICATION_DATACITE_SHOULDER}."
+                    )
                 else:
                     datacite_json = get_datacite_json(publication_tree, project_id, version)
                     datacite_resp = upsert_datacite_json(datacite_json, doi=existing_doi)
@@ -767,7 +776,18 @@ def publish_publication_doi(self, project_id: str, doi: str, version: int | None
     page and sends that version's metadata, unless a newer version is live by now. Retried with
     backoff; once retries run out, `withdraw_publication --restore <project_id>` sends the same
     `publish` event, URL and metadata, and marks it indexable.
+
+    A DOI that isn't under this portal's DataCite prefix (is_doi_under_shoulder: e.g. a prod DOI in
+    pprd's copied data) is left alone, and the page is marked indexable without it, as under DEBUG.
     """
+
+    if not is_doi_under_shoulder(doi):
+        logger.warning(
+            f"Not publishing DOI {doi} for project {project_id}: it isn't under this portal's DataCite "
+            f"prefix {settings.PORTAL_PUBLICATION_DATACITE_SHOULDER}. Marking the page indexable without it."
+        )
+        _mark_publication_indexable(project_id, version)
+        return
 
     url = None
     metadata = None

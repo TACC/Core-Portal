@@ -3,11 +3,13 @@
 import json
 
 import networkx as nx
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from portal.apps.projects.workspace_operations.datacite_operations import (
     get_datacite_json,
     get_registered_doi_attributes,
+    is_doi_under_shoulder,
     merge_registered_metadata,
     upsert_datacite_json,
 )
@@ -29,6 +31,9 @@ class Command(BaseCommand):
     Also rewrites each publication's static croissant.json on the web mirror
     (write_publication_croissant_file), whether or not it has a DOI, so it carries the same metadata
     as the landing page. With --dry-run nothing is written.
+
+    A DOI that isn't under this portal's DataCite prefix (e.g. a prod DOI in pprd's copied data) is
+    skipped, since this portal's DataCite account can't update it.
 
     Examples:
 
@@ -84,6 +89,12 @@ class Command(BaseCommand):
             doi = publication.value.get("doi")
             if not doi:
                 self.stdout.write(f"Skipped {label}: no DOI")
+                continue
+            if not is_doi_under_shoulder(doi):
+                self.stdout.write(
+                    f"Skipped {label}: {doi} isn't under this portal's DataCite prefix "
+                    f"{settings.PORTAL_PUBLICATION_DATACITE_SHOULDER}"
+                )
                 continue
 
             try:

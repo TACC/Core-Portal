@@ -875,6 +875,26 @@ def test_publish_project_reuses_existing_doi(mocker, settings):
     assert kwargs["doi"] == "10.5555/existing-doi"
 
 
+def test_publish_project_debug_reuses_doi_under_another_prefix_without_updating_it(mocker, settings, caplog):
+    """pprd's copied data carries prod DOIs, which its test-API DataCite account can't update."""
+    fixtures = _setup_publish_project_fixtures(settings, existing_doi="10.5555/existing-doi")
+    settings.PORTAL_PUBLICATION_DATACITE_SHOULDER = "10.99999"
+    mock_datacite_json = mocker.patch(f"{DIR}.get_datacite_json")
+    mock_upsert = mocker.patch(f"{DIR}.upsert_datacite_json")
+    mocker.patch(f"{DIR}.upload_metadata_file")
+    mocker.patch(f"{DIR}.service_account")
+    mocker.patch(f"{DIR}._transfer_files", return_value=SimpleNamespace(uuid="transfer-uuid-2"))
+    mocker.patch(f"{DIR}._transfer_cover_image")
+    mocker.patch.object(poll_tapis_file_transfer, "apply_async")
+
+    publish_project(project_id="test.project-1", version=1)
+
+    mock_datacite_json.assert_not_called()
+    mock_upsert.assert_not_called()
+    assert ProjectMetadata.get_project_by_id(fixtures.source_project_id).value["doi"] == "10.5555/existing-doi"
+    assert "isn't under this portal's DataCite prefix 10.99999" in caplog.text
+
+
 def test_publish_project_datacite_mint_failure_raises_and_rolls_back(mocker, settings):
     fixtures = _setup_publish_project_fixtures(settings)
     mocker.patch(f"{DIR}.get_datacite_json", return_value={"titles": []})
@@ -1085,6 +1105,22 @@ def test_publish_publication_doi_still_moves_url_when_metadata_fails_to_build(mo
     mock_publish.assert_called_once_with("10.5555/minted-doi", url="https://example.org/v2", metadata=None)
     assert "update_datacite_metadata test.project-1" in caplog.text
     assert Publication.objects.get(project_id="test.project-1").is_indexable
+
+
+def test_publish_publication_doi_under_another_prefix_marks_page_indexable_without_datacite(mocker, settings, caplog):
+    """A DOI this portal's DataCite account can't update (e.g. a prod DOI in pprd's copied data) is
+    left alone rather than retried, and the page becomes indexable as it would under DEBUG."""
+    settings.PORTAL_PUBLICATION_DATACITE_SHOULDER = "10.99999"
+    Publication.objects.create(project_id="test.project-1", version=2, value={}, tree={}, is_indexable=False)
+    mock_publish = mocker.patch(f"{DIR}.publish_datacite_doi")
+    mock_retry = mocker.patch.object(publish_publication_doi, "retry")
+
+    publish_publication_doi("test.project-1", "10.5555/minted-doi", version=2)
+
+    mock_publish.assert_not_called()
+    mock_retry.assert_not_called()
+    assert Publication.objects.get(project_id="test.project-1").is_indexable
+    assert "Not publishing DOI 10.5555/minted-doi" in caplog.text
 
 
 def test_publish_publication_doi_failure_leaves_page_unindexable(mocker):
@@ -1956,6 +1992,21 @@ def test_write_publication_croissant_task_retries_tapis_error(mocker):
     mock_retry.assert_called_once()
 
 
+def test_write_publication_croissant_task_gives_up_after_max_retries_and_logs_remedy(mocker, caplog):
+    Publication.objects.create(project_id="test.project-1", version=1, value={}, tree={})
+    mocker.patch(f"{DIR}.write_publication_croissant_file", side_effect=RuntimeError("tapis down"))
+    mock_retry = mocker.patch.object(write_publication_croissant, "retry")
+
+    with pytest.raises(RuntimeError, match="tapis down"):
+        write_publication_croissant.apply(
+            args=["test.project-1", 1], retries=write_publication_croissant.max_retries, throw=True
+        )
+
+    mock_retry.assert_not_called()
+    assert "Gave up writing croissant.json for test.project-1: tapis down" in caplog.text
+    assert "update_datacite_metadata test.project-1" in caplog.text
+
+
 def test_write_publication_croissant_task_doesnt_retry_invalid_metadata(mocker, caplog):
     from portal.apps.public_data.schema_org import SchemaOrgValidationError
 
@@ -1985,6 +2036,28 @@ def test_delete_publication_croissant_file_without_file_deletes_nothing(mocker):
 
     assert not delete_publication_croissant_file("test.project-1", 1)
     client.files.delete.assert_not_called()
+
+
+def test_delete_publication_croissant_task_retries_tapis_error_with_backoff(mocker, caplog):
+    error = RuntimeError("tapis down")
+    mocker.patch(f"{DIR}.delete_publication_croissant_file", side_effect=error)
+    mock_retry = mocker.patch.object(delete_publication_croissant, "retry", side_effect=Retry())
+
+    with pytest.raises(Retry):
+        delete_publication_croissant("test.project-1", 2)
+
+    mock_retry.assert_called_once_with(exc=error, countdown=60)
+    assert "Could not remove test.project-1 v2's croissant.json: tapis down" in caplog.text
+
+
+def test_delete_publication_croissant_task_removes_file(mocker):
+    mock_delete = mocker.patch(f"{DIR}.delete_publication_croissant_file", return_value=True)
+    mock_retry = mocker.patch.object(delete_publication_croissant, "retry")
+
+    delete_publication_croissant("test.project-1", 2)
+
+    mock_delete.assert_called_once_with("test.project-1", 2)
+    mock_retry.assert_not_called()
 
 
 def test_mark_publication_indexable_queues_croissant_write(croissant_tasks):

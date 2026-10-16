@@ -113,6 +113,29 @@ def test_debug_skips_hiding(publications, mock_hide, settings):
     assert "Skipped DataCite hide for 10.12345/aaaa (test.project-1 v2): DEBUG is set" in out
 
 
+def test_doi_under_another_prefix_skips_hiding(publications, mock_hide, settings):
+    """pprd's copied data carries prod DOIs, which its test-API DataCite account can't update."""
+    settings.PORTAL_PUBLICATION_DATACITE_SHOULDER = "10.99999"
+
+    out, _ = run("test.project-1")
+
+    assert not is_published("test.project-1")
+    mock_hide.assert_not_called()
+    assert "Skipped DataCite hide for 10.12345/aaaa (test.project-1 v2): it isn't under" in out
+
+
+def test_restore_of_doi_under_another_prefix_skips_datacite_and_marks_indexable(publications, mock_publish, settings):
+    settings.PORTAL_PUBLICATION_DATACITE_SHOULDER = "10.99999"
+    Publication.objects.filter(project_id="test.project-9").update(is_indexable=False)
+
+    out, _ = run("--restore", "test.project-9")
+
+    mock_publish.assert_not_called()
+    assert "Skipped DataCite publish for 10.12345/zzzz (test.project-9 v1): it isn't under" in out
+    publication = Publication.objects.get(project_id="test.project-9")
+    assert publication.is_published and publication.is_indexable
+
+
 def test_rejected_hide_still_withdraws_and_reports_failure(publications, mocker):
     mock_hide = mocker.patch(
         f"{DIR}.hide_datacite_doi",

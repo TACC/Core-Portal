@@ -1,7 +1,5 @@
-import datetime
 import json
 import logging
-import re
 
 import networkx as nx
 import requests
@@ -16,7 +14,12 @@ from portal.apps.projects.schema_models.license_urls import (
 )
 from portal.apps.projects.schema_models.orcid import ORCID_URL_PREFIX, orcid_url
 from portal.apps.public_data.origin import get_configured_origin
-from portal.apps.publications.utils import get_landing_page_path, get_published_workspace_id
+from portal.apps.publications.utils import (
+    get_landing_page_path,
+    get_publication_date,
+    get_published_workspace_id,
+    get_publisher_name,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +41,22 @@ class DataCiteError(Exception):
         super().__init__(message)
         self.status_code = status_code
         self.errors = errors or []
+
+
+def is_doi_under_shoulder(doi: str) -> bool:
+    """Whether `doi`'s prefix is this portal's PORTAL_PUBLICATION_DATACITE_SHOULDER, so its DataCite
+    account can update it. DOI prefixes are case-insensitive. Always True when no shoulder is set.
+
+    pprd's database is a copy of prod's, so its publications carry prod DOIs, but pprd talks to
+    DataCite's test API with the test prefix. Sending a prod DOI there fails, and the publish and
+    withdraw paths would retry it. Callers skip the DataCite call for a DOI this returns False for.
+    """
+
+    shoulder = (settings.PORTAL_PUBLICATION_DATACITE_SHOULDER or "").strip().lower()
+    if not shoulder:
+        return True
+    bare_doi = normalize_doi(doi)
+    return bool(bare_doi) and bare_doi.split("/", 1)[0].lower() == shoulder
 
 
 def _check_datacite_response(res, action):
@@ -146,19 +165,14 @@ def _get_issued_date(base_meta):
 
     publish_project writes the date into the tree before building this payload: the source project's
     stored first-publish date on a republish, or the published project's `created` on a first publish.
-    update_datacite_metadata's rebuild from a stored Publication reads that same date. It's a
-    datetime in memory or an ISO string once saved (DjangoJSONEncoder). Returns None for a tree with
-    no usable date, rather than guessing today's: for a publication made before that date was
-    stored, today would overwrite the DOI's real Issued date. `publicationYear` is taken from this
-    date.
+    update_datacite_metadata's rebuild from a stored Publication reads that same date. Parsed by
+    get_publication_date (publications/utils.py), as the landing page's `datePublished` is. Returns
+    None for a tree with no usable date, rather than guessing today's: for a publication made before
+    that date was stored, today would overwrite the DOI's real Issued date. `publicationYear` is taken
+    from this date.
     """
 
-    stored = base_meta.get("publicationDate") or base_meta.get("publication_date")
-    if isinstance(stored, (datetime.date, datetime.datetime)):
-        return stored.isoformat()[:10]
-    if isinstance(stored, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", stored[:10]):
-        return stored[:10]
-    return None
+    return get_publication_date(base_meta)
 
 
 def get_datacite_url(project_id: str, version: int | None = None):
@@ -290,7 +304,15 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
     # `resourceType` is DataCite's free-text refinement of `resourceTypeGeneral`; with no finer
     # category to offer, DataCite's guidance is to repeat the general type.
     datacite_json["types"] = {"resourceTypeGeneral": "Dataset", "resourceType": "Dataset"}
-    datacite_json["publisher"] = settings.PORTAL_PUBLICATION_PUBLISHER
+    # DataCite requires a publisher on every DOI and rejects a null or blank one with a 422, so fail
+    # here with the cause instead.
+    publisher = get_publisher_name()
+    if not publisher:
+        raise ValueError(
+            "PORTAL_PUBLICATION_PUBLISHER is unset or blank, and DataCite requires a publisher on every "
+            f"DOI -- set it before minting or updating a DOI for {project_id}."
+        )
+    datacite_json["publisher"] = publisher
 
     # The year comes from the Issued date, so the two (and the landing page's citeAs year) can't
     # disagree. Only a first publish sends it: upsert_datacite_json drops it from an update. With no

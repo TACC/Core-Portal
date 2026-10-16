@@ -2932,13 +2932,13 @@ def test_index_view_renders_title_and_description_from_publication(client, publi
 
 @pytest.mark.parametrize("on_publication_route", [True, False])
 def test_index_view_names_publisher_on_landing_pages_only(client, settings, publication, on_publication_route):
-    """A landing page's title suffix and og:site_name name the publisher; every other page keeps
-    the portal namespace."""
+    """A landing page's title suffix and og:site_name name the publisher; every app-shell page keeps
+    the portal namespace. (The catalog page names the publisher too -- see its own tests.)"""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     if on_publication_route:
         url = get_landing_page_path(publication.project_id, publication.version)
     else:
-        url = "/published-datasets/"
+        url = "/published-datasets/not-a-real-project/"
     body = client.get(url).content.decode()
 
     title = re.search(r"<title>(.*?)</title>", body, re.S).group(1)
@@ -3060,7 +3060,7 @@ def test_index_view_head_values_have_no_surrounding_whitespace(client, publicati
     if on_publication_route:
         url = get_landing_page_path(publication.project_id, publication.version)
     else:
-        url = "/published-datasets/"
+        url = "/published-datasets/not-a-real-project/"
     body = client.get(url).content.decode()
 
     values = [re.search(r"<title>(.*?)</title>", body, re.S).group(1)]
@@ -3655,3 +3655,163 @@ def test_get_schema_org_json_passes_mlcroissant_validation(rf, settings, publica
     issues = mlc.Dataset(jsonld=jsonld_path).metadata.ctx.issues
     assert not issues.errors
     assert not issues.warnings
+
+
+# ---------------------------------------------------------------------------
+# datePublished
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "stored,expected",
+    [
+        ("2024-05-01", "2024-05-01"),
+        # publish_project stores a full timestamp with no timezone.
+        ("2024-05-01T12:34:56.789", "2024-05-01"),
+        ("2024-05-01T12:34:56+00:00", "2024-05-01"),
+    ],
+)
+def test_get_schema_org_json_date_published_is_date_only(rf, settings, publication, stored, expected):
+    """datePublished is the date alone, the same date DataCite's Issued date is sent from."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    publication.value = valid_base_meta(publicationDate=stored)
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
+
+    assert schema["datePublished"] == expected
+    tree = nx.DiGraph()
+    tree.add_node("NODE_ROOT", value={**publication.value, "projectId": "x"})
+    datacite_json = get_datacite_json(tree, publication.project_id, publication.version)
+    assert datacite_json["dates"] == [{"date": expected, "dateType": "Issued"}]
+
+
+def test_get_schema_org_json_date_published_reads_snake_case_key(rf, publication):
+    publication.value = valid_base_meta(publicationDate=None, publication_date="2023-01-02T00:00:00")
+    publication.save()
+
+    assert get_schema_org_json(publication, publication.project_id, make_request(rf))["datePublished"] == "2023-01-02"
+
+
+@patch("portal.apps.public_data.schema_org.logger")
+def test_get_schema_org_json_non_iso_date_published_is_passed_through_and_logged(mock_logger, rf, publication):
+    """An unrecognized date is kept rather than dropped, which would also withhold conformsTo."""
+    publication.value = valid_base_meta(publicationDate="October 2014")
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
+
+    assert schema["datePublished"] == "October 2014"
+    assert "conformsTo" in schema
+    assert "isn't an ISO date: 'October 2014'" in mock_logger.warning.call_args.args[0]
+
+
+# ---------------------------------------------------------------------------
+# Catalog page (/published-datasets/)
+# ---------------------------------------------------------------------------
+
+CATALOG_PATH = "/published-datasets/"
+
+
+def _catalog_links(body):
+    return re.findall(r'<li><a href="([^"]*)">([^<]*)</a></li>', _react_root(body))
+
+
+def test_catalog_page_is_indexable_and_lists_published_datasets_newest_first(client, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    older = Publication.objects.create(
+        project_id="test.project-1", version=1, value=valid_base_meta(title="Older"), tree={}
+    )
+    Publication.objects.filter(pk=older.pk).update(created=older.created.replace(year=2020))
+    Publication.objects.create(project_id="test.project-2", version=3, value=valid_base_meta(title="Newer"), tree={})
+
+    response = client.get(CATALOG_PATH)
+    body = response.content.decode()
+
+    assert response.status_code == 200
+    assert ROBOTS_META.findall(body) == ["index, follow, max-image-preview:large"]
+    assert re.search(r"<title>(.*?)</title>", body, re.S).group(1) == "Published datasets | Test Publisher"
+    assert '<meta property="og:title" content="Published datasets | Test Publisher">' in body
+    assert '<meta name="description" content="Browse the research datasets published by Test Publisher.">' in body
+    assert f'<link rel="canonical" href="http://testserver{CATALOG_PATH}">' in body
+    assert "<h1>Published datasets</h1>" in _react_root(body)
+    assert _catalog_links(body) == [
+        (f"http://testserver{get_landing_page_path('test.project-2', 3)}", "Newer"),
+        (f"http://testserver{get_landing_page_path('test.project-1', 1)}", "Older"),
+    ]
+
+
+def test_catalog_page_leaves_out_withdrawn_mid_publish_and_untitled_datasets(client):
+    Publication.objects.create(project_id="test.project-1", value=valid_base_meta(title="Listed"), tree={})
+    Publication.objects.create(
+        project_id="test.project-2", value=valid_base_meta(title="Withdrawn"), tree={}, is_published=False
+    )
+    Publication.objects.create(
+        project_id="test.project-3", value=valid_base_meta(title="Mid publish"), tree={}, is_indexable=False
+    )
+    Publication.objects.create(project_id="test.project-4", value=valid_base_meta(title="  "), tree={})
+
+    body = client.get(CATALOG_PATH).content.decode()
+
+    assert [title for _, title in _catalog_links(body)] == ["Listed"]
+
+
+def test_catalog_page_escapes_titles(client):
+    Publication.objects.create(project_id="test.project-1", value=valid_base_meta(title="Rocks & <pores>"), tree={})
+
+    body = client.get(CATALOG_PATH).content.decode()
+
+    assert "Rocks &amp; &lt;pores&gt;</a>" in _react_root(body)
+    assert "<pores>" not in body
+
+
+def test_catalog_page_canonical_url_drops_query_string(client):
+    Publication.objects.create(project_id="test.project-1", value=valid_base_meta(), tree={})
+
+    response = client.get(f"{CATALOG_PATH}?utm_source=x")
+
+    assert response.status_code == 200
+    assert f'<link rel="canonical" href="http://testserver{CATALOG_PATH}">' in response.content.decode()
+
+
+def test_catalog_page_uses_configured_origin(client, settings):
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://data.example.org/published-datasets"
+    Publication.objects.create(project_id="test.project-1", value=valid_base_meta(), tree={})
+
+    body = client.get(CATALOG_PATH).content.decode()
+
+    assert f'<link rel="canonical" href="https://data.example.org{CATALOG_PATH}">' in body
+    assert _catalog_links(body)[0][0].startswith("https://data.example.org/published-datasets/")
+
+
+def test_catalog_page_without_datasets_stays_noindex_app_shell(client):
+    Publication.objects.create(project_id="test.project-1", value=valid_base_meta(), tree={}, is_published=False)
+
+    response = client.get(CATALOG_PATH)
+    body = response.content.decode()
+
+    assert "catalog_datasets" not in response.context
+    assert ROBOTS_META.findall(body) == ["noindex, follow"]
+    assert "<h1>Published datasets</h1>" not in body
+
+
+@pytest.mark.parametrize(
+    "prefix,path",
+    [
+        # The /public-data/ mount's root is the client's Public Data view, not the catalog.
+        ("/published-datasets", "/public-data/"),
+        # Landing pages are canonical under /public-data/, so /published-datasets/ is just the app.
+        ("", CATALOG_PATH),
+        # Only the root of the mount is the catalog.
+        ("/published-datasets", f"{CATALOG_PATH}not-a-real-project/"),
+    ],
+)
+def test_only_the_landing_mount_root_is_the_catalog(client, settings, prefix, path):
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = prefix
+    Publication.objects.create(project_id="test.project-1", value=valid_base_meta(), tree={})
+
+    response = client.get(path)
+
+    assert response.status_code == 200
+    assert "catalog_datasets" not in response.context
+    assert ROBOTS_META.findall(response.content.decode()) == ["noindex, follow"]

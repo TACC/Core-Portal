@@ -3,7 +3,11 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from portal.apps.projects.workspace_operations.datacite_operations import hide_datacite_doi, publish_datacite_doi
+from portal.apps.projects.workspace_operations.datacite_operations import (
+    hide_datacite_doi,
+    is_doi_under_shoulder,
+    publish_datacite_doi,
+)
 from portal.apps.projects.workspace_operations.project_publish_operations import (
     delete_publication_croissant_file,
     get_publish_doi_update,
@@ -38,7 +42,9 @@ class Command(BaseCommand):
 
     The publication is withdrawn (or restored) even if DataCite rejects the request, so a failed
     DataCite call can be retried by running the same command again for the same project id. When
-    DEBUG is set, publish_project never makes DOIs findable, so the DataCite call is skipped.
+    DEBUG is set, publish_project never makes DOIs findable, so the DataCite call is skipped. It's
+    also skipped for a DOI that isn't under this portal's DataCite prefix (e.g. a prod DOI in pprd's
+    copied data), which this portal's DataCite account can't update.
 
     Examples:
 
@@ -100,6 +106,11 @@ class Command(BaseCommand):
             elif settings.DEBUG:
                 self.stdout.write(
                     f"Skipped DataCite {datacite_event} for {doi} ({label}): DEBUG is set, so DOIs aren't made findable"
+                )
+            elif not is_doi_under_shoulder(doi):
+                self.stdout.write(
+                    f"Skipped DataCite {datacite_event} for {doi} ({label}): it isn't under this portal's DataCite "
+                    f"prefix {settings.PORTAL_PUBLICATION_DATACITE_SHOULDER}"
                 )
             else:
                 # A rejected event (e.g. a DOI that's still a draft) raises DataCiteError, with

@@ -21,6 +21,7 @@ from portal.apps.projects.workspace_operations.datacite_operations import (
     get_doi_publication_date,
     get_registered_doi_attributes,
     hide_datacite_doi,
+    is_doi_under_shoulder,
     merge_registered_metadata,
     publish_datacite_doi,
     upsert_datacite_json,
@@ -32,6 +33,13 @@ DATACITE_SETTINGS = override_settings(
     DATACITE_PASS="datacite-pass",
     PORTAL_PUBLICATION_DATACITE_SHOULDER="10.1234",
 )
+
+
+@pytest.fixture(autouse=True)
+def publisher(settings):
+    """get_datacite_json refuses to build a payload without a publisher, which DataCite requires;
+    unit_test_settings.py leaves it unset."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
 
 
 @pytest.fixture(autouse=True)
@@ -87,6 +95,45 @@ def test_get_datacite_json_minimal():
 
     expected_path = reverse("publications:index", kwargs={"project_id": "test.project-1"})
     assert result["url"] == f"https://testserver{expected_path}"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("publisher", [None, "", "   "])
+def test_get_datacite_json_refuses_without_publisher(settings, publisher):
+    """DataCite rejects a DOI with a null or blank publisher, so the payload isn't built at all."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = publisher
+
+    with pytest.raises(ValueError, match="PORTAL_PUBLICATION_PUBLISHER is unset or blank"):
+        get_datacite_json(make_pub_graph(minimal_base_meta()), "test.project-1")
+
+
+@pytest.mark.django_db
+def test_get_datacite_json_trims_publisher(settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "  Test Publisher "
+
+    assert get_datacite_json(make_pub_graph(minimal_base_meta()), "test.project-1")["publisher"] == "Test Publisher"
+
+
+@pytest.mark.parametrize(
+    "shoulder,doi,expected",
+    [
+        ("10.1234", "10.1234/abc", True),
+        ("10.1234", "10.1234/ABC", True),
+        ("10.1234", "https://doi.org/10.1234/abc", True),
+        (" 10.1234 ", "doi:10.1234/abc", True),
+        ("10.1234", "10.12345/abc", False),
+        ("10.80023", "10.17612/P7H59H", False),
+        ("10.1234", "not a doi", False),
+        ("", "10.17612/P7H59H", True),
+        (None, "10.17612/P7H59H", True),
+    ],
+)
+def test_is_doi_under_shoulder(settings, shoulder, doi, expected):
+    """A DOI is only this portal's to update when its prefix is the configured shoulder; with no
+    shoulder configured, nothing is ruled out."""
+    settings.PORTAL_PUBLICATION_DATACITE_SHOULDER = shoulder
+
+    assert is_doi_under_shoulder(doi) is expected
 
 
 @DATACITE_SETTINGS

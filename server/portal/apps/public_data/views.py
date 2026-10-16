@@ -18,12 +18,11 @@ from django.urls import reverse
 from django.utils.http import content_disposition_header
 from django.views.generic.base import TemplateView, View
 
-from portal.apps.public_data.links import get_publication_origin, get_published_web_url
+from portal.apps.public_data.links import get_landing_page_url, get_publication_origin, get_published_web_url
 from portal.apps.public_data.schema_org import (
     CROISSANT_1_1_MEDIA_TYPE,
     dumps_json_ld,
     get_citation_context,
-    get_publisher_name,
     get_schema_org_json,
     get_unique_publication_file_objs,
 )
@@ -33,6 +32,7 @@ from portal.apps.publications.utils import (
     get_archive_zip_path,
     get_landing_namespace,
     get_published_workspace_id,
+    get_publisher_name,
 )
 
 logger = logging.getLogger(__name__)
@@ -130,6 +130,13 @@ class IndexView(TemplateView):
                 raise
             except Exception as e:
                 logger.exception(f"Failed to build meta tags for project {project_id}: {e}")
+        elif self._is_catalog_page():
+            datasets = _get_catalog_datasets(self.request)
+            # With nothing to list, the page stays the noindex app shell.
+            if datasets:
+                context["catalog_datasets"] = datasets
+                context["publisher"] = get_publisher_name()
+                context["canonical_url"] = f"{get_publication_origin(self.request)}{self.request.path}"
         context["setup_complete"] = (
             False if self.request.user.is_anonymous else self.request.user.profile.setup_complete
         )
@@ -154,6 +161,35 @@ class IndexView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
+
+    def _is_catalog_page(self):
+        """Whether this is the published-datasets browse page: the root of the `publications` mount,
+        when that's the mount landing pages are canonical under (DPMP). It's the JSON-LD's
+        `includedInDataCatalog.url` (get_catalog_url), so it's indexable and lists every dataset.
+        Elsewhere -- the /public-data/ root, or a portal whose landing pages live under it -- the
+        root stays the app shell.
+        """
+
+        return get_landing_namespace() == "publications" and self.request.path == reverse("publications:index_fallback")
+
+
+def _get_catalog_datasets(request):
+    """Every published, indexable dataset's title and landing-page URL, newest first, for the catalog
+    page's server-rendered list (IndexView._is_catalog_page). The same publications the sitemap lists,
+    except that a publication whose metadata fails to build is still linked: its page is noindex, but
+    linking it does no harm. Reads only the title, not each publication's whole metadata.
+    """
+
+    publications = (
+        Publication.objects.filter(is_published=True, is_indexable=True)
+        .order_by("-created", "project_id")
+        .values_list("project_id", "version", "value__title")
+    )
+    return [
+        {"title": title, "url": get_landing_page_url(project_id, version, request)}
+        for project_id, version, title in publications
+        if isinstance(title, str) and title.strip()
+    ]
 
 
 def _is_publication_file_path(pub, path):
