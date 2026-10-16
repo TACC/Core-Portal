@@ -54,6 +54,7 @@ function AppRouter() {
     if (authenticatedUser?.username) {
       dispatch({ type: 'FETCH_INTRO' });
       dispatch({ type: 'FETCH_CUSTOM_MESSAGES' });
+      dispatch({ type: 'GET_ALLOCATIONS' });
     }
   }, [authenticatedUser]);
 
