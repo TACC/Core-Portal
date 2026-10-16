@@ -7,10 +7,9 @@ import mimetypes
 import re
 import unicodedata
 
-from django.conf import settings
-
 from portal.apps.projects.schema_models.doi import doi_url, normalize_doi
 from portal.apps.public_data.links import get_landing_page_url, get_publication_file_url
+from portal.apps.publications.utils import get_publisher_name
 
 # Characters that are special to (La)TeX inside a BibTeX field value, and how to write each one
 # literally, so a title like "Pores & 50% porosity" can't break the entry or the document citing it.
@@ -69,7 +68,7 @@ def get_apa_citation(base_meta, doi, project_id, version, request):
     identifier = doi_url(doi) or get_landing_page_url(project_id, version, request)
 
     creator_and_year = " ".join([*author_names, *([f"({year})"] if year else [])])
-    sentences = [creator_and_year, base_meta.get("title"), settings.PORTAL_PUBLICATION_PUBLISHER]
+    sentences = [creator_and_year, base_meta.get("title"), get_publisher_name()]
     # The identifier is a URL, so it isn't followed by a period.
     return " ".join([*(_end_sentence(part.strip()) for part in sentences if part and part.strip()), identifier])
 
@@ -126,7 +125,7 @@ def get_bibtex_citation(base_meta, doi, project_id, version, request):
     fields = [
         ("author", " and ".join(authors)),
         ("title", _bibtex_value(base_meta.get("title") or "")),
-        ("publisher", _bibtex_value(settings.PORTAL_PUBLICATION_PUBLISHER or "")),
+        ("publisher", _bibtex_value(get_publisher_name() or "")),
         ("year", re.sub(r"[^0-9]", "", publication_date[:4])),
         ("doi", _bibtex_verbatim(normalize_doi(doi) or "")),
         ("url", _bibtex_verbatim(doi_url(doi) or get_landing_page_url(project_id, version, request))),

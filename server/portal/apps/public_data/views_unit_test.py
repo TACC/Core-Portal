@@ -568,6 +568,25 @@ def test_get_apa_citation_omits_missing_parts(rf, settings):
     assert citation == landing_page
 
 
+@pytest.mark.parametrize("publisher,expected", [("  Test Publisher ", "Test Publisher."), ("   ", None)])
+def test_get_apa_citation_and_bibtex_trim_the_publisher(rf, settings, publisher, expected):
+    """The publisher is read through get_publisher_name, as the JSON-LD and meta tags read it:
+    trimmed, and left out when it's blank."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = publisher
+    request = make_request(rf)
+    base_meta = {"title": "Test Dataset"}
+
+    apa = get_apa_citation(base_meta, None, "test.project-1", 1, request)
+    bibtex = get_bibtex_citation(base_meta, None, "test.project-1", 1, request)
+
+    if expected:
+        assert f" {expected} " in apa
+        assert "  publisher = {Test Publisher},\n" in bibtex
+    else:
+        assert apa.startswith("Test Dataset. http")
+        assert "publisher" not in bibtex
+
+
 def test_get_apa_citation_skips_authors_without_last_name(rf, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     request = make_request(rf)
@@ -3099,7 +3118,10 @@ def test_index_view_mid_publish_publication_is_noindex_without_metadata(client, 
     assert "citation_title" not in body
 
 
-@pytest.mark.parametrize("publication_date,expected", [("2024-05-01", ["2024-05-01"]), (None, [])])
+@pytest.mark.parametrize(
+    "publication_date,expected",
+    [("2024-05-01", ["2024-05-01"]), ("2024-05-01T12:30:00", ["2024-05-01"]), (None, [])],
+)
 def test_index_view_dc_date_only_when_publication_has_a_date(client, settings, publication_date, expected):
     """DC.date is left out, rather than rendered as content="None", for a publication with no date."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"

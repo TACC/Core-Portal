@@ -248,6 +248,10 @@ class PublicationListingView(BaseApiView):
                 "keywords": publication.value.get("keywords"),
                 "authors": publication.value.get("authors"),
                 "publication_date": publication.created,
+                # False while a first publish is still in progress (files transferring, DOI not
+                # findable): DPMP's public Browse page leaves it out, as the sitemap and the
+                # server-rendered catalog do. The workbench listing still shows it.
+                "is_indexable": publication.is_indexable,
             }
 
             try:

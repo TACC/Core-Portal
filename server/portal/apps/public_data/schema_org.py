@@ -757,7 +757,9 @@ def get_citation_context(pub, request):
             # One "Last, First" string per author -- the template emits one <meta
             # name="citation_author"> tag per entry, as Scholar's guide asks for.
             "citation_authors": [name for name in (format_citation_author(author) for author in authors) if name],
-            "publication_date": publication_date,
+            # For DC.date: the same "YYYY-MM-DD" date already resolved for the JSON-LD
+            # `datePublished` (DataCite's Issued date too), not the stored timestamp.
+            "publication_date": schema_org_json.get("datePublished"),
             "citation_date": format_citation_date(publication_date),
             "pdf_url": get_citation_pdf_url(file_objs, pub.project_id, request),
             "abstract_url": schema_org_json.get("url"),

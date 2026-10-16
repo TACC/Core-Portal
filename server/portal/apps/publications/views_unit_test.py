@@ -18,6 +18,19 @@ DIR = "portal.apps.publications.views"
 pytestmark = pytest.mark.django_db
 
 
+def test_publication_listing_flags_whether_each_publication_is_indexable(client, authenticated_user):
+    """The listing keeps a first publish that's still in progress, for the workbench, but flags it so
+    DPMP's public Browse page can leave it out (PublishedDatasetsBrowse.jsx)."""
+    Publication.objects.create(project_id="test.project-1", value={"projectId": "p1"}, tree={})
+    Publication.objects.create(project_id="test.project-2", value={"projectId": "p2"}, tree={}, is_indexable=False)
+
+    response = client.get(reverse("publications_api:publication_listing"))
+
+    assert response.status_code == 200
+    listed = {publication["id"]: publication["is_indexable"] for publication in response.json()["response"]}
+    assert listed == {"p1": True, "p2": False}
+
+
 @pytest.fixture
 def mock_version_steps(mocker):
     mocker.patch(f"{DIR}.get_project_for_user")

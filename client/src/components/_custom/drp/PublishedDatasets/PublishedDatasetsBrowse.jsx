@@ -54,11 +54,17 @@ function PublishedDatasetsBrowse() {
   useEffect(() => {
     if (!publications) return;
 
+    // A first publish that's still in progress isn't listed, matching the
+    // sitemap and the server-rendered catalog.
+    const listedPublications = publications.filter(
+      (pub) => pub.is_indexable !== false
+    );
+
     // Only perform image validation in pprd and dev environment
     if (isDebug) {
       setFilteredPublicationsLoading(true);
       Promise.all(
-        publications.map((pub) => {
+        listedPublications.map((pub) => {
           return new Promise((resolve) => {
             if (
               !pub.cover_image ||
@@ -86,7 +92,7 @@ function PublishedDatasetsBrowse() {
         });
     } else {
       // In production, use all publications without validation
-      setFilteredPublications(publications);
+      setFilteredPublications(listedPublications);
     }
   }, [publications]);
 
