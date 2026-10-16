@@ -67,16 +67,19 @@ const ManageAccountView = () => {
         isLoading ? (
           <LoadingSpinner />
         ) : (
-          <Suspense>
-            <ProfileInformation />
-            {!hideApps && (profileData?.licenses ?? []).length > 0 && (
-              <Licenses />
-            )}
-            {!hideDataFiles && (profileData?.integrations ?? []).length > 0 && (
-              <Integrations />
-            )}
-            <PasswordInformation />
-          </Suspense>
+          !!profileData && (
+            <Suspense>
+              <ProfileInformation />
+              {!hideApps && (profileData?.licenses ?? []).length > 0 && (
+                <Licenses />
+              )}
+              {!hideDataFiles &&
+                (profileData?.integrations ?? []).length > 0 && (
+                  <Integrations />
+                )}
+              <PasswordInformation />
+            </Suspense>
+          )
         )
       }
       contentClassName={styles.panels}

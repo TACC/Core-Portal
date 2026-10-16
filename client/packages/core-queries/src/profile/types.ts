@@ -40,7 +40,7 @@ export type TProfileIntegration = {
   activated: string;
   connect: string;
   disconnect: string;
-  error: string;
+  error?: string;
 };
 
 export type TProfileResponse = {

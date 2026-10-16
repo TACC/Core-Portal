@@ -25,6 +25,25 @@ export const profileHandlerWithGoogleDrive = http.get(
   }
 );
 
+export const profileHandlerWithIntegrationError = http.get(
+  '/accounts/api/profile/data',
+  () => {
+    return HttpResponse.json({
+      ...profileJson,
+      integrations: [
+        {
+          label: 'Google Drive',
+          description: 'test description',
+          activated: true,
+          disconnect: 'https://disconnect.com',
+          connect: 'https://google.com',
+          error: 'SETUP_ERROR',
+        },
+      ],
+    });
+  }
+);
+
 export const profileHandlerWithIntegration = http.get(
   '/accounts/api/profile/data',
   () => {
