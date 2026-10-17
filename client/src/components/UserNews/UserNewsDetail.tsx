@@ -13,9 +13,7 @@ const UserNewsDetail = () => {
 
   if (isPending) return <LoadingSpinner />;
   if (isError)
-    return (
-      <p className={styles['news-message']}>Unable to load user updates</p>
-    );
+    return <p className={styles['news-message']}>Unable to load user news</p>;
 
   const selectedNews = data?.find((newsItem) => String(newsItem.id) === id);
 

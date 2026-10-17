@@ -34,9 +34,7 @@ describe('UserNewsBrowse', () => {
     );
 
     const { findByText } = renderComponent(<UserNewsBrowse />, store);
-    expect(
-      await findByText(/Unable to load user updates/i)
-    ).toBeInTheDocument();
+    expect(await findByText(/Unable to load user news/i)).toBeInTheDocument();
   });
 
   it('renders heading, date label, and clickable title link', async () => {
@@ -44,7 +42,7 @@ describe('UserNewsBrowse', () => {
       <UserNewsBrowse />,
       store
     );
-    await findByText(/User Updates/i);
+    await findByText(/User News/i);
     expect(
       getByRole('link', {
         name: /TACC Resource Login and Job Submissions/,

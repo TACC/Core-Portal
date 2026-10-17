@@ -161,7 +161,7 @@ function DashboardTickets() {
 function DashboardUserNews() {
   return (
     <SectionTableWrapper
-      header="User Updates"
+      header="User News"
       headerActions={
         <span>
           <Link
