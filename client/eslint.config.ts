@@ -7,7 +7,15 @@ import { fixupConfigRules } from '@eslint/compat';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import { defineConfig, globalIgnores } from 'eslint/config';
 export default defineConfig([
-  globalIgnores(['**/node_modules', '**/coverage', '**/build', '**/dist']),
+  globalIgnores([
+    '**/node_modules',
+    '**/coverage',
+    '**/build',
+    '**/dist',
+    'packages/core-components/components/ui',
+    'packages/core-components/lib',
+    'packages/core-components/hooks',
+  ]),
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
   },
