@@ -9,6 +9,7 @@ from celery import shared_task
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction
 
 from portal.apps.projects.models.project_metadata import ProjectMetadata
@@ -551,7 +552,7 @@ def upload_metadata_file(project_id: str, project_json: str):
     client = service_account()
     client.files.mkdir(systemId=published_root, path=f"/archive/{project_id}")
     with StringIO() as f:
-        json.dump(project_json, f, ensure_ascii=False, indent=4)
+        json.dump(project_json, f, ensure_ascii=False, indent=4, cls=DjangoJSONEncoder)
         f.seek(0)
         f.name = upload_name
         client.files.insert(systemId=published_root, path=upload_full_path, file=f)
@@ -1001,7 +1002,7 @@ def send_publication_accepted_email_to_authors(self, project_id):
     """
     Alert project authors that their request has been accepted.
     """
-    user_emails = get_project_user_emails(project_id)
+    user_emails = get_project_user_emails(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}")
     for user_email in user_emails:
         email_body = f"""
             <p>Hello,</p>
