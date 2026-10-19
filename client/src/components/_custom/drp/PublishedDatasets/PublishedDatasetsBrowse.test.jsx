@@ -1,6 +1,6 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import renderComponent, { workbenchConfig } from 'utils/testing';
 import PublishedDatasetsBrowse from './PublishedDatasetsBrowse';
 
@@ -41,5 +41,41 @@ describe('PublishedDatasetsBrowse', () => {
     expect(screen.getByText('Live dataset')).toBeDefined();
     expect(screen.getByText('Unflagged dataset')).toBeDefined();
     expect(screen.queryByText('In progress')).toBeNull();
+  });
+
+  it('leaves out publications without a cover image in debug', async () => {
+    const store = mockStore({
+      publications: {
+        listing: {
+          loading: false,
+          error: null,
+          publications: [
+            {
+              ...publication('drp.project.published.DRP-1', 'No cover', true),
+              cover_image: '',
+            },
+            {
+              ...publication('drp.project.published.DRP-2', 'Default', true),
+              cover_image: 'media/default/cover_image/default_logo.png',
+            },
+          ],
+        },
+      },
+      systems: { storage: { configuration: [] } },
+    });
+    const config = {
+      ...workbenchConfig,
+      config: { ...workbenchConfig.config, debug: true },
+    };
+
+    renderComponent(<PublishedDatasetsBrowse />, store, undefined, config);
+
+    // The spinner clears once every cover image has been checked.
+    await waitFor(() =>
+      expect(screen.queryByTestId('loading-spinner')).toBeNull()
+    );
+    expect(screen.queryByText('No cover')).toBeNull();
+    expect(screen.queryByText('Default')).toBeNull();
+    expect(document.querySelector('.c-card-list')).toBeNull();
   });
 });
