@@ -3,10 +3,13 @@
 (get_citation_context).
 """
 
+import calendar
 import copy
+import datetime
 import json
 import logging
 import mimetypes
+import re
 from urllib.parse import quote
 
 from django.conf import settings
@@ -204,6 +207,95 @@ def _get_date_published(base_meta, project_id):
     if stored:
         logger.warning(f"Publication {project_id} has a publication date that isn't an ISO date: {stored!r}.")
     return stored
+
+
+def _get_entity_values(pub):
+    """The `value` of every node in the publication's `tree` -- the project root's and each
+    entity's, which publish_project's _add_values_to_tree copies in (see get_publication_file_objs).
+    """
+
+    return [node.get("value") or {} for node in (pub.tree or {}).get("nodes", [])]
+
+
+def _get_text(value, key):
+    """An entity value's free-text field, trimmed, or "" when it's unset or not a string."""
+
+    text = value.get(key)
+    return text.strip() if isinstance(text, str) else ""
+
+
+def _get_spatial_coverage(entity_values):
+    """A name-only schema.org Place for each distinct location an entity names, for
+    `spatialCoverage`. DPMP's samples (DrpSampleMetadata) carry these as free text, with no
+    coordinates, so there's no `geo` to give: each sample's `geographical_location`, or failing
+    that its coarser `geographic_origin` (e.g. the celestial body of an extraterrestrial sample).
+    """
+
+    names = []
+    for value in entity_values:
+        name = _get_text(value, "geographicalLocation") or _get_text(value, "geographicOrigin")
+        if name and name not in names:
+            names.append(name)
+    return [{"@type": "Place", "name": name} for name in names]
+
+
+def _get_iso_8601_date_bounds(text):
+    """The first and last day an ISO 8601 year ("2020"), year-month ("2020-05"), date or date-time
+    covers, or None when `text` isn't one."""
+
+    # fromisoformat also takes a space between the date and the time, which ISO 8601 doesn't.
+    if not text or any(char.isspace() for char in text):
+        return None
+    try:
+        if re.fullmatch(r"\d{4}", text):
+            year = int(text)
+            return datetime.date(year, 1, 1), datetime.date(year, 12, 31)
+        if re.fullmatch(r"\d{4}-\d{2}", text):
+            year, month = (int(part) for part in text.split("-"))
+            return datetime.date(year, month, 1), datetime.date(year, month, calendar.monthrange(year, month)[1])
+        day = datetime.datetime.fromisoformat(text).date()
+    except ValueError:
+        return None
+    return day, day
+
+
+def _get_iso_8601_coverage(text):
+    """Parse an ISO 8601 date (see _get_iso_8601_date_bounds) or "start/end" interval of two of
+    them into (first day, last day, start text, end text), or None when `text` is neither, or is
+    an interval that ends before it starts."""
+
+    parts = text.split("/")
+    if len(parts) > 2:
+        return None
+    bounds = [_get_iso_8601_date_bounds(part) for part in parts]
+    if None in bounds:
+        return None
+    first_day, last_day = bounds[0][0], bounds[-1][1]
+    if first_day > last_day:
+        return None
+    return first_day, last_day, parts[0], parts[-1]
+
+
+def _get_temporal_coverage(entity_values):
+    """The span of every entity's `date_of_collection` (DPMP's samples, DrpSampleMetadata), for
+    `temporalCoverage`: the date itself when there's only one, or a "start/end" ISO 8601 interval
+    from the earliest to the latest. The form takes free text, so a value that isn't ISO 8601 is
+    left out rather than guessed at. Not logged: those are expected in legacy DPMP metadata, and a
+    warning would fire on every page render and sitemap build. `date_of_creation` is left out too:
+    when an artificial or computer-generated sample was made says nothing about the period its
+    data covers.
+    """
+
+    coverages = []
+    for value in entity_values:
+        coverage = _get_iso_8601_coverage(_get_text(value, "dateOfCollection"))
+        if coverage:
+            coverages.append(coverage)
+    if not coverages:
+        return None
+    start_text = min(coverages, key=lambda coverage: coverage[0])[2]
+    end_text = max(coverages, key=lambda coverage: coverage[1])[3]
+    return start_text if start_text == end_text else f"{start_text}/{end_text}"
 
 
 def _named_node(node_type, name, url):
@@ -510,6 +602,7 @@ def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=Fals
     # Root-level and entity-node files together -- see get_unique_publication_file_objs.
     if file_objs is None:
         file_objs = get_unique_publication_file_objs(pub)
+    entity_values = _get_entity_values(pub)
 
     # A metadata-only / externally-hosted publication can legitimately have no files at all, and
     # so is never a Croissant candidate. Having files that failed to make it into `distribution`
@@ -597,6 +690,10 @@ def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=Fals
         "publisher": _named_node("Organization", publisher_name, f"{get_publication_origin(request)}/"),
         # Trimmed list, the same one DataCite's `subjects` gets (projects/schema_models/keywords.py).
         "keywords": normalize_keywords(base_meta.get("keywords")),
+        # Both recommended by Google's Dataset guidance, and both sourced from the entities' metadata
+        # in `tree` (DPMP's samples) rather than the project's -- see the helpers' docstrings.
+        "spatialCoverage": _get_spatial_coverage(entity_values),
+        "temporalCoverage": _get_temporal_coverage(entity_values),
         # Date only: publish_project stores a full timestamp with no timezone, and DataCite's Issued
         # date and citation_publication_date are both the date alone.
         "datePublished": _get_date_published(base_meta, project_id),

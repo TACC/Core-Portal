@@ -38,6 +38,7 @@ from portal.apps.public_data.schema_org import (
     _format_content_size,
     _get_archive_file_object,
     _get_distribution,
+    _get_iso_8601_coverage,
     _get_license,
     _get_orcid_same_as,
     _get_record_sets,
@@ -3664,10 +3665,16 @@ def test_get_schema_org_json_passes_mlcroissant_validation(rf, settings, publica
             {"type": "dir", "name": "raw", "path": "/raw"},
         ]
     )
+    publication.tree = sample_tree(
+        {"geographicalLocation": "Austin, TX", "dateOfCollection": "2019-06-01"},
+        {"geographicalLocation": "Houston, TX", "dateOfCollection": "2020-03"},
+    )
     publication.save()
 
     schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
     assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.1"
+    assert schema["spatialCoverage"]
+    assert schema["temporalCoverage"]
     assert schema["recordSet"]
     # No ZIP here, so the directory is left out; the archived test above covers FileSets.
     assert not any(_has_type(entry, "cr:FileSet") for entry in schema["distribution"])
@@ -3838,3 +3845,109 @@ def test_only_the_landing_mount_root_is_the_catalog(client, settings, prefix, pa
     assert response.status_code == 200
     assert "catalog_datasets" not in response.context
     assert ROBOTS_META.findall(response.content.decode()) == ["noindex, follow"]
+
+
+# ---------------------------------------------------------------------------
+# spatialCoverage / temporalCoverage
+# ---------------------------------------------------------------------------
+
+
+def sample_tree(*sample_values):
+    """A publication `tree` with the project root and one sample node per value, stored camelCase
+    as publish_project's _add_values_to_tree copies them in."""
+
+    nodes = [{"id": "NODE_ROOT", "value": valid_base_meta()}]
+    nodes += [
+        {"id": f"sample-{index}", "value": {"name": f"Sample {index}", "dataType": "sample", **value}}
+        for index, value in enumerate(sample_values)
+    ]
+    return {"nodes": nodes}
+
+
+def test_get_schema_org_json_spatial_coverage_is_a_name_only_place_per_distinct_location(rf, publication):
+    publication.tree = sample_tree(
+        {"geographicalLocation": " Austin, TX ", "geographicOrigin": "Earth"},
+        # No geographical_location, so the coarser geographic_origin.
+        {"geographicOrigin": "Mars"},
+        {"geographicalLocation": "Austin, TX"},
+        {"geographicalLocation": "   "},
+        {},
+    )
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
+
+    assert schema["spatialCoverage"] == [
+        {"@type": "Place", "name": "Austin, TX"},
+        {"@type": "Place", "name": "Mars"},
+    ]
+
+
+@pytest.mark.parametrize(
+    "dates,expected",
+    [
+        (["2019-06-01"], "2019-06-01"),
+        (["2019-06-01T10:30:00Z"], "2019-06-01T10:30:00Z"),
+        (["2019"], "2019"),
+        (["2019-06"], "2019-06"),
+        (["2018/2019-06"], "2018/2019-06"),
+        (["2019-06-01", "2018-02-03", "2019-01-01"], "2018-02-03/2019-06-01"),
+        # A year runs from its first day to its last, so it spans any date within it.
+        (["2019-06-01", "2019"], "2019"),
+        (["2019-06-01", "2019-06-01/2020"], "2019-06-01/2020"),
+        (["2019-06-01", "2019-06-01"], "2019-06-01"),
+        # Only the ISO 8601 ones.
+        (["June 2019", "2020-01-02", "n/a"], "2020-01-02"),
+    ],
+)
+def test_get_schema_org_json_temporal_coverage_spans_iso_8601_collection_dates(rf, publication, dates, expected):
+    publication.tree = sample_tree(*({"dateOfCollection": date} for date in dates))
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
+
+    assert schema["temporalCoverage"] == expected
+
+
+def test_get_schema_org_json_temporal_coverage_ignores_date_of_creation(rf, publication):
+    publication.tree = sample_tree({"dateOfCreation": "2019-06-01"})
+    publication.save()
+
+    assert "temporalCoverage" not in get_schema_org_json(publication, publication.project_id, make_request(rf))
+
+
+@pytest.mark.parametrize(
+    "tree",
+    [
+        {},
+        {"nodes": [{"id": "NODE_ROOT"}, {"id": "x", "value": None}]},
+        sample_tree({"geographicalLocation": "", "dateOfCollection": "last summer"}),
+    ],
+)
+def test_get_schema_org_json_omits_coverage_without_usable_sample_metadata(rf, publication, tree):
+    publication.tree = tree
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
+
+    assert "spatialCoverage" not in schema
+    assert "temporalCoverage" not in schema
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "",
+        "June 2019",
+        "06/01/2019",
+        "2019-13",
+        "2019-02-30",
+        "2019-06-01 10:30",
+        "2020/2019",
+        "2019/",
+        "2018/2019/2020",
+        "0000",
+    ],
+)
+def test_get_iso_8601_coverage_rejects_non_iso_8601_text(text):
+    assert _get_iso_8601_coverage(text) is None
