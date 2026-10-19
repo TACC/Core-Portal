@@ -68,7 +68,7 @@
   to list) is indexable too, and names the publisher the same way.
 {% endcomment %}
 {% block robots %}{% if citation_context or catalog_datasets %}<meta name="robots" content="index, follow, max-image-preview:large">{% elif noindex_publication %}<meta name="robots" content="noindex, follow">{% else %}{{ block.super }}{% endif %}{% endblock %}
-{% block title %}{% if citation_context.entities.0.title %}{{ citation_context.entities.0.title }} | {{ publisher|default:settings.PORTAL_NAMESPACE }}{% elif catalog_datasets %}Published datasets | {{ publisher|default:settings.PORTAL_NAMESPACE }}{% else %}{{ settings.PORTAL_NAMESPACE }} Workbench{% endif %}{% endblock %}
+{% block title %}{% if citation_context.entities.0.title %}{{ citation_context.entities.0.title }} | {{ publisher|default:settings.PORTAL_NAMESPACE }}{% elif catalog_datasets %}Published datasets | {{ publisher|default:settings.PORTAL_NAMESPACE }}{% else %}Workbench{% endif %}{% endblock %}
 {% block meta_description %}{% if citation_context.entities.0.description %}{{ citation_context.entities.0.description|truncatechars:160 }}{% elif catalog_datasets %}Browse the research datasets published by {{ publisher|default:settings.PORTAL_NAMESPACE }}.{% else %}{{ block.super }}{% endif %}{% endblock %}
 {% block og_title %}{% if citation_context.entities.0.title %}{{ citation_context.entities.0.title }} | {{ publisher|default:settings.PORTAL_NAMESPACE }}{% elif catalog_datasets %}Published datasets | {{ publisher|default:settings.PORTAL_NAMESPACE }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 {% block og_site_name %}{% if citation_context or catalog_datasets %}{{ publisher|default:settings.PORTAL_NAMESPACE }}{% else %}{{ block.super }}{% endif %}{% endblock %}

@@ -2952,7 +2952,8 @@ def test_index_view_renders_title_and_description_from_publication(client, publi
 @pytest.mark.parametrize("on_publication_route", [True, False])
 def test_index_view_names_publisher_on_landing_pages_only(client, settings, publication, on_publication_route):
     """A landing page's title suffix and og:site_name name the publisher; every app-shell page keeps
-    the portal namespace. (The catalog page names the publisher too -- see its own tests.)"""
+    the plain "Workbench" title and the portal namespace as og:site_name. (The catalog page names the
+    publisher too -- see its own tests.)"""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     if on_publication_route:
         url = get_landing_page_path(publication.project_id, publication.version)
@@ -2967,7 +2968,7 @@ def test_index_view_names_publisher_on_landing_pages_only(client, settings, publ
         assert title == og_title == "Test Dataset | Test Publisher"
         assert site_name == "Test Publisher"
     else:
-        assert title == og_title == "test Workbench"
+        assert title == og_title == "Workbench"
         assert site_name == "test"
 
 
@@ -3100,7 +3101,7 @@ def test_index_view_head_values_have_no_surrounding_whitespace(client, publicati
     if on_publication_route:
         assert values[:2] == ["Test Dataset | test", "index, follow, max-image-preview:large"]
     else:
-        assert values[:2] == ["test Workbench", "noindex, follow"]
+        assert values[:2] == ["Workbench", "noindex, follow"]
 
 
 def test_index_view_mid_publish_publication_is_noindex_without_metadata(client, publication):

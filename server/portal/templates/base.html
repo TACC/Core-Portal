@@ -65,7 +65,7 @@
       different host than the one serving this request).
     {% endcomment %}
     <meta property="og:url" content="{% if canonical_url %}{{ canonical_url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endif %}">
-    <meta property="og:title" content="{% block og_title %}{{ settings.PORTAL_NAMESPACE }} Workbench{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Workbench{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Explore published research datasets and computational tools on {{ settings.PORTAL_NAMESPACE }}.{% endblock %}">
     {% block og_image %}{% endblock %}
     {% comment %}
