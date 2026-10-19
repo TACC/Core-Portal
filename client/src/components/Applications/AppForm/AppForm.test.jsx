@@ -1,5 +1,6 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
+import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import { AppSchemaForm, AppDetail } from './AppForm';
@@ -26,6 +27,11 @@ import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { userFixture } from '../../../redux/sagas/fixtures/users.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 import timekeeper from 'timekeeper';
+import { vi } from 'vitest';
+
+vi.mock('hooks/system-monitor/useSystemMonitor', () => ({
+  useSystemQueue: vi.fn().mockResolvedValue([]),
+}));
 
 const frozenDate = '2023-10-01';
 const mockStore = configureStore();
