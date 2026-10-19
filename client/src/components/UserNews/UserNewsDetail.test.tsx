@@ -62,9 +62,7 @@ describe('UserNewsDetail', () => {
       store,
       history
     );
-    expect(
-      await findByText(/Unable to load user updates/i)
-    ).toBeInTheDocument();
+    expect(await findByText(/Unable to load user news/i)).toBeInTheDocument();
   });
 
   it('renders selected detail timeline and passes sanitize false', async () => {
