@@ -343,8 +343,8 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
 
     # DataCite's schema requires an IETF BCP-47 / ISO 639-1 code here
     # (e.g. "en"), not the language's English name -- matches the
-    # DC.language/`@language` value already emitted elsewhere for this same
-    # publication (public_data/schema_org.py, base.html).
+    # DC.language/citation_language/`inLanguage` value already emitted elsewhere
+    # for this same publication (public_data/schema_org.py, base.html).
     datacite_json["language"] = "en"
 
     datacite_json["identifiers"] = [

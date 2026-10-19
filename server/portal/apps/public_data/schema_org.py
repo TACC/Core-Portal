@@ -690,6 +690,10 @@ def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=Fals
         "publisher": _named_node("Organization", publisher_name, f"{get_publication_origin(request)}/"),
         # Trimmed list, the same one DataCite's `subjects` gets (projects/schema_models/keywords.py).
         "keywords": normalize_keywords(base_meta.get("keywords")),
+        # Recommended by Google's Dataset guidance. The context's `@language` only tags this
+        # document's own strings; this states the dataset's language. The same "en" as DC.language,
+        # citation_language (index_base.html) and DataCite's `language` (datacite_operations.py).
+        "inLanguage": "en",
         # Both recommended by Google's Dataset guidance, and both sourced from the entities' metadata
         # in `tree` (DPMP's samples) rather than the project's -- see the helpers' docstrings.
         "spatialCoverage": _get_spatial_coverage(entity_values),
@@ -851,9 +855,15 @@ def get_citation_context(pub, request):
                 )
                 if name
             ],
-            # One "Last, First" string per author -- the template emits one <meta
-            # name="citation_author"> tag per entry, as Scholar's guide asks for.
-            "citation_authors": [name for name in (format_citation_author(author) for author in authors) if name],
+            # One "Last, First" name per author -- the template emits one <meta
+            # name="citation_author"> tag per entry, as Scholar's guide asks for -- with the
+            # author's own institution (as in the JSON-LD `affiliation`) for the
+            # citation_author_institution tag that follows it, or "" for none.
+            "citation_authors": [
+                {"name": name, "institution": (author.get("institution") or "").strip()}
+                for author, name in ((author, format_citation_author(author)) for author in authors)
+                if name
+            ],
             # For DC.date: the same "YYYY-MM-DD" date already resolved for the JSON-LD
             # `datePublished` (DataCite's Issued date too), not the stored timestamp.
             "publication_date": schema_org_json.get("datePublished"),

@@ -1869,6 +1869,7 @@ def test_get_schema_org_json_success(rf, settings, publication):
         "url": "http://testserver/published-datasets/",
     }
     assert schema["version"] == "3"
+    assert schema["inLanguage"] == "en"
     assert schema["dateModified"] == publication.last_updated.isoformat()
     assert len(schema["distribution"]) == 1
     assert len(schema["recordSet"]) == 1
@@ -2342,7 +2343,7 @@ def test_get_citation_context(rf, settings, publication):
     assert entity["identifier"] == schema_org_json["identifier"]
     assert entity["license"] == schema_org_json["license"]
     assert entity["dc_creators"] == ["Ada Lovelace"]
-    assert entity["citation_authors"] == ["Lovelace, Ada"]
+    assert entity["citation_authors"] == [{"name": "Lovelace, Ada", "institution": ""}]
     assert entity["citation_date"] == "2024/05/01"
     assert entity["abstract_url"] == schema_org_json["url"]
     assert citation_meta["cover_image_url"] is None  # PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME unset
@@ -2887,12 +2888,37 @@ def test_index_view_renders_citation_and_dc_meta_tags(client, settings, publicat
 
     assert '<meta name="citation_title" content="Test Dataset">' in body
     assert '<meta name="citation_author" content="Lovelace, Ada">' in body
+    assert '<meta name="citation_language" content="en">' in body
+    assert "citation_author_institution" not in body
     assert '<meta name="citation_doi" content="10.1234/test-doi">' in body
     assert '<meta name="citation_publisher" content="Test Publisher">' in body
     assert '<meta name="DC.title" content="Test Dataset">' in body
     assert '<meta name="DC.creator" content="Ada Lovelace">' in body
     assert '<meta name="DC.rights" content="https://opendatacommons.org/licenses/by/1-0/">' in body
     assert '<meta name="DC.identifier" content="https://doi.org/10.1234/test-doi">' in body
+
+
+def test_index_view_follows_each_citation_author_with_their_own_institution(client, publication):
+    """Highwire Press tags pair an institution with the citation_author just before it."""
+    publication.value = valid_base_meta(
+        authors=[
+            {**full_author(), "institution": " University of Texas at Austin "},
+            {"first_name": "Grace", "last_name": "Hopper", "institution": ""},
+            {"first_name": "Alan", "last_name": "Turing", "institution": "University of Cambridge"},
+        ]
+    )
+    publication.save()
+
+    body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+
+    tags = re.findall(r'<meta name="(citation_author(?:_institution)?)" content="([^"]*)">', body)
+    assert tags == [
+        ("citation_author", "Lovelace, Ada"),
+        ("citation_author_institution", "University of Texas at Austin"),
+        ("citation_author", "Hopper, Grace"),
+        ("citation_author", "Turing, Alan"),
+        ("citation_author_institution", "University of Cambridge"),
+    ]
 
 
 @pytest.mark.parametrize("publisher", [None, "", "  "])
