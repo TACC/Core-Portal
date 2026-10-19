@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { Button, FormField, InlineMessage, SectionMessage } from '_common';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import { useTrash } from 'hooks/datafiles/mutations';
@@ -10,7 +10,7 @@ import { useSelectedFiles, useModal } from 'hooks/datafiles';
 import styles from './DataFilesCompressModal.module.scss';
 
 const DataFilesTrashModal = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
 
@@ -30,7 +30,7 @@ const DataFilesTrashModal = () => {
   const toggle = () => toggleModal({ operation: 'trash', props: {} });
 
   const reloadPage = () => {
-    history.push(location.pathname);
+    navigate(location.pathname);
   };
 
   const trashCallback = () => {

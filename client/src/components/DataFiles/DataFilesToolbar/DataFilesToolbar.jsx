@@ -206,6 +206,19 @@ const DataFilesToolbar = ({ scheme, api }) => {
     toggle({ operation: 'trash', props: { selectedFiles, homeDir, destSystem } });
   };
 
+  const trashCallback = useCallback(() => {
+    // Specific handling for shared workspaces.
+    const homeDir = selectedSystem?.homeDir || '';
+    const destSystem = selectedFiles[0]?.system || selectedSystem?.system;
+    if (!destSystem) return;
+
+    trash({
+      destSystem,
+      homeDir,
+      callback: reloadPage,
+    });
+  }, [selectedFiles, selectedSystem, reloadPage, status]);
+
   const toggleExtractModal = () =>
     toggle({ operation: 'extract', props: { selectedFile: selectedFiles[0] } });
 
@@ -271,19 +284,6 @@ const DataFilesToolbar = ({ scheme, api }) => {
       });
     }
   };
-
-  const trashCallback = useCallback(() => {
-    // Specific handling for shared workspaces.
-    const homeDir = selectedSystem?.homeDir || '';
-    const destSystem = selectedFiles[0]?.system || selectedSystem?.system;
-    if (!destSystem) return;
-
-    trash({
-      destSystem,
-      homeDir,
-      callback: reloadPage,
-    });
-  }, [selectedFiles, selectedSystem, reloadPage, status]);
 
   const empty = () => {
     dispatch({
