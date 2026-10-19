@@ -9,10 +9,8 @@
   "imports": {
     "#/components/*": "./components/*.tsx",
     "#/hooks/*": "./hooks/*.ts",
-    "#/lib/*": [
-      "./lib/*.ts",
-      "./lib/*.tsx"
-    ]
+    "#/lib/*": "./lib/*.ts",
+    "#/lib/highlighter": "./lib/highlighter.tsx"
   },
   "exports": {
     "./components/*": "./components/*.tsx",

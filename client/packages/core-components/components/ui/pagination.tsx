@@ -55,7 +55,10 @@ function PaginationLink({
     <Button
       variant={isActive ? 'outline' : 'ghost'}
       size={size}
-      className={cn(className)}
+      className={cn(
+        'tw:no-underline, tw:hover:no-underline tw:text-inherit',
+        className
+      )}
       nativeButton={false}
       render={
         <a
@@ -72,6 +75,7 @@ function PaginationLink({
 function PaginationPrevious({
   className,
   text = 'Previous',
+  size = 'default',
   ...props
 }: React.ComponentProps<typeof PaginationLink> & { text?: string }) {
   return (
@@ -90,6 +94,7 @@ function PaginationPrevious({
 function PaginationNext({
   className,
   text = 'Next',
+  size = 'default',
   ...props
 }: React.ComponentProps<typeof PaginationLink> & { text?: string }) {
   return (
