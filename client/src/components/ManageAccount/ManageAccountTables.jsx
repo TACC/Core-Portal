@@ -1,13 +1,14 @@
 import React, { useMemo } from 'react';
 import { useTable } from 'react-table';
 import { Modal, ModalHeader, ModalBody, Table } from 'reactstrap';
-import { useSelector, useDispatch } from 'react-redux';
 import { shape, string, arrayOf, bool } from 'prop-types';
 import { Button, SectionHeader, SectionTableWrapper } from '_common';
 import { IntegrationModal } from './ManageAccountModals';
 import './ManageAccount.scss';
 import styles from './ManageAccountTables.module.css';
 import TicketCreateModal from '../Tickets/TicketCreateModal';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { profileQueries } from '@tacc/core-queries';
 
 export const TableTemplate = ({ attributes }) => {
   const { getTableProps, rows, prepareRow } = useTable(attributes);
@@ -52,11 +53,10 @@ TableTemplate.propTypes = {
 };
 
 export const ProfileInformation = () => {
-  const dispatch = useDispatch();
   const {
     data: { demographics },
-    errors,
-  } = useSelector((state) => state.profile);
+  } = useSuspenseQuery(profileQueries.getProfile());
+
   const columns = useMemo(
     () => [
       {
@@ -71,8 +71,6 @@ export const ProfileInformation = () => {
     []
   );
   const data = useMemo(() => [demographics], []);
-  const openModal = () =>
-    dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { required: true } });
   const hiddenColumns = Object.keys(demographics).filter(
     (key) => !demographics[key]
   );
@@ -158,7 +156,9 @@ LicenseCell.propTypes = {
 };
 
 export const Licenses = () => {
-  const { licenses } = useSelector((state) => state.profile.data);
+  const {
+    data: { licenses },
+  } = useSuspenseQuery(profileQueries.getProfile());
 
   const columns = useMemo(
     () =>
@@ -169,7 +169,7 @@ export const Licenses = () => {
           Cell: LicenseCell,
         };
       }),
-    []
+    [licenses]
   );
   const data = useMemo(() => licenses, [licenses]);
   return (
@@ -227,7 +227,9 @@ IntegrationCell.propTypes = {
 };
 
 export const Integrations = () => {
-  const { integrations } = useSelector((state) => state.profile.data);
+  const {
+    data: { integrations },
+  } = useSuspenseQuery(profileQueries.getProfile());
   const columns = useMemo(
     () =>
       integrations.map((app) => ({
@@ -235,7 +237,7 @@ export const Integrations = () => {
         accessor: () => app,
         Cell: IntegrationCell,
       })),
-    []
+    [integrations]
   );
   const data = useMemo(() => integrations, [integrations]);
   return (
@@ -248,10 +250,22 @@ export const Integrations = () => {
   );
 };
 export const PasswordInformation = () => {
-  const lastChanged = useSelector((state) => {
-    const { data } = state.profile;
-    return data.passwordLastChanged;
-  });
+  const {
+    data: { history },
+  } = useSuspenseQuery(profileQueries.getProfile());
+
+  const lastChanged = useMemo(() => {
+    const mostRecentChangeEvent = history
+      .filter(
+        (entry) =>
+          entry.comment.toLowerCase().includes('password') &&
+          entry.comment.toLowerCase().includes('change')
+      )
+      .pop().timestamp;
+    const output = new Date(mostRecentChangeEvent).toLocaleDateString();
+    return output;
+  }, [history]);
+
   return (
     <article>
       <SectionHeader isForList>Password Information</SectionHeader>
