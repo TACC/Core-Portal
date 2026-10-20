@@ -1976,19 +1976,22 @@ def test_get_schema_org_json_uses_full_croissant_1_1_context(rf, publication):
     context = get_schema_org_json(publication, publication.project_id, make_request(rf))["@context"]
 
     # Every key in the Croissant 1.1 spec's @context (Appendix 1), including terms this
-    # document never emits.
+    # document never emits, plus the path/repeated/replace/samplingRate terms that
+    # mlcroissant's reference @context still maps.
     assert set(context) == {
         "@language", "@vocab", "sc", "cr", "rai", "dct", "annotation", "arrayShape", "citeAs",
         "column", "conformsTo", "containedIn", "data", "dataType", "equivalentProperty", "examples",
         "excludes", "extract", "field", "fileProperty", "fileObject", "fileSet", "format", "includes",
-        "isArray", "isLiveDataset", "jsonPath", "key", "md5", "parentField", "recordSet", "references",
-        "regex", "readLines", "sdVersion", "separator", "source", "subField", "transform", "unArchive",
-        "value",
+        "isArray", "isLiveDataset", "jsonPath", "key", "md5", "parentField", "path", "recordSet",
+        "references", "regex", "readLines", "repeated", "replace", "samplingRate", "sdVersion",
+        "separator", "source", "subField", "transform", "unArchive", "value",
     }  # fmt: skip
     assert context["cr"] == "http://mlcommons.org/croissant/"
     assert context["conformsTo"] == "dct:conformsTo"
     assert context["containedIn"] == "cr:containedIn"
     assert context["dataType"] == {"@id": "cr:dataType", "@type": "@vocab"}
+    for term in ("path", "repeated", "replace", "samplingRate"):
+        assert context[term] == f"cr:{term}"
     # https, not the spec's http: mlcroissant rejects a Dataset that isn't https://schema.org/Dataset.
     assert context["@vocab"] == context["sc"] == "https://schema.org/"
 

@@ -85,10 +85,12 @@ CROISSANT_1_1_MEDIA_TYPE = f'application/ld+json; profile="{CROISSANT_1_1}"'
 
 # The Croissant 1.1 spec's JSON-LD @context (Appendix 1), in full, except that schema.org is
 # https://schema.org/ rather than the spec's http://schema.org/: mlcroissant rejects a Dataset whose
-# @vocab doesn't resolve to https://schema.org/Dataset. Every Croissant term this document emits --
-# in `distribution` (cr:FileObject, cr:FileSet and its `containedIn`) or `recordSet` (cr:RecordSet,
-# field/source/extract/fileObject/dataType/column) -- needs its mapping here, or it falls back to
-# the bare @vocab and resolves to a nonexistent "https://schema.org/<term>".
+# @vocab doesn't resolve to https://schema.org/Dataset. It also maps path, repeated, replace and
+# samplingRate, which Appendix 1 omits but mlcroissant's own reference @context still includes.
+# Every Croissant term this document emits -- in `distribution` (cr:FileObject, cr:FileSet and its
+# `containedIn`) or `recordSet` (cr:RecordSet, field/source/extract/fileObject/dataType/column) --
+# needs its mapping here, or it falls back to the bare @vocab and resolves to a nonexistent
+# "https://schema.org/<term>".
 CROISSANT_1_1_CONTEXT = {
     "@language": "en",
     "@vocab": "https://schema.org/",
@@ -120,10 +122,14 @@ CROISSANT_1_1_CONTEXT = {
     "key": "cr:key",
     "md5": "cr:md5",
     "parentField": "cr:parentField",
+    "path": "cr:path",
     "recordSet": "cr:recordSet",
     "references": "cr:references",
     "regex": "cr:regex",
     "readLines": "cr:readLines",
+    "repeated": "cr:repeated",
+    "replace": "cr:replace",
+    "samplingRate": "cr:samplingRate",
     "sdVersion": "cr:sdVersion",
     "separator": "cr:separator",
     "source": "cr:source",
