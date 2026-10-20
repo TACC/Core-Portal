@@ -565,12 +565,13 @@ def get_unique_publication_file_objs(pub):
 def _cap_file_objects(schema_org_json, archive, max_file_objects):
     """Keep the first `max_file_objects` per-file `distribution` entries, plus the ZIP (`archive`),
     and drop any `recordSet` whose source file was cut, so no `fileObject` reference dangles.
+    Returns whether any entry was cut.
     """
 
     archive_id = archive["@id"] if archive else None
     files = [entry for entry in schema_org_json.get("distribution", []) if entry.get("@id") != archive_id]
     if len(files) <= max_file_objects:
-        return
+        return False
     kept = files[:max_file_objects] + ([archive] if archive else [])
     schema_org_json["distribution"] = kept
     kept_ids = {entry["@id"] for entry in kept}
@@ -583,18 +584,18 @@ def _cap_file_objects(schema_org_json, archive, max_file_objects):
         schema_org_json["recordSet"] = record_sets
     else:
         schema_org_json.pop("recordSet", None)
+    return True
 
 
-def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=False, max_file_objects=None):
+def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=False):
     """Build a schema.org/Dataset JSON-LD object for a published project to embed directly in
     the page's <script type="application/ld+json"> tag for Google Dataset Search.
 
     `file_objs` is get_unique_publication_file_objs(pub), for a caller that already has it.
     `file_sets` also lists published directories as cr:FileSets, for the standalone Croissant
     document (see _get_distribution). It never changes whether `conformsTo` is claimed: FileSets
-    are only listed alongside the ZIP, which is listed either way.
-    `max_file_objects` caps the per-file `distribution` entries (see _cap_file_objects). It's
-    applied after `conformsTo` is decided, so the claim reflects every file, as croissant.json does.
+    are only listed alongside the ZIP, which is listed either way. Every file is listed: the
+    landing page's shorter copy is cut by get_citation_context.
     """
 
     base_meta = pub.value
@@ -789,9 +790,6 @@ def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=Fals
                 "encodingFormat": "application/ld+json",
             }
 
-    if max_file_objects is not None:
-        _cap_file_objects(schema_org_json, archive, max_file_objects)
-
     return schema_org_json
 
 
@@ -805,9 +803,16 @@ def get_citation_context(pub, request):
     file_objs = get_unique_publication_file_objs(pub)
     # Built first so its already-resolved `url` and `distribution` (with real, absolute
     # download URLs) can be reused below instead of recomputed.
-    schema_org_json = get_schema_org_json(
-        pub, pub.project_id, request, file_objs, max_file_objects=LANDING_PAGE_MAX_FILE_OBJECTS
-    )
+    schema_org_json = get_schema_org_json(pub, pub.project_id, request, file_objs)
+    # Decided on every file, before the cut below: croissant.json lists them all, so it conforms
+    # whether or not the landing page's shorter copy still does.
+    croissant_conforms = "conformsTo" in schema_org_json
+    archive = _get_archive_file_object(pub, request)
+    if _cap_file_objects(schema_org_json, archive, LANDING_PAGE_MAX_FILE_OBJECTS) and archive is None:
+        # With no ZIP to cover the files that were cut, the page's copy no longer describes the whole
+        # dataset. It stays a valid schema.org Dataset for Google, and croissant.json, linked below,
+        # is its Croissant description.
+        schema_org_json.pop("conformsTo", None)
 
     base_meta = pub.value
     authors = base_meta.get("authors", [])
@@ -821,9 +826,10 @@ def get_citation_context(pub, request):
     # single tags in <head>, not part of the citation_* block. The JSON-LD `image` already
     # resolved it, so the tags and the structured data can't disagree.
     citation_meta["cover_image_url"] = schema_org_json.get("image")
-    # Linked only when the document claims Croissant conformance -- PublicationCroissantView
-    # 404s otherwise, so the page never links a Croissant loader to something it would reject.
-    if "conformsTo" in schema_org_json:
+    # Linked only when croissant.json claims Croissant conformance -- PublicationCroissantView 404s
+    # otherwise, so the page never links a Croissant loader to something it would reject. Even when
+    # the page's own shorter copy doesn't claim it, as then croissant.json is the full description.
+    if croissant_conforms:
         citation_meta["croissant_url"] = get_croissant_url(pub.project_id, request)
     # The web mirror's static copy (see `subjectOf` in get_schema_org_json), linked under the same
     # conditions it's written.

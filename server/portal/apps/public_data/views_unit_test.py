@@ -29,12 +29,14 @@ from portal.apps.public_data.citations import (
 )
 from portal.apps.public_data.links import (
     get_cover_image_url,
+    get_croissant_url,
     get_landing_page_url,
     get_publication_file_url,
     get_publication_origin,
 )
 from portal.apps.public_data.schema_org import (
     SchemaOrgValidationError,
+    _cap_file_objects,
     _format_content_size,
     _get_archive_file_object,
     _get_distribution,
@@ -1570,13 +1572,15 @@ def _many_files(count, columns=None):
     ]
 
 
-def test_schema_org_json_caps_file_objects_but_keeps_archive_and_conforms_to(rf, settings, archived_publication):
-    """The landing page lists only the first files plus the ZIP; croissant.json lists them all."""
+def test_landing_page_caps_file_objects_but_keeps_archive_and_conforms_to(rf, settings, archived_publication):
+    """The landing page lists only the first files plus the ZIP, which covers the rest, so it still
+    claims conformance; croissant.json lists them all."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     archived_publication.value = valid_base_meta(fileObjs=_many_files(5))
     request = make_request(rf)
 
-    capped = get_schema_org_json(archived_publication, archived_publication.project_id, request, max_file_objects=2)
+    with patch("portal.apps.public_data.schema_org.LANDING_PAGE_MAX_FILE_OBJECTS", 2):
+        citation_meta, capped, _ = get_citation_context(archived_publication, request)
     full = get_schema_org_json(archived_publication, archived_publication.project_id, request)
 
     assert [entry["@id"] for entry in capped["distribution"]] == [
@@ -1586,14 +1590,16 @@ def test_schema_org_json_caps_file_objects_but_keeps_archive_and_conforms_to(rf,
     ]
     assert len(full["distribution"]) == 6
     assert capped["conformsTo"] == full["conformsTo"] == "http://mlcommons.org/croissant/1.1"
+    assert citation_meta["croissant_url"] == get_croissant_url(archived_publication.project_id, request)
 
 
 def test_schema_org_json_cap_drops_record_sets_for_cut_files(rf, settings, publication):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     publication.value = valid_base_meta(fileObjs=_many_files(3, columns=[{"name": "x"}]))
 
-    schema = get_schema_org_json(publication, publication.project_id, make_request(rf), max_file_objects=1)
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
 
+    assert _cap_file_objects(schema, None, 1)
     assert [entry["@id"] for entry in schema["distribution"]] == [f"{FILES_URL}f0.csv"]
     assert [record_set["@id"] for record_set in schema["recordSet"]] == [f"{FILES_URL}f0.csv#records"]
 
@@ -1602,19 +1608,66 @@ def test_schema_org_json_cap_leaves_short_lists_alone(rf, settings, archived_pub
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     request = make_request(rf)
 
-    capped = get_schema_org_json(archived_publication, archived_publication.project_id, request, max_file_objects=1)
+    capped = get_schema_org_json(archived_publication, archived_publication.project_id, request)
+    archive = _get_archive_file_object(archived_publication, request)
 
+    assert not _cap_file_objects(capped, archive, 1)
     assert capped == get_schema_org_json(archived_publication, archived_publication.project_id, request)
 
 
-def test_get_citation_context_caps_landing_page_file_objects(rf, settings, publication):
+def test_get_citation_context_capped_without_archive_drops_conforms_to_but_links_croissant(rf, settings, publication):
+    """With no ZIP to cover the files cut from the landing page, its copy doesn't describe the whole
+    dataset, so only croissant.json claims Croissant conformance -- and the page still links it."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     publication.value = valid_base_meta(fileObjs=_many_files(3))
+    request = make_request(rf)
 
     with patch("portal.apps.public_data.schema_org.LANDING_PAGE_MAX_FILE_OBJECTS", 2):
-        _, schema, _ = get_citation_context(publication, make_request(rf))
+        citation_meta, schema, _ = get_citation_context(publication, request)
 
     assert len(schema["distribution"]) == 2
+    assert "conformsTo" not in schema
+    assert get_schema_org_json(publication, publication.project_id, request)["conformsTo"] == (
+        "http://mlcommons.org/croissant/1.1"
+    )
+    assert citation_meta["croissant_url"] == get_croissant_url(publication.project_id, request)
+
+
+def test_get_citation_context_capped_non_conformant_dataset_has_no_croissant_link(rf, settings, publication):
+    """A dataset whose full description doesn't conform (here, a file without a checksum) neither
+    claims it nor links croissant.json, capped or not."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    publication.value = valid_base_meta(fileObjs=[*_many_files(2), {"type": "file", "name": "x.csv", "path": "/x.csv"}])
+
+    with patch("portal.apps.public_data.schema_org.LANDING_PAGE_MAX_FILE_OBJECTS", 1):
+        citation_meta, schema, _ = get_citation_context(publication, make_request(rf))
+
+    assert len(schema["distribution"]) == 1
+    assert "conformsTo" not in schema
+    assert "croissant_url" not in citation_meta
+
+
+def test_capped_landing_page_without_archive_links_a_conformant_croissant_json(client, settings, publication):
+    """End to end: the page's JSON-LD makes no Croissant claim, but links croissant.json, which serves
+    every file and claims it."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    publication.value = valid_base_meta(fileObjs=_many_files(3))
+    publication.save()
+    croissant_path = reverse("publications:croissant", kwargs={"project_id": publication.project_id})
+
+    with patch("portal.apps.public_data.schema_org.LANDING_PAGE_MAX_FILE_OBJECTS", 2):
+        body = client.get(get_landing_page_path(publication.project_id, publication.version)).content.decode()
+        croissant = client.get(croissant_path)
+
+    json_ld = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', body, re.S).group(1))
+    assert len(json_ld["distribution"]) == 2
+    assert "conformsTo" not in json_ld
+    assert re.search(
+        rf'<link rel="alternate" type="application/ld\+json" href="[^"]*{re.escape(croissant_path)}">', body
+    )
+    assert croissant.status_code == 200
+    assert croissant.json()["conformsTo"] == "http://mlcommons.org/croissant/1.1"
+    assert len(croissant.json()["distribution"]) == 3
 
 
 @pytest.mark.parametrize(
