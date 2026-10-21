@@ -629,6 +629,8 @@ def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=Fals
         logger.error(f"{e} Emitting this publication's Dataset without `license` or `conformsTo` meanwhile.")
         license_url = None
 
+    # Whitespace-only counts as unset, as in DataCite's `creators` (datacite_operations.py).
+    institution = (base_meta.get("institution") or "").strip()
     creators = []
     for author in base_meta.get("authors", []):
         given_name = (author.get("first_name") or "").strip()
@@ -645,9 +647,9 @@ def get_schema_org_json(pub, project_id, request, file_objs=None, file_sets=Fals
             creator["givenName"] = given_name
         if family_name:
             creator["familyName"] = family_name
-        # Only the author's own institution: the publication-level `institution` says where the
-        # dataset is hosted, not where each of its authors works.
-        institution = (author.get("institution") or "").strip()
+        # Every author is affiliated with the publication-level `institution`, matching DataCite's
+        # `creators` (datacite_operations.py) and the dataset page; an author's own `institution`,
+        # if any, is ignored.
         if institution:
             creator["affiliation"] = {"@type": "Organization", "name": institution}
         same_as = _get_orcid_same_as(author)
@@ -869,10 +871,10 @@ def get_citation_context(pub, request):
             ],
             # One "Last, First" name per author -- the template emits one <meta
             # name="citation_author"> tag per entry, as Scholar's guide asks for -- with the
-            # author's own institution (as in the JSON-LD `affiliation`) for the
+            # publication-level institution (as in the JSON-LD `affiliation`) for the
             # citation_author_institution tag that follows it, or "" for none.
             "citation_authors": [
-                {"name": name, "institution": (author.get("institution") or "").strip()}
+                {"name": name, "institution": (base_meta.get("institution") or "").strip()}
                 for author, name in ((author, format_citation_author(author)) for author in authors)
                 if name
             ],
