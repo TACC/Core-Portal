@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { LoadingSpinner } from '_common';
 import Searchbar from '_common/Searchbar';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
@@ -21,12 +21,9 @@ function PublishedDatasetsBrowse() {
     },
   } = useWorkbenchConfig();
 
-  const [filteredPublications, setFilteredPublications] = useState([]);
-  const [filteredPublicationsLoading, setFilteredPublicationsLoading] =
-    useState(false);
   const query = queryStringParser.parse(useLocation().search);
 
-  const { error, loading, publications } = useSelector(
+  const { loading, publications } = useSelector(
     (state) => state.publications.listing
   );
 
@@ -35,60 +32,82 @@ function PublishedDatasetsBrowse() {
     shallowEqual
   );
 
-  const selectedSystem = systems.find(
+  const selectedSystemId = systems.find(
     (s) => s.scheme === 'projects' && s.publicationProject === true
-  );
+  )?.system;
 
   useEffect(() => {
     dispatch({
       type: 'PUBLICATIONS_GET_PUBLICATIONS',
       payload: {
         queryString: query.query_string,
-        system: selectedSystem?.system,
+        system: selectedSystemId,
       },
     });
-  }, [dispatch, query.query_string]);
+  }, [dispatch, query.query_string, selectedSystemId]);
+
+  // A first publish that's still in progress isn't listed, matching the
+  // sitemap and the server-rendered catalog.
+  const listedPublications = useMemo(
+    () => (publications || []).filter((pub) => pub.is_indexable !== false),
+    [publications]
+  );
 
   // Workaround to filter out publications that don't have a cover image
-  // Mainly done so we can test pprd properly
+  // Mainly done so we can test pprd properly. Holds the publications whose
+  // image loaded and the list they were checked from, so a result for an
+  // older list is never shown.
+  const [validated, setValidated] = useState({ source: null, results: [] });
+
+  // Only perform image validation in pprd and dev environment
   useEffect(() => {
-    if (!publications) return;
+    if (!isDebug) return;
+    let cancelled = false;
+    Promise.all(
+      listedPublications.map((pub) => {
+        return new Promise((resolve) => {
+          if (
+            !pub.cover_image ||
+            pub.cover_image.includes(
+              'media/default/cover_image/default_logo.png'
+            )
+          ) {
+            return resolve(null);
+          }
 
-    // Only perform image validation in pprd and dev environment
-    if (isDebug) {
-      setFilteredPublicationsLoading(true);
-      Promise.all(
-        publications.map((pub) => {
-          return new Promise((resolve) => {
-            if (
-              !pub.cover_image ||
-              pub.cover_image.includes(
-                'media/default/cover_image/default_logo.png'
-              )
-            ) {
-              return resolve(null);
-            }
-
-            const img = new Image();
-            img.onload = () => resolve(pub);
-            img.onerror = () => resolve(null);
-            img.src = `${BASE_ASSET_URL}/${pub.cover_image}`;
-          });
-        })
-      )
-        .then((results) => {
-          setFilteredPublications(results.filter(Boolean));
-          setFilteredPublicationsLoading(false);
-        })
-        .catch((error) => {
-          console.error(error);
-          setFilteredPublicationsLoading(false);
+          const img = new Image();
+          img.onload = () => resolve(pub);
+          img.onerror = () => resolve(null);
+          img.src = `${BASE_ASSET_URL}/${pub.cover_image}`;
         });
-    } else {
-      // In production, use all publications without validation
-      setFilteredPublications(publications);
-    }
-  }, [publications]);
+      })
+    )
+      .then((results) => {
+        if (!cancelled) {
+          setValidated({
+            source: listedPublications,
+            results: results.filter(Boolean),
+          });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        if (!cancelled) {
+          setValidated({ source: listedPublications, results: [] });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isDebug, listedPublications]);
+
+  const filteredPublicationsLoading =
+    isDebug && validated.source !== listedPublications;
+  // In production, use all publications without validation
+  let filteredPublications = listedPublications;
+  if (isDebug) {
+    filteredPublications = filteredPublicationsLoading ? [] : validated.results;
+  }
 
   return (
     <div className={'o-section'}>

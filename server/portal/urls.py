@@ -27,6 +27,7 @@ from django.views.generic.base import TemplateView
 from impersonate import views as impersonate_views
 
 from portal.apps.auth.views import tapis_oauth as login
+from portal.apps.public_data.views import SitemapView
 from portal.views.views import health_check, serve_docs
 from portal.views.views import project_version as portal_version
 
@@ -98,6 +99,18 @@ urlpatterns = [
     ),
     path("workbench/", include("portal.apps.workbench.urls", namespace="workbench")),
     path("public-data/", include("portal.apps.public_data.urls", namespace="public")),
+    # sitemap (published datasets). Not at the conventional /sitemap.xml: Core-CMS
+    # already serves that path (its CMSSitemap), and nginx routes it to the CMS.
+    # Served from the same directory as the landing pages it lists, so it's valid
+    # under the sitemap protocol's same-path rule even without robots.txt. Reaches
+    # this app wherever /published-datasets is proxied here (local nginx.conf;
+    # a DPMP-specific location block on deployments). Must come before the
+    # published-datasets/ include, whose index_fallback catch-all would otherwise
+    # swallow it.
+    path("published-datasets/sitemap.xml", SitemapView.as_view(), name="sitemap"),
+    # Numbered sitemap files, listed by sitemap.xml's <sitemapindex> once there are more
+    # publications than one sitemap file may hold (SitemapView's docstring).
+    path("published-datasets/sitemap-<int:page>.xml", SitemapView.as_view(), name="sitemap_page"),
     path("published-datasets/", include("portal.apps.public_data.urls", namespace="publications")),
     path("request-access/", include("portal.apps.request_access.urls", namespace="request_access")),
     path("user-news/", include("portal.apps.news.urls", namespace="news")),
