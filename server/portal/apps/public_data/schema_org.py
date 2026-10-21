@@ -481,10 +481,10 @@ def _get_record_sets(file_objs, project_id, request):
     """Build the Croissant `recordSet` list (one cr:RecordSet per CSV/TSV file that has known
     columns) from `file_objs` -- the same combined list `distribution` is built from, so every
     recordSet's `source.fileObject` resolves to a `distribution` entry. This only ever reads
-    metadata already stored on `fileObjs` (the `columns` field) -- it does no file I/O of its
-    own, since this runs on every page request. Nothing populates `columns` yet (see
-    FileColumn), so today this returns [] and the Dataset is emitted with no `recordSet` --
-    which Croissant allows; it isn't one of REQUIRED_CROISSANT_FIELDS.
+    metadata already stored on `fileObjs` (the `columns` field, loaded from the archive job's columns
+    manifest by load_publication_file_checksums) -- it does no file I/O of its own, since this runs
+    on every page request. Without stored columns the Dataset has no `recordSet`, which Croissant
+    allows; it isn't one of REQUIRED_CROISSANT_FIELDS.
     """
 
     record_sets = []

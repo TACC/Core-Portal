@@ -21,9 +21,9 @@ class Command(BaseCommand):
 
     By default each publication gets a checksum-only archive job (manifests only -- no ZIP, no Ranch
     transfer; needs archive app 0.0.3+), and its manifest is loaded when the job ends. --load-only
-    skips the job and loads a manifest that already exists. Either way, the ZIP's own checksum is
-    loaded too when one exists; --hash-archive has the job write it for the publication's existing
-    ZIP, which reads the whole ZIP once more.
+    skips the job and loads a manifest that already exists. Either way, the ZIP's own checksum and
+    (archive app 0.0.4+) the CSV/TSV columns manifest are loaded too when they exist. --hash-archive
+    has the job write the ZIP's checksum for its existing ZIP, which reads the whole ZIP once more.
 
     Examples:
 

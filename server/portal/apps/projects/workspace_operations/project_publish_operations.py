@@ -1,5 +1,8 @@
+import base64
+import csv
 import json
 import logging
+import posixpath
 import re
 from functools import partial
 from io import StringIO
@@ -53,6 +56,17 @@ _SHA256_MANIFEST_LINE = re.compile(r"(\\?)([0-9a-fA-F]{64}) [ *](.+)")
 # checksumOnly (manifests only; no ZIP, no Ranch transfer) only exists from archive app 0.0.3. An
 # older app ignores the variable and re-runs the full archive, so it's refused below.
 _CHECKSUM_ONLY_MIN_APP_VERSION = (0, 0, 3)
+
+# From app version 0.0.4 the job also writes the header row of every published CSV/TSV file here,
+# one `<base64 path> <base64 header row>` line per file (paths as in the sha256 manifest), so the
+# landing page's Croissant `recordSet` can name each file's columns without reading the files.
+_COLUMNS_MANIFEST_PATH = "archive/{workspace_id}/manifest-columns.txt"
+
+# A header with more columns than this isn't stored: every column becomes a JSON-LD field on every
+# landing page render.
+MAX_STORED_COLUMNS = 500
+
+_COLUMN_DELIMITERS = {".csv": ",", ".tsv": "\t"}
 
 _TERMINAL_JOB_STATES = ("FINISHED", "CANCELLED", "FAILED")
 ARCHIVE_JOB_POLL_SECONDS = 60
@@ -238,6 +252,54 @@ def _read_sha256_manifest(workspace_id):
     return _parse_sha256_manifest(content.decode("utf-8", errors="replace"), workspace_id)
 
 
+def _parse_columns_manifest(content, workspace_id):
+    """Map each CSV/TSV file's path (relative to its published system, as _parse_sha256_manifest's
+    keys are) to its columns, `[{"name": ...}, ...]` as FileObj.columns stores them, from the archive
+    job's columns manifest. The header row is parsed as CSV, or TSV for a .tsv file. Lines that don't
+    decode, files in another directory or of another type, headers with no named column, and headers
+    over MAX_STORED_COLUMNS columns are skipped.
+    """
+
+    prefix = f"{workspace_id}/"
+    columns = {}
+    for line in content.split("\n"):
+        parts = line.split(" ")
+        if len(parts) != 2:
+            continue
+        try:
+            path = base64.b64decode(parts[0], validate=True).decode("utf-8")
+            # utf-8-sig drops the byte-order mark spreadsheet exports often start with.
+            header = base64.b64decode(parts[1], validate=True).decode("utf-8-sig")
+        except (ValueError, UnicodeDecodeError):
+            continue
+        delimiter = _COLUMN_DELIMITERS.get(posixpath.splitext(path)[1].lower())
+        if not path.startswith(prefix) or delimiter is None:
+            continue
+        names = [name.strip() for name in next(csv.reader([header], delimiter=delimiter), [])]
+        names = [name for name in names if name]
+        if len(names) > MAX_STORED_COLUMNS:
+            logger.warning(f"Not storing the {len(names)} columns of {path}: over {MAX_STORED_COLUMNS}.")
+            continue
+        if names:
+            columns[path[len(prefix) :]] = [{"name": name} for name in names]
+    return columns
+
+
+def _read_columns_manifest(workspace_id):
+    """Fetch and parse a published workspace's columns manifest, or return None if there isn't one
+    (archive app older than 0.0.4, or the job didn't get that far)."""
+
+    path = _COLUMNS_MANIFEST_PATH.format(workspace_id=workspace_id)
+    try:
+        content = service_account().files.getContents(
+            systemId=settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME, path=path
+        )
+    except Exception as e:
+        logger.info(f"No columns manifest at {settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME}/{path}: {e}")
+        return None
+    return _parse_columns_manifest(content.decode("ascii", errors="replace"), workspace_id)
+
+
 def _read_archive_checksum(workspace_id):
     """Return a published workspace's ZIP's (sha256, size in bytes), from the `.sha256` file the
     archive job writes beside it and a listing of the ZIP, or None if either is missing (archive
@@ -271,7 +333,8 @@ def load_publication_file_checksums(self, project_id: str, version: int | None =
     left unhashed; the page then just omits conformsTo.
 
     Also stores the version's whole-publication ZIP's sha256 and size (Publication.archive_sha256
-    and archive_size), which add the ZIP to the landing page's `distribution`.
+    and archive_size), which add the ZIP to the landing page's `distribution`, and each CSV/TSV
+    file's columns (FileObj.columns), which give it a Croissant `recordSet`.
     """
 
     publication = Publication.objects.get(project_id=project_id)
@@ -279,6 +342,7 @@ def load_publication_file_checksums(self, project_id: str, version: int | None =
     workspace_id = get_published_workspace_id(project_id, version)
     hashes = _read_sha256_manifest(workspace_id)
     archive = _read_archive_checksum(workspace_id)
+    columns = _read_columns_manifest(workspace_id) or {}
     if not hashes:
         logger.warning(
             f"No sha256 checksums available for publication {project_id} v{version}; its files stay "
@@ -287,7 +351,7 @@ def load_publication_file_checksums(self, project_id: str, version: int | None =
         )
     if not archive:
         logger.info(f"No archive checksum available for publication {project_id} v{version}.")
-    if not hashes and not archive:
+    if not hashes and not archive and not columns:
         return
 
     with transaction.atomic():
@@ -298,10 +362,15 @@ def load_publication_file_checksums(self, project_id: str, version: int | None =
                 f"Publication {project_id} is now v{publication.version}; discarding v{version}'s checksums."
             )
             return
-        stored, unhashed = 0, set()
-        for file_obj in get_publication_file_objs(publication) if hashes else []:
+        stored, stored_columns, unhashed = 0, 0, set()
+        for file_obj in get_publication_file_objs(publication) if hashes or columns else []:
             path = (file_obj.get("path") or "").strip("/")
             if file_obj.get("type") != "file" or not path:
+                continue
+            if path in columns and file_obj.get("columns") != columns[path]:
+                file_obj["columns"] = columns[path]
+                stored_columns += 1
+            if not hashes:
                 continue
             if path in hashes:
                 if file_obj.get("sha256") != hashes[path]:
@@ -309,14 +378,17 @@ def load_publication_file_checksums(self, project_id: str, version: int | None =
                     stored += 1
             else:
                 unhashed.add(path)
-        update_fields = ["value", "tree"] if stored else []
+        update_fields = ["value", "tree"] if stored or stored_columns else []
         if archive and (publication.archive_sha256, publication.archive_size) != archive:
             publication.archive_sha256, publication.archive_size = archive
             update_fields += ["archive_sha256", "archive_size"]
         if update_fields:
             publication.save(update_fields=[*update_fields, "last_updated"])
 
-    logger.info(f"Stored {stored} sha256 checksum(s) for publication {project_id} v{version}.")
+    logger.info(
+        f"Stored {stored} sha256 checksum(s) and {stored_columns} file(s)' columns for publication "
+        f"{project_id} v{version}."
+    )
     if unhashed:
         logger.warning(
             f"{len(unhashed)} file(s) of publication {project_id} v{version} aren't in its sha256 "

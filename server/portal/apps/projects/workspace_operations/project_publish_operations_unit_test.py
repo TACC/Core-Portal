@@ -4,6 +4,7 @@
    :synopsis: project_publish_operations unit tests.
 """
 
+import base64
 import datetime
 import json
 from types import SimpleNamespace
@@ -18,10 +19,13 @@ from django.contrib.auth.models import Group
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps.projects.schema_models import constants
 from portal.apps.projects.workspace_operations.project_publish_operations import (
+    MAX_STORED_COLUMNS,
     _add_values_to_tree,
     _check_transfer_status,
+    _parse_columns_manifest,
     _parse_sha256_manifest,
     _read_archive_checksum,
+    _read_columns_manifest,
     _read_sha256_manifest,
     _record_minted_doi,
     _switch_publication_to_version,
@@ -1563,9 +1567,17 @@ def mock_archive_checksum(mocker):
 
 
 @pytest.fixture
-def mock_manifest(mocker, mock_archive_checksum):
+def mock_columns(mocker):
+    """Patch the columns manifest fetch; set `.return_value` to the parsed {path: columns} mapping.
+    Defaults to None, no columns manifest."""
+    return mocker.patch(f"{DIR}._read_columns_manifest", return_value=None)
+
+
+@pytest.fixture
+def mock_manifest(mocker, mock_archive_checksum, mock_columns):
     """Patch the manifest fetch; set `.return_value` to the parsed {path: sha256} mapping. The ZIP
-    checksum fetch is patched too (mock_archive_checksum), so no test reaches Tapis."""
+    checksum and columns fetches are patched too (mock_archive_checksum, mock_columns), so no test
+    reaches Tapis."""
     return mocker.patch(f"{DIR}._read_sha256_manifest")
 
 
@@ -2111,3 +2123,140 @@ def test_switch_publication_to_version_first_publish_removes_nothing(mocker, set
     assert _switch_publication_to_version("test.project-1", 1, system_id)
 
     croissant_tasks.delete.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# CSV/TSV columns manifest
+# ---------------------------------------------------------------------------
+
+
+def columns_line(path, header):
+    """One columns manifest line, as the archive app writes it."""
+    return f"{base64.b64encode(path.encode()).decode()} {base64.b64encode(header.encode()).decode()}"
+
+
+def test_parse_columns_manifest_reads_csv_and_tsv_headers():
+    manifest = "\n".join(
+        [
+            columns_line("DRP-1149/data.csv", 'depth,"porosity, %",label'),
+            columns_line("DRP-1149/sample1/table.TSV", "x\ty\t z "),
+            "",
+        ]
+    )
+
+    assert _parse_columns_manifest(manifest, "DRP-1149") == {
+        "data.csv": [{"name": "depth"}, {"name": "porosity, %"}, {"name": "label"}],
+        "sample1/table.TSV": [{"name": "x"}, {"name": "y"}, {"name": "z"}],
+    }
+
+
+def test_parse_columns_manifest_handles_any_filename_and_a_byte_order_mark():
+    manifest = columns_line("DRP-1149/odd name\nwith newline.csv", "\ufeffa,b")
+
+    assert _parse_columns_manifest(manifest, "DRP-1149") == {
+        "odd name\nwith newline.csv": [{"name": "a"}, {"name": "b"}]
+    }
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        columns_line("DRP-1150/data.csv", "a,b"),  # another workspace
+        columns_line("DRP-1149/data.txt", "a,b"),  # not CSV/TSV
+        columns_line("DRP-1149/empty.csv", ""),  # empty file
+        columns_line("DRP-1149/blank.csv", " , "),  # no named column
+        "not base64! at-all",
+        "!!!! ####",  # two fields, but not base64
+        f"{base64.b64encode(b'DRP-1149/a.csv').decode()} {base64.b64encode(b'\xff,b').decode()}",  # not UTF-8
+        "onlyonefield",
+        f"{columns_line('DRP-1149/a.csv', 'a')} extra",
+    ],
+)
+def test_parse_columns_manifest_skips_unusable_lines(line):
+    assert _parse_columns_manifest(line, "DRP-1149") == {}
+
+
+def test_parse_columns_manifest_skips_headers_over_the_column_limit(mocker):
+    mock_logger = mocker.patch(f"{DIR}.logger")
+    header = ",".join(f"c{i}" for i in range(MAX_STORED_COLUMNS + 1))
+
+    assert _parse_columns_manifest(columns_line("DRP-1149/wide.csv", header), "DRP-1149") == {}
+    mock_logger.warning.assert_called_once()
+
+
+def test_read_columns_manifest_fetches_from_published_root_system(mocker, settings):
+    client = mocker.patch(f"{DIR}.service_account").return_value
+    client.files.getContents.return_value = columns_line("DRP-1129v2/a.csv", "x,y").encode()
+
+    assert _read_columns_manifest("DRP-1129v2") == {"a.csv": [{"name": "x"}, {"name": "y"}]}
+    client.files.getContents.assert_called_once_with(
+        systemId=settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME, path="archive/DRP-1129v2/manifest-columns.txt"
+    )
+
+
+def test_read_columns_manifest_returns_none_when_missing(mocker):
+    mocker.patch(f"{DIR}.service_account").return_value.files.getContents.side_effect = Exception("404")
+
+    assert _read_columns_manifest("DRP-1149") is None
+
+
+def test_load_publication_file_checksums_stores_columns_without_a_sha256_manifest(mock_manifest, mock_columns):
+    Publication.objects.create(
+        project_id="test.project-1",
+        version=1,
+        value={"title": "T", "fileObjs": [{"type": "file", "name": "data.csv", "path": "/data.csv"}]},
+        tree=node_link_tree({"type": "file", "name": "t.tsv", "path": "/sample1/t.tsv"}),
+    )
+    mock_manifest.return_value = None
+    mock_columns.return_value = {
+        "data.csv": [{"name": "a"}, {"name": "b"}],
+        "sample1/t.tsv": [{"name": "x"}],
+    }
+
+    load_publication_file_checksums("test.project-1", 1)
+
+    publication = Publication.objects.get(project_id="test.project-1")
+    assert publication.value["fileObjs"][0]["columns"] == [{"name": "a"}, {"name": "b"}]
+    assert publication.tree["nodes"][1]["value"]["fileObjs"][0]["columns"] == [{"name": "x"}]
+    assert "sha256" not in publication.value["fileObjs"][0]
+
+
+def test_load_publication_file_checksums_skips_save_when_columns_unchanged(mocker, mock_manifest, mock_columns):
+    columns = [{"name": "a"}]
+    Publication.objects.create(
+        project_id="test.project-1",
+        version=1,
+        value={"title": "T", "fileObjs": [{"type": "file", "name": "d.csv", "path": "/d.csv", "columns": columns}]},
+        tree={},
+    )
+    mock_manifest.return_value = None
+    mock_columns.return_value = {"d.csv": columns}
+    mock_save = mocker.patch.object(Publication, "save")
+
+    load_publication_file_checksums("test.project-1", 1)
+
+    mock_save.assert_not_called()
+
+
+def test_loaded_columns_give_the_landing_page_a_record_set(rf, mock_manifest, mock_columns):
+    from portal.apps.public_data.schema_org import get_schema_org_json
+
+    Publication.objects.create(
+        project_id="test.project-1",
+        version=1,
+        value={
+            "title": "T",
+            "description": "D",
+            "fileObjs": [{"type": "file", "name": "data.csv", "path": "/data.csv"}],
+        },
+        tree={},
+    )
+    mock_manifest.return_value = {"data.csv": H1}
+    mock_columns.return_value = {"data.csv": [{"name": "depth"}]}
+
+    load_publication_file_checksums("test.project-1", 1)
+
+    publication = Publication.objects.get(project_id="test.project-1")
+    schema_org_json = get_schema_org_json(publication, "test.project-1", rf.get("/"))
+    [record_set] = schema_org_json["recordSet"]
+    assert [field["name"] for field in record_set["field"]] == ["depth"]

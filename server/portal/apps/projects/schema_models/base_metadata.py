@@ -35,9 +35,10 @@ class BaseFileMetadata(BaseMetadataModel):
 class FileColumn(BaseMetadataModel):
     """A single column/field discovered in a tabular file.
 
-    Nothing populates this yet: it's where a future publish-time column-extraction step (e.g. the
-    archive job reading CSV/TSV headers) would land, so the Croissant `recordSet` for a published
-    project can be built from stored metadata alone, with no file I/O at request time.
+    Populated after publish from the CSV/TSV header manifest the archive job writes (archive app
+    0.0.4+; project_publish_operations.py's load_publication_file_checksums), so the Croissant
+    `recordSet` for a published project is built from stored metadata alone, with no file I/O at
+    request time.
     """
 
     name: str

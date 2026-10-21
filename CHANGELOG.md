@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * XML sitemap of indexable landing pages at `/published-datasets/sitemap.xml`, cached for 5 minutes per host. Past 50,000 publications it becomes a sitemap index of `sitemap-N.xml` files. The local `robots.txt` advertises it, with nginx filling in the host.
   * Publication fields `is_indexable` (migration `0004`), and `archive_sha256` and `archive_size` (migration `0005`).
   * Checksums: after each archive job, per-file sha256s from its `manifest-sha256.txt` and the ZIP's own sha256 are stored on the publication (archive app 0.0.3+). File metadata gains optional `sha256` and `columns` fields.
+  * CSV/TSV columns: each table's header row, from the archive job's `manifest-columns.txt` (archive app 0.0.4+), is stored as the file's `columns`, which gives it a Croissant `recordSet`. `compute_publication_checksums` backfills them too.
   * Management commands:
     * `compute_publication_checksums`: backfills checksums with a checksum-only archive job (`--hash-archive` also hashes the existing ZIP; `--load-only`, `--dry-run`, `--all`).
     * `update_datacite_metadata`: re-sends DataCite metadata for existing DOIs without changing their state, and rewrites each publication's static `croissant.json` (`--dry-run` prints the merged payload; `--all`).
