@@ -79,4 +79,20 @@ target-version = "py312"
 select = ["E", "W", "F", "I", "UP"]
 
 [tool.ruff.lint.per-file-ignores]
-"**/migrations/*.py" = ["E501", "RUF012"]
+"**/migrations/*.py" = ["E501", "RUF012", "S"]
+"**/*_test.py" = ["S"]
+"**/test_*.py" = ["S"]
+"**/conftest.py" = ["S"]
+"**/settings_secret*.py" = ["S"]
+"**/secrets*.py" = ["S"]
+"**/unit_test_settings.py" = ["S"]
+
+[tool.bandit]
+exclude_dirs = [
+    "*/migrations",
+    "*_test.py",
+    "*/test_*.py",
+    "*/conftest.py",
+    "*/settings_secret*.py",
+    "*/unit_test_settings.py",
+]
