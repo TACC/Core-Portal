@@ -91,7 +91,7 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
       iconName: 'folder',
       disabled: disabled,
       hidden: hideDataFiles,
-      category: 'Doing My Science',
+      category: 'Explore Science',
     },
     {
       to: path + ROUTES.APPLICATIONS,
@@ -99,7 +99,7 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
       iconName: 'applications',
       disabled: disabled,
       hidden: hideApps,
-      category: 'Doing My Science',
+      category: 'Explore Science',
     },
     {
       to: path + ROUTES.HISTORY,
@@ -108,21 +108,21 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
       disabled: disabled,
       hidden: hideApps,
       children: <HistoryBadge unread={unread} disabled={disabled} />,
-      category: 'Doing My Science',
+      category: 'Explore Science',
     },
     {
       to: path + ROUTES.TICKETS,
-      label: 'My Tickets',
+      label: 'Tickets',
       iconName: 'multiple-coversation',
       disabled: disabled,
-      category: 'My Tools',
+      category: 'Stay Informed',
     },
     {
       to: path + ROUTES.JOBS,
-      label: 'My Jobs',
+      label: 'Jobs',
       iconName: 'jobs',
       disabled: disabled,
-      category: 'My Tools',
+      category: 'Explore Science',
     },
     {
       to: path + ROUTES.SYSTEM_STATUS,
@@ -130,7 +130,7 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
       iconName: 'data-files',
       disabled: disabled,
       hidden: hideSystemStatus,
-      category: 'My Tools',
+      category: 'Stay Informed',
     },
     {
       to: path + ROUTES.ALLOCATIONS,
@@ -138,7 +138,7 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
       iconName: 'allocations',
       disabled: disabled,
       hidden: hideAllocations,
-      category: 'Etc.',
+      category: 'Get Access',
     },
     {
       to: path + ROUTES.UI,
