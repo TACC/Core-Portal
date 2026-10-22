@@ -3,6 +3,16 @@ import { useSelectedFiles } from 'hooks/datafiles';
 import Cookies from 'js-cookie';
 import { apiClient } from 'utils/apiClient';
 import { useMutation } from '@tanstack/react-query';
+
+const getCopyToast = (response: Record<string, any>, copyCount: number) => ({
+  event_type: 'data_files',
+  operation: 'copy',
+  status: 'SUCCESS',
+  extra: {
+    response,
+    copy_count: copyCount,
+  },
+});
 import { v4 as uuidv4 } from 'uuid';
 
 export async function copyFileUtil({
@@ -100,7 +110,7 @@ function useCopy() {
     callback: any;
   }) => {
     const filteredSelected = selected
-      .filter((f: any) => status[f.id] !== 'SUCCESS')
+      .filter((f: any) => !['SUCCESS', 'ACCEPTED'].includes(status[f.id]))
       .map((f: any) => ({ ...f, api: srcApi }));
     const copyCalls: Promise<any>[] = filteredSelected.map((file: any) => {
       // Copy File
@@ -108,52 +118,75 @@ function useCopy() {
         type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
         payload: { status: 'RUNNING', key: file.id, operation: 'copy' },
       });
-      return mutateAsync(
-        {
-          api: file.api,
-          scheme: scheme,
-          system: file.system,
-          path: file.path,
-          filename: file.name,
-          filetype: file.type,
-          destApi,
-          destSystem,
-          destPath,
-          destPathName: name,
-          metadata: file.metadata,
+      return mutateAsync({
+        api: file.api,
+        scheme,
+        system: file.system,
+        path: file.path,
+        filename: file.name,
+        filetype: file.type,
+        destApi,
+        destSystem,
+        destPath,
+        destPathName: name,
+        metadata: file.metadata,
+      }).then(
+        (response) => {
+          const pending = response.data?.pending === true;
+          const copyResponse = {
+            source: `${file.api}://${file.system}/${file.path.replace(
+              /^\/+/,
+              ''
+            )}`,
+            systemId: destSystem,
+            path: `${destPath.replace(/\/$/, '')}/${file.name}`,
+            nativeFormat: file.type === 'dir' ? 'dir' : 'raw',
+            ...response.data,
+          };
+          dispatch({
+            type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+            payload: {
+              status: pending ? 'ACCEPTED' : 'SUCCESS',
+              key: file.id,
+              operation: 'copy',
+            },
+          });
+          return { pending, response: copyResponse };
         },
-        {
-          onSuccess: () => {
-            dispatch({
-              type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-              payload: { status: 'SUCCESS', key: file.id, operation: 'copy' },
-            });
-          },
-          onError: (error: any) => {
-            dispatch({
-              type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-              payload: { status: 'ERROR', key: file.id, operation: 'copy' },
-            });
-          },
+        (error) => {
+          dispatch({
+            type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+            payload: { status: 'ERROR', key: file.id, operation: 'copy' },
+          });
+          throw error;
         }
       );
     });
-    // Result
-    Promise.all(copyCalls).then(() => {
-      dispatch({
-        type: 'DATA_FILES_TOGGLE_MODAL',
-        payload: { operation: 'copy', props: {} },
-      });
-      dispatch({
-        type: 'ADD_TOAST',
-        payload: {
-          pk: uuidv4(),
-          message: `Copying ${
-            copyCalls.length > 1 ? `${copyCalls.length} files` : 'File'
-          }`,
-        },
-      });
-      callback();
+    return Promise.allSettled(copyCalls).then((results) => {
+      const successful = results.flatMap((result) =>
+        result.status === 'fulfilled' ? [result.value] : []
+      );
+      const completed = successful.filter((result) => !result.pending);
+      const pending = successful.filter((result) => result.pending);
+      if (results.every((r) => r.status === 'fulfilled')) {
+        dispatch({
+          type: 'DATA_FILES_TOGGLE_MODAL',
+          payload: { operation: 'copy', props: {} },
+        });
+      }
+      if (pending.length) {
+        dispatch({
+          type: 'ADD_TOAST',
+          payload: getCopyToast(pending[0].response, pending.length),
+        });
+      }
+      if (completed.length) {
+        dispatch({
+          type: 'ADD_TOAST',
+          payload: getCopyToast(completed[0].response, completed.length),
+        });
+        callback();
+      }
     });
   };
   return { copy, status, setStatus };
