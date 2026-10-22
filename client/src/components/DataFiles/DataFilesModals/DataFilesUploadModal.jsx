@@ -17,6 +17,7 @@ import { useUpload } from 'hooks/datafiles/mutations';
 import DataFilesUploadModalListingTable from './DataFilesUploadModalListing/DataFilesUploadModalListingTable';
 
 import styles from './DataFilesUploadModal.module.scss';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 export const LAYOUT_CLASS_MAP = {
   compact: 'is-compact',
@@ -32,14 +33,18 @@ const DataFilesUploadModal = ({ className = '', layout = DEFAULT_LAYOUT }) => {
   const reloadCallback = () => {
     navigate(location.pathname);
   };
-  const portalName = useSelector((state) => state.workbench.portalName);
+
+  const {
+    data: {
+      portalName,
+      config: {
+        uploadModalMaxSizeLabel: maxSizeLabel = '2GB',
+        uploadModalMaxSizeValue: maxSize = 2 * 1024 * 1024 * 1024,
+      },
+    },
+  } = useWorkbenchConfig();
+
   const { DataFilesUploadModalAddon } = useAddonComponents({ portalName });
-  const maxSizeLabel = useSelector(
-    (state) => state.workbench.config.uploadModalMaxSizeLabel
-  );
-  const maxSize = useSelector(
-    (state) => state.workbench.config.uploadModalMaxSizeValue
-  );
 
   const { getStatus: getModalStatus, toggle } = useModal();
   const isOpen = getModalStatus('upload');

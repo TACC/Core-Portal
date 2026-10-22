@@ -14,8 +14,8 @@ The base Portal code for TACC WMA Workspace Portals
 ## Prerequisites for running the portal application:
 
 - Docker > 28
-- Python 3.12.x
-- Nodejs 24.x (LTS)
+- Python 3.12.x and [uv package manager](https://docs.astral.sh/uv/getting-started/installation/)
+- Nodejs 24.x (LTS) and [pnpm package manager](https://pnpm.io/installation)
 
 The Core Portal can be run using [Docker][1].
 
@@ -117,6 +117,10 @@ After you clone the repository locally, there are several configuration steps re
 
 - To override any standard or custom CMS settings, create a `server/conf/cms/settings_local.py`
 
+#### Install local Python dependencies:
+    cd server
+    uv sync
+
 #### Build the image for the portal's django container:
 
     make build
@@ -136,12 +140,12 @@ OR
 #### Install client-side dependencies and bundle code:
 
     cd client
-    npm ci
-    npm run build
+    pnpm ci
+    pnpm run build
 
-- _Notes: During local development you can also use `npm run dev` to set a live reload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS LTS and not an earlier version. You will also need the port 3000 available locally._
+- _Notes: During local development you can also use `pnpm run dev` to set a live reload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS LTS and not an earlier version. You will also need the port 3000 available locally._
 
-- _Notes: If your settings.DEBUG is set to true, you will have to use `npm run dev` to have a functional app. In DEBUG setting, the requests are handled via [vite][2]._
+- _Notes: If your settings.DEBUG is set to true, you will have to use `pnpm run dev` to have a functional app. In DEBUG setting, the requests are handled via [vite][2]._
 
 #### Set up pre-commit hooks:
 
@@ -245,16 +249,16 @@ ngrok http 443
 Client-side code is linted (JavaScript via `eslint`, CSS via `stylelint`), and is enforced on commits to the repo. To see a list of linting issues, in the console:
 
 1. Navigate to `client/` directory.
-1. Run `npm run lint`, which is the same as linting both languages independently:
-   - `npm run lint:js`
-   - `npm run lint:css`
-   - `npm run prettier:check`
+1. Run `pnpm run lint`, which is the same as linting both languages independently:
+   - `pnpm run lint:js`
+   - `pnpm run lint:css`
+   - `pnpm run prettier:check`
 
 You may auto-fix your linting errors to conform with configured standards, for specific languages, via:
 
-- `npm run lint:js -- --fix`
-- `npm run lint:css -- --fix`
-- `npm run prettier:fix`
+- `pnpm run lint:js -- --fix`
+- `pnpm run lint:css -- --fix`
+- `pnpm run prettier:fix`
 
 Server-side Python code is formatted and linted via Ruff (configured via `.pre-commit-config.yaml` and `pyproject.toml`), and is enforced on commits to the repo. To check for server-side linting and formatting errors, run `ruff check` and `ruff format --check` from the command line.
 To do so, run the following in the `core_portal_django` container:
@@ -275,9 +279,9 @@ ruff format .
 
 Server-side python testing is run through pytest. Start docker container first by `docker exec -it core_portal_django bash`, Then run `pytest -ra` from the `server` folder to run backend tests and display a report at the bottom of the output.
 
-Client-side javascript testing is run through Jest. Run `npm run test`\* from the `client` folder to ensure tests are running correctly.
+Client-side javascript testing is run through Jest. Run `pnpm run test`\* from the `client` folder to ensure tests are running correctly.
 
-\* To run tests without console logging, run `npm run test -- --silent`.
+\* To run tests without console logging, run `pnpm run test -- --silent`.
 
 #### Test Coverage
 
@@ -327,10 +331,10 @@ We use a modifed version of [GitFlow](https://datasift.github.io/gitflow/Introdu
 
 3. Make changes in your [Core Styles] clone as necessary.
 4. Test changes.
-   - Changes to imported files during `npm run dev` will trigger livereload.
+   - Changes to imported files during `pnpm run dev` will trigger livereload.
 5. Commit successful changes to a [Core Styles] branch.
 
-- _Note: [If you run `npm install` or `npm ci`, the link is destroyed.](https://github.com/npm/cli/issues/2380#issuecomment-1029967927) Repeat the above steps to restore it._
+- _Note: [If you run `pnpm install` or `pnpm ci`, the link is destroyed.](https://github.com/npm/cli/issues/2380#issuecomment-1029967927) Repeat the above steps to restore it._
 
 #### Best Practices
 

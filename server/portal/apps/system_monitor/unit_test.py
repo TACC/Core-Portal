@@ -61,3 +61,36 @@ def test_system_monitor_when_status_endpoint_fails(client, settings, requests_mo
     requests_mock.get(settings.SYSTEM_MONITOR_URL, exc=Http404)
     response = client.get("/api/system-monitor/")
     assert response.status_code == 404
+
+
+@pytest.mark.parametrize("load", [None, "0.95", True, float("nan"), float("inf"), -float("inf")])
+def test_queue_load_validation(load):
+    from portal.apps.system_monitor.views import _get_queues
+
+    assert _get_queues({"queues": {"normal": {"load": load}}}) == [{"name": "normal", "load": None}]
+
+
+@pytest.mark.parametrize("load", [0, 0.8999, 0.9, 1])
+def test_queue_load_numbers(load):
+    from portal.apps.system_monitor.views import _get_queues
+
+    assert _get_queues({"queues": {"normal": {"load": load}}}) == [{"name": "normal", "load": load}]
+
+
+@pytest.mark.parametrize("queues", [None, [], "unavailable", {"normal": None}])
+def test_unavailable_queues(queues):
+    from portal.apps.system_monitor.views import _get_queues
+
+    assert _get_queues({"queues": queues}) == []
+
+
+@pytest.mark.django_db()
+def test_system_queue_load_validation(client, settings, requests_mock):
+    settings.SYSTEM_MONITOR_DISPLAY_LIST = ["Frontera"]
+    requests_mock.get(
+        f"{settings.SYSTEM_MONITOR_URL}frontera.tacc.utexas.edu",
+        json={"display_name": "Frontera", "queues": {"normal": {"load": "0.95"}, "large": {"load": 0.9}}},
+    )
+    response = client.get("/api/system-monitor/frontera.tacc.utexas.edu")
+    assert response.status_code == 200
+    assert response.json() == [{"name": "normal", "load": None}, {"name": "large", "load": 0.9}]

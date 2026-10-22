@@ -5,6 +5,7 @@ import { Button } from '_common';
 import { useFileListing } from 'hooks/datafiles';
 import { MetadataTitle } from '_common/ProjectMetadata';
 import useDrpDatasetModals from '../utils/hooks/useDrpDatasetModals';
+import { useAuthenticatedUser, useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DataFilesProjectFileListingMetadataTitleAddon = ({
   folderMetadata,
@@ -12,15 +13,17 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({
   system,
   path,
 }) => {
-  const portalName = useSelector((state) => state.workbench.portalName);
+  const {
+    data: { portalName },
+  } = useWorkbenchConfig();
   const { projectId } = useSelector((state) => state.projects.metadata);
   const { loading } = useFileListing('FilesListing');
-
+  const authenticatedUser = useAuthenticatedUser();
   const { canEditDataset } = useSelector((state) => {
     const userAccess = state.projects.metadata.members
       .filter((member) =>
         member.user
-          ? member.user.username === state.authenticatedUser?.user?.username
+          ? member.user.username === authenticatedUser?.username
           : { access: null }
       )
       .map((currentUser) => {

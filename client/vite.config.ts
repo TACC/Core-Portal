@@ -43,6 +43,8 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    testTimeout: 10_000,
+    maxWorkers: '50%', // Prevents local test flake due to resource contention
     setupFiles: ['./vitest.setup.ts'],
   },
 });

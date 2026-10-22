@@ -25,7 +25,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "noFallthroughCasesInSwitch": true,
-    "types": ["vitest/globals", "@testing-library/jest-dom/vitest"],
+    "types": ["vitest/globals", "@testing-library/jest-dom/vitest"]
   },
   "include": ["./src", "./packages"]
 }

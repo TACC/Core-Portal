@@ -279,13 +279,17 @@ def get_project_user(username):
             "first_name": "",
             "last_name": "",
             "email": "",
+            "orcid_id": None,
         }
+
+    orcid_id = user.profile.orcid_id if hasattr(user, "profile") else None
 
     return {
         "username": username,
         "first_name": user.first_name,
         "last_name": user.last_name,
         "email": user.email,
+        "orcid_id": orcid_id,
     }
 
 

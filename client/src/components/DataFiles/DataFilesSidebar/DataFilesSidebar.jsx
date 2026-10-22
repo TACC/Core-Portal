@@ -13,6 +13,7 @@ import { useTapisToken } from 'hooks/datafiles';
 import { useMatch } from 'react-router-dom';
 import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
 import './DataFilesSidebar.scss';
+import { useAuthenticatedUser, useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DataFilesAddButton = ({ readOnly }) => {
   const { data: tapisToken } = useTapisToken();
@@ -33,9 +34,12 @@ const DataFilesAddButton = ({ readOnly }) => {
     (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
     shallowEqual
   );
-  const maxSizeLabel = useSelector(
-    (state) => state.workbench.config.uploadModalMaxSizeLabel
-  );
+
+  const {
+    data: {
+      config: { uploadModalMaxSizeLabel: maxSizeLabel = '2GB' },
+    },
+  } = useWorkbenchConfig();
 
   const sharedWorkspaces = systems.find((e) => e.scheme === 'projects');
 
@@ -111,7 +115,7 @@ const DataFilesSidebar = ({ readOnly = false }) => {
     shallowEqual
   );
 
-  const user = useSelector((state) => state.authenticatedUser.user);
+  const user = useAuthenticatedUser();
 
   const match = useMatch('/workbench/data/*');
 
@@ -119,7 +123,7 @@ const DataFilesSidebar = ({ readOnly = false }) => {
 
   systems.forEach((sys) => {
     if (sys.scheme === 'projects') {
-      if (!sys.reviewProject || user.groups?.includes('PROJECT_REVIEWER')) {
+      if (!sys.reviewProject || user?.groups?.includes('PROJECT_REVIEWER')) {
         sidebarItems.push({
           to: `${match.pathnameBase}/${sys.api}/${sys.scheme}/${sys.system}`,
           label: sys.name,

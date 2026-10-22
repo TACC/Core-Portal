@@ -91,7 +91,6 @@ Styleguide Components.Button
 .c-button--is-active {
   padding: 6px 18px;
   min-width: var(--min-width);
-  max-width: var(--max-width);
 }
 
 /* Modifiers: Types: Primary */
@@ -265,6 +264,18 @@ Styleguide Components.Button
 }
 .c-button--as-link:not(:disabled):hover {
   text-decoration: underline;
+}
+
+/* Modifiers: Types: As Button */
+
+.c-button--as-button {
+  color: var(--global-color-accent--normal);
+  background: unset;
+  border: unset;
+  padding-inline: unset;
+}
+.c-button--as-button:not(:disabled):hover {
+  text-decoration: none;
 }
 
 /* Modifiers: Types: Is Busy */

@@ -26,6 +26,7 @@ import { getStatusText } from '../../Jobs/JobsStatus';
 import * as ROUTES from '../../../constants/routes';
 import styles from './JobHistoryModal.module.scss';
 import './JobHistoryModal.css';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const placeHolder = '...';
 
@@ -65,9 +66,11 @@ function JobHistoryContent({
 }) {
   const dispatch = useDispatch();
 
-  const hideDataFiles = useSelector(
-    (state) => state.workbench.config.hideDataFiles
-  );
+  const {
+    data: {
+      config: { hideDataFiles },
+    },
+  } = useWorkbenchConfig();
 
   // TODOv3: dropV2Jobs
   const outputLocation =
@@ -78,6 +81,7 @@ function JobHistoryContent({
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
   const hasFailedStatus = jobDetails.status === 'FAILED';
   const hasEnded = isTerminalState(jobDetails.status);
+  const execSystemId = jobDetails.execSystemId;
 
   const appDataObj = {
     'App ID': jobDetails.appId,
@@ -244,8 +248,9 @@ function JobHistoryContent({
             Cancel Job
           </Button>
         )}
-        {hasEnded && version === 'v3' && (
+        {hasEnded && version === 'v3' && execSystemId !== 'frontera' && (
           // TODOv3: dropV2Jobs
+          // WP-1367: removes 'Resubmit Job' button for jobs run on Frontera only
           <Button
             type="primary"
             attr="submit"

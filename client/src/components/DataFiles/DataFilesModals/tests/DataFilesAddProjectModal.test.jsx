@@ -47,6 +47,13 @@ const initialMockState = {
   },
 };
 
+const projectUser = {
+  username: 'username',
+  first_name: 'User',
+  last_name: 'Name',
+  email: 'user@name.com',
+};
+
 describe('DataFilesAddProjectModal', () => {
   it('renders the add project modal', () => {
     const store = mockStore(initialMockState);
@@ -55,7 +62,9 @@ describe('DataFilesAddProjectModal', () => {
     const { getAllByText } = renderComponent(
       <DataFilesAddProjectModal />,
       store,
-      history
+      history,
+      undefined,
+      projectUser
     );
 
     // Check that the authenticated user appears as the default owner
@@ -70,7 +79,9 @@ describe('DataFilesAddProjectModal', () => {
     const { getAllByText, getByRole } = renderComponent(
       <DataFilesAddProjectModal />,
       store,
-      history
+      history,
+      undefined,
+      projectUser
     );
 
     const inputField = getByRole('textbox', { name: 'title' });
@@ -92,7 +103,9 @@ describe('DataFilesAddProjectModal', () => {
     const { getAllByText, getByRole } = renderComponent(
       <DataFilesAddProjectModal />,
       store,
-      history
+      history,
+      undefined,
+      projectUser
     );
 
     const titleField = getByRole('textbox', { name: 'title' });

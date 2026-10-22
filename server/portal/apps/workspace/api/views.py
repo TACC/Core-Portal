@@ -831,7 +831,14 @@ class AppsTrayView(BaseApiView):
         # Add "My Apps" tab with all of the user's private and shared apps
         # that are enabled, or all available apps if no public apps are enabled
         my_apps = self.getPrivateApps(request.user)
-        shared_apps = self.getSharedApps(request.user)
+        shared_apps = (
+            self.getSharedApps(request.user)
+            if settings.PORTAL_NAMESPACE != "Frontera"
+            else {
+                "title": "Shared Apps",
+                "apps": [],
+            }  # WP-1367: hide Shared Apps in Frontera portal for Frontera retirement
+        )
 
         # Only return tabs that are non-empty
         tabs = list(filter(lambda tab: len(tab["apps"]) > 0, [my_apps] + [shared_apps] + tabs))

@@ -1141,3 +1141,20 @@ def test_update_project(mock_tapis_client, mock_owner, authenticated_user):
         assert updated_project["notes"]["title"] == new_title
         assert updated_project["notes"]["description"] == new_description
         assert updated_project["notes"]["keywords"] == new_keywords
+
+
+def test_get_project_user_orcid(authenticated_user, django_user_model):
+    """get_project_user should surface a member's ORCID when present, and default to None otherwise."""
+    result = ws_o.get_project_user(authenticated_user.username)
+    assert result["orcid_id"] is None
+
+    # Once the profile has an ORCID, it should be returned.
+    authenticated_user.profile.orcid_id = "0000-0001-2345-6789"
+    authenticated_user.profile.save()
+    result = ws_o.get_project_user(authenticated_user.username)
+    assert result["orcid_id"] == "0000-0001-2345-6789"
+
+    # A user that exists but has no PortalProfile row at all should not raise.
+    django_user_model.objects.create_user(username="no_profile_user")
+    result = ws_o.get_project_user("no_profile_user")
+    assert result["orcid_id"] is None

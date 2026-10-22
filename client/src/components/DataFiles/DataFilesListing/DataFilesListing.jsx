@@ -21,6 +21,7 @@ import {
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
 import Searchbar from '_common/Searchbar';
 import { getCurrentDirectory } from '../DataFilesModals/DataFilesModalTables/DataFilesModalListingTable';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const fileTypes = [
   'Audio',
@@ -57,12 +58,13 @@ const DataFilesListing = ({
   const isPortalProject = scheme === 'projects';
   const hideSearchBar = isPortalProject && sharedWorkspaces?.hideSearchBar;
 
-  const showViewPath = useSelector(
-    (state) =>
-      api === 'tapis' && state.workbench && state.workbench.config.viewPath
-  );
+  const {
+    data: {
+      config: { showDataFileType, viewPath },
+    },
+  } = useWorkbenchConfig();
 
-  const { showDataFileType } = useSelector((state) => state.workbench.config);
+  const showViewPath = useSelector((state) => api === 'tapis' && !!viewPath);
 
   const {
     data: files,
@@ -121,18 +123,12 @@ const DataFilesListing = ({
     const cells = [
       {
         id: 'checkbox',
-        width: 0.05,
-        minWidth: 20,
-        maxWidth: 40,
         Header: CheckboxHeaderCell,
         Cell: checkboxCellCallback,
       },
       {
         id: 'icon',
         accessor: (row) => row,
-        width: 0.05,
-        minWidth: 20,
-        maxWidth: 25,
         Cell: FileIconCell,
       },
       {

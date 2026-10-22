@@ -1,10 +1,7 @@
 import React from 'react';
 import { vi } from 'vitest';
-import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
-import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import renderComponent from 'utils/testing';
 import DataFilesListing from './DataFilesListing';
@@ -12,15 +9,7 @@ import * as DataFilesModalListingTable from '../DataFilesModals/DataFilesModalTa
 import { CheckboxCell, FileNavCell } from './DataFilesListingCells';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import filesFixture from '../fixtures/DataFiles.files.fixture';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-});
+import { QueryClient } from '@tanstack/react-query';
 
 const mockStore = configureStore();
 const initialMockState = {
@@ -66,8 +55,9 @@ const initialMockState = {
       trashPath: '.Trash',
     },
   },
-  authenticatedUser: { user: { username: 'username' } },
 };
+
+const authenticatedUser = { username: 'username' };
 
 describe('CheckBoxCell', () => {
   it('box is checked when selected', () => {
@@ -226,9 +216,10 @@ describe('DataFilesListing', () => {
           path="/"
         />,
         store,
-        history
+        history,
+        undefined,
+        authenticatedUser
       );
-
       expect(getByText(message)).toBeDefined();
     }
   );
@@ -244,21 +235,17 @@ describe('DataFilesListing', () => {
       systems: systemsFixture,
     });
 
-    const { queryByText } = render(
-      <QueryClientProvider client={queryClient}>
-        <Provider store={store}>
-          <BrowserRouter history={history}>
-            <DataFilesListing
-              api="tapis"
-              scheme="projects"
-              system="test.system"
-              resultCount={0}
-              path="/"
-              isPublic={false}
-            />
-          </BrowserRouter>
-        </Provider>
-      </QueryClientProvider>
+    const { queryByText } = renderComponent(
+      <DataFilesListing
+        api="tapis"
+        scheme="projects"
+        system="test.system"
+        resultCount={0}
+        path="/"
+        isPublic={false}
+      />,
+      store,
+      history
     );
     expect(queryByText(/Search/)).toBeNull();
   });
@@ -279,19 +266,14 @@ describe('DataFilesListing - Section Name Determination', () => {
       'getCurrentDirectory'
     ).mockImplementationOnce(() => 'Mock System Name');
 
-    const { getByPlaceholderText } = render(
-      <QueryClientProvider client={queryClient}>
-        <Provider store={store}>
-          <BrowserRouter>
-            <DataFilesListing
-              api="tapis"
-              scheme="private"
-              system="test.system"
-              path="/home/user" // Same as homeDir
-            />
-          </BrowserRouter>
-        </Provider>
-      </QueryClientProvider>
+    const { getByPlaceholderText } = renderComponent(
+      <DataFilesListing
+        api="tapis"
+        scheme="private"
+        system="test.system"
+        path="/home/user" // Same as homeDir
+      />,
+      store
     );
 
     expect(getByPlaceholderText('Search Mock System Name')).toBeInTheDocument();
@@ -304,19 +286,14 @@ describe('DataFilesListing - Section Name Determination', () => {
       'getCurrentDirectory'
     ).mockImplementationOnce(() => currentDirName);
 
-    const { getByPlaceholderText } = render(
-      <QueryClientProvider client={queryClient}>
-        <Provider store={store}>
-          <BrowserRouter>
-            <DataFilesListing
-              api="tapis"
-              scheme="private"
-              system="test.system"
-              path="/home/user/some/other/dir" // Different from homeDir
-            />
-          </BrowserRouter>
-        </Provider>
-      </QueryClientProvider>
+    const { getByPlaceholderText } = renderComponent(
+      <DataFilesListing
+        api="tapis"
+        scheme="private"
+        system="test.system"
+        path="/home/user/some/other/dir" // Different from homeDir
+      />,
+      store
     );
 
     expect(
@@ -365,7 +342,8 @@ describe('DataFilesListing - showViewPath', () => {
         path="/"
       />,
       store,
-      history
+      history,
+      { config: { viewPath: true } }
     );
     // Path cell is added
     expect(getByText('Path')).toBeDefined();
@@ -412,7 +390,8 @@ describe('DataFilesListing - showViewPath', () => {
         path="/"
       />,
       store,
-      history
+      history,
+      { config: { viewPath: false } }
     );
     // Path should not exist as a new cell
     expect(queryByText('Path')).toBeNull();

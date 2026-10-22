@@ -8,6 +8,7 @@ import SiteSearchListing from './SiteSearchListing/SiteSearchListing';
 import styles from './SiteSearch.module.css';
 
 import { Section } from '_common';
+import { useAuthenticatedUser } from '@tacc/core-hooks';
 
 export const SiteSearchComponent = ({ filterPriorityList }) => {
   const dispatch = useDispatch();
@@ -23,7 +24,7 @@ export const SiteSearchComponent = ({ filterPriorityList }) => {
   const { loading, error, completed, results } = useSelector(
     (state) => state.siteSearch
   );
-  const { user } = useSelector((state) => state.authenticatedUser);
+  const user = useAuthenticatedUser();
 
   useEffect(() => {
     dispatch({

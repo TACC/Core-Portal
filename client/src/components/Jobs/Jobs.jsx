@@ -19,6 +19,7 @@ import JobsSearchInfoModal from './JobsSearchInfoModal';
 import * as ROUTES from '../../constants/routes';
 import Searchbar from '_common/Searchbar';
 import queryStringParser from 'query-string';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 function JobsView({
   showDetails = false,
@@ -39,10 +40,11 @@ function JobsView({
     // TODOv3: dropV2Jobs
     version === 'v3' ? state.jobs.list : state.jobsv2.list
   );
-
-  const hideDataFiles = useSelector(
-    (state) => state.workbench.config.hideDataFiles
-  );
+  const {
+    data: {
+      config: { hideDataFiles },
+    },
+  } = useWorkbenchConfig();
 
   const { isJobLoading, isNotificationLoading } = useSelector(
     (state) => ({

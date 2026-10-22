@@ -14,22 +14,19 @@ import './ManageAccount.scss';
 import './ManageAccount.global.css';
 import styles from './ManageAccount.module.css';
 import { INTEGRATION_SETUP_ERROR } from '../../constants/messages';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const ManageAccountView = () => {
   const {
-    config: { hideApps, hideDataFiles },
-    profile: {
-      isLoading,
-      errors,
-      data: { licenses, integrations },
+    data: {
+      config: { hideApps, hideDataFiles },
     },
-  } = useSelector(
-    (state) => ({
-      config: state.workbench.config,
-      profile: state.profile,
-    }),
-    shallowEqual
-  );
+  } = useWorkbenchConfig();
+  const {
+    isLoading,
+    errors,
+    data: { licenses, integrations },
+  } = useSelector((state) => state.profile, shallowEqual);
 
   const dispatch = useDispatch();
   useEffect(() => {

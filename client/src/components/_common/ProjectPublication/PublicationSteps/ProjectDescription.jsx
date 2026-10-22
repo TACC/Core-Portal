@@ -12,16 +12,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { formatDate } from 'utils/timeFormat';
 import { formatDataKey } from 'utils/dataKeyFormat';
 import { useFormikContext } from 'formik';
+import { useAuthenticatedUserOrThrow } from '@tacc/core-hooks';
 
 // Proofread view of the project's metadata before publication.
 const ProjectDescription = ({ project }) => {
   const dispatch = useDispatch();
   const [data, setData] = useState({});
   const { errors } = useFormikContext();
-
+  const { username } = useAuthenticatedUserOrThrow();
   const canEdit = useSelector((state) => {
     const { members } = state.projects.metadata;
-    const { username } = state.authenticatedUser.user;
     const currentUser = members.find(
       (member) => member.user?.username === username
     );

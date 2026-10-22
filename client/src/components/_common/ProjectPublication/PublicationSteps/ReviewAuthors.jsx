@@ -6,6 +6,7 @@ import styles from '../PublicationWizard.module.scss';
 import ReorderUserList from '../ReorderUserList/ReorderUserList';
 import ProjectMembersList from '../ProjectMembersList/ProjectMembersList';
 import { useDispatch, useSelector } from 'react-redux';
+import { useAuthenticatedUserOrThrow } from '@tacc/core-hooks';
 
 // Review/reorder the publication's authors and preview citations.
 const ReviewAuthors = ({
@@ -17,10 +18,9 @@ const ReviewAuthors = ({
   const [members, setMembers] = useState([]);
 
   const dispatch = useDispatch();
-
+  const { username } = useAuthenticatedUserOrThrow();
   const canEdit = useSelector((state) => {
     const { members } = state.projects.metadata;
-    const { username } = state.authenticatedUser.user;
     const currentUser = members.find(
       (member) => member.user?.username === username
     );

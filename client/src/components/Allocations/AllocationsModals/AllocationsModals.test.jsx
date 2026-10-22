@@ -164,15 +164,15 @@ describe('View Team Modal', () => {
   test('renders the Manage Team tab', () => {
     const store = mockStore({
       ...mockState,
-      authenticatedUser: {
-        user: {
-          username: 'testuser2',
-        },
-      },
     });
     const { getByText } = renderComponent(
       <AllocationsTeamViewModal {...testProps} />,
-      store
+      store,
+      undefined,
+      undefined,
+      {
+        username: 'testuser2',
+      }
     );
     expect(getByText(/Manage Team/).closest('button')).toBeDefined();
   });

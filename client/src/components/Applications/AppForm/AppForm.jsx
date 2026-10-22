@@ -19,6 +19,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { getSystemName, isTACCHost } from 'utils/systems';
 import FormSchema from './AppFormSchema';
+import QueueField from './QueueField';
 import {
   isTargetPathEmpty,
   isTargetPathField,
@@ -49,6 +50,7 @@ import {
 
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const appShape = PropTypes.shape({
   loading: PropTypes.bool,
@@ -264,10 +266,13 @@ export const AppSchemaForm = ({ app }) => {
   const storageState = useSelector((state) => state.systems.storage);
   const jobSubmission = useSelector((state) => state.jobs.submit);
   const systemMonitor = useSelector((state) => state.systemMonitor);
-  const hideManageAccount = useSelector(
-    (state) => state.workbench.config.hideManageAccount
-  );
-  const isTACCPortal = useSelector((state) => state.workbench.isTACCPortal);
+
+  const {
+    data: {
+      isTACCPortal,
+      config: { hideManageAccount },
+    },
+  } = useWorkbenchConfig();
 
   const {
     allocations,
@@ -1031,19 +1036,16 @@ export const AppSchemaForm = ({ app }) => {
                       )}
                     {isJobTypeBATCH(app) && (
                       <>
-                        <FormField
-                          label="Queue"
-                          name="execSystemLogicalQueue"
-                          description="Select the queue this job will execute on."
-                          type="select"
-                          required
+                        <QueueField
+                          hostname={selectedExecSystem?.host}
+                          queueName={values.execSystemLogicalQueue}
                         >
                           {formState.appQueueValues.map((q) => (
                             <option key={q.name} value={q.name}>
                               {`${!!q.description ? (q.description.startsWith(q.name) ? q.description : `${q.name} (${q.description})`) : q.name}`}
                             </option>
                           ))}
-                        </FormField>
+                        </QueueField>
                         {selectedQueue?.schedulerOptions &&
                           selectedQueue.schedulerOptions.map(
                             (opt) =>
