@@ -46,8 +46,16 @@ beforeEach(() => {
   );
 });
 
-it('announces acceptance without reporting success or refreshing before completion', async () => {
-  mutateAsync.mockResolvedValue({ data: { pending: true, uuid: 'transfer' } });
+it('dispatches a structured copy-started notification without refreshing', async () => {
+  mutateAsync.mockResolvedValue({
+    data: {
+      pending: true,
+      uuid: 'transfer',
+      source: 'tapis://my-data/one.txt',
+      systemId: 'workspace',
+      path: 'shared/one.txt',
+    },
+  });
   const { result } = renderHook(useCopy);
   await result.current.copy(options);
   const actions = dispatch.mock.calls.map(([action]) => action);
@@ -58,9 +66,20 @@ it('announces acceptance without reporting success or refreshing before completi
     {
       type: 'ADD_TOAST',
       payload: {
-        status: 'INFO',
-        message:
-          'Copy started for 2 files. You will be notified when complete.',
+        event_type: 'data_files',
+        operation: 'copy',
+        status: 'SUCCESS',
+        extra: {
+          copy_count: 2,
+          response: {
+            nativeFormat: 'raw',
+            path: 'shared/one.txt',
+            pending: true,
+            source: 'tapis://my-data/one.txt',
+            systemId: 'workspace',
+            uuid: 'transfer',
+          },
+        },
       },
     },
   ]);
@@ -73,10 +92,23 @@ it('announces acceptance without reporting success or refreshing before completi
 it('keeps synchronous copy success and refresh behavior', async () => {
   mutateAsync.mockResolvedValue({ data: {} });
   const { result } = renderHook(useCopy);
-  await result.current.copy(options);
+  await result.current.copy({ ...options, destSystem: 'my-data' });
   expect(dispatch).toHaveBeenCalledWith({
     type: 'ADD_TOAST',
-    payload: { message: 'Files copied to /shared' },
+    payload: {
+      event_type: 'data_files',
+      operation: 'copy',
+      status: 'SUCCESS',
+      extra: {
+        copy_count: 2,
+        response: {
+          nativeFormat: 'raw',
+          path: '/shared/one.txt',
+          source: 'tapis://my-data/one.txt',
+          systemId: 'my-data',
+        },
+      },
+    },
   });
   expect(options.callback).toHaveBeenCalledOnce();
 });
@@ -85,10 +117,23 @@ it('uses singular copy success text for one file', async () => {
   selected.splice(1);
   mutateAsync.mockResolvedValue({ data: {} });
   const { result } = renderHook(useCopy);
-  await result.current.copy(options);
+  await result.current.copy({ ...options, destSystem: 'my-data' });
   expect(dispatch).toHaveBeenCalledWith({
     type: 'ADD_TOAST',
-    payload: { message: 'File copied to /shared' },
+    payload: {
+      event_type: 'data_files',
+      operation: 'copy',
+      status: 'SUCCESS',
+      extra: {
+        copy_count: 1,
+        response: {
+          nativeFormat: 'raw',
+          path: '/shared/one.txt',
+          source: 'tapis://my-data/one.txt',
+          systemId: 'my-data',
+        },
+      },
+    },
   });
 });
 

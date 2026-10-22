@@ -3,7 +3,16 @@ import { useSelectedFiles } from 'hooks/datafiles';
 import Cookies from 'js-cookie';
 import { apiClient } from 'utils/apiClient';
 import { useMutation } from '@tanstack/react-query';
-import truncateMiddle from 'utils/truncateMiddle';
+
+const getCopyToast = (response: Record<string, any>, copyCount: number) => ({
+  event_type: 'data_files',
+  operation: 'copy',
+  status: 'SUCCESS',
+  extra: {
+    response,
+    copy_count: copyCount,
+  },
+});
 
 export async function copyFileUtil({
   api,
@@ -123,6 +132,16 @@ function useCopy() {
       }).then(
         (response) => {
           const pending = response.data?.pending === true;
+          const copyResponse = {
+            source: `${file.api}://${file.system}/${file.path.replace(
+              /^\/+/,
+              ''
+            )}`,
+            systemId: destSystem,
+            path: `${destPath.replace(/\/$/, '')}/${file.name}`,
+            nativeFormat: file.type === 'dir' ? 'dir' : 'raw',
+            ...response.data,
+          };
           dispatch({
             type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
             payload: {
@@ -131,7 +150,7 @@ function useCopy() {
               operation: 'copy',
             },
           });
-          return { pending };
+          return { pending, response: copyResponse };
         },
         (error) => {
           dispatch({
@@ -143,37 +162,27 @@ function useCopy() {
       );
     });
     return Promise.allSettled(copyCalls).then((results) => {
-      const completed = results.filter(
-        (r) => r.status === 'fulfilled' && !r.value.pending
-      ).length;
-      const pending = results.filter(
-        (r) => r.status === 'fulfilled' && r.value.pending
-      ).length;
+      const successful = results.flatMap((result) =>
+        result.status === 'fulfilled' ? [result.value] : []
+      );
+      const completed = successful.filter((result) => !result.pending);
+      const pending = successful.filter((result) => result.pending);
       if (results.every((r) => r.status === 'fulfilled')) {
         dispatch({
           type: 'DATA_FILES_TOGGLE_MODAL',
           payload: { operation: 'copy', props: {} },
         });
       }
-      if (pending) {
-        const fileLabel = pending === 1 ? 'file' : 'files';
+      if (pending.length) {
         dispatch({
           type: 'ADD_TOAST',
-          payload: {
-            status: 'INFO',
-            message: `Copy started for ${pending} ${fileLabel}. You will be notified when complete.`,
-          },
+          payload: getCopyToast(pending[0].response, pending.length),
         });
       }
-      if (completed) {
-        const fileLabel = completed === 1 ? 'File' : 'Files';
+      if (completed.length) {
         dispatch({
           type: 'ADD_TOAST',
-          payload: {
-            message: `${fileLabel} copied to ${
-              truncateMiddle(destPath, 20) || '/'
-            }`,
-          },
+          payload: getCopyToast(completed[0].response, completed.length),
         });
         callback();
       }
