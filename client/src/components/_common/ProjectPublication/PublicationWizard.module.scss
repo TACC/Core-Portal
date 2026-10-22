@@ -1,4 +1,4 @@
-@import '../../../styles/tools/mixins.scss';
+@use '../../../styles/tools/mixins.scss' as mixins;
 
 .root {
   /* As a flex child */
@@ -10,7 +10,7 @@
 }
 
 .title {
-  @include truncate-with-ellipsis;
+  @include mixins.truncate-with-ellipsis;
   max-width: 1400px;
   font-size: 18px;
 }

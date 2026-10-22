@@ -13,6 +13,7 @@ const getCopyToast = (response: Record<string, any>, copyCount: number) => ({
     copy_count: copyCount,
   },
 });
+import { v4 as uuidv4 } from 'uuid';
 
 export async function copyFileUtil({
   api,

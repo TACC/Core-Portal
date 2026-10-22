@@ -5,7 +5,7 @@
   /* FAQ: Dropped in Bootstrap 5 */
   /* https://getbootstrap.com/docs/5.3/migration/#forms-1 */
   .input-group-prepend {
-      margin-right: -1px;
+    margin-right: -1px;
   }
 
   /* C-BUTTON--NEW.CSS */

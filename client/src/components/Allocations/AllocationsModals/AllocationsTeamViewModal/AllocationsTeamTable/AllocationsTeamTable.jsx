@@ -13,11 +13,12 @@ const AllocationsTeamTable = ({ rawData = [], clickHandler, visible = {} }) => {
         Header: 'listing',
         accessor: (el) => el,
         Cell: (el) => {
-          const { firstName, lastName } = el.value;
+          const { firstName, lastName, username } = el.value;
           return (
-            <span className={styles.content}>
+            <>
               {capitalize(firstName)} {capitalize(lastName)}
-            </span>
+              <small className={styles.username}>{username}</small>
+            </>
           );
         },
       },
@@ -52,7 +53,7 @@ const AllocationsTeamTable = ({ rawData = [], clickHandler, visible = {} }) => {
               {row.cells.map((cell) => {
                 const { key: cellKey, ...cellProps } = cell.getCellProps();
                 return (
-                  <td key={cellKey} {...cellProps}>
+                  <td key={cellKey} className={styles.content} {...cellProps}>
                     {cell.render('Cell')}
                   </td>
                 );

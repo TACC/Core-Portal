@@ -14,6 +14,7 @@ import { useSystemRole } from '../DataFilesProjectMembers/_cells/SystemRoleSelec
 import './DataFilesToolbar.scss';
 import { useTrash } from 'hooks/datafiles/mutations';
 import canCompressForDownload from 'utils/canCompressForDownload';
+import { useAuthenticatedUser, useWorkbenchConfig } from '@tacc/core-hooks';
 
 const EMPTY_FILE_LIST = [];
 
@@ -82,10 +83,19 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const [customPermissionCheck, setCustomPermissionCheck] = useState(
     () => () => true
   );
-  const { hasCustomDataFilesToolbarChecks } = useSelector(
-    (state) => state.workbench.config
-  );
-  const { portalName } = useSelector((state) => state.workbench);
+  const {
+    data: {
+      portalName,
+      config: {
+        hasCustomDataFilesToolbarChecks,
+        trashPath,
+        makeLink,
+        extractApp,
+        compressApp,
+        makePublic,
+      },
+    },
+  } = useWorkbenchConfig();
 
   useEffect(() => {
     // dynamically import custom permission check function if it exists
@@ -108,9 +118,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   const { DataFilesToolbarAddon } = useAddonComponents({ portalName });
 
-  const authenticatedUser = useSelector(
-    (state) => state.authenticatedUser?.user?.username
-  );
+  const authenticatedUser = useAuthenticatedUser()?.username;
 
   const { query: authenticatedUserQuery } = useSystemRole(
     projectId,
@@ -121,16 +129,14 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   const inTrash = useSelector((state) => {
     if (selectedSystem?.scheme === 'projects') {
-      return state.files.params.FilesListing.path.startsWith(
-        `${state.workbench.config.trashPath}`
-      );
+      return state.files.params.FilesListing.path.startsWith(trashPath);
     } else {
       // remove leading slash from homeDir value
       const homeDir = selectedSystem?.homeDir?.slice(1);
       if (!homeDir) return false;
 
       return state.files.params.FilesListing.path.startsWith(
-        `${homeDir}/${state.workbench.config.trashPath}`
+        `${homeDir}/${trashPath}`
       );
     }
   });
@@ -152,43 +158,32 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   const showDownload = api === 'tapis';
 
-  const showMakeLink = useSelector(
-    (state) =>
-      state.workbench &&
-      state.workbench.config.makeLink &&
-      api === 'tapis' &&
-      (scheme === 'private' || scheme === 'projects')
-  );
+  const showMakeLink =
+    makeLink &&
+    api === 'tapis' &&
+    (scheme === 'private' || scheme === 'projects');
 
-  const hasActiveAllocation = (state) => {
+  const hasActiveAllocation = useSelector((state) => {
     return (
-      state.allocations.portal_alloc ||
-      (Array.isArray(state.allocations.active) &&
+      state.allocations?.portal_alloc ||
+      (Array.isArray(state.allocations?.active) &&
         state.allocations.active.length > 0)
     );
-  };
+  });
 
-  const showCompress = !!useSelector(
-    (state) =>
-      state.workbench.config.extractApp &&
-      modifiableUserData &&
-      hasActiveAllocation(state)
+  const showCompress = !!(
+    !!compressApp &&
+    modifiableUserData &&
+    hasActiveAllocation
   );
 
-  const showExtract = !!useSelector(
-    (state) =>
-      state.workbench.config.compressApp &&
-      modifiableUserData &&
-      hasActiveAllocation(state)
+  const showExtract = !!(
+    !!extractApp &&
+    modifiableUserData &&
+    hasActiveAllocation
   );
 
-  const showMakePublic = useSelector(
-    (state) =>
-      state.workbench &&
-      state.workbench.config.makePublic &&
-      api === 'tapis' &&
-      modifiableUserData
-  );
+  const showMakePublic = makePublic && api === 'tapis' && modifiableUserData;
 
   const toggleRenameModal = () =>
     toggle({ operation: 'rename', props: { selectedFile: selectedFiles[0] } });

@@ -5,23 +5,26 @@ import { Button, LoadingSpinner, Section } from '_common';
 import { Button as ReactstrapButton } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
 import OnboardingStep from './OnboardingStep';
+import TicketCreateModal from '../Tickets/TicketCreateModal';
 
 import styles from './OnboardingUser.module.scss';
+import { useAuthenticatedUser, useWorkbenchConfig } from '@tacc/core-hooks';
 
 const OnboardingUser = () => {
   const params = useParams();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.onboarding.user);
-  const isStaff = useSelector((state) =>
-    state.authenticatedUser.user ? state.authenticatedUser.user.isStaff : false
-  );
+  const isStaff = useAuthenticatedUser()?.isStaff ?? false;
   const loading = useSelector((state) => state.onboarding.user.loading);
   const error = useSelector((state) => state.onboarding.user.error);
-  const onboardingCompleteRedirect = useSelector(
-    (state) => state.workbench.config.onboardingCompleteRedirect
-  );
-  const continueLink = onboardingCompleteRedirect || '/workbench/';
+  const {
+    data: {
+      config: { onboardingCompleteRedirect },
+    },
+  } = useWorkbenchConfig();
 
+  const continueLink = onboardingCompleteRedirect || '/workbench/';
+  const [isTicketModalOpen, setIsTicketModalOpen] = React.useState(false);
   useEffect(() => {
     dispatch({
       type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER',
@@ -60,19 +63,7 @@ const OnboardingUser = () => {
             <OnboardingStep step={step} key={uuidv4()} />
           ))}
           <div className={styles.access}>
-            <Button
-              type="link"
-              onClick={() =>
-                dispatch({
-                  type: 'TICKET_CREATE_OPEN_MODAL',
-                  payload: {
-                    provideDashBoardLinkOnSuccess: false,
-                    showAsModalOnDashboard: false,
-                    subject: `Onboarding`,
-                  },
-                })
-              }
-            >
+            <Button type="link" onClick={() => setIsTicketModalOpen(true)}>
               <h6>Get Help</h6>
             </Button>
             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -84,6 +75,11 @@ const OnboardingUser = () => {
               Continue
             </ReactstrapButton>
           </div>
+          <TicketCreateModal
+            isModalOpen={isTicketModalOpen}
+            setIsModalOpen={setIsTicketModalOpen}
+            initialSubject="Onboarding"
+          />
         </>
       }
     />

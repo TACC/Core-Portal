@@ -29,9 +29,8 @@ const Searchbar = ({
     location.search
   );
 
-  if (!sectionName) {
-    sectionName = useSystemDisplayName({ system, scheme, path });
-  }
+  const systemDisplayName = useSystemDisplayName({ system, scheme, path });
+  const displayName = sectionName || systemDisplayName;
 
   const allFilterTypesValue = `All ${dataType ? dataType : ''} Types`;
 
@@ -93,7 +92,7 @@ const Searchbar = ({
 
   return (
     <form
-      aria-label={`${sectionName} Search`}
+      aria-label={`${displayName} Search`}
       className={`${className} ${styles['container']}`}
       onSubmit={onSubmit}
     >
@@ -117,9 +116,9 @@ const Searchbar = ({
           onChange={onChange}
           value={query || ''}
           name="query"
-          aria-label={`Search ${sectionName}`}
+          aria-label={`Search ${displayName}`}
           className={`form-control ${styles['input']}`}
-          placeholder={`Search ${sectionName}`}
+          placeholder={`Search ${displayName}`}
           data-testid="input"
           autoComplete="off"
           disabled={disabled}
@@ -148,7 +147,7 @@ const Searchbar = ({
           className={`${styles.results} ${disabled ? styles.hidden : ''}`}
           data-testid="summary-of-search-results"
         >
-          {resultCount} results in {sectionName || dataType}
+          {resultCount} results in {displayName || dataType}
         </div>
       )}
       {((hasQuery && !siteSearch) ||

@@ -5,20 +5,24 @@ import { useSelectedFiles } from 'hooks/datafiles';
 import { ProjectFileListingActions } from '_common/ProjectMetadata';
 import useDrpDatasetModals from '../utils/hooks/useDrpDatasetModals';
 import styles from './DataFilesProjectFileListingAddon.module.scss';
+import { useAuthenticatedUser, useWorkbenchConfig } from '@tacc/core-hooks';
 
 // DRP's toolbar = the generic core publication toolbar + per-entity dataset
 // add/edit actions (sample / digital dataset / analysis data) in the slot.
 const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
-  const portalName = useSelector((state) => state.workbench.portalName);
+  const {
+    data: { portalName },
+  } = useWorkbenchConfig();
   const { projectId } = useSelector((state) => state.projects.metadata);
   const { selectedFiles } = useSelectedFiles();
 
   const { createSampleModal, createOriginDataModal, createAnalysisDataModal } =
     useDrpDatasetModals(projectId, portalName);
 
+  const username = useAuthenticatedUser()?.username;
+
   const canEditDataset = useSelector((state) => {
     const { members } = state.projects.metadata;
-    const { username } = state.authenticatedUser?.user ?? {};
     const currentUser = members.find(
       (member) => member.user?.username === username
     );

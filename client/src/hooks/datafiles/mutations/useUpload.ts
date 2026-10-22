@@ -5,6 +5,7 @@ import Cookies from 'js-cookie';
 import truncateMiddle from 'utils/truncateMiddle';
 import { useMutation } from '@tanstack/react-query';
 import { TTapisToken } from '../useTapisToken';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 export async function uploadUtil({
   api,
@@ -106,9 +107,11 @@ function useUpload() {
     (state: any) => state.files.operationStatus.upload,
     shallowEqual
   );
-  const projectsEnableMetadata = useSelector(
-    (state: any) => state.workbench.config.projectsEnableMetadata
-  );
+  const {
+    data: {
+      config: { projectsEnableMetadata },
+    },
+  } = useWorkbenchConfig();
 
   const setStatus = (newStatus: any) => {
     dispatch({

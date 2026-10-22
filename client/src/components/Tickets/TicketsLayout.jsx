@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { InfiniteScrollTable, Message } from '_common';
+import { ticketsQueries } from '@tacc/core-queries';
 import { formatDate } from 'utils/timeFormat';
 import * as ROUTES from '../../constants/routes';
 import './TicketsLayout.scss';
@@ -25,10 +26,11 @@ export function getStatusText(status) {
 }
 
 function TicketsView() {
-  const dispatch = useDispatch();
-  const isLoading = useSelector((state) => state.ticketList.loading);
-  const tickets = useSelector((state) => state.ticketList.content);
-  const loadingError = useSelector((state) => state.ticketList.loadingError);
+  const {
+    data: ticketsData,
+    isLoading,
+    isError,
+  } = useQuery(ticketsQueries.listTickets());
   const noDataText = (
     <>
       No tickets. You can add a ticket{' '}
@@ -42,11 +44,7 @@ function TicketsView() {
     </>
   );
 
-  useEffect(() => {
-    dispatch({ type: 'TICKET_LIST_FETCH' });
-  }, [dispatch]);
-
-  if (loadingError) {
+  if (isError) {
     return (
       <Message type="warn" className="ticket__error">
         We were unable to retrieve your tickets.
@@ -114,7 +112,7 @@ function TicketsView() {
   return (
     <InfiniteScrollTable
       tableColumns={columns}
-      tableData={tickets}
+      tableData={ticketsData ?? []}
       isLoading={isLoading}
       className="tickets-view"
       noDataText={noDataText}

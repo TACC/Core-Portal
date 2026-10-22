@@ -39,16 +39,27 @@ class AllocationStep(AbstractStep):
             )
         else:
             if "expected_hosts" in self.settings:
-                # checking if expected hosts are included in allocation hosts
                 expected_hosts = self.settings["expected_hosts"]
+                mode = self.settings.get("expected_hosts_mode", "all")
                 allocation_hosts = {h.lower() for h in allocations["hosts"].keys()}
                 matched_hosts = [h for h in expected_hosts if h in allocation_hosts]
                 missing_hosts = [h for h in expected_hosts if h not in allocation_hosts]
 
-                if missing_hosts:
+                if mode == "any":
+                    if not matched_hosts:
+                        self.state = SetupState.FAILED
+                        self.log(f"User {self.user.username} has no allocations on any of: {expected_hosts}")
+                        return
+                elif mode == "all":
+                    if missing_hosts:
+                        self.state = SetupState.FAILED
+                        self.log(f"User {self.user.username} is missing allocations on: {missing_hosts}")
+                        return
+                else:
                     self.state = SetupState.FAILED
-                    self.log(f"User {self.user.username} is missing allocations on: {missing_hosts}")
+                    self.log(f"Invalid expected_hosts_mode: {mode!r}")
                     return
+
                 self.log(f"Expected host allocations found: {matched_hosts}")
 
             self.complete("Allocations retrieved", data=allocations)

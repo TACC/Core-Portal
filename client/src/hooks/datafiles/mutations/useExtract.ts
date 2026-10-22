@@ -5,6 +5,7 @@ import { apiClient } from 'utils/apiClient';
 import { TTapisFile } from 'utils/types';
 import { TJobBody, TJobPostResponse } from './useSubmitJob';
 import { getAppUtil, getAllocationForToolbarAction } from './toolbarAppUtils';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 async function submitJobUtil(body: TJobBody) {
   const res = await apiClient.post<TJobPostResponse>(
@@ -28,9 +29,11 @@ function useExtract() {
     });
   };
 
-  const extractApp = useSelector(
-    (state: any) => state.workbench.config.extractApp
-  );
+  const {
+    data: {
+      config: { extractApp },
+    },
+  } = useWorkbenchConfig();
   const { data: fullExtractApp } = useQuery({
     queryKey: ['extract-app', extractApp.id, extractApp.version],
     queryFn: () => getAppUtil(extractApp.id, extractApp.version),
