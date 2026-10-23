@@ -203,7 +203,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
     const destSystem = selectedSystem?.system || selectedFiles[0]?.system;
     if (!destSystem) return;
 
-    toggle({ operation: 'trash', props: { selectedFiles, homeDir, destSystem } });
+    toggle({ operation: 'trash', props: { selectedFiles } });
   };
 
   const trashCallback = useCallback(() => {
