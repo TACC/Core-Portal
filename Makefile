@@ -4,6 +4,7 @@ DOCKER_TAG ?= $(shell git rev-parse --short HEAD)
 DOCKER_IMAGE := $(DOCKERHUB_REPO):$(DOCKER_TAG)
 DOCKER_IMAGE_LATEST := $(DOCKERHUB_REPO):latest
 NGROK_ENV_FILE = ./server/conf/env_files/ngrok.env
+OP_ENV_FILE = ./server/conf/env_files/1pass-secret-ref.env
 ifeq ("$(wildcard $(NGROK_ENV_FILE))","")
     NGROK_ENV_FILE = ./server/conf/env_files/ngrok.sample.env
 endif
@@ -36,7 +37,7 @@ publish-latest:
 
 .PHONY: start
 start:
-	docker compose --env-file $(NGROK_ENV_FILE) -f server/conf/docker/docker-compose-dev.all.debug.yml up
+	op run --env-file="${OP_ENV_FILE}" -- docker compose --env-file $(NGROK_ENV_FILE) -f server/conf/docker/docker-compose-dev.all.debug.yml up
 
 .PHONY: stop
 stop:
