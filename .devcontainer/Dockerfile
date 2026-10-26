@@ -1,2 +1,5 @@
+ARG UV_VERSION=latest
+FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv
+
 FROM mcr.microsoft.com/devcontainers/python:3-3.12-trixie
-COPY --from=ghcr.io/astral-sh/uv:0.13.5 /uv /uvx /bin/
+COPY --from=uv /uv /uvx /bin/

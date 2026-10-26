@@ -1,7 +1,10 @@
 {
   "name": "core-portal-dev",
   "build": {
-    "dockerfile": "Dockerfile"
+    "dockerfile": "Dockerfile",
+    "args": {
+      "UV_VERSION": "0.13.5"
+    }
   },
   "features": {
     "ghcr.io/devcontainers/features/node:2": {
