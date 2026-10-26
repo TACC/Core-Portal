@@ -108,13 +108,14 @@ jobs:
           enable-cache: true
 
       - name: Run Bandit
-        run: uvx --python 3.12 --from "bandit[sarif]==1.9.4" bandit -c server/pyproject.toml -r server/portal --severity-level low --confidence-level medium -f sarif -o bandit.sarif
+        working-directory: ./server
+        run: uvx --python 3.12 --from "bandit[sarif]==1.9.4" bandit -c pyproject.toml -r portal --severity-level low --confidence-level medium -f sarif -o bandit.sarif
 
       - name: Upload Bandit results
         if: always()
         uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: bandit.sarif
+          sarif_file: server/bandit.sarif
 
   Server_Side_Ruff_Security_Scan:
     runs-on: ubuntu-24.04
