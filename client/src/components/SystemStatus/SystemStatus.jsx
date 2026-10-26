@@ -1,5 +1,11 @@
 import React, { useEffect } from 'react';
-import { Route, Switch, Link, useHistory, useLocation } from 'react-router-dom';
+import {
+  Route,
+  Routes as RouterRoutes,
+  useNavigate,
+  useParams,
+  useLocation,
+} from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { LoadingSpinner, Section, SectionTableWrapper } from '_common';
@@ -28,7 +34,7 @@ const SystemStatusSidebar = ({ systemList }) => {
   return <Sidebar sidebarItems={sidebarItems} />;
 };
 
-const Layout = ({ hostname }) => {
+const SystemStatusLayout = ({ hostname }) => {
   const {
     loading,
     error: loadingError,
@@ -74,30 +80,28 @@ const Layout = ({ hostname }) => {
 const DefaultSystemRedirect = () => {
   const systemList = useSelector((state) => state.systemMonitor.list);
 
-  const history = useHistory();
+  const navigate = useNavigate();
   useEffect(() => {
     if (systemList.length === 0) return;
     const defaultSystem =
       systemList.find((sys) => sys.display_name === 'Frontera') ??
       systemList[0];
-    history.push(`/workbench/system-status/${defaultSystem.hostname}`);
+    navigate(`/workbench/system-status/${defaultSystem.hostname}`);
   }, [systemList]);
   return <></>;
 };
 
+const SystemStatusRoute = () => {
+  const { hostname } = useParams();
+  return <SystemStatusLayout hostname={hostname} />;
+};
+
 const Routes = () => {
   return (
-    <Switch>
-      <Route
-        path={`${root}/:hostname`}
-        render={({ match: { params } }) => {
-          return <Layout hostname={params.hostname} />;
-        }}
-      />
-      <Route path={`${root}`}>
-        <DefaultSystemRedirect />
-      </Route>
-    </Switch>
+    <RouterRoutes>
+      <Route path={`:hostname`} element={<SystemStatusRoute />} />
+      <Route path={`*`} element={<DefaultSystemRedirect />} />
+    </RouterRoutes>
   );
 };
 

@@ -3,16 +3,29 @@
   align-items: center;
   margin-bottom: 10px;
   justify-content: flex-start;
-  width: 35%;
+  gap: 15px;
 }
 
 .user-name {
-  flex-grow: 1; /* Take up available space */
-  margin-right: 10px; /* Space between name and buttons */
+  width: 200px;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.orcid-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 280px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .button-group {
   display: flex;
   gap: 15px; /* Space between buttons */
+  flex-shrink: 0;
   min-width: 200px;
 }

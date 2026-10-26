@@ -31,20 +31,26 @@
   background: var(--global-color-accent--weak);
 }
 .tr-disabled {
-  color: var(--global-color-primary--light);
-}
-.tr-disabled .data-files-nav-link {
-  color: var(--global-color-primary--light);
-  pointer-events: none;
-}
-.tr-disabled .btn.btn-sm {
-  color: var(--global-color-primary--light);
+  opacity: 0.75;
   pointer-events: none;
 }
 .td {
   padding-left: 15px;
   padding-right: 15px;
   flex-grow: 1;
+}
+.td:nth-child(1) /* checkbox/loading */ {
+  flex-grow: 0;
+  padding-inline: unset;
+  width: 45px;
+  text-align: center;
+}
+.td:nth-child(2) /* file icon */ {
+  flex-grow: 0;
+  padding-left: unset;
+}
+.td:nth-child(3) /* file name */ {
+  padding-left: unset;
 }
 
 /* NOTE: Mimicked on: DataFiles, DataFilesProjectsList, DataFilesProjectFileListing */

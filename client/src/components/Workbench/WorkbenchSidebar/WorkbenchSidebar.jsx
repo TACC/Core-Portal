@@ -1,27 +1,23 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import * as ROUTES from '../../../constants/routes';
 import HistoryBadge from '../../History/HistoryBadge';
 import './WorkbenchSidebar.global.scss'; // XXX: Global stylesheet imported in component
 import { Sidebar } from '_common';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 /** A navigation list for the application */
 const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
-  let { path } = useRouteMatch();
-  if (path.includes('accounts')) path = ROUTES.WORKBENCH;
+  const path = ROUTES.WORKBENCH;
 
   const unread = useSelector((state) => state.notifications.list.unread);
-  const hideApps = useSelector((state) => state.workbench.config.hideApps);
-  const hideDataFiles = useSelector(
-    (state) => state.workbench.config.hideDataFiles
-  );
-  const hideAllocations = useSelector(
-    (state) => state.workbench.config.hideAllocations
-  );
-  const hideSystemStatus = useSelector(
-    (state) => state.workbench.config.hideSystemStatus
-  );
+
+  const {
+    data: {
+      config: { hideDataFiles, hideAllocations, hideSystemStatus, hideApps },
+    },
+  } = useWorkbenchConfig();
+
   const sidebarItems = [
     {
       to: path + ROUTES.DASHBOARD,

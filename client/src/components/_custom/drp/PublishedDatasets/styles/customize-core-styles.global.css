@@ -1,10 +1,9 @@
 /* TWEAK CORE-STYLES */
 
 .has-cms-ui {
+  /* Card List */
 
-/* Card List */
-
-.c-card-list [class*='card--'] img {
+  .c-card-list [class*='card--'] img {
     padding: 20px;
     aspect-ratio: 1 / 1;
 
@@ -15,73 +14,75 @@
 
     /* to avoid cutting off words in an image */
     object-position: left;
-}
+  }
 
-/* to allow long file names to wrap */
-.c-card-list p {
+  /* to allow long file names to wrap */
+  .c-card-list p {
     word-break: break-word;
-}
+  }
 
+  /* Card */
 
-/* Card */
-
-/* To make project link align across cards */
-/* FAQ: Card layout is inconsistent cuz headings can span few to many lines */
-[class*='card--image-top'] {
+  /* To make project link align across cards */
+  /* FAQ: Card layout is inconsistent cuz headings can span few to many lines */
+  [class*='card--image-top'] {
     grid-template-rows: repeat(3, min-content) 1fr;
-}
-[class*='card--image-top'] > p:has(a:only-child) {
+  }
+  [class*='card--image-top'] > p:has(a:only-child) {
     align-self: end;
-}
+  }
 
+  /* Data List */
 
-/* Data List */
+  /* to swap colors for key and value (design request specific to projects) */
+  .c-data-list__key {
+    color: var(--global-color-primary--dark);
+  }
+  .c-data-list__value {
+    color: var(--global-color-primary--x-dark);
+  }
 
-/* to swap colors for key and value (design request specific to projects) */
-.c-data-list__key { color: var(--global-color-primary--dark); }
-.c-data-list__value { color: var(--global-color-primary--x-dark); }
-
-/* to not truncate text */
-.c-data-list__key,
-.c-data-list__label {
+  /* to not truncate text */
+  .c-data-list__key,
+  .c-data-list__label {
     overflow: visible;
     white-space: normal;
-}
+  }
 
-/* to arrange and truncate links in value column */
-.c-data-list__value nav {
+  /* to arrange and truncate links in value column */
+  .c-data-list__value nav {
     display: flex;
     flex-direction: column;
     gap: 0.5em;
-}
-.c-data-list__value nav a {
+  }
+  .c-data-list__value nav a {
     display: flex;
     flex-direction: row;
     gap: 0.5em;
-}
-.c-data-list__value nav a span {
+  }
+  .c-data-list__value nav a span {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
+  }
 
+  /* Modal */
 
-/* Modal */
-
-.modal-body {
+  .modal-body {
     padding: 1.5rem;
-}
+  }
 
+  /* CUSTOM UTILITIES */
 
-
-
-/* CUSTOM UTILITIES */
-
-.u-thead-content-with-input {
+  .u-thead-content-with-input {
     display: flex;
     gap: 1ch;
-}
+  }
 
-.u-title-needs-colon > :first-child { font-weight: normal; }
-.u-title-needs-colon > :first-child::after { content: ':'; }
+  .u-title-needs-colon > :first-child {
+    font-weight: normal;
+  }
+  .u-title-needs-colon > :first-child::after {
+    content: ':';
+  }
 }

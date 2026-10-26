@@ -1,10 +1,8 @@
 .row {
-  height: 35px;
   cursor: pointer;
   color: var(--global-color-primary--xx-dark);
+
   td {
-    font-weight: 500;
-    font-size: 14px;
     vertical-align: middle;
   }
 }
@@ -12,7 +10,20 @@
   background-color: var(--global-color-accent--weak);
 }
 .content {
+  display: flex;
+  flex-direction: column;
   margin-left: 1.5rem;
+  line-height: 1.3;
+  padding: 4px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--global-color-primary--xx-dark);
+}
+
+.username {
+  font-size: smaller;
+  font-weight: unset;
+  color: var(--global-color-primary--medium);
 }
 .active-user {
   composes: row;

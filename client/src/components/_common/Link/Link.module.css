@@ -1,0 +1,17 @@
+/* Elements: Ticket As Button */
+.as-button {
+  color: var(--global-color-primary--xx-dark);
+  background-color: var(--global-color-primary--x-light);
+  border-color: var(--global-color-primary--xx-dark);
+  padding: 6px 18px;
+  border-width: var(--global-border-width--normal);
+  border-style: solid;
+  font-weight: 500;
+  font-size: 0.75rem; /* 12px */
+}
+.as-button:hover {
+  text-decoration: none;
+  color: var(--global-color-primary--xx-dark);
+  background-color: var(--global-color-accent--weak);
+  border-color: var(--global-color-accent--normal);
+}

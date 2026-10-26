@@ -35,7 +35,7 @@ const Button = ({
   size = '', // unless `type="link", defaults to `short` after `propTypes`
   dataTestid = undefined,
   disabled = false,
-  onClick = null,
+  onClick = /** @type {((e: any) => void) | null} */ (null),
   attr = 'button',
   isLoading = false,
 }) => {

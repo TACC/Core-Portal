@@ -1,17 +1,18 @@
 import React from 'react';
-import { Route, Switch, Redirect, useRouteMatch } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import * as ROUTES from '../../constants/routes';
 import OnboardingAdmin from './OnboardingAdmin';
 import OnboardingUser from './OnboardingUser';
 
-function Onboarding() {
-  const { path } = useRouteMatch();
+const path = `${ROUTES.WORKBENCH}${ROUTES.ONBOARDING}`;
 
+function Onboarding() {
   return (
-    <Switch>
-      <Route path={`${path}/setup/:username?`} component={OnboardingUser} />
-      <Route path={`${path}/admin`} component={OnboardingAdmin} />
-      <Redirect from={`${path}`} to={`${path}/setup`} />
-    </Switch>
+    <Routes>
+      <Route path={`setup/:username?`} element={<OnboardingUser />} />
+      <Route path={`admin`} element={<OnboardingAdmin />} />
+      <Route index element={<Navigate to={`${path}/setup`} replace />} />
+    </Routes>
   );
 }
 

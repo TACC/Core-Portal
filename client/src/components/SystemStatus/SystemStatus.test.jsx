@@ -2,7 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { render, waitFor } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import SystemStatus from './SystemStatus';
 
 import fetchMock from 'fetch-mock';
@@ -70,7 +70,12 @@ describe('System Status Page Layout', () => {
         <MemoryRouter
           initialEntries={['/workbench/system-status/frontera.tacc.utexas.edu']}
         >
-          <SystemStatus />
+          <Routes>
+            <Route
+              path="/workbench/system-status/*"
+              element={<SystemStatus />}
+            />
+          </Routes>
         </MemoryRouter>
       </Provider>
     );
@@ -101,7 +106,12 @@ describe('System Status Page Layout', () => {
         <MemoryRouter
           initialEntries={['/workbench/system-status/frontera.tacc.utexas.edu']}
         >
-          <SystemStatus />
+          <Routes>
+            <Route
+              path="/workbench/system-status/*"
+              element={<SystemStatus />}
+            />
+          </Routes>
         </MemoryRouter>
       </Provider>
     );

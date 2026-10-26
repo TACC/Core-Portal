@@ -3,12 +3,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import styles from './DataFilesProjectTreeModal.module.scss';
 import { useAddonComponents } from 'hooks/datafiles';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DataFilesProjectTreeModal = () => {
   const dispatch = useDispatch();
 
   const { projectId } = useSelector((state) => state.projects.metadata);
-  const portalName = useSelector((state) => state.workbench.portalName);
+  const {
+    data: { portalName },
+  } = useWorkbenchConfig();
 
   const isOpen = useSelector((state) => state.files.modals.projectTree);
   const props = useSelector((state) => state.files.modalProps['projectTree']);

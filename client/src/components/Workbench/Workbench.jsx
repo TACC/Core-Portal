@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Route, Switch, useRouteMatch, Redirect } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { LoadingSpinner } from '_common';
 import { useSystems, useTapisToken } from 'hooks/datafiles';
@@ -22,9 +22,10 @@ import './Workbench.scss';
 // Core Styles needs to be imported last for Rollup to compile the CSS correctly.
 import '../../index.css';
 import { useRedirectOnSessionExpired } from 'hooks/auth';
+import { useSuspenseQueries } from '@tanstack/react-query';
+import { userQueries, workbenchConfigQueries } from '@tacc/core-queries';
 
 function Workbench() {
-  const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const { loading: loadingSystems } = useSystems();
 
@@ -35,37 +36,34 @@ function Workbench() {
   useRedirectOnSessionExpired({ location: '/' });
 
   // showUIPatterns: Show some entries only in local development
+
+  const [workbenchConfig, authenticatedUser] = useSuspenseQueries({
+    queries: [
+      workbenchConfigQueries.getWorkbenchConfig(),
+      userQueries.getAuthenticatedUser(),
+    ],
+  });
+
   const {
-    loading,
-    setupComplete,
-    showUIPatterns,
-    isStaff,
-    hideApps,
-    hideDataFiles,
-    hideAllocations,
-    showSubmissions,
-    hideManageAccount,
-    hideSystemStatus,
-    hideOnboarding,
-    isTACCPortal,
-  } = useSelector(
-    (state) => ({
-      loading: state.workbench.loading || loadingSystems,
-      setupComplete: state.workbench.setupComplete,
-      showUIPatterns: state.workbench.config.debug,
-      isStaff:
-        state.authenticatedUser.user && state.authenticatedUser.user.isStaff,
-      hideApps: state.workbench.config.hideApps,
-      hideDataFiles: state.workbench.config.hideDataFiles,
-      hideAllocations: state.workbench.config.hideAllocations,
-      showSubmissions: state.workbench.config.showSubmissions,
-      hideManageAccount: state.workbench.config.hideManageAccount,
-      hideSystemStatus: state.workbench.config.hideSystemStatus,
-      hideOnboarding: state.workbench.config.hideOnboarding,
-      isTACCPortal: state.workbench.isTACCPortal,
-    }),
-    shallowEqual
-  );
+    data: {
+      setupComplete,
+      config: {
+        showUIPatterns,
+        hideApps,
+        hideDataFiles,
+        hideAllocations,
+        showSubmissions,
+        hideManageAccount,
+        hideSystemStatus,
+        hideOnboarding,
+        isTACCPortal,
+      },
+    },
+  } = workbenchConfig;
+
+  const isStaff = authenticatedUser.data
+    ? authenticatedUser.data.isStaff
+    : false;
 
   // Get systems and any other initial data we need from the backend
   useEffect(() => {
@@ -94,92 +92,87 @@ function Workbench() {
       <WorkbenchSidebar
         disabled={!setupComplete}
         showUIPatterns={showUIPatterns}
-        loading={loading}
+        loading={false}
       />
       <div className="workbench-content">
-        {loading ? (
-          <LoadingSpinner />
-        ) : (
-          <>
-            {setupComplete ? (
-              <Switch>
-                <Route path={`${path}${ROUTES.DASHBOARD}`}>
-                  <Dashboard />
-                </Route>
-                {!hideManageAccount && (
-                  <Route
-                    path={`${path}${ROUTES.ACCOUNT}`}
-                    component={ManageAccount}
-                  />
-                )}
-                {!hideDataFiles && (
-                  <Route path={`${path}${ROUTES.DATA}`}>
-                    <DataFiles />
-                  </Route>
-                )}
-                {!hideApps && (
-                  <Route
-                    path={`${path}${ROUTES.APPLICATIONS}`}
-                    component={Applications}
-                  />
-                )}
-                {!hideAllocations && (
-                  <Route
-                    path={`${path}${ROUTES.ALLOCATIONS}`}
-                    component={Allocations}
-                  />
-                )}
-                {showSubmissions && (
-                  <Route
-                    path={`${path}${ROUTES.SUBMISSIONS}`}
-                    component={Submissions}
-                  />
-                )}
-                {!hideApps && (
-                  <Route
-                    path={`${path}${ROUTES.HISTORY}`}
-                    component={History}
-                  />
-                )}
-                {!hideOnboarding && (
-                  <Route
-                    path={`${path}${ROUTES.ONBOARDING}`}
-                    component={Onboarding}
-                  />
-                )}
-                {isStaff && !hideOnboarding && (
-                  <Route
-                    path={`${path}${ROUTES.ONBOARDINGADMIN}`}
-                    component={OnboardingAdmin}
-                  />
-                )}
-                {!hideSystemStatus && (
-                  <Route
-                    path={`${path}${ROUTES.SYSTEM_STATUS}`}
-                    component={SystemStatus}
-                  />
-                )}
-                {showUIPatterns && (
-                  <Route path={`${path}${ROUTES.UI}`} component={UIPatterns} />
-                )}
-                <Redirect from={`${path}`} to={`${path}${ROUTES.DASHBOARD}`} />
-              </Switch>
-            ) : (
-              <Switch>
+        <>
+          {setupComplete ? (
+            <Routes>
+              <Route path={`${ROUTES.DASHBOARD}/*`} element={<Dashboard />} />
+              {!hideManageAccount && (
+                <Route path={`${ROUTES.ACCOUNT}`} element={<ManageAccount />} />
+              )}
+              {!hideDataFiles && (
+                <Route path={`${ROUTES.DATA}/*`} element={<DataFiles />} />
+              )}
+              {!hideApps && (
                 <Route
-                  path={`${path}${ROUTES.ONBOARDING}`}
-                  component={Onboarding}
+                  path={`${ROUTES.APPLICATIONS}/*`}
+                  element={<Applications />}
                 />
-                <Redirect
-                  from={`${path}`}
-                  to={`${path}${ROUTES.ONBOARDING}/setup/`}
+              )}
+              {!hideAllocations && (
+                <Route
+                  path={`${ROUTES.ALLOCATIONS}/*`}
+                  element={<Allocations />}
                 />
-              </Switch>
-            )}
-          </>
-        )}
+              )}
+              {showSubmissions && (
+                <Route
+                  path={`${ROUTES.SUBMISSIONS}`}
+                  element={<Submissions />}
+                />
+              )}
+              {!hideApps && (
+                <Route path={`${ROUTES.HISTORY}/*`} element={<History />} />
+              )}
+              {!hideOnboarding && (
+                <Route
+                  path={`${ROUTES.ONBOARDING}/*`}
+                  element={<Onboarding />}
+                />
+              )}
+              {isStaff && !hideOnboarding && (
+                <Route
+                  path={`${ROUTES.ONBOARDINGADMIN}`}
+                  element={<OnboardingAdmin />}
+                />
+              )}
+              {!hideSystemStatus && (
+                <Route
+                  path={`${ROUTES.SYSTEM_STATUS}/*`}
+                  element={<SystemStatus />}
+                />
+              )}
+              {showUIPatterns && (
+                <Route path={`${ROUTES.UI}`} element={<UIPatterns />} />
+              )}
+              <Route
+                path="*"
+                element={
+                  <Navigate
+                    to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`}
+                    replace
+                  />
+                }
+              />
+            </Routes>
+          ) : (
+            <Routes>
+              <Route path={`${ROUTES.ONBOARDING}/*`} element={<Onboarding />} />
+              <Route
+                path="*"
+                element={
+                  <Navigate
+                    to={`${ROUTES.WORKBENCH}${ROUTES.ONBOARDING}/setup/`}
+                    replace
+                  />
+                }
+              />
+            </Routes>
+          )}
+        </>
       </div>
-      <TicketCreateModal /* Top level modals */ />
     </div>
   );
 }

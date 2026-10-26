@@ -2,7 +2,6 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import { BrowserRouter } from 'react-router-dom';
 import renderComponent from 'utils/testing';
 import { AppSchemaForm, AppDetail } from './AppForm';
 import allocationsFixture from './fixtures/AppForm.allocations.fixture';
@@ -28,6 +27,11 @@ import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { userFixture } from '../../../redux/sagas/fixtures/users.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 import timekeeper from 'timekeeper';
+import { vi } from 'vitest';
+
+vi.mock('hooks/system-monitor/useSystemMonitor', () => ({
+  useSystemQueue: vi.fn().mockResolvedValue([]),
+}));
 
 const frozenDate = '2023-10-01';
 const mockStore = configureStore();
@@ -60,13 +64,7 @@ const initialMockState = {
 };
 
 function renderAppSchemaFormComponent(store, app) {
-  return render(
-    <Provider store={store}>
-      <BrowserRouter>
-        <AppSchemaForm app={app} />
-      </BrowserRouter>
-    </Provider>
-  );
+  return renderComponent(<AppSchemaForm app={app} />, store);
 }
 
 describe('AppSchemaForm', () => {

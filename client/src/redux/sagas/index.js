@@ -25,19 +25,8 @@ import {
 import watchAllocations from './allocations.sagas';
 import watchSystemMonitor from './systemMonitor.sagas';
 import watchProfile from './profile.sagas';
-import {
-  watchTicketListFetch,
-  watchTicketDetailedView,
-  watchTicketDetailedViewFetchHistory,
-  watchTicketDetailedViewFetchSubject,
-  watchPostTicketReply,
-  watchPostTicketCreate,
-  watchTicketCreateOpenModal,
-  watchTicketCreateCloseModal,
-} from './tickets.sagas';
+
 import { watchPostRequestAccess } from './requestAccess.sagas';
-import { watchAuthenticatedUser } from './authenticated_user.sagas';
-import { watchWorkbench } from './workbench.sagas';
 import {
   watchFetchIntroMessageComponents,
   watchSaveIntroMessageComponents,
@@ -59,9 +48,7 @@ function* watchStartCustomSaga() {
 }
 
 function* startCustomSaga(action) {
-  const portalName = yield select((state) => {
-    return state.workbench.portalName;
-  });
+  const portalName = action.payload.portalName;
 
   const { default: customSaga } = yield import(
     `./_custom/${portalName.toLowerCase()}.sagas.js`
@@ -98,19 +85,9 @@ export default function* rootSaga() {
     watchSystems(),
     watchSystemMonitor(),
     ...watchProfile,
-    watchTicketListFetch(),
-    watchTicketDetailedView(),
-    watchTicketDetailedViewFetchHistory(),
-    watchTicketDetailedViewFetchSubject(),
-    watchPostTicketReply(),
-    watchPostTicketCreate(),
     watchPostRequestAccess(),
-    watchTicketCreateOpenModal(),
-    watchTicketCreateCloseModal(),
-    watchAuthenticatedUser(),
     watchSocket(),
     watchFetchNotifications(),
-    watchWorkbench(),
     watchFetchIntroMessageComponents(),
     watchFetchCustomMessages(),
     watchSaveIntroMessageComponents(),

@@ -1,16 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import {
-  Link,
-  NavLink as RRNavLink,
-  Route,
-  useHistory,
-  Switch,
-  Redirect,
-} from 'react-router-dom';
-import { Nav, NavItem, NavLink } from 'reactstrap';
+import { Link, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import { string } from 'prop-types';
-import { Icon, LoadingSpinner, Section, SectionTableWrapper } from '_common';
+import { LoadingSpinner, Section, SectionTableWrapper } from '_common';
 import { AllocationsTable } from './AllocationsTables';
 import { AllocationsTeamViewModal } from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';
@@ -29,8 +21,7 @@ export const Header = ({ page }) => {
 };
 Header.propTypes = { page: string.isRequired };
 
-export const Actions = ({ page }) => {
-  const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/${page}`;
+export const Actions = () => {
   return (
     <a
       className="btn btn-primary"
@@ -42,11 +33,10 @@ export const Actions = ({ page }) => {
     </a>
   );
 };
-Actions.propTypes = { page: string.isRequired };
 
 export const Layout = ({ page }) => {
   const loading = useSelector((state) => state.allocations.loading);
-  const history = useHistory();
+  const navigate = useNavigate();
   const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}`;
 
   const sidebarItems = [
@@ -86,17 +76,23 @@ export const Layout = ({ page }) => {
               <AllocationsTable page={page} />
             </SectionTableWrapper>
           )}
-          <Switch>
-            <Route exact path={`${root}/${page}/:projectId(\\d+)`}>
-              <AllocationsTeamViewModal
-                isOpen
-                toggle={() => {
-                  history.push(`${root}/${page}`);
-                }}
-              />
-            </Route>
-            <Redirect to={`${root}/${page}`} />
-          </Switch>
+          <Routes>
+            <Route
+              path={`${page}/:projectId`}
+              element={
+                <AllocationsTeamViewModal
+                  isOpen
+                  toggle={() => {
+                    navigate(`${root}/${page}`);
+                  }}
+                />
+              }
+            />
+            <Route
+              path="*"
+              element={<Navigate to={`${root}/${page}`} replace />}
+            />
+          </Routes>
         </>
       }
     />

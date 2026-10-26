@@ -1,6 +1,5 @@
 import { put, call, takeLatest } from 'redux-saga/effects';
 import Cookies from 'js-cookie';
-import 'cross-fetch';
 
 export function* postRequestAccess(action) {
   yield put({ type: 'REQUEST_ACCESS_STARTED' });

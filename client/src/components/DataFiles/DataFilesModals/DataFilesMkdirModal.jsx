@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
@@ -27,10 +27,10 @@ const DataFilesMkdirModal = () => {
       .required('Please enter a valid directory name.'),
   });
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const reloadPage = () => {
-    history.push(location.pathname);
+    navigate(location.pathname);
   };
 
   const mkdirCallback = ({ dirname }) => {

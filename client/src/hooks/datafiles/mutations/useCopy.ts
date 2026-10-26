@@ -3,7 +3,7 @@ import { useSelectedFiles } from 'hooks/datafiles';
 import Cookies from 'js-cookie';
 import { apiClient } from 'utils/apiClient';
 import { useMutation } from '@tanstack/react-query';
-import truncateMiddle from 'utils/truncateMiddle';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function copyFileUtil({
   api,
@@ -147,9 +147,10 @@ function useCopy() {
       dispatch({
         type: 'ADD_TOAST',
         payload: {
-          message: `${
+          pk: uuidv4(),
+          message: `Copying ${
             copyCalls.length > 1 ? `${copyCalls.length} files` : 'File'
-          } copied to ${truncateMiddle(`${destPath}`, 20) || '/'}`,
+          }`,
         },
       });
       callback();

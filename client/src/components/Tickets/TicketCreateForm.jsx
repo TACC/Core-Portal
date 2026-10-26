@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Formik, Form } from 'formik';
@@ -18,6 +18,9 @@ import { Button, FileInputDropZoneFormField, FormField } from '_common';
 import ReCAPTCHA from 'react-google-recaptcha';
 import * as ROUTES from '../../constants/routes';
 import './TicketCreateForm.scss';
+import { useMutation } from '@tanstack/react-query';
+import { ticketsMutations } from '@tacc/core-queries';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 function CreatedTicketInformation({ provideDashBoardLinkOnSuccess, ticketId }) {
   if (!ticketId) {
@@ -55,28 +58,15 @@ function TicketCreateForm({
   initialSubject = '',
   provideDashBoardLinkOnSuccess,
 }) {
-  const creating = useSelector((state) => state.ticketCreate.creating);
-  const creatingError = useSelector(
-    (state) => state.ticketCreate.creatingError
-  );
-  const creatingErrorMessage = useSelector(
-    (state) => state.ticketCreate.creatingErrorMessage
-  );
-  const creatingSuccess = useSelector(
-    (state) => state.ticketCreate.creatingSuccess
-  );
-  const createdTicketId = useSelector(
-    (state) => state.ticketCreate.createdTicketId
-  );
-  const recaptchaSiteKey = useSelector(
-    (state) => state.workbench.recaptchaSiteKey
-  );
-  const maxSizeMessage = useSelector(
-    (state) => state.workbench.config.ticketAttachmentMaxSizeMessage
-  );
-  const maxSize = useSelector(
-    (state) => state.workbench.config.ticketAttachmentMaxSize
-  );
+  const {
+    data: {
+      recaptchaSiteKey,
+      config: {
+        ticketAttachmentMaxSizeMessage: maxSizeMessage = '3MB',
+        ticketAttachmentMaxSize: maxSize = 3145728,
+      },
+    },
+  } = useWorkbenchConfig();
 
   const defaultValues = useMemo(
     () => ({
@@ -92,10 +82,14 @@ function TicketCreateForm({
     [authenticatedUser, initialSubject]
   );
 
-  const dispatch = useDispatch();
-
   const isAuthenticated = !!authenticatedUser?.username;
-
+  const {
+    mutateAsync: createTicket,
+    data: createdTicketId,
+    isPending,
+    isError,
+    isSuccess,
+  } = useMutation(ticketsMutations.postTicketCreate());
   const formShape = {
     subject: Yup.string().required('Required'),
     problem_description: Yup.string().required('Required'),
@@ -124,7 +118,7 @@ function TicketCreateForm({
       enableReinitialize
       initialValues={defaultValues}
       validationSchema={formSchema}
-      onSubmit={(values, { resetForm }) => {
+      onSubmit={async (values, { resetForm }) => {
         const formData = new FormData();
         Object.keys(values).forEach((key) => formData.append(key, values[key]));
         if (values.attachments) {
@@ -132,15 +126,10 @@ function TicketCreateForm({
             formData.append('attachments', attach)
           );
         }
-
-        dispatch({
-          type: 'TICKET_CREATE',
-          payload: {
-            formData,
-            resetSubmittedForm: resetForm,
-            refreshTickets: isAuthenticated,
-          },
-        });
+        try {
+          await createTicket(formData);
+          resetForm();
+        } catch {}
       }}
     >
       {({ isSubmitting, isValid, setFieldValue }) => {
@@ -215,7 +204,7 @@ function TicketCreateForm({
             </ModalBody>
             <ModalFooter>
               <div className="ticket-create-button-row">
-                {creatingSuccess && (
+                {isSuccess && (
                   <CreatedTicketInformation
                     ticketId={createdTicketId}
                     provideDashBoardLinkOnSuccess={
@@ -223,17 +212,17 @@ function TicketCreateForm({
                     }
                   />
                 )}
-                {creatingError && (
+                {isError && (
                   <Alert color="warning">
-                    Ticket creating error: {creatingErrorMessage}
+                    There was an error creating your ticket.
                   </Alert>
                 )}
                 <Button
                   attr="submit"
                   type="primary"
                   size="medium"
-                  disabled={!isValid || isSubmitting || creating}
-                  isLoading={creating}
+                  disabled={!isValid || isSubmitting || isPending}
+                  isLoading={isPending}
                 >
                   Add Ticket
                 </Button>
