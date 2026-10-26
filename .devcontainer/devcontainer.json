@@ -1,0 +1,42 @@
+{
+  "name": "core-portal-dev",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/node:2": {
+      "version": "24",
+      "pnpmVersion": "12.6.0"
+    }
+  },
+  "containerEnv": {
+    "RUFF_CACHE_DIR": "/home/vscode/.cache/ruff",
+    "UV_PROJECT_ENVIRONMENT": "${containerWorkspaceFolder}/server/.venv",
+    "UV_LINK_MODE": "copy",
+    "UV_COMPILE_BYTECODE": "1",
+    "pnpm_config_store_dir": "/home/vscode/.local/share/pnpm/store"
+  },
+  "mounts": [
+    "source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/client/node_modules,type=volume",
+    "source=${localWorkspaceFolderBasename}-venv,target=${containerWorkspaceFolder}/server/.venv,type=volume"
+  ],
+  "postCreateCommand": "/bin/bash .devcontainer/post-create.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "vitest.explorer"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "${workspaceFolder}/server/.venv/bin/python",
+        "python.terminal.activateEnvironment": false,
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff"
+        }
+      }
+    }
+  }
+}
