@@ -32,14 +32,13 @@ services:
     command: ["memcached"]
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.28
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.29
     ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+      memlock: -1
     environment:
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g
-      - discovery.type=single-node
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      discovery.type: single-node
+      ingest.geoip.downloader.enabled: "false"
     volumes:
       - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - core_portal_es_data:/usr/share/elasticsearch/data
