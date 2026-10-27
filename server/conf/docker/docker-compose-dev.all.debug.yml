@@ -1,5 +1,5 @@
 # This is NOT TACC Deployments config
-# (it's only used on local dev envs)
+# (it is only used on local dev envs)
 services:
   cms:
     image: taccwma/core-cms:latest
