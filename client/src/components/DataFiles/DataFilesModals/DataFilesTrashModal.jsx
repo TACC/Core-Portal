@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Button } from '_common';
@@ -23,21 +23,18 @@ const DataFilesTrashModal = React.memo(() => {
   const selectedSystem = fetchSelectedSystem(params);
   const isOpen = getModalStatus('trash');
   const { selectedFiles } = useSelectedFiles();
-  const selected = useMemo(() => selectedFiles, [isOpen]);
   const dispatch = useDispatch();
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     setStatus({});
   };
 
-  const toggle = () => toggleModal({ operation: 'trash', props: {} });
+  const toggle = useCallback(
+    () => toggleModal({ operation: 'trash', props: {} }),
+    [toggleModal],
+  );
 
-  const reloadPage = () => {
-    navigate(location.pathname);
-    console.info('reloadPage called: ', location.pathname);
-  };
   const trashCallback = useCallback(() => {
-    console.info('trashCallback called');
     // Specific handling for shared workspaces.
     const homeDir = selectedSystem?.homeDir || '';
     const destSystem = selectedFiles[0]?.system || selectedSystem?.system;
@@ -46,13 +43,15 @@ const DataFilesTrashModal = React.memo(() => {
     trash({
       destSystem,
       homeDir,
-      callback: reloadPage,
+      callback: () => {
+        navigate(location.pathname);
+      },
     });
     toggle();
-  }, [selected, reloadPage, status]);
+  }, [trash, selectedFiles, selectedSystem, navigate, location.pathname, toggle]);
 
-  const actionString = `Moving ${selected.length} File${
-    selected.length > 1 ? 's' : ''
+  const actionString = `Moving ${selectedFiles.length} File${
+    selectedFiles.length > 1 ? 's' : ''
   } to Trash`;
 
   return (
@@ -71,7 +70,7 @@ const DataFilesTrashModal = React.memo(() => {
               {/* Table of selected files */}
               <div className="dataFilesModalColHeader">{actionString}</div>
               <div className="filesListing">
-                <DataFilesModalSelectedTable data={selected} operation="trash" />
+                <DataFilesModalSelectedTable data={selectedFiles} operation="trash" />
               </div>
             </div>
           </div>
