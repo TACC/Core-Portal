@@ -36,6 +36,11 @@
       "settings": {
         "python.defaultInterpreterPath": "${workspaceFolder}/server/.venv/bin/python",
         "python.terminal.activateEnvironment": false,
+
+        "python.testing.cwd": "${workspaceFolder}/server",
+        "python.testing.pytestArgs": ["."],
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestEnabled": true,
         "[python]": {
           "editor.defaultFormatter": "charliermarsh.ruff"
         }
