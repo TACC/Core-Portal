@@ -34,9 +34,9 @@
         "vitest.explorer"
       ],
       "settings": {
+        "editor.formatOnSave": true,
         "python.defaultInterpreterPath": "${workspaceFolder}/server/.venv/bin/python",
         "python.terminal.activateEnvironment": false,
-
         "python.testing.cwd": "${workspaceFolder}/server",
         "python.testing.pytestArgs": ["."],
         "python.testing.unittestEnabled": false,
