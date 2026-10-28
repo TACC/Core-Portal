@@ -19,7 +19,7 @@ _VANITY_BASE_URL = "https://cep.test"
 _LOGIN_REDIRECT_URL = "/remote/login/"
 _LOGOUT_REDIRECT_URL = "/cms/logout/"
 
-_SYSTEM_MONITOR_DISPLAY_LIST = ["Stampede3", "Lonestar6", "Frontera", "Vista"]
+_SYSTEM_MONITOR_DISPLAY_LIST = ["Stampede3", "Lonestar6", "Vista"]
 
 ########################
 # DJANGO SETTINGS LOCAL
@@ -271,6 +271,7 @@ _WORKBENCH_SETTINGS = {
     "uploadModalMaxSizeLabel": "2GB",
     "uploadModalMaxSizeValue": 2147483648,
     "jobsv2Title": "Historic Jobs",
+    "groupedNav": False,
 }
 
 _PORTAL_ELEVATED_ROLES = {
