@@ -27,7 +27,7 @@ SESSION_COOKIE_NAME = "sessionid"  # use the sessionid in your views code
 # the module to store sessions data
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 # age of cookie in seconds (default: 2 weeks)
-# the number of seconds for only 7 for example
+
 SESSION_COOKIE_AGE = 24 * 60 * 60 * 7
 # whether a user's session cookie expires when the web browser is closed
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
@@ -98,7 +98,6 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [os.path.join(BASE_DIR, "templates"), os.path.join(BASE_DIR, "../../client/dist")],
-        # 'APP_DIRS': True,
         "OPTIONS": {
             "context_processors": [
                 # Django core processors

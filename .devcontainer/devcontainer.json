@@ -31,7 +31,9 @@
         "charliermarsh.ruff",
         "esbenp.prettier-vscode",
         "bradlc.vscode-tailwindcss",
-        "vitest.explorer"
+        "vitest.explorer",
+        "dbaeumer.vscode-eslint",
+        "stylelint.vscode-stylelint"
       ],
       "settings": {
         "editor.formatOnSave": true,
