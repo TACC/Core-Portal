@@ -27,7 +27,8 @@ SESSION_COOKIE_NAME = "sessionid"  # use the sessionid in your views code
 # the module to store sessions data
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 # age of cookie in seconds (default: 2 weeks)
-SESSION_COOKIE_AGE = 24 * 60 * 60 * 7  # the number of seconds for only 7 for example
+
+SESSION_COOKIE_AGE = 24 * 60 * 60 * 7
 # whether a user's session cookie expires when the web browser is closed
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # whether the session cookie should be secure (https:// only)
@@ -89,16 +90,17 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "impersonate.middleware.ImpersonateMiddleware",  # must be AFTER django.contrib.auth
+    # must be AFTER django.contrib.auth
+    "impersonate.middleware.ImpersonateMiddleware",
 ]
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "templates")],
-        "APP_DIRS": True,
+        "DIRS": [os.path.join(BASE_DIR, "templates"), os.path.join(BASE_DIR, "../../client/dist")],
         "OPTIONS": {
             "context_processors": [
+                # Django core processors
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
@@ -106,6 +108,10 @@ TEMPLATES = [
                 "portal.utils.contextprocessors.analytics",
                 "portal.utils.contextprocessors.debug",
                 "portal.utils.contextprocessors.messages",
+            ],
+            "loaders": [
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
             ],
         },
     },
