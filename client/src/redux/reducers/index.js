@@ -7,7 +7,6 @@ import { systems, files } from './datafiles.reducers';
 import requestAccess from './requestAccess.reducers';
 import systemMonitor from './systemMonitor.reducers';
 import { allocations } from './allocations.reducers';
-import profile from './profile.reducers';
 import { pushKeys } from './systems.reducers';
 import notifications from './notifications.reducers';
 import {
@@ -29,7 +28,6 @@ export default combineReducers({
   systemMonitor,
   files,
   allocations,
-  profile,
   requestAccess,
   app,
   apps,

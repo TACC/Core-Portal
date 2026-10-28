@@ -1,0 +1,60 @@
+{
+  "demographics": {
+    "id": 123456,
+    "user": 1,
+    "setup_complete": true,
+    "institution": "University of Texas at Austin (utexas.edu)",
+    "orcid_id": "0000-0000-0000-0000",
+    "username": "mmunstermann",
+    "email": "mmunstermann@tacc.utexas.edu",
+    "firstName": "Max",
+    "lastName": "Munstermann",
+    "institutionId": 1,
+    "department": "University of Texas at Austin (utexas.edu)",
+    "departmentId": 1,
+    "citizenship": "United States",
+    "citizenshipId": 230,
+    "source": "Standard",
+    "uid": 123456,
+    "homeDirectory": "01111/mmunstermann",
+    "gid": 567981,
+    "orcidId": "0000-0000-0000-0000"
+  },
+  "history": [
+    {
+      "status": "New",
+      "timestamp": "2015-06-08T19:35:25Z",
+      "actor": "mmunsterman",
+      "comment": "Automatic account creation for UT Federated ID authentication via the TACC User Portal"
+    },
+    {
+      "status": "Active",
+      "timestamp": "2026-06-19T17:45:33Z",
+      "actor": "mmunsterman",
+      "comment": "Change Password"
+    },
+    {
+      "status": "Active",
+      "timestamp": "2026-06-21T18:32:22Z",
+      "actor": "mmunsterman",
+      "comment": "Change Password"
+    }
+  ],
+  "licenses": [
+    {
+      "license_type": "MATLAB",
+      "class": "portal.apps.licenses.MATLABLicense",
+      "details_html": "portal/apps/licenses/matlab_details.html",
+      "template_html": "\u003Cp\u003E\n    \u003Ca class=\"btn-link\" href=\"http://www.mathworks.com/\" target=\"_blank\"\u003EMathworks' MATLAB \u003Ci class=\"fas fa-external-link-alt\"\u003E\u003C/i\u003E\u003C/a\u003E\n    is available to Academic users in the Portal Applications Workspace but requires activation.\n\u003C/p\u003E\n\u003Cp\u003E\n     To request activation, please open a support ticket and Portal support will enable MATLAB for your account.\n\u003C/p\u003E\n"
+    }
+  ],
+  "integrations": [
+    {
+      "label": "Google Drive",
+      "description": "test description",
+      "activated": false,
+      "disconnect": "https://disconnect.com",
+      "connect": "https://google.com"
+    }
+  ]
+}

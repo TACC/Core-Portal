@@ -1,4 +1,4 @@
-import { all, select, takeEvery, fork } from 'redux-saga/effects';
+import { all, takeEvery, fork } from 'redux-saga/effects';
 import { watchJobs, watchJobDetails } from './jobs.sagas';
 import watchApps from './apps.sagas';
 import watchSystems from './systems.sagas';
@@ -24,7 +24,6 @@ import {
 } from './datafiles.sagas';
 import watchAllocations from './allocations.sagas';
 import watchSystemMonitor from './systemMonitor.sagas';
-import watchProfile from './profile.sagas';
 
 import { watchPostRequestAccess } from './requestAccess.sagas';
 import {
@@ -84,7 +83,6 @@ export default function* rootSaga() {
     watchApps(),
     watchSystems(),
     watchSystemMonitor(),
-    ...watchProfile,
     watchPostRequestAccess(),
     watchSocket(),
     watchFetchNotifications(),
