@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Button } from '_common';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -31,7 +31,7 @@ const DataFilesTrashModal = React.memo(() => {
 
   const toggle = useCallback(
     () => toggleModal({ operation: 'trash', props: {} }),
-    [toggleModal],
+    [toggleModal]
   );
 
   const trashCallback = useCallback(() => {
@@ -48,11 +48,23 @@ const DataFilesTrashModal = React.memo(() => {
       },
     });
     toggle();
-  }, [trash, selectedFiles, selectedSystem, navigate, location.pathname, toggle]);
+  }, [
+    trash,
+    selectedFiles,
+    selectedSystem,
+    navigate,
+    location.pathname,
+    toggle,
+  ]);
 
   const actionString = `Moving ${selectedFiles.length} File${
     selectedFiles.length > 1 ? 's' : ''
   } to Trash`;
+
+  const selectedIndices = useSelector(
+    (state) => state.files.selected.FilesListing
+  );
+  const listing = useSelector((state) => state.files.listing?.FilesListing);
 
   return (
     <Modal
@@ -64,29 +76,33 @@ const DataFilesTrashModal = React.memo(() => {
       <ModalHeader toggle={toggle} charcode="&#xe912;">
         Move to Trash
       </ModalHeader>
-        <ModalBody style={{ height: '40vh' }}>
-          <div className="row h-100">
-            <div className="col-md-12 d-flex flex-column">
-              {/* Table of selected files */}
-              <div className="dataFilesModalColHeader">{actionString}</div>
-              <div className="filesListing">
-                <DataFilesModalSelectedTable data={selectedFiles} operation="trash" />
-              </div>
+      <ModalBody style={{ height: '40vh' }}>
+        <div className="row h-100">
+          <div className="col-md-12 d-flex flex-column">
+            {/* Table of selected files */}
+            <div className="dataFilesModalColHeader">{actionString}</div>
+            <div className="filesListing">
+              <DataFilesModalSelectedTable
+                data={selectedFiles}
+                operation="trash"
+              />
             </div>
+            <div className="dataFilesModalColFooter"></div>
           </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            isLoading={status.type === 'RUNNING'}
-            type="primary"
-            size="long"
-            iconNameBefore={status.type === 'ERROR' ? 'alert' : null}
-            attr="submit"
-            onClick={trashCallback}
-          >
-            Move to Trash
-          </Button>
-        </ModalFooter>
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <Button
+          isLoading={status.type === 'RUNNING'}
+          type="primary"
+          size="long"
+          iconNameBefore={status.type === 'ERROR' ? 'alert' : null}
+          attr="submit"
+          onClick={trashCallback}
+        >
+          Move to Trash
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 });
