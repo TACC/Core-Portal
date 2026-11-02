@@ -194,8 +194,7 @@ function JobHistoryContent({
         <DescriptionList
           density="compact"
           data={
-            !hideDataFiles &&
-            version === 'v3' && {
+            !hideDataFiles && {
               Execution: (
                 <DataFilesLink
                   path={getExecutionPath(jobDetails)}
@@ -315,7 +314,6 @@ function JobHistoryModal({ uuid }) {
               jobDetails={job}
               jobDisplay={display}
               toggle={close}
-              version={version}
             />
           )}
         </div>
