@@ -61,8 +61,6 @@ function JobHistoryContent({
   jobDisplay = {},
   jobName = '',
   toggle,
-  // TODOv3: dropV2Jobs
-  version,
 }) {
   const dispatch = useDispatch();
 
@@ -72,11 +70,7 @@ function JobHistoryContent({
     },
   } = useWorkbenchConfig();
 
-  // TODOv3: dropV2Jobs
-  const outputLocation =
-    version === 'v3'
-      ? getOutputPath(jobDetails)
-      : `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
+  const outputLocation = getOutputPath(jobDetails);
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
   const hasFailedStatus = jobDetails.status === 'FAILED';
@@ -100,11 +94,6 @@ function JobHistoryContent({
       />
     ),
   };
-
-  if (version === 'v2') {
-    // TODOv3: dropV2Jobs
-    delete statusDataObj[lastMessageTitle];
-  }
 
   if (jobDetails.remoteOutcome) {
     statusDataObj['Remote Outcome'] = jobDetails.remoteOutcome;
@@ -162,20 +151,10 @@ function JobHistoryContent({
     configDataObj.Queue = jobDisplay.queue;
   }
 
-  // TODOv3: dropV2Jobs
-  if (version === 'v3') {
-    configDataObj['Max Minutes'] = jobDetails.maxMinutes;
-  } else {
-    configDataObj['Max Hours'] = jobDetails.maxHours;
-  }
+  configDataObj['Max Minutes'] = jobDetails.maxMinutes;
 
   if ('coresPerNode' in jobDisplay) {
     configDataObj['Cores On Each Node'] = jobDisplay.coresPerNode;
-  }
-
-  // TODOv3: dropV2Jobs
-  if ('processorsPerNode' in jobDisplay && version === 'v2') {
-    configDataObj['Processors On Each Node'] = jobDisplay.processorsPerNode;
   }
 
   if ('nodeCount' in jobDisplay) {
@@ -192,12 +171,8 @@ function JobHistoryContent({
   if ('reservation' in jobDisplay) {
     configDataObj.Reservation = jobDisplay.reservation;
   }
-  // TODOv3: dropV2Jobs
-  if (version === 'v3') {
-    configDataObj['Execution Directory'] = jobDetails.execSystemExecDir;
-  } else {
-    configDataObj['Execution Directory'] = jobDetails.workPath;
-  }
+
+  configDataObj['Execution Directory'] = jobDetails.execSystemExecDir;
 
   const data = {
     Application: <DescriptionList data={appDataObj} />,
@@ -237,8 +212,7 @@ function JobHistoryContent({
             }
           }
         />
-        {!hasEnded && version === 'v3' && (
-          // TODOv3: dropV2Jobs
+        {!hasEnded && (
           <Button
             type="primary"
             attr="submit"
@@ -248,8 +222,7 @@ function JobHistoryContent({
             Cancel Job
           </Button>
         )}
-        {hasEnded && version === 'v3' && execSystemId !== 'frontera' && (
-          // TODOv3: dropV2Jobs
+        {hasEnded && execSystemId !== 'frontera' && (
           // WP-1367: removes 'Resubmit Job' button for jobs run on Frontera only
           <Button
             type="primary"
@@ -276,23 +249,10 @@ JobHistoryContent.propTypes = {
 
   jobDisplay: PropTypes.object.isRequired,
   toggle: PropTypes.func.isRequired,
-  // TODOv3: dropV2Jobs
-  version: PropTypes.string.isRequired,
 };
-function JobHistoryModal({ uuid, version = 'v3' }) {
+function JobHistoryModal({ uuid }) {
   const { loading, loadingError, job, display } = useSelector((state) => {
-    if (version === 'v3') {
-      return state.jobDetail;
-    } else {
-      // TODOv3: dropV2Jobs
-      const jobv2 = state.jobsv2.list.find((job) => job.id === uuid);
-      return {
-        loading: false,
-        loadingError: null,
-        job: jobv2,
-        display: jobv2.display,
-      };
-    }
+    return state.jobDetail;
   });
   const { state } = useLocation();
   let jobName = job ? job.name : placeHolder;
@@ -307,35 +267,20 @@ function JobHistoryModal({ uuid, version = 'v3' }) {
 
   const navigate = useNavigate();
   const close = () => {
-    // TODOv3: dropV2Jobs
-    if (version === 'v3') {
-      navigate(
-        `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}${
-          query.query_string ? `?query_string=${query.query_string}` : ''
-        }`,
-        {
-          state: {
-            fromJobHistoryModal: true,
-          },
-        }
-      );
-    } else {
-      navigate(
-        `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBSV2}${
-          query.query_string ? `?query_string=${query.query_string}` : ''
-        }`,
-        {
-          state: {
-            fromJobHistoryModal: true,
-          },
-        }
-      );
-    }
+    navigate(
+      `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}${
+        query.query_string ? `?query_string=${query.query_string}` : ''
+      }`,
+      {
+        state: {
+          fromJobHistoryModal: true,
+        },
+      }
+    );
   };
 
   const headerData = {
-    // TODOv3: dropV2Jobs
-    ...(version === 'v3' ? { 'Job UUID': uuid } : { 'Job ID': uuid }),
+    ...{ 'Job UUID': uuid },
     Application: display ? display.applicationName : placeHolder,
     System: display ? display.systemName : placeHolder,
   };
@@ -381,7 +326,5 @@ function JobHistoryModal({ uuid, version = 'v3' }) {
 
 JobHistoryModal.propTypes = {
   uuid: PropTypes.string.isRequired,
-  // TODOv3: dropV2Jobs
-  version: PropTypes.string.isRequired,
 };
 export default JobHistoryModal;
