@@ -30,6 +30,7 @@ export default defineConfig({
   server: {
     origin: 'https://cep.test',
     port: 3000,
+    host: '127.0.0.1',
     cors: {
       origin: ['https://cep.test'],
     },
@@ -54,5 +55,6 @@ export default defineConfig({
         'src/components/UIPatterns/**/*.{ts,tsx,js,jsx}',
       ],
     },
+    globalSetup: ['./vitest.globals.ts'],
   },
 });
