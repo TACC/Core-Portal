@@ -30,6 +30,7 @@ export default defineConfig({
   server: {
     origin: 'https://cep.test',
     port: 3000,
+    host: '127.0.0.1',
     cors: {
       origin: ['https://cep.test'],
     },
@@ -46,5 +47,14 @@ export default defineConfig({
     testTimeout: 10_000,
     maxWorkers: '50%', // Prevents local test flake due to resource contention
     setupFiles: ['./vitest.setup.ts'],
+    coverage: {
+      exclude: [
+        'packages/core-components/components/ui/**/*.{ts,tsx,js,jsx}',
+        'packages/core-components/hooks/**/*.{ts,tsx,js,jsx}',
+        'packages/core-components/lib/**/*.{ts,tsx,js,jsx}',
+        'src/components/UIPatterns/**/*.{ts,tsx,js,jsx}',
+      ],
+    },
+    globalSetup: ['./vitest.globals.ts'],
   },
 });
