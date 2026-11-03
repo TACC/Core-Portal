@@ -143,7 +143,6 @@ export function* getJobDetails(action) {
 
 export function* watchJobs() {
   yield takeLatest('GET_JOBS', getJobs);
-  yield takeLatest('GET_V2_JOBS', getV2Jobs);
   yield takeLeading('SUBMIT_JOB', submitJob);
 }
 
