@@ -37,7 +37,7 @@ publish-latest:
 
 .PHONY: start
 start:
-	op run --env-file="${OP_ENV_FILE}" -- docker compose --env-file $(NGROK_ENV_FILE) -f server/conf/docker/docker-compose-dev.all.debug.yml up
+	$(if $(shell command -v op 2>/dev/null),op run --env-file="$(OP_ENV_FILE)" -- )docker compose --env-file "$(NGROK_ENV_FILE)" -f server/conf/docker/docker-compose-dev.all.debug.yml up
 
 .PHONY: stop
 stop:

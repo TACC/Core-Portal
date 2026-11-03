@@ -1,5 +1,5 @@
 """
-All secret values (eg. configurable per project) - usually stored in UT stache.
+All secret values (eg. configurable per project) - usually stored in UT 1Password.
 """
 
 import os
