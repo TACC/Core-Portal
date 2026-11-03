@@ -3,8 +3,6 @@ import { fireEvent } from '@testing-library/react';
 import Jobs from './Jobs';
 import { createMemoryHistory } from 'history';
 import { default as jobsList } from './Jobs.fixture';
-// TODOv3: dropV2Jobs
-import { default as jobsV2List } from './JobsV2.fixture';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
@@ -48,11 +46,6 @@ describe('Jobs View', () => {
       jobs: {
         ...initialMockState,
       },
-      // TODOv3: dropV2Jobs
-      jobsv2: {
-        list: jobsV2List,
-        loading: false,
-      },
       apps: {
         ...appIconMockState,
       },
@@ -66,42 +59,11 @@ describe('Jobs View', () => {
     expect(getByText('05/01/2020 09:44')).toBeDefined();
   });
 
-  // TODOv3: dropV2Jobs
-  it('renders jobs v2', () => {
-    const store = mockStore({
-      jobs: {
-        ...initialMockState,
-      },
-      // TODOv3: dropV2Jobs
-      jobsv2: {
-        list: jobsV2List,
-        loading: false,
-      },
-      apps: {
-        ...appIconMockState,
-      },
-      notifications,
-    });
-
-    const history = createMemoryHistory();
-
-    // TODOv3: dropV2Jobs
-    history.push('/jobsv2');
-    const { getAllByText } = renderJobsComponent(store, history);
-    expect(getAllByText('Compressing Files')).toBeDefined();
-    expect(getAllByText('12/12/2022 14:52')).toBeDefined();
-  });
-
   it('renders errors when jobs cannot be retrieved', () => {
     const store = mockStore({
       jobs: {
         ...initialMockState,
         error: 'error',
-      },
-      // TODOv3: dropV2Jobs
-      jobsv2: {
-        list: jobsV2List,
-        loading: false,
       },
       apps: {
         ...appIconMockState,
