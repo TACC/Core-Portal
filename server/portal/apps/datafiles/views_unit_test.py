@@ -509,14 +509,5 @@ def test_systems_list(client, authenticated_user, mock_tapis_client, agave_stora
                 "icon": "publications",
                 "resourceProvider": "TACC",
             },
-            {
-                "name": "Google Drive",
-                "system": "googledrive",
-                "scheme": "private",
-                "api": "googledrive",
-                "icon": None,
-                "integration": "portal.apps.googledrive_integration",
-                "resourceProvider": "Other",
-            },
         ],
     }

@@ -92,10 +92,6 @@ urlpatterns = [
     path("webhooks/", include("portal.apps.webhooks.urls", namespace="webhooks")),
     # views
     path("tickets/", include("portal.apps.tickets.urls", namespace="tickets")),
-    path(
-        "googledrive-privacy-policy/",
-        include("portal.apps.googledrive_integration.urls", namespace="googledrive-privacy-policy"),
-    ),
     path("workbench/", include("portal.apps.workbench.urls", namespace="workbench")),
     path("public-data/", include("portal.apps.public_data.urls", namespace="public")),
     path("published-datasets/", include("portal.apps.public_data.urls", namespace="publications")),
@@ -105,10 +101,6 @@ urlpatterns = [
     # portal_messages
     path("api/portal_messages/", include("portal.apps.portal_messages.urls", namespace="portal_messages")),
     # integrations
-    path(
-        "accounts/applications/googledrive/",
-        include("portal.apps.googledrive_integration.urls", namespace="googledrive_integration"),
-    ),
     # version check.
     path("version/", portal_version),
     # health check

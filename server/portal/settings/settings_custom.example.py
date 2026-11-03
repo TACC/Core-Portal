@@ -120,15 +120,6 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "hideSearchBar": False,
         "resourceProvider": "TACC",
     },
-    {
-        "name": "Google Drive",
-        "system": "googledrive",
-        "scheme": "private",
-        "api": "googledrive",
-        "icon": None,
-        "integration": "portal.apps.googledrive_integration",
-        "resourceProvider": "External Resources",
-    },
 ]
 
 ########################

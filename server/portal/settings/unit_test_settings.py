@@ -74,7 +74,6 @@ INSTALLED_APPS = [
     "portal.apps.workbench",
     "portal.apps.workspace",
     "portal.apps.system_monitor",
-    "portal.apps.googledrive_integration",
     "portal.apps.datafiles",
     "portal.apps.projects",
     "portal.apps.portal_messages",
@@ -534,14 +533,6 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "siteSearchPriority": 0,
     },
     {"name": "Shared Workspaces", "scheme": "projects", "api": "tapis", "icon": "publications"},
-    {
-        "name": "Google Drive",
-        "system": "googledrive",
-        "scheme": "private",
-        "api": "googledrive",
-        "icon": None,
-        "integration": "portal.apps.googledrive_integration",
-    },
 ]
 PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM = next(
     (sys for sys in PORTAL_DATAFILES_STORAGE_SYSTEMS if sys["default"] is True), None
