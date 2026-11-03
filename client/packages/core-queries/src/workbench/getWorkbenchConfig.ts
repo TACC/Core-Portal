@@ -34,7 +34,6 @@ export type TWorkbenchConfig = {
   };
   ticketAttachmentMaxSizeMessage: string;
   ticketAttachmentMaxSize: number;
-  jobsv2Title: string;
   trashPath: string;
   showUserNews: boolean;
   projectsEnableMetadata: boolean;
