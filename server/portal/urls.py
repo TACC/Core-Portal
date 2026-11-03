@@ -92,11 +92,11 @@ urlpatterns = [
     path("webhooks/", include("portal.apps.webhooks.urls", namespace="webhooks")),
     # views
     path("tickets/", include("portal.apps.tickets.urls", namespace="tickets")),
-    path("workbench/", include("portal.apps.workbench.urls", namespace="workbench")),
     path(
         "googledrive-privacy-policy/",
         include("portal.apps.googledrive_integration.urls", namespace="googledrive-privacy-policy"),
     ),
+    path("workbench/", include("portal.apps.workbench.urls", namespace="workbench")),
     path("public-data/", include("portal.apps.public_data.urls", namespace="public")),
     path("published-datasets/", include("portal.apps.public_data.urls", namespace="publications")),
     path("request-access/", include("portal.apps.request_access.urls", namespace="request_access")),
