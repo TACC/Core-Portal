@@ -8,11 +8,7 @@ import renderComponent from 'utils/testing';
 import Routes from './History';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
-// TODOv3: dropV2Jobs
-import { initialStateV2 as jobsv2 } from '../../redux/reducers/jobs.reducers';
 import { default as jobsList } from '../Jobs/Jobs.fixture';
-// TODOv3: dropV2Jobs
-import { default as jobsV2List } from '../Jobs/JobsV2.fixture';
 import jobDetailFixture from '../../redux/sagas/fixtures/jobdetail.fixture';
 import jobDetailDisplayFixture from '../../redux/sagas/fixtures/jobdetaildisplay.fixture';
 import appDetailFixture from '../../redux/sagas/fixtures/appdetail.fixture';
@@ -26,8 +22,6 @@ describe('History Routes', () => {
         store={mockStore({
           notifications,
           jobs: { ...jobs, list: jobsList },
-          // TODOv3: dropV2Jobs
-          jobsv2: { ...jobsv2, list: jobsV2List },
           jobDetail: {
             jobUuid: 'job_uuid',
             app: appDetailFixture,
@@ -59,8 +53,6 @@ describe('History Routes', () => {
     const store = mockStore({
       notifications,
       jobs: { ...jobs, list: jobsList },
-      // TODOv3: dropV2Jobs
-      jobsv2: { ...jobsv2, list: jobsV2List },
       jobDetail: {
         jobUuid: 'job_uuid',
         app: appDetailFixture,
