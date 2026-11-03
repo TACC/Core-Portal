@@ -80,7 +80,13 @@ const DataFilesTrashModal = React.memo(() => {
         <div className="row h-100">
           <div className="col-md-12 d-flex flex-column">
             {/* Table of selected files */}
-            <div className="dataFilesModalColHeader">{actionString}</div>
+            <div
+              className="dataFilesModalColHeader"
+              role="heading"
+              aria-level="2"
+            >
+              {actionString}
+            </div>
             <div className="filesListing">
               <DataFilesModalSelectedTable
                 data={selectedFiles}
