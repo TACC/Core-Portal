@@ -270,8 +270,7 @@ _WORKBENCH_SETTINGS = {
     "ticketAttachmentMaxSize": 3145728,
     "uploadModalMaxSizeLabel": "2GB",
     "uploadModalMaxSizeValue": 2147483648,
-    "jobsv2Title": "Historic Jobs",
-    "groupedNav": False,
+    "sidebarLayout": [],
 }
 
 _PORTAL_ELEVATED_ROLES = {

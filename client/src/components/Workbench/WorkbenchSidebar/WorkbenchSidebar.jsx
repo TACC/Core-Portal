@@ -6,7 +6,6 @@ import './WorkbenchSidebar.global.scss'; // XXX: Global stylesheet imported in c
 import { Sidebar } from '_common';
 import { useWorkbenchConfig } from '@tacc/core-hooks';
 
-/** A navigation list for the application */
 const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
   const path = ROUTES.WORKBENCH;
 
@@ -19,141 +18,93 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
         hideAllocations,
         hideSystemStatus,
         hideApps,
-        groupedNav,
+        sidebarLayout,
       },
     },
   } = useWorkbenchConfig();
 
-  const useGroupedNav = groupedNav == true;
-
-  const defaultItems = [
-    {
+  const itemRegistry = {
+    dashboard: {
       to: path + ROUTES.DASHBOARD,
       label: 'Dashboard',
       iconName: 'dashboard',
-      disabled: disabled,
     },
-    {
+    data: {
       to: path + ROUTES.DATA,
       label: 'Data Files',
       iconName: 'folder',
-      disabled: disabled,
       hidden: hideDataFiles,
     },
-    {
+    applications: {
       to: path + ROUTES.APPLICATIONS,
       label: 'Applications',
       iconName: 'applications',
-      disabled: disabled,
       hidden: hideApps,
     },
-    {
+    allocations: {
       to: path + ROUTES.ALLOCATIONS,
       label: 'Allocations',
       iconName: 'allocations',
-      disabled: disabled,
       hidden: hideAllocations,
     },
-    {
+    history: {
       to: path + ROUTES.HISTORY,
       label: 'History',
       iconName: 'history',
-      disabled: disabled,
       hidden: hideApps,
       children: <HistoryBadge unread={unread} disabled={disabled} />,
     },
-    {
-      to: path + ROUTES.SYSTEM_STATUS,
-      label: 'System Status',
-      iconName: 'data-files',
-      disabled: disabled,
-      hidden: hideSystemStatus,
-    },
-    {
-      to: path + ROUTES.UI,
-      label: 'UI Patterns',
-      iconName: 'copy',
-      disabled: disabled,
-      hidden: !showUIPatterns,
-    },
-  ];
-
-  const groupedItems = [
-    {
-      to: path + ROUTES.DASHBOARD,
-      label: 'Getting Started',
-      iconName: 'dashboard',
-      disabled: disabled,
-    },
-    {
-      to: path + ROUTES.DATA,
-      label: 'Data Files',
-      iconName: 'folder',
-      disabled: disabled,
-      hidden: hideDataFiles,
-      category: 'Explore Science',
-    },
-    {
-      to: path + ROUTES.APPLICATIONS,
-      label: 'Apps',
-      iconName: 'applications',
-      disabled: disabled,
-      hidden: hideApps,
-      category: 'Explore Science',
-    },
-    {
-      to: path + ROUTES.HISTORY,
-      label: 'Job History',
-      iconName: 'history',
-      disabled: disabled,
-      hidden: hideApps,
-      children: <HistoryBadge unread={unread} disabled={disabled} />,
-      category: 'Explore Science',
-    },
-    {
+    tickets: {
       to: path + ROUTES.TICKETS,
       label: 'Tickets',
       iconName: 'multiple-coversation',
-      disabled: disabled,
-      category: 'Stay Informed',
     },
-    {
-      to: path + ROUTES.JOBS,
-      label: 'Jobs',
-      iconName: 'jobs',
-      disabled: disabled,
-      category: 'Explore Science',
-    },
-    {
+    systemStatus: {
       to: path + ROUTES.SYSTEM_STATUS,
       label: 'System Status',
       iconName: 'data-files',
-      disabled: disabled,
       hidden: hideSystemStatus,
-      category: 'Stay Informed',
     },
-    {
-      to: path + ROUTES.ALLOCATIONS,
-      label: 'Allocations',
-      iconName: 'allocations',
-      disabled: disabled,
-      hidden: hideAllocations,
-      category: 'Get Access',
-    },
-    {
+    ui: {
       to: path + ROUTES.UI,
       label: 'UI Patterns',
       iconName: 'copy',
-      disabled: disabled,
       hidden: !showUIPatterns,
-      category: 'Etc.',
     },
+  };
+
+  const defaultLayout = [
+    { id: 'dashboard' },
+    { id: 'data' },
+    { id: 'applications' },
+    { id: 'allocations' },
+    { id: 'history' },
+    { id: 'systemStatus' },
+    { id: 'ui' },
   ];
 
   const addItems = [];
+
+  const layout = sidebarLayout?.length ? sidebarLayout : defaultLayout;
+
+  const sidebarItems = layout
+    .filter(({ id }) => {
+      if (!itemRegistry[id]) {
+        console.warn(`WorkbenchSidebar: unknown sidebar item id "${id}"`);
+        return false;
+      }
+      return true;
+    })
+    .map(({ id, category, label }) => ({
+      ...itemRegistry[id],
+      ...(label && { label }),
+      ...(category && { category }),
+      disabled,
+    }));
+
   return (
     <Sidebar
-      sidebarItems={useGroupedNav ? groupedItems : defaultItems}
+      sidebarItems={sidebarItems}
       addItemsAfter={addItems}
       loading={loading}
       isMain
