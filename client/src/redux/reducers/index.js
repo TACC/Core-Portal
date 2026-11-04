@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
-// TODOv3: dropV2Jobs
-import { jobs, jobDetail, jobsv2 } from './jobs.reducers';
+import { jobs, jobDetail } from './jobs.reducers';
 import { app, apps } from './apps.reducers';
 import { systems, files } from './datafiles.reducers';
 
@@ -21,8 +20,6 @@ import publications from './publications.reducers';
 
 export default combineReducers({
   jobs,
-  // TODOv3: dropV2Jobs
-  jobsv2,
   jobDetail,
   systems,
   systemMonitor,
