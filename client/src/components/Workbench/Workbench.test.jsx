@@ -6,9 +6,6 @@ import Workbench from './Workbench';
 import { initialState as onboarding } from '../../redux/reducers/onboarding.reducers';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
-// TODOv3: dropV2Jobs
-import { initialStateV2 as jobsv2 } from '../../redux/reducers/jobs.reducers';
-
 import { initialState as systemMonitor } from '../../redux/reducers/systemMonitor.reducers';
 import { initialIntroMessageComponents as introMessageComponents } from '../../redux/reducers/portalMessages.reducers';
 import { initialSystemState as systems } from '../../redux/reducers/datafiles.reducers';
@@ -20,8 +17,6 @@ const state = {
   notifications,
   introMessageComponents,
   jobs,
-  // TODOv3: dropV2Jobs
-  jobsv2,
   systemMonitor,
   systems,
 };

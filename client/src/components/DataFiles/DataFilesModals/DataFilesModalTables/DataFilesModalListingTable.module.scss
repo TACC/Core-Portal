@@ -13,8 +13,9 @@
 
 .link {
   /* extra padding to make link (back link in header) similar height to rows */
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding: 10px;
+  display: block;
+  margin-right: auto;
 }
 .link-icon {
   --color: var(--global-color-accent--normal);
