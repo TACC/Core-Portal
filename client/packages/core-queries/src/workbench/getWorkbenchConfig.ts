@@ -44,6 +44,11 @@ export type TWorkbenchConfig = {
   enableWorkspaceKeywords?: boolean;
   uploadModalMaxSizeLabel?: string;
   uploadModalMaxSizeValue?: number;
+  sidebarLayout?: null | {
+    id: string;
+    category?: string;
+    label?: string;
+  };
 };
 
 export type TWorkbenchResponse = {
