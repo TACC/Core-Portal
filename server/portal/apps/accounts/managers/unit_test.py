@@ -20,7 +20,7 @@ def _run_add_pub_key_to_resource(user):
     system_id = "portal-home.testuser"
     pub_key = "pubkey"
     hostname = "data.tacc.utexas.edu"
-    return add_pub_key_to_resource(user, password, token, system_id, pub_key, hostname)
+    return add_pub_key_to_resource(user, user.username, password, token, system_id, pub_key, hostname)
 
 
 # AuthenticationException occurs with bad password/token when trying to push keys

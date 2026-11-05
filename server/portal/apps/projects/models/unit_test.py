@@ -12,6 +12,8 @@ from portal.apps.projects.models.base import Project
 from portal.apps.projects.models.metadata import LegacyProjectMetadata
 from portal.apps.projects.models.utils import get_latest_project_storage
 
+pytestmark = pytest.mark.django_db
+
 
 @pytest.fixture()
 def agave_client(mocker):
