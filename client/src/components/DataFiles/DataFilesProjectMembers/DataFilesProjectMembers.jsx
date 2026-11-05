@@ -1,13 +1,20 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Button, InfiniteScrollTable, LoadingSpinner } from '_common';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Input, Label } from 'reactstrap';
-import { SystemRoleSelector, ProjectRoleSelector } from './_cells';
+import { SystemRoleSelector } from './_cells';
 import styles from './DataFilesProjectMembers.module.scss';
 import { useSystemRole } from './_cells/SystemRoleSelector';
 import './DataFilesProjectMembers.scss';
 import { useAuthenticatedUser, useWorkbenchConfig } from '@tacc/core-hooks';
+import { userQueries } from '@tacc/core-queries';
+import { useQuery } from '@tanstack/react-query';
+
+// The backend needs to camelcase this
+function formatUser({ first_name, last_name, email }) {
+  return `${first_name} ${last_name} (${email})`;
+}
 
 const DataFilesProjectMembers = ({
   projectId,
@@ -18,9 +25,6 @@ const DataFilesProjectMembers = ({
   mode = 'addremove',
   loading = false,
 }) => {
-  const dispatch = useDispatch();
-
-  const userSearchResults = useSelector((state) => state.users.search.users);
   const authenticatedUser = useAuthenticatedUser()?.username;
 
   const {
@@ -42,41 +46,31 @@ const DataFilesProjectMembers = ({
     const projectSystem = state.systems.storage.configuration.find(
       (s) => s.scheme === 'projects'
     );
-
     return projectSystem?.readOnly || !canEditSystem;
   });
 
-  const [selectedUser, setSelectedUser] = useState('');
-
   const [inputUser, setInputUser] = useState('');
+  const [debouncedInputUser, setDebouncedInputUser] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedInputUser(inputUser.trim());
+    }, 750);
+    return () => clearTimeout(timer);
+  }, [inputUser, setDebouncedInputUser]);
+
+  const { data: userQueryData } = useQuery(
+    userQueries.getUserSearch({ query: debouncedInputUser })
+  );
+  const selectedUser = (userQueryData ?? []).find(
+    (user) => formatUser(user) === inputUser
+  );
 
   const [transferUser, setTransferUser] = useState(null);
-
-  // The backend needs to camelcase this
-  const formatUser = ({ first_name, last_name, email }) =>
-    `${first_name} ${last_name} (${email})`;
-
-  const userSearch = (e) => {
-    setInputUser(e.target.value);
-    if (!e.target.value || e.target.value.trim().length < 1) return;
-    // Try to set the selectedUser to something matching current search results
-    setSelectedUser(
-      userSearchResults.find((user) => formatUser(user) === e.target.value)
-    );
-    if (!selectedUser) {
-      dispatch({
-        type: 'USERS_SEARCH',
-        payload: {
-          q: e.target.value,
-        },
-      });
-    }
-  };
-
   const confirmTransfer = useCallback(() => {
     onTransfer(transferUser);
     setTransferUser(null);
-  }, [transferUser, setTransferUser]);
+  }, [transferUser, setTransferUser, onTransfer]);
 
   const onAddCallback = useCallback(
     (user) => {
@@ -251,7 +245,7 @@ const DataFilesProjectMembers = ({
               <Input
                 list="user-search-list"
                 type="text"
-                onChange={(e) => userSearch(e)}
+                onChange={(e) => setInputUser(e.target.value)}
                 placeholder="Search by name"
                 className={styles['member-search']}
                 disabled={loading || mode === 'transfer'}
@@ -261,7 +255,7 @@ const DataFilesProjectMembers = ({
               <datalist id="user-search-list">
                 {
                   // Need to replace this component with a generalized solution from FP-743
-                  userSearchResults
+                  (userQueryData ?? [])
                     .filter((user) => !alreadyMember(user))
                     .map((user) => (
                       <option value={formatUser(user)} key={user.username} />
