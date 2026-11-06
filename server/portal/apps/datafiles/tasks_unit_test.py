@@ -39,14 +39,20 @@ def test_completed_transfer_notifies_and_indexes(transfer_mocks):
     assert payload["extra"]["response"]["pending"] is False
 
 
-@pytest.mark.parametrize("status", ["ACCEPTED", "IN_PROGRESS"])
-def test_incomplete_transfer_retries_without_notifying(transfer_mocks, status):
+@pytest.mark.parametrize(
+    ("status", "retries", "countdown"),
+    [("ACCEPTED", 0, 30), ("IN_PROGRESS", 4, 300)],
+)
+def test_incomplete_transfer_retries_without_notifying(transfer_mocks, status, retries, countdown):
     client, notify, index = transfer_mocks
     client.files.getTransferTask.return_value.status = status
-    with patch.object(monitor_transfer, "retry", side_effect=Retry()) as retry:
-        with pytest.raises(Retry):
-            check_transfer()
-    retry.assert_called_once_with(countdown=30)
+    with (
+        patch.object(type(monitor_transfer.request), "retries", retries),
+        patch.object(monitor_transfer, "retry", side_effect=Retry()) as retry,
+        pytest.raises(Retry),
+    ):
+        check_transfer()
+    retry.assert_called_once_with(countdown=countdown)
     notify.assert_not_called()
     index.assert_not_called()
 
@@ -66,6 +72,18 @@ def test_indexing_error_does_not_hide_completion(transfer_mocks):
     index.side_effect = RuntimeError("indexing unavailable")
     check_transfer()
     assert notify.call_args.kwargs["status"] == "SUCCESS"
+
+
+def test_root_destination_uses_root_path_for_indexing(transfer_mocks):
+    client, notify, index = transfer_mocks
+    client.files.getTransferTask.return_value.status = "COMPLETED"
+    monitor_transfer.run(
+        username="username",
+        source_system="my-data",
+        response={"uuid": "transfer-id", "systemId": "workspace", "path": "file.txt"},
+    )
+    assert index.call_args_list[0].kwargs["kwargs"]["filePath"] == "/"
+    assert notify.call_args.kwargs["message"] == "File copied to /"
 
 
 def test_status_lookup_failure_retries(transfer_mocks):

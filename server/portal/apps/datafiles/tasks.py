@@ -11,8 +11,15 @@ from portal.apps.search.tasks import tapis_indexer
 
 logger = logging.getLogger(__name__)
 
+INITIAL_POLL_INTERVAL_SECONDS = 30
+MAX_POLL_INTERVAL_SECONDS = 300
 
-@shared_task(bind=True, queue="default", max_retries=2880)
+
+def _retry_countdown(retries):
+    return min(INITIAL_POLL_INTERVAL_SECONDS * (2 ** min(retries, 4)), MAX_POLL_INTERVAL_SECONDS)
+
+
+@shared_task(bind=True, queue="default", max_retries=290)
 def monitor_transfer(self, username, source_system, response):
     # Use a fresh client on each check so long transfers survive token refresh.
     from portal.apps.datafiles.views import get_tapis_client
@@ -24,16 +31,17 @@ def monitor_transfer(self, username, source_system, response):
         status = transfer.status
     except Exception as exc:
         if self.request.retries < self.max_retries:
-            raise self.retry(exc=exc, countdown=30)
+            raise self.retry(exc=exc, countdown=_retry_countdown(self.request.retries))
         status = "UNKNOWN"
 
     if status not in ("COMPLETED", "FAILED", "CANCELLED", "UNKNOWN"):
         if self.request.retries < self.max_retries:
-            raise self.retry(countdown=30)
+            raise self.retry(countdown=_retry_countdown(self.request.retries))
         status = "UNKNOWN"
 
+    destination = os.path.dirname(response["path"]) or "/"
     if status == "COMPLETED":
-        for path, recurse in ((os.path.dirname(response["path"]), False), (response["path"], True)):
+        for path, recurse in ((destination, False), (response["path"], True)):
             try:
                 tapis_indexer.apply_async(
                     kwargs={
@@ -48,7 +56,6 @@ def monitor_transfer(self, username, source_system, response):
                 # An indexing outage must not hide a completed transfer.
                 logger.exception("Unable to schedule indexing for transfer %s", response["uuid"])
 
-    destination = os.path.dirname(response["path"]) or "/"
     message = f"File copied to {destination}"
     if status == "UNKNOWN":
         message = "Unable to confirm file copy completion. Check the destination before retrying."
