@@ -2,13 +2,23 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import * as ROUTES from '../../../constants/routes';
 import HistoryBadge from '../../History/HistoryBadge';
-import './WorkbenchSidebar.global.scss'; // XXX: Global stylesheet imported in component
+import './WorkbenchSidebar.global.scss';
 import { Sidebar } from '_common';
 import { useWorkbenchConfig } from '@tacc/core-hooks';
 
-const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
-  const path = ROUTES.WORKBENCH;
+const path = ROUTES.WORKBENCH;
 
+const DEFAULT_LAYOUT = [
+  'dashboard',
+  'data',
+  'applications',
+  'allocations',
+  'history',
+  'systemStatus',
+  'ui',
+].map((id) => ({ id }));
+
+const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
   const unread = useSelector((state) => state.notifications.list.unread);
 
   const {
@@ -73,34 +83,18 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
     },
   };
 
-  const defaultLayout = [
-    { id: 'dashboard' },
-    { id: 'data' },
-    { id: 'applications' },
-    { id: 'allocations' },
-    { id: 'history' },
-    { id: 'systemStatus' },
-    { id: 'ui' },
-  ];
+  const layout = sidebarLayout?.length ? sidebarLayout : DEFAULT_LAYOUT;
+
+  const sidebarItems = layout.flatMap(({ id, category, label }) => {
+    const item = itemRegistry[id];
+    if (!item) {
+      console.warn(`WorkbenchSidebar: unknown sidebar item id "${id}"`);
+      return [];
+    }
+    return [{ ...item, label: label ?? item.label, category, disabled }];
+  });
 
   const addItems = [];
-
-  const layout = sidebarLayout?.length ? sidebarLayout : defaultLayout;
-
-  const sidebarItems = layout
-    .filter(({ id }) => {
-      if (!itemRegistry[id]) {
-        console.warn(`WorkbenchSidebar: unknown sidebar item id "${id}"`);
-        return false;
-      }
-      return true;
-    })
-    .map(({ id, category, label }) => ({
-      ...itemRegistry[id],
-      ...(label && { label }),
-      ...(category && { category }),
-      disabled,
-    }));
 
   return (
     <Sidebar
