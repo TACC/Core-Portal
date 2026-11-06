@@ -251,6 +251,29 @@ def test_tapis_file_view_put_is_logged_for_metrics(
     logging_metric_mock.assert_called()
 
 
+def test_copy_to_shared_workspace_monitors_transfer(
+    client, authenticated_user, mock_tapis_client, tapis_file_listing_mock, mocker
+):
+    index = mocker.patch("portal.libs.agave.operations.tapis_indexer.apply_async")
+    monitor = mocker.patch("portal.apps.datafiles.tasks.monitor_transfer.apply_async")
+    mock_tapis_client.files.createTransferTask.return_value = TapisResult(uuid="transfer-id", status="ACCEPTED")
+    response = client.put(
+        "/api/datafiles/tapis/copy/private/frontera.home.username/test.txt/",
+        content_type="application/json",
+        data={"dest_path": "/shared", "dest_system": "workspace"},
+    )
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["pending"] is True
+    assert data["systemId"] == "workspace"
+    assert data["path"] == "shared/test.txt"
+    monitor.assert_called_once_with(
+        kwargs={"username": authenticated_user.username, "source_system": "frontera.home.username", "response": data},
+        countdown=5,
+    )
+    index.assert_not_called()
+
+
 @patch("portal.libs.agave.operations.tapis_indexer")
 @patch("portal.apps.datafiles.views.tapis_put_handler")
 def test_tapis_file_view_put_is_logged_for_metrics_exception(

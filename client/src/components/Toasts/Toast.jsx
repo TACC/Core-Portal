@@ -139,6 +139,21 @@ export const getToastMessage = (
         message ? message.toLowerCase() : 'session ready to view.'
       }`;
     case 'data_files': {
+      if (extra.transfer_complete) {
+        if (status !== 'SUCCESS' || !extra.response) return message;
+        const { systemId, path } = extra.response;
+        const destination = path
+          .replace(/^\/+|\/+$/g, '')
+          .split('/')
+          .slice(0, -1)
+          .join('/');
+        const project = (projectList || []).find((p) => p.id === systemId);
+        const system = (systemList || []).find((s) => s.system === systemId);
+        const name = project?.title || system?.name || systemId;
+        const copyCount = extra.copy_count || 1;
+        const fileLabel = copyCount === 1 ? 'File' : `${copyCount} Files`;
+        return `${fileLabel} copied to ${name}/${destination}`;
+      }
       return OPERATION_MAP.toastMap(
         operation,
         status,
