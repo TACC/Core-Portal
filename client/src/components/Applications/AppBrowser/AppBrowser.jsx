@@ -85,23 +85,22 @@ const AppBrowser = () => {
             <div className="apps-grid-list">
               {categoryDict[category].map((app) => (
                 <div key={uuidv4()} className="apps-grid-item">
-                  <NavLink
-                    tag={RRNavLink}
+                  <RRNavLink
                     to={
                       `${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${app.appId}` +
                       (app.version ? `?appVersion=${app.version}` : '')
                     }
-                    activeClassName="active"
-                    isActive={() =>
-                      `${params.appId}-${appVersion}` ===
-                      `${app.appId}-${app.version}`
+                    className={({ isActive }) =>
+                      isActive && (appVersion || '') === (app.version || '')
+                        ? 'nav-link active'
+                        : 'nav-link'
                     }
                   >
                     <span className="nav-content">
                       <AppIcon appId={app.appId} category={category} />
                       <span className="nav-text">{app.label || app.appId}</span>
                     </span>
-                  </NavLink>
+                  </RRNavLink>
                 </div>
               ))}
             </div>
