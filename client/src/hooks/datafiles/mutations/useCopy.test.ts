@@ -66,6 +66,7 @@ it('dispatches a structured copy-started notification without refreshing', async
     {
       type: 'ADD_TOAST',
       payload: {
+        pk: expect.any(String),
         event_type: 'data_files',
         operation: 'copy',
         status: 'SUCCESS',
@@ -96,6 +97,7 @@ it('keeps synchronous copy success and refresh behavior', async () => {
   expect(dispatch).toHaveBeenCalledWith({
     type: 'ADD_TOAST',
     payload: {
+      pk: expect.any(String),
       event_type: 'data_files',
       operation: 'copy',
       status: 'SUCCESS',
@@ -121,6 +123,7 @@ it('uses singular copy success text for one file', async () => {
   expect(dispatch).toHaveBeenCalledWith({
     type: 'ADD_TOAST',
     payload: {
+      pk: expect.any(String),
       event_type: 'data_files',
       operation: 'copy',
       status: 'SUCCESS',

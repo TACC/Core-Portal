@@ -3,8 +3,10 @@ import { useSelectedFiles } from 'hooks/datafiles';
 import Cookies from 'js-cookie';
 import { apiClient } from 'utils/apiClient';
 import { useMutation } from '@tanstack/react-query';
+import { v4 as uuidv4 } from 'uuid';
 
 const getCopyToast = (response: Record<string, any>, copyCount: number) => ({
+  pk: uuidv4(),
   event_type: 'data_files',
   operation: 'copy',
   status: 'SUCCESS',
@@ -13,7 +15,6 @@ const getCopyToast = (response: Record<string, any>, copyCount: number) => ({
     copy_count: copyCount,
   },
 });
-import { v4 as uuidv4 } from 'uuid';
 
 export async function copyFileUtil({
   api,

@@ -2,6 +2,7 @@ import { runSaga } from 'redux-saga';
 import { handleSocket } from '../notifications.sagas';
 
 const notification = {
+  pk: 51,
   event_type: 'data_files',
   operation: 'copy',
   status: 'SUCCESS',
@@ -115,6 +116,7 @@ it('aggregates completed copy toasts for the same destination', async () => {
     {
       type: 'ADD_TOAST',
       payload: expect.objectContaining({
+        pk: 51,
         extra: expect.objectContaining({ copy_count: 3 }),
       }),
     },
