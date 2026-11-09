@@ -102,6 +102,7 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
       addItemsAfter={addItems}
       loading={loading}
       isMain
+      compact={sidebarItems}
     />
   );
 };

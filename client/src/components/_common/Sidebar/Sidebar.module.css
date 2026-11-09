@@ -57,3 +57,16 @@
 .category-text {
   padding-left: 20px;
 }
+
+.compact {
+  padding-top: 8px;
+}
+
+.compact .link {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.compact .category-label {
+  padding: 12px 1rem 6px;
+}
