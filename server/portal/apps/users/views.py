@@ -19,6 +19,7 @@ from zeep.transports import Transport
 from portal.apps.users import utils as users_utils
 from portal.apps.users.utils import (
     add_user,
+    check_user_is_tas_project_admin,
     get_allocations,
     get_per_user_allocation_usage,
     get_project_from_id,
@@ -236,10 +237,10 @@ class TasUsersView(BaseApiView):
 
         tas_project = get_project_from_id(project_id)
         project_name = tas_project["title"]
-        is_pi = tas_project["pi"]["username"] == request.user.username
-        if not is_pi:
+        is_admin = check_user_is_tas_project_admin(request.user.username, project_id)
+        if not is_admin:
             return JsonResponse(
-                {"message": "Forbidden: Project roles can only be assigned by the Project PI."}, status=403
+                {"message": "Forbidden: Project roles can only be assigned by the Project PI or Delegate."}, status=403
             )
 
         tas_client = self._getSOAPTASClient()
@@ -264,11 +265,21 @@ class AllocationUsageView(BaseApiView):
 @method_decorator(login_required, name="dispatch")
 class AllocationManagementView(BaseApiView):
     def post(self, request, project_id, user_id):
+        is_admin = check_user_is_tas_project_admin(request.user.username, project_id)
+        if not is_admin:
+            return JsonResponse(
+                {"message": "Forbidden: Project users can only be added by the Project PI or Delegate."}, status=403
+            )
         logger.info(f"Adding {user_id} to TAS project {project_id}")
         add_user(project_id, user_id)
         return JsonResponse({"response": "ok"})
 
     def delete(self, request, project_id, user_id):
-        logger.info(f"Deleting {user_id} to TAS project {project_id}")
+        is_admin = check_user_is_tas_project_admin(request.user.username, project_id)
+        if not is_admin:
+            return JsonResponse(
+                {"message": "Forbidden: Project users can only be deleted by the Project PI or Delegate."}, status=403
+            )
+        logger.info(f"Deleting {user_id} from TAS project {project_id}")
         remove_user(project_id, user_id)
         return JsonResponse({"response": "ok"})
