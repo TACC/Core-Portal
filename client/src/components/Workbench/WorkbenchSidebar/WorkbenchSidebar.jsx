@@ -97,7 +97,7 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
   const isCompact = sidebarItems.some((item) => item.category);
 
   const addItems = [];
-  
+
   return (
     <Sidebar
       sidebarItems={sidebarItems}
