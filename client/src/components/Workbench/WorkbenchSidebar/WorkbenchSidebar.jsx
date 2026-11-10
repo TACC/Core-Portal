@@ -94,6 +94,8 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
     return [{ ...item, label: label ?? item.label, category, disabled }];
   });
 
+  const isCompact = sidebarItems.some((item) => item.category);
+
   const addItems = [];
 
   return (
@@ -102,7 +104,7 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
       addItemsAfter={addItems}
       loading={loading}
       isMain
-      compact={sidebarItems}
+      compact={isCompact}
     />
   );
 };
