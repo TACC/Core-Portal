@@ -29,7 +29,8 @@ SESSION_COOKIE_NAME = "sessionid"  # use the sessionid in your views code
 # the module to store sessions data
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 # age of cookie in seconds (default: 2 weeks)
-SESSION_COOKIE_AGE = 24 * 60 * 60 * 7  # the number of seconds for only 7 for example
+
+SESSION_COOKIE_AGE = 24 * 60 * 60 * 7
 # whether a user's session cookie expires when the web browser is closed
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # whether the session cookie should be secure (https:// only)
@@ -91,7 +92,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "impersonate.middleware.ImpersonateMiddleware",  # must be AFTER django.contrib.auth
+    # must be AFTER django.contrib.auth
+    "impersonate.middleware.ImpersonateMiddleware",
 ]
 
 # The checked-in workbench index.html is the dev template: with DEBUG off it includes "index.html",
@@ -105,7 +107,7 @@ with open(os.path.join(BASE_DIR, "apps/workbench/templates/portal/apps/workbench
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "DIRS": [os.path.join(BASE_DIR, "templates"), os.path.join(BASE_DIR, "../../client/dist")],
         "OPTIONS": {
             # locmem first, so it wins over the app's own index.html. These replace APP_DIRS, which
             # can't be combined with an explicit `loaders` list.
@@ -115,6 +117,7 @@ TEMPLATES = [
                 "django.template.loaders.app_directories.Loader",
             ],
             "context_processors": [
+                # Django core processors
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
