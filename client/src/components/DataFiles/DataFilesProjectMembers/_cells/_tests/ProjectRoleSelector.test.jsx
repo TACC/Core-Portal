@@ -1,23 +1,16 @@
 import React from 'react';
-import fetchMock from 'fetch-mock';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import ProjectRoleSelector from '../ProjectRoleSelector';
 import { waitFor, screen, fireEvent } from '@testing-library/react';
+import { server } from '@tacc/test-fixtures';
+import { projectsRoleHandlerWithCoPiRole } from '@tacc/test-fixtures/handlers/projects/projectsHandlers';
 
 const mockStore = configureStore();
 
 describe('ProjectRoleSelector', () => {
   it('renders AppRouter and dispatches events', async () => {
-    const fm = fetchMock
-      .sandbox()
-      .get(`/api/projects/CEP-000/project-role/testuser/`, {
-        status: 200,
-        body: { role: 'co_pi' },
-      });
-    global.fetch = vi.fn();
-    fetch.mockImplementation(fm);
-
+    server.use(projectsRoleHandlerWithCoPiRole);
     renderComponent(
       <ProjectRoleSelector projectId="CEP-000" username="testuser" />,
       mockStore({})
