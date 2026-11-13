@@ -4,6 +4,7 @@ import { newsHandlers } from './handlers/news';
 import { ticketsHandlers } from './handlers/tickets';
 import { usersHandlers } from './handlers/usersHandlers';
 import { workbenchHandlers } from './handlers/workbench';
+import { profileHandlers } from './handlers/profile';
 
 const exampleHandler = [
   http.get('https://api.example.com/user', () => {
@@ -19,5 +20,6 @@ export const server = setupServer(
   ...ticketsHandlers,
   ...workbenchHandlers,
   ...usersHandlers,
+  ...profileHandlers,
   ...exampleHandler
 );
