@@ -35,9 +35,7 @@ jobs:
 
       - name: Run Server-side unit tests and generate coverage report
         working-directory: ./server
-        run: |
-          cp portal/apps/workbench/templates/portal/apps/workbench/index.j2 portal/apps/workbench/templates/portal/apps/workbench/index.html
-          uv run pytest --cov-config=.coveragerc --cov=portal --cov-report=xml -ra
+        run: uv run pytest --cov-config=.coveragerc --cov=portal --cov-report=xml -ra
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
