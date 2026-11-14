@@ -88,12 +88,15 @@ services:
       - django
 
   websockets:
-    image: taccwma/core-portal:latest
+    extends:
+      file: docker-compose-core-env.yml
+      service: django-common
     env_file:
       - path: ../env_files/ngrok.env
         required: false
     volumes:
       - ../../../.:/srv/www/portal
+      - ../../portal/settings/settings_secret_local.py:/srv/www/portal/server/portal/settings/settings_secret.py
       - /srv/www/portal/server/.venv # don't overwrite container venv with local files
       - ../nginx/certificates/cep.test.crt:/etc/ssl/cep.test.crt
       - ../nginx/certificates/cep.test.key:/etc/ssl/cep.test.key
@@ -105,12 +108,15 @@ services:
     command: 'python manage.py runserver 0.0.0.0:9000'
 
   django:
-    image: taccwma/core-portal:latest
+    extends:
+      file: docker-compose-core-env.yml
+      service: django-common
     env_file:
       - path: ../env_files/ngrok.env
         required: false
     volumes:
       - ../../../.:/srv/www/portal
+      - ../../portal/settings/settings_secret_local.py:/srv/www/portal/server/portal/settings/settings_secret.py
       - /srv/www/portal/server/.venv # don't overwrite container venv with local files
       - ../../static:/var/www/portal/server/static
       - ../../media:/var/www/portal/server/media
@@ -131,12 +137,15 @@ services:
     container_name: core_portal_django
 
   workers:
-    image: taccwma/core-portal:latest
+    extends:
+      file: docker-compose-core-env.yml
+      service: django-common
     env_file:
       - path: ../env_files/ngrok.env
         required: false
     volumes:
       - ../../../.:/srv/www/portal
+      - ../../portal/settings/settings_secret_local.py:/srv/www/portal/server/portal/settings/settings_secret.py
       - /srv/www/portal/server/.venv # don't overwrite container venv with local files
       - ../../static:/var/www/portal/server/static
       - ../../media:/var/www/portal/server/media
