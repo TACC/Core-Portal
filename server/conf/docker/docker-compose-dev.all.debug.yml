@@ -84,8 +84,10 @@ services:
       - 127.0.0.1:443:443
     container_name: core_portal_nginx
     depends_on:
-      - cms
-      - django
+      cms:
+        condition: service_started
+      django:
+        condition: service_started
 
   websockets:
     image: taccwma/core-portal:latest
