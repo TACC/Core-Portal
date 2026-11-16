@@ -1,7 +1,9 @@
 import json
 import logging
 
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.utils.decorators import method_decorator
 
 from portal.apps.notifications.models import Notification
 from portal.views.base import BaseApiView
@@ -9,6 +11,7 @@ from portal.views.base import BaseApiView
 logger = logging.getLogger(__name__)
 
 
+@method_decorator(login_required, name="dispatch")
 class ManageNotificationsView(BaseApiView):
     def get(self, request, *args, **kwargs):
         """List all notifications of a certain event type."""
@@ -63,7 +66,7 @@ class ManageNotificationsView(BaseApiView):
             for n in notifs:
                 n.mark_read()
         else:
-            n = Notification.get(id=nid)
+            n = Notification.objects.get(id=nid, user=request.user.username)
             n.read = read
             n.save()
 
@@ -76,7 +79,7 @@ class ManageNotificationsView(BaseApiView):
             for i in items:
                 i.mark_deleted()
         else:
-            x = Notification.objects.get(pk=pk)
+            x = Notification.objects.get(pk=pk, user=request.user.username)
             x.mark_deleted()
 
         return JsonResponse({"message": "OK"})
