@@ -1,18 +1,15 @@
 import json
 import logging
 
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.utils.decorators import method_decorator
 
 from portal.apps.notifications.models import Notification
-from portal.views.base import BaseApiView
+from portal.views.base import AuthenticatedApiView
 
 logger = logging.getLogger(__name__)
 
 
-@method_decorator(login_required, name="dispatch")
-class ManageNotificationsView(BaseApiView):
+class ManageNotificationsView(AuthenticatedApiView):
     def get(self, request, *args, **kwargs):
         """List all notifications of a certain event type."""
         limit = request.GET.get("limit", 0)

@@ -68,9 +68,33 @@ class TestManageNotificationsViewDelete:
 
         response = client.delete(url)
 
-        assert response.status_code == 302  # Redirects to login
+        assert response.status_code == 401
+        assert response["Content-Type"] == "application/json"
+        assert json.loads(response.content) == {"message": "Authentication required"}
         notification.refresh_from_db()
         assert notification.deleted is False
+
+    def test_get_requires_login(self, client, user1, create_notification):
+        """Test that unauthenticated users get a JSON 401 when listing notifications."""
+        create_notification(user1)
+        url = reverse("notifications:event_type_notifications")
+
+        response = client.get(url)
+
+        assert response.status_code == 401
+        assert json.loads(response.content) == {"message": "Authentication required"}
+
+    def test_patch_requires_login(self, client, user1, create_notification):
+        """Test that unauthenticated users cannot mark notifications as read."""
+        notification = create_notification(user1)
+        url = reverse("notifications:event_type_notifications")
+
+        response = client.patch(url, json.dumps({"id": notification.pk}), content_type="application/json")
+
+        assert response.status_code == 401
+        assert json.loads(response.content) == {"message": "Authentication required"}
+        notification.refresh_from_db()
+        assert notification.read is False
 
     def test_delete_single_notification_by_authenticated_user(self, client, user1, create_notification):
         """Test that an authenticated user can delete their own notification."""
