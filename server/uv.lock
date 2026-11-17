@@ -1205,11 +1205,11 @@ wheels = [
 
 [[package]]
 name = "networkx"
-version = "3.7"
+version = "3.2.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/dc/76/3af777226b63a5e64a6b36b1ec5855c14e2b94a37096d4760e595fc43511/networkx-3.7.tar.gz", hash = "sha256:fd77a511bd90f39f3d016351345b52cf5319b813bdca01de3f755d3cca62e96a", size = 1866482, upload-time = "2026-09-21T16:45:16.974Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c4/80/a84676339aaae2f1cfdf9f418701dd634aef9cc76f708ef55c36ff39c3ca/networkx-3.2.1.tar.gz", hash = "sha256:9f1bb5cf3409bf324e0a722c20bdb4c20ee39bf1c30ce8ae499c8502b0b5e0c6", size = 2073928, upload-time = "2023-10-28T08:41:39.364Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7e/cd/fe58041e9011f307c490e3e17dd48cc516448f7c698a3f2d9d9d65d7e6a8/networkx-3.7-py3-none-any.whl", hash = "sha256:e3fd2c13a7814cee3746340d8d7f8598a67f16a58bf47fb7f8793fab6efca1b0", size = 2142205, upload-time = "2026-09-21T16:45:14.609Z" },
+    { url = "https://files.pythonhosted.org/packages/d5/f0/8fbc882ca80cf077f1b246c0e3c3465f7f415439bdea6b899f6b19f61f70/networkx-3.2.1-py3-none-any.whl", hash = "sha256:f18c69adc97877c42332c170849c96cefa91881c99a7cb3e95b7c659ebdc1ec2", size = 1647772, upload-time = "2023-10-28T08:41:36.945Z" },
 ]
 
 [[package]]
@@ -1493,7 +1493,7 @@ requires-dist = [
     { name = "jsonpickle", specifier = ">=4.1.4,<5.0.0" },
     { name = "kombu", specifier = ">=5.7.0,<6.0.0" },
     { name = "matplotlib", specifier = ">=3.10.0,<4.0.0" },
-    { name = "networkx", specifier = ">=3.2.1,<4.0.0" },
+    { name = "networkx", specifier = "==3.2.1" },
     { name = "numpy", specifier = ">=2.0.0,<3.0.0" },
     { name = "paramiko", specifier = ">=5.1.0,<6.0.0" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.1.12,<4.0.0" },
