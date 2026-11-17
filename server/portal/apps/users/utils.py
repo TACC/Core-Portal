@@ -183,3 +183,9 @@ def check_user_groups(username, groups):
     except Exception as e:
         logger.error(f"Issue checking user groups for user:{username} which failed with the following exception:{e}")
         return False
+
+
+def check_user_is_tas_project_admin(username, project_id):
+    """Returns True if user is a TAS project admin (PI or Delegate) for the given project_id"""
+    tas_project_users = get_project_users_from_id(project_id)
+    return any(u["username"] == username and u["role"] in ("Delegate", "PI") for u in tas_project_users)

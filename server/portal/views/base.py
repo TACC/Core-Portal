@@ -82,3 +82,12 @@ class BaseApiView(View):
         except Exception as e:  # pylint: disable=broad-except
             logger.error(e, exc_info=True)
             return JsonResponse({"message": "Something went wrong here..."}, status=500)
+
+
+class AuthenticatedApiView(BaseApiView):
+    """Base API view that returns a JSON 401 for unauthenticated requests."""
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return JsonResponse({"message": "Authentication required"}, status=401)
+        return super().dispatch(request, *args, **kwargs)

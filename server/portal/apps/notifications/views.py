@@ -4,12 +4,12 @@ import logging
 from django.http import JsonResponse
 
 from portal.apps.notifications.models import Notification
-from portal.views.base import BaseApiView
+from portal.views.base import AuthenticatedApiView
 
 logger = logging.getLogger(__name__)
 
 
-class ManageNotificationsView(BaseApiView):
+class ManageNotificationsView(AuthenticatedApiView):
     def get(self, request, *args, **kwargs):
         """List all notifications of a certain event type."""
         limit = request.GET.get("limit", 0)
@@ -63,7 +63,7 @@ class ManageNotificationsView(BaseApiView):
             for n in notifs:
                 n.mark_read()
         else:
-            n = Notification.get(id=nid)
+            n = Notification.objects.get(id=nid, user=request.user.username)
             n.read = read
             n.save()
 
@@ -76,7 +76,7 @@ class ManageNotificationsView(BaseApiView):
             for i in items:
                 i.mark_deleted()
         else:
-            x = Notification.objects.get(pk=pk)
+            x = Notification.objects.get(pk=pk, user=request.user.username)
             x.mark_deleted()
 
         return JsonResponse({"message": "OK"})
