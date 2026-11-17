@@ -6,3 +6,4 @@ omit =
     # omit test files
     */*unit_test.py
     */*tests.py
+    */settings*

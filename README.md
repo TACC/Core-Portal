@@ -103,8 +103,9 @@ After you clone the repository locally, there are several configuration steps re
 #### Create settings and secrets
 
 ##### Portal
+- Install the [1Password CLI](https://1password.com/downloads/command-line). If you have access to the WMA_Developers vault, then `make start` should automatically inject the secrets into your local containers.
 
-- Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.utexas.edu/entry/bedc97190d3a907cb44488785440595c)
+- If you CANNOT use the 1Password CLI on your machine, create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secrets` entry in 1Password.
 
 - Copy `server/conf/env_files/ngrok.sample.env` to `server/conf/env_files/ngrok.env`
   - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `NGROK_AUTHTOKEN` and `NGROK_DOMAIN` in `ngrok.env` to enable webhook notifications locally_
