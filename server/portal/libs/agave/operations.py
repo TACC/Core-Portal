@@ -443,7 +443,14 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None, m
         copy_result = {
             "uuid": copy_response.uuid,
             "status": copy_response.status,
+            "pending": True,
+            "systemId": dest_system,
+            "path": dest_path_full,
+            "source": src_url,
         }
+        # Transfers run asynchronously. Index only after completion.
+        if kwargs.get("defer_transfer_indexing"):
+            return copy_result
 
     tapis_indexer.apply_async(
         kwargs={
