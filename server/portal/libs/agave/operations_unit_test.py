@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, patch
 from django.test import TestCase
 from elasticsearch_dsl import Q
 from elasticsearch_dsl.response import Hit
+from kombu.exceptions import OperationalError
 from tapipy.tapis import TapisResult
 
 from portal.exceptions.api import ApiException
@@ -58,6 +59,16 @@ class TestOperations(TestCase):
         mock_indexer.delay.assert_called_with(mock_response_listing)
 
         self.assertEqual(ls, {"listing": mock_response_listing, "reachedEnd": True, "folder_metadata": None})
+
+    @patch("portal.libs.agave.operations.tapis_listing_indexer")
+    def test_listing_succeeds_when_indexing_queue_is_unavailable(self, mock_indexer):
+        client = MagicMock()
+        client.files.listFiles.return_value = []
+        mock_indexer.delay.side_effect = OperationalError()
+
+        result = listing(client, "test.system", "/path")
+
+        self.assertEqual(result, {"listing": [], "reachedEnd": True, "folder_metadata": None})
 
     @patch("portal.libs.agave.operations.listing")
     @patch("portal.libs.agave.operations.IndexedFile.search")

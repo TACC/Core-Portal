@@ -9,6 +9,7 @@ import httpx
 from django.conf import settings
 from django.db import transaction
 from elasticsearch_dsl import Q
+from kombu.exceptions import OperationalError
 from tapipy.errors import BaseTapyException
 
 from portal.apps.projects.schema_models import constants
@@ -115,7 +116,10 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
         listing = []
 
     # Update Elasticsearch after each listing.
-    tapis_listing_indexer.delay(listing)
+    try:
+        tapis_listing_indexer.delay(listing)
+    except OperationalError:
+        logger.warning("Unable to queue listing for indexing", exc_info=True)
     return {"listing": listing, "reachedEnd": len(listing) < int(limit), "folder_metadata": folder_entity_value}
 
 
