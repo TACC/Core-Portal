@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import react from '@vitejs/plugin-react';
@@ -31,12 +32,16 @@ export default defineConfig({
     origin: 'https://cep.test',
     port: 3000,
     host: '127.0.0.1',
+    https: {
+      key: readFileSync('/certs/cep.test.key'),
+      cert: readFileSync('/certs/cep.test.crt'),
+    },
     cors: {
       origin: ['https://cep.test'],
     },
     hmr: {
-      protocol: 'ws',
-      host: 'localhost',
+      protocol: 'wss',
+      host: 'cep.test',
       port: 3000,
     },
   },
