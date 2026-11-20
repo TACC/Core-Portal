@@ -59,7 +59,7 @@ const PublicData = () => {
     <>
       <Routes>
         <Route
-          path="/public-data/:api/:scheme/:system/*"
+          path="/:api/:scheme/:system/*"
           element={
             publicDataSystem.system ? (
               <PublicDataListing
@@ -79,7 +79,7 @@ const PublicData = () => {
 };
 
 const PublicDataListing = ({ canDownload, downloadCallback }) => {
-  const { api, scheme, system, path } = useParams();
+  const { api, scheme, system, '*': path } = useParams();
   const dispatch = useDispatch();
   const { query_string: queryString, filter } = queryStringParser.parse(
     useLocation().search
