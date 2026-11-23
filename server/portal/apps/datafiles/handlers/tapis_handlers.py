@@ -41,9 +41,11 @@ allowed_actions = {
     ],
 }
 
+readonly_actions = ["listing", "search", "download", "preview", "detail"]
+
 
 def tapis_get_handler(client, scheme, system, path, operation, tapis_tracking_id=None, **kwargs):
-    if operation not in allowed_actions[scheme]:
+    if operation not in readonly_actions:
         raise PermissionDenied
     op = getattr(operations, operation)
     # Exclude .Trash directory from Public and Community Data listing and search

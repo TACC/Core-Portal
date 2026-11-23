@@ -124,20 +124,19 @@ class TapisFilesView(BaseApiView):
         try:
             client = get_tapis_client(request.user, system)
         except AttributeError:
-            # Make sure that we only let unauth'd users see public systems
-            public_sys = next(
-                (sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys["scheme"] == "public"), None
+            # Only let unauthenticated users see public systems
+            public_sys = next((s for s in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if s["scheme"] == "public"), None)
+            prefix = settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX
+
+            is_public_path = (
+                public_sys and public_sys["system"] == system and path.startswith(public_sys["homeDir"].strip("/"))
             )
-            if public_sys and public_sys["system"] == system and path.startswith(public_sys["homeDir"].strip("/")):
-                client = service_account()
-            elif (
-                system
-                and settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX
-                and system.startswith(settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX)
-            ):
-                client = service_account()
-            else:
+            is_published_project = system and prefix and system.startswith(prefix)
+
+            if scheme not in ("public", "community") or not (is_public_path or is_published_project):
                 return JsonResponse({"message": "This data requires authentication to view."}, status=403)
+
+            client = service_account()
         try:
             METRICS.info(
                 "Data Files",
