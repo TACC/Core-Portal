@@ -70,6 +70,7 @@ const Sidebar = ({
   addItemsAfter = [],
   loading = false,
   isMain = false,
+  compact = false,
 }) => {
   const groupedItems = groupByCategory(sidebarItems);
 
@@ -77,7 +78,7 @@ const Sidebar = ({
     <Nav
       className={`nav-sidebar ${styles['root']} ${
         isMain ? styles['main'] : ''
-      }`}
+      } ${compact ? styles['compact'] : ''}`}
       vertical
     >
       {!loading && addItemsBefore
@@ -137,6 +138,7 @@ Sidebar.propTypes = {
   addItemsAfter: PropTypes.arrayOf(PropTypes.object),
   loading: PropTypes.bool,
   isMain: PropTypes.bool,
+  compact: PropTypes.bool,
 };
 
 export default Sidebar;

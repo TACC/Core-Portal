@@ -520,3 +520,95 @@ def test_systems_list(client, authenticated_user, mock_tapis_client, agave_stora
             },
         ],
     }
+
+
+# --- TapisFilesView.get: unauthenticated access ---
+
+PUBLIC_SYSTEM = "cloud.data"
+PUBLIC_HOME = "/corral/tacc/aci/CEP/public"
+PUBLISHED_PREFIX = "test.publish"
+
+
+@pytest.fixture
+def anon_setup(settings, mocker):
+    settings.PORTAL_DATAFILES_STORAGE_SYSTEMS = [
+        {"name": "Public Data", "system": PUBLIC_SYSTEM, "scheme": "public", "api": "tapis", "homeDir": PUBLIC_HOME},
+    ]
+    settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = PUBLISHED_PREFIX
+    mock_service_account = mocker.patch("portal.apps.datafiles.views.service_account")
+    mock_get = mocker.patch("portal.apps.datafiles.views.tapis_get_handler", return_value={"listing": []})
+    return mock_service_account, mock_get
+
+
+def test_anonymous_can_view_public_path(client, anon_setup):
+    mock_service_account, mock_get = anon_setup
+
+    response = client.get(f"/api/datafiles/tapis/listing/public/{PUBLIC_SYSTEM}{PUBLIC_HOME}/")
+
+    assert response.status_code == 200
+    mock_service_account.assert_called_once_with()
+    assert mock_get.call_args.args[0] == mock_service_account.return_value
+
+
+def test_anonymous_can_view_public_subpath(client, anon_setup):
+    _, mock_get = anon_setup
+
+    response = client.get(f"/api/datafiles/tapis/listing/public/{PUBLIC_SYSTEM}{PUBLIC_HOME}/sub/dir/")
+
+    assert response.status_code == 200
+    mock_get.assert_called_once()
+
+
+@pytest.mark.parametrize("scheme", ["public", "community"])
+def test_anonymous_can_view_published_project(client, anon_setup, scheme):
+    mock_service_account, mock_get = anon_setup
+
+    response = client.get(f"/api/datafiles/tapis/listing/{scheme}/{PUBLISHED_PREFIX}.PRJ-123/")
+
+    assert response.status_code == 200
+    mock_service_account.assert_called_once_with()
+    mock_get.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        # public system but path outside homeDir
+        f"/api/datafiles/tapis/listing/public/{PUBLIC_SYSTEM}/corral/tacc/aci/CEP/private/",
+        # public system with no path (defaults to "/")
+        f"/api/datafiles/tapis/listing/public/{PUBLIC_SYSTEM}/",
+        # non public system
+        f"/api/datafiles/tapis/listing/public/frontera.home.username{PUBLIC_HOME}/",
+        # system does not start with published prefix
+        f"/api/datafiles/tapis/listing/public/other.{PUBLISHED_PREFIX}/",
+    ],
+)
+def test_anonymous_denied_for_non_public_data(client, anon_setup, url):
+    mock_service_account, mock_get = anon_setup
+
+    response = client.get(url)
+
+    assert response.status_code == 403
+    assert response.json() == {"message": "This data requires authentication to view."}
+    mock_service_account.assert_not_called()
+    mock_get.assert_not_called()
+
+
+def test_anonymous_denied_when_published_prefix_unset(client, anon_setup, settings):
+    mock_service_account, mock_get = anon_setup
+    settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = ""
+
+    response = client.get(f"/api/datafiles/tapis/listing/public/{PUBLISHED_PREFIX}.PRJ-123/")
+
+    assert response.status_code == 403
+    mock_service_account.assert_not_called()
+
+
+def test_anonymous_denied_when_no_public_system_configured(client, anon_setup, settings):
+    mock_service_account, _ = anon_setup
+    settings.PORTAL_DATAFILES_STORAGE_SYSTEMS = []
+
+    response = client.get(f"/api/datafiles/tapis/listing/public/{PUBLIC_SYSTEM}{PUBLIC_HOME}/")
+
+    assert response.status_code == 403
+    mock_service_account.assert_not_called()
