@@ -103,7 +103,8 @@ After you clone the repository locally, there are several configuration steps re
 #### Create settings and secrets
 
 ##### Portal
-- Install the [1Password CLI](https://1password.com/downloads/command-line). If you have access to the WMA_Developers vault, then `make start` should automatically inject the secrets into your local containers.
+- Install the [1Password CLI](https://1password.com/downloads/command-line). If you have access to the WMA_Developers vault, then `make start` should automatically inject the secrets into your local containers. If you need to use custom secrets, you can duplicate the "Core Portal Development Secrets" secret and copy the vault/secret names into the 
+`OP_SECRET_PATH` setting in the Makefile.
 
 - If you CANNOT use the 1Password CLI on your machine, create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secrets` entry in 1Password.
 
