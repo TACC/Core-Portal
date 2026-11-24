@@ -138,5 +138,5 @@ _RECAPTCHA_SECRET_KEY = os.environ.get("RECAPTCHA_SECRET_KEY")
 _RECAPTCHA_SITE_KEY = os.environ.get("RECAPTCHA_SITE_KEY")
 
 
-_DATACITE_USER = "tdl.tacc"
-_DATACITE_PASS = "CHANGEME"
+_DATACITE_USER = os.environ.get("DATACITE_USER", "tdl.tacc")
+_DATACITE_PASS = os.environ.get("DATACITE_PASS", "CHANGEME")
