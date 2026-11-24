@@ -12,7 +12,8 @@ from zeep.exceptions import Fault
 
 from portal.apps.auth.models import TapisOAuthToken
 from portal.apps.users.tasks import get_tas_allocations
-from portal.apps.users.utils import get_allocations
+from portal.apps.users.utils import check_user_is_tas_project_admin, get_allocations
+from portal.exceptions.api import ApiException
 
 
 class AttrDict(dict):
@@ -222,11 +223,93 @@ def tas_delete_user_error_response():
         yield json.load(f)
 
 
-def test_add_user(client, requests_mock, authenticated_user, tas_add_user_response):
+@pytest.fixture
+def tas_project_users():
+    """Shape returned by get_project_users_from_id"""
+    return [
+        {
+            "id": 1,
+            "username": "username",
+            "role": "PI",
+            "firstName": "Firstname",
+            "lastName": "Lastname",
+            "email": "user@user.com",
+        },
+        {
+            "id": 2,
+            "username": "delegate",
+            "role": "Delegate",
+            "firstName": "Del",
+            "lastName": "Egate",
+            "email": "delegate@user.com",
+        },
+        {
+            "id": 3,
+            "username": "standard",
+            "role": "Standard",
+            "firstName": "Stan",
+            "lastName": "Dard",
+            "email": "standard@user.com",
+        },
+    ]
+
+
+@pytest.fixture
+def mock_project_users(mocker, tas_project_users):
+    yield mocker.patch("portal.apps.users.utils.get_project_users_from_id", return_value=tas_project_users)
+
+
+@pytest.mark.parametrize(
+    "username,expected",
+    [
+        ("username", True),  # PI
+        ("delegate", True),  # Delegate
+        ("standard", False),  # Standard
+        ("not_in_project", False),
+    ],
+)
+def test_check_user_is_tas_project_admin(mock_project_users, username, expected):
+    assert check_user_is_tas_project_admin(username, "1234") is expected
+    mock_project_users.assert_called_once_with("1234")
+
+
+def test_check_user_is_tas_project_admin_no_users(mocker):
+    mocker.patch("portal.apps.users.utils.get_project_users_from_id", return_value=[])
+    assert check_user_is_tas_project_admin("username", "1234") is False
+
+
+def test_check_user_is_tas_project_admin_propagates_api_error(mocker):
+    mocker.patch("portal.apps.users.utils.get_project_users_from_id", side_effect=ApiException("Failed"))
+    with pytest.raises(ApiException):
+        check_user_is_tas_project_admin("username", "1234")
+
+
+def test_add_user(client, requests_mock, authenticated_user, mock_project_users, tas_add_user_response):
     requests_mock.post(f"{settings.TAS_URL}/v1/projects/1234/users/5678", json=tas_add_user_response)
     response = client.post("/api/users/team/manage/1234/5678")
     assert response.status_code == 200
     assert response.json() == {"response": "ok"}
+
+
+def test_add_user_as_delegate(
+    client, requests_mock, authenticated_user, mock_project_users, tas_project_users, tas_add_user_response
+):
+    tas_project_users[0]["role"] = "Delegate"
+    requests_mock.post(f"{settings.TAS_URL}/v1/projects/1234/users/5678", json=tas_add_user_response)
+    response = client.post("/api/users/team/manage/1234/5678")
+    assert response.status_code == 200
+    assert response.json() == {"response": "ok"}
+
+
+def test_add_user_forbidden_for_standard_user(
+    client, requests_mock, authenticated_user, mock_project_users, tas_project_users
+):
+    tas_project_users[0]["role"] = "Standard"
+    post = requests_mock.post(f"{settings.TAS_URL}/v1/projects/1234/users/5678", json={})
+    response = client.post("/api/users/team/manage/1234/5678")
+    assert response.status_code == 403
+    assert "Forbidden" in response.json()["message"]
+    assert not post.called
 
 
 def test_add_user_unauthenticated(client):
@@ -234,17 +317,38 @@ def test_add_user_unauthenticated(client):
     assert response.status_code == 302
 
 
-def test_add_user_failure(client, requests_mock, authenticated_user, tas_add_user_error_response):
+def test_add_user_failure(client, requests_mock, authenticated_user, mock_project_users, tas_add_user_error_response):
     requests_mock.post(f"{settings.TAS_URL}/v1/projects/1234/users/5678", json=tas_add_user_error_response)
     response = client.post("/api/users/team/manage/1234/5678")
     assert response.status_code == 400
 
 
-def test_delete_user(client, requests_mock, authenticated_user, tas_delete_user_response):
+def test_delete_user(client, requests_mock, authenticated_user, mock_project_users, tas_delete_user_response):
     requests_mock.delete(f"{settings.TAS_URL}/v1/projects/1234/users/5678", json=tas_delete_user_response)
     response = client.delete("/api/users/team/manage/1234/5678")
     assert response.status_code == 200
     assert response.json() == {"response": "ok"}
+
+
+def test_delete_user_as_delegate(
+    client, requests_mock, authenticated_user, mock_project_users, tas_project_users, tas_delete_user_response
+):
+    tas_project_users[0]["role"] = "Delegate"
+    requests_mock.delete(f"{settings.TAS_URL}/v1/projects/1234/users/5678", json=tas_delete_user_response)
+    response = client.delete("/api/users/team/manage/1234/5678")
+    assert response.status_code == 200
+    assert response.json() == {"response": "ok"}
+
+
+def test_delete_user_forbidden_for_standard_user(
+    client, requests_mock, authenticated_user, mock_project_users, tas_project_users
+):
+    tas_project_users[0]["role"] = "Standard"
+    delete = requests_mock.delete(f"{settings.TAS_URL}/v1/projects/1234/users/5678", json={})
+    response = client.delete("/api/users/team/manage/1234/5678")
+    assert response.status_code == 403
+    assert "Forbidden" in response.json()["message"]
+    assert not delete.called
 
 
 def test_delete_user_unauthenticated(client):
@@ -252,7 +356,9 @@ def test_delete_user_unauthenticated(client):
     assert response.status_code == 302
 
 
-def test_delete_user_failure(client, requests_mock, authenticated_user, tas_delete_user_error_response):
+def test_delete_user_failure(
+    client, requests_mock, authenticated_user, mock_project_users, tas_delete_user_error_response
+):
     requests_mock.delete(f"{settings.TAS_URL}/v1/projects/1234/users/5678", json=tas_delete_user_error_response)
     response = client.delete("/api/users/team/manage/1234/5678")
     assert response.status_code == 400

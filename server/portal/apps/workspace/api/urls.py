@@ -13,8 +13,6 @@ urlpatterns = [
     ),
     re_path(r"^jobs/(?P<operation>\w+)/?$", views.JobsView.as_view()),
     re_path(r"^jobs/?", views.JobsView.as_view()),
-    # TODOv3: dropV2Jobs
-    re_path(r"^historic/?", views.HistoricJobsView.as_view()),
     re_path(r"^systems/?", views.SystemsView.as_view()),
     re_path(r"^tray/?", views.AppsTrayView.as_view()),
 ]

@@ -3,14 +3,12 @@ import pytest
 from portal.apps.projects.models.base import Project
 
 
-@pytest.mark.django_db
 @pytest.fixture()
 def service_account(mocker):
     yield mocker.patch("portal.apps.projects.models.base.service_account")
 
 
 @pytest.fixture()
-@pytest.mark.django_db
 def project_model(mocker):
     mocker.patch("portal.apps.projects.models.base.Project._create_dir")
     mocker.patch("portal.apps.projects.models.base.Project._delete_dir")
@@ -18,7 +16,7 @@ def project_model(mocker):
 
 
 @pytest.fixture()
-def mock_projects(project_model, service_account, mock_storage_system, mock_tapis_client, regular_user):
+def mock_projects(db, project_model, service_account, mock_storage_system, mock_tapis_client, regular_user):
     prj1 = Project.create(mock_tapis_client, "First Project", "test.project-123", regular_user)
     prj1.storage.name = "test.project-123"
     prj1.storage.id = "test.project-123"

@@ -26,7 +26,7 @@ import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFiles
 import { useSystemRole } from './DataFilesProjectMembers/_cells/SystemRoleSelector';
 import DataFilesPublicationsList from './DataFilesPublicationsList/DataFilesPublicationsList';
 import DataFilesReviewProjectList from './DataFilesReviewProjectsList/DataFilesReviewProjectList';
-import { getDecodedPath } from 'utils/datafilesUtil';
+import { getDecodedPath, trimTrailingSlashes } from 'utils/datafilesUtil';
 import { useAuthenticatedUser, useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DefaultSystemRedirect = () => {
@@ -83,7 +83,7 @@ const ProjectFileRoute = () => {
     <DataFilesProjectFileListing
       rootSystem={rootSystem}
       system={system}
-      path={getDecodedPath(filePath)}
+      path={getDecodedPath(trimTrailingSlashes(filePath))}
     />
   );
 };
@@ -97,7 +97,7 @@ const DataFileRoute = () => {
         api={api}
         scheme={scheme}
         system={system}
-        path={filePath || '/'}
+        path={trimTrailingSlashes(filePath) || '/'}
       />
     </SectionTableWrapper>
   );

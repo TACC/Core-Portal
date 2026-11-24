@@ -783,13 +783,25 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(_RESULT_BACKEND_HOST, _RESULT_BACKEND_PORT)],
+            "hosts": [
+                {
+                    "host": _RESULT_BACKEND_HOST,
+                    "port": _RESULT_BACKEND_PORT,
+                    "socket_timeout": None,
+                }
+            ],
         },
     },
     "short-lived": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(_RESULT_BACKEND_HOST, _RESULT_BACKEND_PORT)],
+            "hosts": [
+                {
+                    "host": _RESULT_BACKEND_HOST,
+                    "port": _RESULT_BACKEND_PORT,
+                    "socket_timeout": None,
+                }
+            ],
         },
     },
 }

@@ -7,7 +7,7 @@ from django.core.management import call_command
 from tapipy.tapis import TapisResult
 
 from portal.apps.workspace.api.views import AppsTrayView
-from portal.apps.workspace.models import AppTrayCategory, JobSubmission
+from portal.apps.workspace.models import AppTrayCategory
 
 pytest.mark.django_db(transaction=True)
 
@@ -200,13 +200,6 @@ def request_jobs_util(client, authenticated_user, query_params={}):
 
 
 def test_get_no_tapis_jobs(client, authenticated_user, mock_tapis_client):
-    mock_tapis_client.jobs.getJobSearchList.return_value = []
-    jobs = request_jobs_util(client, authenticated_user)
-    assert len(jobs) == 0
-
-
-def test_get_no_portal_jobs(client, authenticated_user, mock_tapis_client):
-    JobSubmission.objects.create(user=authenticated_user, jobId="9876")
     mock_tapis_client.jobs.getJobSearchList.return_value = []
     jobs = request_jobs_util(client, authenticated_user)
     assert len(jobs) == 0

@@ -27,19 +27,11 @@ function JobsView({
   rowProps = (row) => {},
   includeSearchbar = true,
 }) {
-  // TODOv3: dropV2Jobs
   const location = useLocation();
-  const version = location.pathname.includes('jobsv2') ? 'v2' : 'v3';
   const dispatch = useDispatch();
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
-  const error = useSelector((state) =>
-    // TODOv3: dropV2Jobs
-    version === 'v3' ? state.jobs.error : state.jobsv2.error
-  );
-  const jobs = useSelector((state) =>
-    // TODOv3: dropV2Jobs
-    version === 'v3' ? state.jobs.list : state.jobsv2.list
-  );
+  const error = useSelector((state) => state.jobs.error);
+  const jobs = useSelector((state) => state.jobs.list);
   const {
     data: {
       config: { hideDataFiles },
@@ -54,24 +46,22 @@ function JobsView({
     shallowEqual
   );
 
-  const query = queryStringParser.parse(useLocation().search);
+  const query = queryStringParser.parse(location.search);
 
-  const noDataText =
-    // TODOv3: dropV2Jobs
-    version === 'v2' || query.query_string ? (
-      'No results found.'
-    ) : (
-      <>
-        No recent jobs. You can submit jobs from the{' '}
-        <Link
-          to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}`}
-          className="wb-link"
-        >
-          Applications Page
-        </Link>
-        .
-      </>
-    );
+  const noDataText = query.query_string ? (
+    'No results found.'
+  ) : (
+    <>
+      No recent jobs. You can submit jobs from the{' '}
+      <Link
+        to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}`}
+        className="wb-link"
+      >
+        Applications Page
+      </Link>
+      .
+    </>
+  );
 
   useEffect(() => {
     dispatch({
@@ -81,12 +71,9 @@ function JobsView({
   }, [dispatch, query.query_string]);
 
   const infiniteScrollCallback = useCallback(() => {
-    // TODOv3: dropV2Jobs
-    const dispatchType = version === 'v3' ? 'GET_JOBS' : 'GET_V2_JOBS';
-
     if (!isJobLoading) {
       dispatch({
-        type: dispatchType,
+        type: 'GET_JOBS',
         params: { offset: jobs.length, queryString: query.query_string || '' },
       });
     }
@@ -95,15 +82,13 @@ function JobsView({
   const jobDetailLink = useCallback(
     ({
       row: {
-        original: { id, uuid, name },
+        original: { uuid, name },
       },
     }) => {
-      // TODOv3: dropV2Jobs
-      const jobsPathname = uuid ? `/jobs/${uuid}` : `/jobsv2/${id}`;
       return (
         <Link
           to={{
-            pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${jobsPathname}`,
+            pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${uuid}`,
             state: { jobName: name },
             search: query.query_string
               ? `?query_string=${query.query_string}`
@@ -162,26 +147,13 @@ function JobsView({
       Header: 'Job Status',
       headerStyle: { textAlign: 'left' },
       accessor: 'status',
-      Cell: (el) => {
-        // TODOv3: dropV2Jobs
-        if (el.row.original.uuid) {
-          return (
-            <JobsStatus
-              status={el.value}
-              fancy={showFancyStatus}
-              jobUuid={el.row.original.uuid}
-            />
-          );
-        } else {
-          return (
-            <JobsStatus
-              status="ARCHIVED"
-              fancy={showFancyStatus}
-              jobUuid={el.row.original.id}
-            />
-          );
-        }
-      },
+      Cell: (el) => (
+        <JobsStatus
+          status={el.value}
+          fancy={showFancyStatus}
+          jobUuid={el.row.original.uuid}
+        />
+      ),
       id: 'jobStatusCol',
     },
     {
@@ -192,31 +164,25 @@ function JobsView({
     },
     {
       Header: 'Output Location',
-      show: version === 'v3' /* TODOv3: dropV2Jobs. remove show here  */,
       headerStyle: { textAlign: 'left' },
       Cell: (el) => {
-        // TODOv3: dropV2Jobs
-        if (el.row.original.uuid) {
-          const outputLocation = getOutputPath(el.row.original);
+        const outputLocation = getOutputPath(el.row.original);
 
-          return outputLocation && !hideDataFiles ? (
-            <Link
-              to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}
-              className="wb-link job__path"
-            >
-              {query.query_string ? (
-                <HighlightSearchTerm
-                  searchTerm={query.query_string}
-                  content={outputLocation}
-                />
-              ) : (
-                outputLocation
-              )}
-            </Link>
-          ) : null;
-        } else {
-          return null;
-        }
+        return outputLocation && !hideDataFiles ? (
+          <Link
+            to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}
+            className="wb-link job__path"
+          >
+            {query.query_string ? (
+              <HighlightSearchTerm
+                searchTerm={query.query_string}
+                content={outputLocation}
+              />
+            ) : (
+              outputLocation
+            )}
+          </Link>
+        ) : null;
       },
     },
     {
@@ -272,10 +238,7 @@ function JobsView({
           </Section>
         }
         getRowProps={rowProps}
-        columnMemoProps={[
-          version,
-          query,
-        ]} /* TODOv3: dropV2Jobs. Refactor version prop. */
+        columnMemoProps={[query]}
       />
     </>
   );

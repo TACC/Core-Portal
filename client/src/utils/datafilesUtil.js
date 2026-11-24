@@ -1,3 +1,5 @@
+export const trimTrailingSlashes = (path) => (path || '').replace(/\/+$/, '');
+
 export const getDecodedPath = (path) => {
   if (!path) return '/';
   try {

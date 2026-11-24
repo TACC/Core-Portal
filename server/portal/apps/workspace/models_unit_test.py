@@ -1,11 +1,4 @@
-from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry, JobSubmission
-
-
-def test_job_submission_model(django_db_reset_sequences, regular_user):
-    event = JobSubmission.objects.create(user=regular_user, jobId="1234")
-    event = JobSubmission.objects.all()[0]
-    assert event.user == regular_user
-    assert event.jobId == "1234"
+from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 
 
 def test_app_tray_models(django_db_reset_sequences):
