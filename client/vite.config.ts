@@ -52,6 +52,7 @@ export default defineConfig({
         'packages/core-components/components/ui/**/*.{ts,tsx,js,jsx}',
         'packages/core-components/hooks/**/*.{ts,tsx,js,jsx}',
         'packages/core-components/lib/**/*.{ts,tsx,js,jsx}',
+        'packages/test-fixtures/**/*.{ts,tsx,js,jsx}',
         'src/components/UIPatterns/**/*.{ts,tsx,js,jsx}',
       ],
     },

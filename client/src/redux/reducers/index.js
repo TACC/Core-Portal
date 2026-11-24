@@ -14,7 +14,6 @@ import {
 } from './portalMessages.reducers';
 import { onboarding } from './onboarding.reducers';
 import projects from './projects.reducers';
-import { users } from './users.reducers';
 import siteSearch from './siteSearch.reducers';
 import publications from './publications.reducers';
 
@@ -34,7 +33,6 @@ export default combineReducers({
   customMessages,
   onboarding,
   projects,
-  users,
   siteSearch,
   publications,
 });

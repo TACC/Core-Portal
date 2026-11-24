@@ -38,7 +38,6 @@ import {
   watchOnboardingAction,
 } from './onboarding.sagas';
 import { watchProjects } from './projects.sagas';
-import { watchUsers } from './users.sagas';
 import { watchSiteSearch } from './siteSearch.sagas';
 import { watchPublications } from './publications.sagas';
 
@@ -94,7 +93,6 @@ export default function* rootSaga() {
     watchOnboardingAdminIndividualUser(),
     watchOnboardingAction(),
     watchProjects(),
-    watchUsers(),
     watchSiteSearch(),
     watchStartCustomSaga(),
     watchPublications(),
