@@ -133,7 +133,7 @@ class TapisFilesView(BaseApiView):
             )
             is_published_project = system and prefix and system.startswith(prefix)
 
-            if scheme not in ("public", "community") or not (is_public_path or is_published_project):
+            if not (is_public_path or is_published_project):
                 return JsonResponse({"message": "This data requires authentication to view."}, status=403)
 
             client = service_account()

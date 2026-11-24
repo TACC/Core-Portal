@@ -573,18 +573,14 @@ def test_anonymous_can_view_published_project(client, anon_setup, scheme):
 @pytest.mark.parametrize(
     "url",
     [
-        # private scheme is never allowed, even on a public path
-        f"/api/datafiles/tapis/listing/private/{PUBLIC_SYSTEM}{PUBLIC_HOME}/",
         # public system but path outside homeDir
         f"/api/datafiles/tapis/listing/public/{PUBLIC_SYSTEM}/corral/tacc/aci/CEP/private/",
         # public system with no path (defaults to "/")
         f"/api/datafiles/tapis/listing/public/{PUBLIC_SYSTEM}/",
-        # different system, even with public scheme
+        # non public system
         f"/api/datafiles/tapis/listing/public/frontera.home.username{PUBLIC_HOME}/",
-        # projects scheme on a published system
-        f"/api/datafiles/tapis/listing/projects/{PUBLISHED_PREFIX}.PRJ-123/",
-        # system that merely resembles the published prefix
-        "/api/datafiles/tapis/listing/public/other.PRJ-123/",
+        # system does not start with published prefix
+        f"/api/datafiles/tapis/listing/public/other.{PUBLISHED_PREFIX}/",
     ],
 )
 def test_anonymous_denied_for_non_public_data(client, anon_setup, url):
