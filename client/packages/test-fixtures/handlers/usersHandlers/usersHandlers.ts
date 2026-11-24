@@ -14,4 +14,20 @@ export const handlers = [
       isStaff: false,
     });
   }),
+
+  http.get('/api/users/', ({ request }) => {
+    const url = new URL(request.url);
+    const queryParam = url.searchParams.get('q');
+    if (queryParam === 'sam') {
+      return HttpResponse.json([
+        {
+          first_name: 'Sam',
+          username: 'smunstermann',
+          last_name: 'Smunstermann',
+          email: 'sam@munster.mann',
+        },
+      ]);
+    }
+    return HttpResponse.json([]);
+  }),
 ];

@@ -1,4 +1,4 @@
-import { all, select, takeEvery, fork } from 'redux-saga/effects';
+import { all, takeEvery, fork } from 'redux-saga/effects';
 import { watchJobs, watchJobDetails } from './jobs.sagas';
 import watchApps from './apps.sagas';
 import watchSystems from './systems.sagas';
@@ -24,7 +24,6 @@ import {
 } from './datafiles.sagas';
 import watchAllocations from './allocations.sagas';
 import watchSystemMonitor from './systemMonitor.sagas';
-import watchProfile from './profile.sagas';
 
 import { watchPostRequestAccess } from './requestAccess.sagas';
 import {
@@ -39,7 +38,6 @@ import {
   watchOnboardingAction,
 } from './onboarding.sagas';
 import { watchProjects } from './projects.sagas';
-import { watchUsers } from './users.sagas';
 import { watchSiteSearch } from './siteSearch.sagas';
 import { watchPublications } from './publications.sagas';
 
@@ -84,7 +82,6 @@ export default function* rootSaga() {
     watchApps(),
     watchSystems(),
     watchSystemMonitor(),
-    ...watchProfile,
     watchPostRequestAccess(),
     watchSocket(),
     watchFetchNotifications(),
@@ -96,7 +93,6 @@ export default function* rootSaga() {
     watchOnboardingAdminIndividualUser(),
     watchOnboardingAction(),
     watchProjects(),
-    watchUsers(),
     watchSiteSearch(),
     watchStartCustomSaga(),
     watchPublications(),
