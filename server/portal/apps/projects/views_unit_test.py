@@ -84,10 +84,10 @@ def project_list(authenticated_user):
                 "name": "PRJ-123",
                 "owner": {
                     "email": authenticated_user.email,
+                    "orcid_id": authenticated_user.profile.orcid_id,
                     "first_name": authenticated_user.first_name,
                     "last_name": authenticated_user.last_name,
                     "username": authenticated_user.username,
-                    "orcid_id": None,
                 },
                 "path": "/corral/tacc/aci/CEP/projects/CEP-1018",
                 "title": "Foo title",
@@ -100,10 +100,10 @@ def project_list(authenticated_user):
                 "name": "PRJ-456",
                 "owner": {
                     "email": authenticated_user.email,
+                    "orcid_id": authenticated_user.profile.orcid_id,
                     "first_name": authenticated_user.first_name,
                     "last_name": authenticated_user.last_name,
                     "username": authenticated_user.username,
-                    "orcid_id": None,
                 },
                 "path": "/corral/tacc/aci/CEP/projects/CEP-1018",
                 "title": "Bar title",

@@ -11,7 +11,7 @@ _DEBUG = True
 # Namespace for portal
 _PORTAL_NAMESPACE = "CEP"
 
-VANITY_BASE_URL = "https://cep.test"
+_VANITY_BASE_URL = "https://cep.test"
 
 # To authenticate a user with the CMS after Portal login,
 # set the _LOGIN_REDIRECT_URL to the custom cms auth endpoint
@@ -235,6 +235,13 @@ _PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME = "cep.project.review"
 _PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = "cep.project.published"
 _PORTAL_PROJECTS_PUBLISHED_ROOT_DIR = "/corral/tacc/aci/CEP/projects/published"
 _PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "cep.project.published"
+# Public HTTP mirror of _PORTAL_PROJECTS_PUBLISHED_ROOT_DIR (e.g. web.corral). When set, published
+# file and cover-image URLs on landing pages 302-redirect here instead of streaming bytes through
+# Tapis and uWSGI. Leave as None to stream from Tapis (fine for local dev; slow for large files).
+# Without it, landing pages also list no whole-publication ZIP (`archive.zip` returns 404) and
+# leave published folders out of `distribution`, since folders are only listed inside the ZIP.
+# e.g. "https://web.corral.tacc.utexas.edu/digitalporousmedia"
+_PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = None
 
 _PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = "PROJECT_REVIEWER"
 _PROJECT_ADMIN_GROUP = "Project Admin"
@@ -244,10 +251,21 @@ _PROJECT_ADMIN_GROUP = "Project Admin"
 #######################
 
 _PORTAL_PUBLICATION_PUBLISHER = "CEP"
+# Mark the workbench app shell and every other page without its own robots tag noindex, so only
+# published-dataset landing pages get indexed. Also gives every page the dataset-portal meta
+# description and share-card (Open Graph/Twitter) defaults. DPMP sets this to True.
+_PORTAL_NOINDEX_APP_SHELL = False
+# Map any publish-form license labels beyond the built-in "ODC-BY 1.0" to their license-deed URL
+# and SPDX id, e.g. {"CC BY 4.0": "https://creativecommons.org/licenses/by/4.0/"} and
+# {"CC BY 4.0": "CC-BY-4.0"}.
+_PORTAL_PUBLICATION_LICENSE_URLS = {}
+_PORTAL_PUBLICATION_LICENSE_SPDX_IDS = {}
 _PORTAL_PUBLICATION_ARCHIVE_APP_ID = ""
 _PORTAL_PUBLICATION_ARCHIVE_APP_VERSION = ""
 _PORTAL_PUBLICATION_RANCH_SYSTEM_ID = ""
 _PORTAL_PUBLICATION_DATACITE_SHOULDER = ""
+# Where DOIs resolve, e.g. "https://cep.test/public-data". DPMP's path is /published-datasets, which
+# also makes that mount canonical for landing pages and the files and documents they link to.
 _PORTAL_PUBLICATION_DATACITE_URL_PREFIX = ""
 _DATACITE_URL = "https://api.test.datacite.org/"
 
