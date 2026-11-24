@@ -1,4 +1,5 @@
 import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
@@ -48,7 +49,13 @@ describe('PublicData', () => {
       },
       authenticatedUser: { user: null },
     });
-    const { getAllByText } = renderComponent(<PublicData />, store, history);
+    const { getAllByText } = renderComponent(
+      <Routes>
+        <Route path="/public-data/*" element={<PublicData />} />
+      </Routes>,
+      store,
+      history
+    );
 
     expect(getAllByText(/Public Data/)).toBeDefined();
     expect(history.location.pathname).toEqual(
