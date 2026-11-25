@@ -1,8 +1,11 @@
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
+
+const certDir = resolve(import.meta.dirname, '../server/conf/nginx/certificates');
 
 export default defineConfig({
   base: '/core/static/',
@@ -31,12 +34,16 @@ export default defineConfig({
     origin: 'https://cep.test',
     port: 3000,
     host: '127.0.0.1',
+    https: {
+      key: readFileSync(resolve(certDir, 'cep.test.key')),
+      cert: readFileSync(resolve(certDir, 'cep.test.crt')),
+    },
     cors: {
       origin: ['https://cep.test'],
     },
     hmr: {
-      protocol: 'ws',
-      host: 'localhost',
+      protocol: 'wss',
+      host: 'cep.test',
       port: 3000,
     },
   },
