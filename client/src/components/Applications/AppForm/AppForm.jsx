@@ -52,6 +52,12 @@ import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelec
 import * as ROUTES from '../../../constants/routes';
 import { useWorkbenchConfig } from '@tacc/core-hooks';
 
+DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+  if (node.tagName === 'A' && node.getAttribute('target') === '_blank') {
+    node.setAttribute('rel', 'noopener noreferrer');
+  }
+});
+
 const appShape = PropTypes.shape({
   loading: PropTypes.bool,
   error: PropTypes.shape({}),
@@ -136,7 +142,9 @@ export const AppDetail = () => {
       {!app.definition && <AppPlaceholder apps={hasApps} />}
       {app.definition.appType === 'html' ? (
         <div id="appDetail-wrapper" className="has-external-app">
-          {parse(DOMPurify.sanitize(app.definition.html))}
+          {parse(
+            DOMPurify.sanitize(app.definition.html, { ADD_ATTR: ['target'] })
+          )}
         </div>
       ) : (
         <div id="appDetail-wrapper" className="has-internal-app">
