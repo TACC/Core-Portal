@@ -5,6 +5,8 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
 
+const certDir = resolve(import.meta.dirname, '../server/conf/nginx/certificates');
+
 export default defineConfig({
   base: '/core/static/',
 
@@ -33,8 +35,8 @@ export default defineConfig({
     port: 3000,
     host: '127.0.0.1',
     https: {
-      key: readFileSync('/certs/cep.test.key'),
-      cert: readFileSync('/certs/cep.test.crt'),
+      key: readFileSync(resolve(certDir, 'cep.test.key')),
+      cert: readFileSync(resolve(certDir, 'cep.test.crt')),
     },
     cors: {
       origin: ['https://cep.test'],
